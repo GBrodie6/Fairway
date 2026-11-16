@@ -1,11 +1,11 @@
 {
- "when": "2026-11-16T20:30:56.396Z",
+ "when": "2026-11-16T21:02:23.423Z",
  "executablePath": "/opt/pw-browsers/chromium",
  "software": true,
  "tier": "low",
  "enforceLuma": false,
  "note": "Software rendering (SwiftShader). Luma and clipping are valid; frame time is not representative of a real GPU.",
- "seconds": 11.4,
+ "seconds": 17.1,
  "rows": [
   {
    "course": "parkland",
@@ -46,10 +46,10 @@
    "tod": "midday",
    "view": "landscape",
    "tier": "low",
-   "luma": 150.8,
+   "luma": 151,
    "clippedPct": 0,
    "crushedPct": 0,
-   "exposure": 0.835,
+   "exposure": 0.837,
    "calls": 6,
    "triangles": 2435,
    "consoleErrors": 0,
@@ -100,7 +100,7 @@
    "luma": 62,
    "clippedPct": 0,
    "crushedPct": 0,
-   "exposure": 6.974,
+   "exposure": 6.972,
    "calls": 6,
    "triangles": 2435,
    "consoleErrors": 0,
@@ -202,7 +202,7 @@
    "luma": 61.9,
    "clippedPct": 0,
    "crushedPct": 0,
-   "exposure": 5.938,
+   "exposure": 5.94,
    "calls": 6,
    "triangles": 2435,
    "consoleErrors": 0,
@@ -304,7 +304,7 @@
    "luma": 61.9,
    "clippedPct": 0,
    "crushedPct": 0,
-   "exposure": 5.868,
+   "exposure": 5.866,
    "calls": 6,
    "triangles": 2435,
    "consoleErrors": 0,
@@ -338,7 +338,7 @@
    "luma": 61.4,
    "clippedPct": 0,
    "crushedPct": 0,
-   "exposure": 6.753,
+   "exposure": 6.75,
    "calls": 6,
    "triangles": 2435,
    "consoleErrors": 0,
@@ -403,10 +403,10 @@
    "tod": "night",
    "view": "portrait",
    "tier": "low",
-   "luma": 61.4,
+   "luma": 61.5,
    "clippedPct": 0,
    "crushedPct": 0,
-   "exposure": 5.663,
+   "exposure": 5.664,
    "calls": 6,
    "triangles": 2435,
    "consoleErrors": 0,
@@ -416,5 +416,71 @@
    "clipOk": true
   }
  ],
+ "engineChecks": {
+  "contextLoss": {
+   "supported": true,
+   "lossCount": 1,
+   "stillLost": false,
+   "lumaBefore": 150.99051766549573,
+   "lumaAfter": 150.86793616723318,
+   "framesAfter": 47
+  },
+  "tiers": [
+   {
+    "tier": "low",
+    "width": 640,
+    "height": 360,
+    "pixelRatio": 1,
+    "luma": 150.9,
+    "calls": 6
+   },
+   {
+    "tier": "medium",
+    "width": 960,
+    "height": 540,
+    "pixelRatio": 1.5,
+    "luma": 150.7,
+    "calls": 15
+   },
+   {
+    "tier": "high",
+    "width": 1280,
+    "height": 720,
+    "pixelRatio": 2,
+    "luma": 150.6,
+    "calls": 17
+   },
+   {
+    "tier": "ultra",
+    "width": 1600,
+    "height": 900,
+    "pixelRatio": 2.5,
+    "luma": 150.3,
+    "calls": 17
+   },
+   {
+    "tier": "low",
+    "width": 640,
+    "height": 360,
+    "pixelRatio": 1,
+    "luma": 150.7,
+    "calls": 6
+   }
+  ],
+  "portrait": {
+   "orientation": "portrait",
+   "width": 360,
+   "height": 640,
+   "luma": 150.5
+  },
+  "debugOverlay": [
+   "tier low  360x640 @1.00  portrait",
+   "frame 50.1 ms  2 fps  cpu 2.5 ms",
+   "draws 6  tris 2k  geo 5  tex 6  prog 11",
+   "texture mem 0 KB  targets 2.6 MB"
+  ],
+  "guardErrors": 0,
+  "consoleErrors": 0
+ },
  "failures": []
 }

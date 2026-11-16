@@ -1,0 +1,2442 @@
+{
+ "version": 1,
+ "textures": {
+  "fairway": {
+   "role": "Closely mown fairway grass",
+   "source": "ambientcg",
+   "asset": "Grass005",
+   "url": "https://ambientcg.com/view?id=Grass005",
+   "name": "Grass 005",
+   "authors": [
+    "ambientCG"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://docs.ambientcg.com/license/",
+   "licenseEvidence": "License page states assets are licensed under Creative Commons CC0 1.0.",
+   "procedural": false,
+   "scale": 2.2,
+   "avg": [
+    0.0862,
+    0.1499,
+    0.0171
+   ],
+   "rough": 0.702,
+   "files": {
+    "512": {
+     "a": "textures/fairway_a_512.webp",
+     "n": "textures/fairway_n_512.jpg",
+     "bytes": 216532
+    },
+    "1024": {
+     "a": "textures/fairway_a_1024.webp",
+     "n": "textures/fairway_n_1024.jpg",
+     "bytes": 1049220
+    },
+    "2048": {
+     "a": "textures/fairway_a_2048.webp",
+     "n": "textures/fairway_n_2048.jpg",
+     "bytes": 4060917
+    }
+   },
+   "bytes": 5326669
+  },
+  "green": {
+   "role": "Tee box and putting green grass",
+   "source": "ambientcg",
+   "asset": "Grass008",
+   "url": "https://ambientcg.com/view?id=Grass008",
+   "name": "Grass 008",
+   "authors": [
+    "ambientCG"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://docs.ambientcg.com/license/",
+   "licenseEvidence": "License page states assets are licensed under Creative Commons CC0 1.0.",
+   "procedural": false,
+   "scale": 1.6,
+   "avg": [
+    0.079,
+    0.1399,
+    0.0158
+   ],
+   "rough": 0.71,
+   "files": {
+    "512": {
+     "a": "textures/green_a_512.webp",
+     "n": "textures/green_n_512.jpg",
+     "bytes": 182949
+    },
+    "1024": {
+     "a": "textures/green_a_1024.webp",
+     "n": "textures/green_n_1024.jpg",
+     "bytes": 939803
+    },
+    "2048": {
+     "a": "textures/green_a_2048.webp",
+     "n": "textures/green_n_2048.jpg",
+     "bytes": 3963219
+    }
+   },
+   "bytes": 5085971
+  },
+  "rough": {
+   "role": "Rough grass",
+   "source": "ambientcg",
+   "asset": "Grass004",
+   "url": "https://ambientcg.com/view?id=Grass004",
+   "name": "Grass 004",
+   "authors": [
+    "ambientCG"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://docs.ambientcg.com/license/",
+   "licenseEvidence": "License page states assets are licensed under Creative Commons CC0 1.0.",
+   "procedural": false,
+   "scale": 2.6,
+   "avg": [
+    0.0981,
+    0.1251,
+    0.0254
+   ],
+   "rough": 0.263,
+   "files": {
+    "512": {
+     "a": "textures/rough_a_512.webp",
+     "n": "textures/rough_n_512.jpg",
+     "bytes": 300444
+    },
+    "1024": {
+     "a": "textures/rough_a_1024.webp",
+     "n": "textures/rough_n_1024.jpg",
+     "bytes": 1238385
+    }
+   },
+   "bytes": 1538829
+  },
+  "deeprough": {
+   "role": "Deep rough grass",
+   "source": "ambientcg",
+   "asset": "Grass001",
+   "url": "https://ambientcg.com/view?id=Grass001",
+   "name": "Grass 001",
+   "authors": [
+    "ambientCG"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://docs.ambientcg.com/license/",
+   "licenseEvidence": "License page states assets are licensed under Creative Commons CC0 1.0.",
+   "procedural": false,
+   "scale": 3,
+   "avg": [
+    0.0484,
+    0.0874,
+    0.0184
+   ],
+   "rough": 0.544,
+   "files": {
+    "512": {
+     "a": "textures/deeprough_a_512.webp",
+     "n": "textures/deeprough_n_512.jpg",
+     "bytes": 275044
+    },
+    "1024": {
+     "a": "textures/deeprough_a_1024.webp",
+     "n": "textures/deeprough_n_1024.jpg",
+     "bytes": 1132506
+    }
+   },
+   "bytes": 1407550
+  },
+  "fescue": {
+   "role": "Links fescue rough",
+   "source": "polyhaven",
+   "asset": "withered_grass",
+   "url": "https://polyhaven.com/a/withered_grass",
+   "name": "Withered Grass",
+   "authors": [
+    "Charlotte Baglioni"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 3,
+   "avg": [
+    0.3379,
+    0.2413,
+    0.1602
+   ],
+   "rough": 0.808,
+   "files": {
+    "512": {
+     "a": "textures/fescue_a_512.webp",
+     "n": "textures/fescue_n_512.jpg",
+     "bytes": 284829
+    },
+    "1024": {
+     "a": "textures/fescue_a_1024.webp",
+     "n": "textures/fescue_n_1024.jpg",
+     "bytes": 1187677
+    }
+   },
+   "bytes": 1472506
+  },
+  "bunker": {
+   "role": "Bunker sand",
+   "source": "ambientcg",
+   "asset": "Ground054",
+   "url": "https://ambientcg.com/view?id=Ground054",
+   "name": "Ground 054",
+   "authors": [
+    "ambientCG"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://docs.ambientcg.com/license/",
+   "licenseEvidence": "License page states assets are licensed under Creative Commons CC0 1.0.",
+   "procedural": false,
+   "scale": 2.4,
+   "avg": [
+    0.3049,
+    0.2373,
+    0.1437
+   ],
+   "rough": 0.665,
+   "files": {
+    "512": {
+     "a": "textures/bunker_a_512.webp",
+     "n": "textures/bunker_n_512.jpg",
+     "bytes": 139329
+    },
+    "1024": {
+     "a": "textures/bunker_a_1024.webp",
+     "n": "textures/bunker_n_1024.jpg",
+     "bytes": 479024
+    }
+   },
+   "bytes": 618353
+  },
+  "beach": {
+   "role": "White beach and dune sand",
+   "source": "polyhaven",
+   "asset": "aerial_beach_01",
+   "url": "https://polyhaven.com/a/aerial_beach_01",
+   "name": "Aerial Beach 01",
+   "authors": [
+    "Rob Tuytel"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 6,
+   "avg": [
+    0.202,
+    0.1701,
+    0.1412
+   ],
+   "rough": 0.61,
+   "files": {
+    "512": {
+     "a": "textures/beach_a_512.webp",
+     "n": "textures/beach_n_512.jpg",
+     "bytes": 175647
+    },
+    "1024": {
+     "a": "textures/beach_a_1024.webp",
+     "n": "textures/beach_n_1024.jpg",
+     "bytes": 478561
+    }
+   },
+   "bytes": 654208
+  },
+  "wetsand": {
+   "role": "Wet sand and shoreline",
+   "source": "polyhaven",
+   "asset": "damp_sand",
+   "url": "https://polyhaven.com/a/damp_sand",
+   "name": "Damp Sand",
+   "authors": [
+    "eye-candy.xyz"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 3,
+   "avg": [
+    0.1895,
+    0.1055,
+    0.0376
+   ],
+   "rough": 0.897,
+   "files": {
+    "512": {
+     "a": "textures/wetsand_a_512.webp",
+     "n": "textures/wetsand_n_512.jpg",
+     "bytes": 186712
+    },
+    "1024": {
+     "a": "textures/wetsand_a_1024.webp",
+     "n": "textures/wetsand_n_1024.jpg",
+     "bytes": 667339
+    }
+   },
+   "bytes": 854051
+  },
+  "dirt": {
+   "role": "Dirt",
+   "source": "polyhaven",
+   "asset": "dirt_floor",
+   "url": "https://polyhaven.com/a/dirt_floor",
+   "name": "Dirt Floor",
+   "authors": [
+    "eye-candy.xyz"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 3,
+   "avg": [
+    0.4235,
+    0.2359,
+    0.1159
+   ],
+   "rough": 0.92,
+   "files": {
+    "512": {
+     "a": "textures/dirt_a_512.webp",
+     "n": "textures/dirt_n_512.jpg",
+     "bytes": 173955
+    },
+    "1024": {
+     "a": "textures/dirt_a_1024.webp",
+     "n": "textures/dirt_n_1024.jpg",
+     "bytes": 648618
+    }
+   },
+   "bytes": 822573
+  },
+  "forest": {
+   "role": "Forest floor and leaf litter",
+   "source": "polyhaven",
+   "asset": "forest_leaves_02",
+   "url": "https://polyhaven.com/a/forest_leaves_02",
+   "name": "Forest Leaves 02",
+   "authors": [
+    "Rob Tuytel"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 3,
+   "avg": [
+    0.185,
+    0.1139,
+    0.0337
+   ],
+   "rough": 0.933,
+   "files": {
+    "512": {
+     "a": "textures/forest_a_512.webp",
+     "n": "textures/forest_n_512.jpg",
+     "bytes": 308522
+    },
+    "1024": {
+     "a": "textures/forest_a_1024.webp",
+     "n": "textures/forest_n_1024.jpg",
+     "bytes": 1033368
+    }
+   },
+   "bytes": 1341890
+  },
+  "needles": {
+   "role": "Conifer needle litter",
+   "source": "polyhaven",
+   "asset": "forest_leaves_04",
+   "url": "https://polyhaven.com/a/forest_leaves_04",
+   "name": "Forest Leaves 04",
+   "authors": [
+    "Rob Tuytel"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 2.5,
+   "avg": [
+    0.1527,
+    0.0818,
+    0.0344
+   ],
+   "rough": 0.759,
+   "files": {
+    "512": {
+     "a": "textures/needles_a_512.webp",
+     "n": "textures/needles_n_512.jpg",
+     "bytes": 332325
+    },
+    "1024": {
+     "a": "textures/needles_a_1024.webp",
+     "n": "textures/needles_n_1024.jpg",
+     "bytes": 1085479
+    }
+   },
+   "bytes": 1417804
+  },
+  "rock": {
+   "role": "Rock",
+   "source": "polyhaven",
+   "asset": "rock_face_03",
+   "url": "https://polyhaven.com/a/rock_face_03",
+   "name": "Rock Face 03",
+   "authors": [
+    "Dario Barresi",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 5,
+   "avg": [
+    0.2127,
+    0.1332,
+    0.0768
+   ],
+   "rough": 0.822,
+   "files": {
+    "512": {
+     "a": "textures/rock_a_512.webp",
+     "n": "textures/rock_n_512.jpg",
+     "bytes": 184384
+    },
+    "1024": {
+     "a": "textures/rock_a_1024.webp",
+     "n": "textures/rock_n_1024.jpg",
+     "bytes": 585690
+    }
+   },
+   "bytes": 770074
+  },
+  "cliff": {
+   "role": "Cliff face",
+   "source": "polyhaven",
+   "asset": "cliff_side",
+   "url": "https://polyhaven.com/a/cliff_side",
+   "name": "Cliff Side",
+   "authors": [
+    "James Ray Cock",
+    "Jenelle van Heerden",
+    "Dario Barresi"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 6,
+   "avg": [
+    0.2007,
+    0.0862,
+    0.0319
+   ],
+   "rough": 0.861,
+   "files": {
+    "512": {
+     "a": "textures/cliff_a_512.webp",
+     "n": "textures/cliff_n_512.jpg",
+     "bytes": 181382
+    },
+    "1024": {
+     "a": "textures/cliff_a_1024.webp",
+     "n": "textures/cliff_n_1024.jpg",
+     "bytes": 498092
+    }
+   },
+   "bytes": 679474
+  },
+  "gravel": {
+   "role": "Gravel path",
+   "source": "polyhaven",
+   "asset": "gravel_floor",
+   "url": "https://polyhaven.com/a/gravel_floor",
+   "name": "Gravel Floor",
+   "authors": [
+    "Jenelle van Heerden",
+    "Matterfield"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 1.6,
+   "avg": [
+    0.3092,
+    0.2053,
+    0.1146
+   ],
+   "rough": 0.506,
+   "files": {
+    "512": {
+     "a": "textures/gravel_a_512.webp",
+     "n": "textures/gravel_n_512.jpg",
+     "bytes": 337067
+    },
+    "1024": {
+     "a": "textures/gravel_a_1024.webp",
+     "n": "textures/gravel_n_1024.jpg",
+     "bytes": 1284439
+    }
+   },
+   "bytes": 1621506
+  },
+  "concrete": {
+   "role": "Concrete cart path",
+   "source": "polyhaven",
+   "asset": "brushed_concrete",
+   "url": "https://polyhaven.com/a/brushed_concrete",
+   "name": "Brushed Concrete ",
+   "authors": [
+    "Dario Barresi",
+    "Dimitrios Savva"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 2.5,
+   "avg": [
+    0.1311,
+    0.1127,
+    0.0884
+   ],
+   "rough": 0.784,
+   "files": {
+    "512": {
+     "a": "textures/concrete_a_512.webp",
+     "n": "textures/concrete_n_512.jpg",
+     "bytes": 114769
+    },
+    "1024": {
+     "a": "textures/concrete_a_1024.webp",
+     "n": "textures/concrete_n_1024.jpg",
+     "bytes": 460115
+    }
+   },
+   "bytes": 574884
+  },
+  "desert": {
+   "role": "Desert ground",
+   "source": "polyhaven",
+   "asset": "red_sand",
+   "url": "https://polyhaven.com/a/red_sand",
+   "name": "Red Sand",
+   "authors": [
+    "Rohit Seervi"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 4,
+   "avg": [
+    0.1847,
+    0.0863,
+    0.0521
+   ],
+   "rough": 0.829,
+   "files": {
+    "512": {
+     "a": "textures/desert_a_512.webp",
+     "n": "textures/desert_n_512.jpg",
+     "bytes": 192199
+    },
+    "1024": {
+     "a": "textures/desert_a_1024.webp",
+     "n": "textures/desert_n_1024.jpg",
+     "bytes": 606241
+    }
+   },
+   "bytes": 798440
+  },
+  "scrub": {
+   "role": "Desert scrub ground with stones",
+   "source": "polyhaven",
+   "asset": "dry_ground_rocks",
+   "url": "https://polyhaven.com/a/dry_ground_rocks",
+   "name": "Dry Ground Rocks",
+   "authors": [
+    "Rob Tuytel"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 4,
+   "avg": [
+    0.1638,
+    0.0976,
+    0.0462
+   ],
+   "rough": 0.812,
+   "files": {
+    "512": {
+     "a": "textures/scrub_a_512.webp",
+     "n": "textures/scrub_n_512.jpg",
+     "bytes": 271097
+    },
+    "1024": {
+     "a": "textures/scrub_a_1024.webp",
+     "n": "textures/scrub_n_1024.jpg",
+     "bytes": 999544
+    }
+   },
+   "bytes": 1270641
+  },
+  "alpine": {
+   "role": "Alpine ground",
+   "source": "polyhaven",
+   "asset": "rocky_terrain_02",
+   "url": "https://polyhaven.com/a/rocky_terrain_02",
+   "name": "Rocky Terrain 02",
+   "authors": [
+    "Amal Kumar"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 5,
+   "avg": [
+    0.078,
+    0.0746,
+    0.0121
+   ],
+   "rough": 0.959,
+   "files": {
+    "512": {
+     "a": "textures/alpine_a_512.webp",
+     "n": "textures/alpine_n_512.jpg",
+     "bytes": 141772
+    },
+    "1024": {
+     "a": "textures/alpine_a_1024.webp",
+     "n": "textures/alpine_n_1024.jpg",
+     "bytes": 430554
+    }
+   },
+   "bytes": 572326
+  },
+  "snow": {
+   "role": "Snow",
+   "source": "polyhaven",
+   "asset": "snow_02",
+   "url": "https://polyhaven.com/a/snow_02",
+   "name": "Snow 02",
+   "authors": [
+    "Rob Tuytel"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 4,
+   "avg": [
+    0.2165,
+    0.2162,
+    0.2219
+   ],
+   "rough": 0.801,
+   "files": {
+    "512": {
+     "a": "textures/snow_a_512.webp",
+     "n": "textures/snow_n_512.jpg",
+     "bytes": 134528
+    },
+    "1024": {
+     "a": "textures/snow_a_1024.webp",
+     "n": "textures/snow_n_1024.jpg",
+     "bytes": 441537
+    }
+   },
+   "bytes": 576065
+  },
+  "bark": {
+   "role": "Broadleaf bark",
+   "source": "polyhaven",
+   "asset": "bark_brown_02",
+   "url": "https://polyhaven.com/a/bark_brown_02",
+   "name": "Bark Brown 02",
+   "authors": [
+    "Rob Tuytel"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 1,
+   "avg": [
+    0.0828,
+    0.0683,
+    0.0404
+   ],
+   "rough": 0.933,
+   "files": {
+    "512": {
+     "a": "textures/bark_a_512.webp",
+     "n": "textures/bark_n_512.jpg",
+     "bytes": 251075
+    }
+   },
+   "bytes": 251075
+  },
+  "pinebark": {
+   "role": "Conifer bark",
+   "source": "polyhaven",
+   "asset": "pine_bark",
+   "url": "https://polyhaven.com/a/pine_bark",
+   "name": "Pine Bark",
+   "authors": [
+    "Dimitrios Savva"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "procedural": false,
+   "scale": 1,
+   "avg": [
+    0.1195,
+    0.0769,
+    0.0467
+   ],
+   "rough": 0.707,
+   "files": {
+    "512": {
+     "a": "textures/pinebark_a_512.webp",
+     "n": "textures/pinebark_n_512.jpg",
+     "bytes": 210871
+    }
+   },
+   "bytes": 210871
+  }
+ },
+ "models": {
+  "oak": {
+   "role": "Broadleaf tree",
+   "source": "polyhaven",
+   "asset": "island_tree_02",
+   "url": "https://polyhaven.com/a/island_tree_02",
+   "name": "Island Tree 02",
+   "authors": [
+    "Rob Tuytel",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 46229844,
+   "file": "models/oak.glb",
+   "lod0": "models/oak_lod0.glb",
+   "tris": {
+    "lod0": 25515,
+    "lod1": 5266,
+    "source": 1072213
+   },
+   "bytes": 1096188,
+   "bytesLod0": 616592,
+   "bytesLod1": 479596,
+   "height": 13,
+   "radius": 12.71,
+   "kind": "tree",
+   "materials": [
+    {
+     "name": "island_tree_02",
+     "foliage": false,
+     "avg": [
+      0.0945,
+      0.0798,
+      0.0518
+     ],
+     "normal": true
+    },
+    {
+     "name": "island_tree_02_leaves",
+     "foliage": true,
+     "avg": [
+      0.1087,
+      0.1312,
+      0.0116
+     ],
+     "coverage": 0.251
+    },
+    {
+     "name": "island_tree_02_branches",
+     "foliage": false,
+     "avg": [
+      0.1627,
+      0.1345,
+      0.1038
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 1
+  },
+  "bushtree": {
+   "role": "Dense evergreen bush tree",
+   "source": "polyhaven",
+   "asset": "searsia_lucida",
+   "url": "https://polyhaven.com/a/searsia_lucida",
+   "name": "Searsia Lucida",
+   "authors": [
+    "James Ray Cock",
+    "Jenelle van Heerden"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 19871241,
+   "file": "models/bushtree.glb",
+   "lod0": "models/bushtree_lod0.glb",
+   "tris": {
+    "lod0": 13886,
+    "lod1": 3181,
+    "source": 113405
+   },
+   "bytes": 670528,
+   "bytesLod0": 343020,
+   "bytesLod1": 327508,
+   "height": 6,
+   "radius": 3.04,
+   "kind": "tree",
+   "materials": [
+    {
+     "name": "searsia_lucida",
+     "foliage": false,
+     "avg": [
+      0.0403,
+      0.0336,
+      0.0186
+     ],
+     "normal": true
+    },
+    {
+     "name": "searsia_lucida_leaves",
+     "foliage": true,
+     "avg": [
+      0.1725,
+      0.1431,
+      0.0802
+     ],
+     "coverage": 0.512
+    },
+    {
+     "name": "searsia_lucida_twigs",
+     "foliage": true,
+     "avg": [
+      0.1725,
+      0.1431,
+      0.0802
+     ],
+     "coverage": 0.512
+    }
+   ],
+   "variants": 7
+  },
+  "shrub2": {
+   "role": "Shrub",
+   "source": "polyhaven",
+   "asset": "shrub_02",
+   "url": "https://polyhaven.com/a/shrub_02",
+   "name": "Shrub 02",
+   "authors": [
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 2058166,
+   "file": "models/shrub2.glb",
+   "lod0": "models/shrub2_lod0.glb",
+   "tris": {
+    "lod0": 3997,
+    "lod1": 836,
+    "source": 9234
+   },
+   "bytes": 105632,
+   "bytesLod0": 54036,
+   "bytesLod1": 51596,
+   "height": 1.2,
+   "radius": 1.09,
+   "kind": "plant",
+   "materials": [
+    {
+     "name": "shrub_02",
+     "foliage": true,
+     "avg": [
+      0.1461,
+      0.0868,
+      0.0405
+     ],
+     "coverage": 0.343
+    }
+   ],
+   "variants": 4
+  },
+  "fern": {
+   "role": "Fern",
+   "source": "polyhaven",
+   "asset": "fern_02",
+   "url": "https://polyhaven.com/a/fern_02",
+   "name": "Fern 02",
+   "authors": [
+    "Rob Tuytel",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 1260950,
+   "file": "models/fern.glb",
+   "lod0": "models/fern_lod0.glb",
+   "tris": {
+    "lod0": 1600,
+    "lod1": 499,
+    "source": 2384
+   },
+   "bytes": 78264,
+   "bytesLod0": 21184,
+   "bytesLod1": 57080,
+   "height": 0.7,
+   "radius": 1,
+   "kind": "plant",
+   "materials": [
+    {
+     "name": "fern_02",
+     "foliage": true,
+     "avg": [
+      0.0639,
+      0.0994,
+      0.011
+     ],
+     "coverage": 0.153
+    }
+   ],
+   "variants": 4
+  },
+  "maple": {
+   "role": "Broadleaf tree",
+   "source": "polyhaven",
+   "asset": "island_tree_01",
+   "url": "https://polyhaven.com/a/island_tree_01",
+   "name": "Island Tree 01",
+   "authors": [
+    "Rob Tuytel",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 66394706,
+   "file": "models/maple.glb",
+   "lod0": "models/maple_lod0.glb",
+   "tris": {
+    "lod0": 25536,
+    "lod1": 4971,
+    "source": 1599403
+   },
+   "bytes": 1111752,
+   "bytesLod0": 619108,
+   "bytesLod1": 492644,
+   "height": 15,
+   "radius": 8.35,
+   "kind": "tree",
+   "materials": [
+    {
+     "name": "island_tree_01",
+     "foliage": false,
+     "avg": [
+      0.0979,
+      0.0856,
+      0.0621
+     ],
+     "normal": true
+    },
+    {
+     "name": "island_tree_01_leaves",
+     "foliage": true,
+     "avg": [
+      0.1087,
+      0.1312,
+      0.0116
+     ],
+     "coverage": 0.251
+    },
+    {
+     "name": "island_tree_01_branches",
+     "foliage": false,
+     "avg": [
+      0.1627,
+      0.1345,
+      0.1038
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 1
+  },
+  "elm": {
+   "role": "Broadleaf tree",
+   "source": "polyhaven",
+   "asset": "island_tree_03",
+   "url": "https://polyhaven.com/a/island_tree_03",
+   "name": "Island Tree 03",
+   "authors": [
+    "Rob Tuytel",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 84942904,
+   "file": "models/elm.glb",
+   "lod0": "models/elm_lod0.glb",
+   "tris": {
+    "lod0": 25243,
+    "lod1": 4914,
+    "source": 2085320
+   },
+   "bytes": 1078524,
+   "bytesLod0": 619844,
+   "bytesLod1": 458680,
+   "height": 17,
+   "radius": 13.96,
+   "kind": "tree",
+   "materials": [
+    {
+     "name": "island_tree_03",
+     "foliage": false,
+     "avg": [
+      0.1912,
+      0.1647,
+      0.1324
+     ],
+     "normal": true
+    },
+    {
+     "name": "island_tree_03_leaves",
+     "foliage": true,
+     "avg": [
+      0.1087,
+      0.1312,
+      0.0116
+     ],
+     "coverage": 0.251
+    },
+    {
+     "name": "island_tree_03_branches",
+     "foliage": false,
+     "avg": [
+      0.1627,
+      0.1345,
+      0.1038
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 1
+  },
+  "birch": {
+   "role": "Broadleaf tree",
+   "source": "polyhaven",
+   "asset": "tree_small_02",
+   "url": "https://polyhaven.com/a/tree_small_02",
+   "name": "Tree Small 02",
+   "authors": [
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 101238854,
+   "file": "models/birch.glb",
+   "lod0": "models/birch_lod0.glb",
+   "tris": {
+    "lod0": 23415,
+    "lod1": 4710,
+    "source": 2062487
+   },
+   "bytes": 1056048,
+   "bytesLod0": 517004,
+   "bytesLod1": 539044,
+   "height": 11,
+   "radius": 7.08,
+   "kind": "tree",
+   "materials": [
+    {
+     "name": "tree_small_02_branches",
+     "foliage": false,
+     "avg": [
+      0.1759,
+      0.1337,
+      0.1021
+     ],
+     "normal": true
+    },
+    {
+     "name": "tree_small_02_leaves",
+     "foliage": true,
+     "avg": [
+      0.1237,
+      0.1734,
+      0.0367
+     ],
+     "coverage": 0.535
+    },
+    {
+     "name": "tree_small_02_trunk",
+     "foliage": false,
+     "avg": [
+      0.1312,
+      0.0966,
+      0.0705
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 1
+  },
+  "jacaranda": {
+   "role": "Flowering broadleaf tree",
+   "source": "polyhaven",
+   "asset": "jacaranda_tree",
+   "url": "https://polyhaven.com/a/jacaranda_tree",
+   "name": "Jacaranda Tree",
+   "authors": [
+    "Rob Tuytel",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 215115342,
+   "file": "models/jacaranda.glb",
+   "lod0": "models/jacaranda_lod0.glb",
+   "tris": {
+    "lod0": 29666,
+    "lod1": 4987,
+    "source": 3863832
+   },
+   "bytes": 1412564,
+   "bytesLod0": 717532,
+   "bytesLod1": 695032,
+   "height": 12,
+   "radius": 8.06,
+   "kind": "tree",
+   "materials": [
+    {
+     "name": "jacaranda_tree_branches",
+     "foliage": false,
+     "avg": [
+      0.0612,
+      0.0352,
+      0.0141
+     ],
+     "normal": true
+    },
+    {
+     "name": "jacaranda_tree_trunk",
+     "foliage": false,
+     "avg": [
+      0.0568,
+      0.0327,
+      0.0127
+     ],
+     "normal": true
+    },
+    {
+     "name": "jacaranda_tree_leaves",
+     "foliage": true,
+     "avg": [
+      0.1547,
+      0.1903,
+      0.0491
+     ],
+     "coverage": 0.242
+    }
+   ],
+   "variants": 1
+  },
+  "fir": {
+   "role": "Conifer",
+   "source": "polyhaven",
+   "asset": "fir_sapling_medium",
+   "url": "https://polyhaven.com/a/fir_sapling_medium",
+   "name": "Fir Sapling Medium",
+   "authors": [
+    "Rob Tuytel",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 78427962,
+   "file": "models/fir.glb",
+   "lod0": "models/fir_lod0.glb",
+   "tris": {
+    "lod0": 21953,
+    "lod1": 4305,
+    "source": 685046
+   },
+   "bytes": 921996,
+   "bytesLod0": 476988,
+   "bytesLod1": 445008,
+   "height": 16,
+   "radius": 5.51,
+   "kind": "tree",
+   "materials": [
+    {
+     "name": "fir_sapling_medium_branches",
+     "foliage": false,
+     "avg": [
+      0.0615,
+      0.0504,
+      0.0354
+     ],
+     "normal": true
+    },
+    {
+     "name": "fir_sapling_medium_twigs",
+     "foliage": true,
+     "avg": [
+      0.084,
+      0.0734,
+      0.0273
+     ],
+     "coverage": 0.236
+    },
+    {
+     "name": "fir_sapling_medium_branches_dead",
+     "foliage": false,
+     "avg": [
+      0.0615,
+      0.0504,
+      0.0354
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 3
+  },
+  "pine": {
+   "role": "Conifer",
+   "source": "polyhaven",
+   "asset": "pine_sapling_medium",
+   "url": "https://polyhaven.com/a/pine_sapling_medium",
+   "name": "Pine Sapling Medium",
+   "authors": [
+    "Rob Tuytel",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 268176371,
+   "file": "models/pine.glb",
+   "lod0": "models/pine_lod0.glb",
+   "tris": {
+    "lod0": 23123,
+    "lod1": 4816,
+    "source": 2662894
+   },
+   "bytes": 918780,
+   "bytesLod0": 491272,
+   "bytesLod1": 427508,
+   "height": 19,
+   "radius": 4.44,
+   "kind": "tree",
+   "materials": [
+    {
+     "name": "pine_sapling_medium_bark",
+     "foliage": false,
+     "avg": [
+      0.0461,
+      0.0361,
+      0.0273
+     ],
+     "normal": true
+    },
+    {
+     "name": "pine_sapling_medium_twig",
+     "foliage": true,
+     "avg": [
+      0.085,
+      0.0675,
+      0.0445
+     ],
+     "coverage": 0.678
+    },
+    {
+     "name": "pine_sapling_medium_dead_branches",
+     "foliage": false,
+     "avg": [
+      0.0461,
+      0.0361,
+      0.0273
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 3
+  },
+  "thorn": {
+   "role": "Dry-country bush tree",
+   "source": "polyhaven",
+   "asset": "searsia_burchellii",
+   "url": "https://polyhaven.com/a/searsia_burchellii",
+   "name": "Searsia Burchellii",
+   "authors": [
+    "James Ray Cock",
+    "Jenelle van Heerden"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 34652982,
+   "file": "models/thorn.glb",
+   "lod0": "models/thorn_lod0.glb",
+   "tris": {
+    "lod0": 16015,
+    "lod1": 3009,
+    "source": 361558
+   },
+   "bytes": 679444,
+   "bytesLod0": 416988,
+   "bytesLod1": 262456,
+   "height": 5,
+   "radius": 4.78,
+   "kind": "tree",
+   "materials": [
+    {
+     "name": "searsia_burchellii_leaves",
+     "foliage": true,
+     "avg": [
+      0.1674,
+      0.1301,
+      0.0802
+     ],
+     "coverage": 0.386
+    },
+    {
+     "name": "searsia_burchellii",
+     "foliage": false,
+     "avg": [
+      0.0212,
+      0.0165,
+      0.0101
+     ],
+     "normal": true
+    },
+    {
+     "name": "searsia_burchellii_twigs",
+     "foliage": true,
+     "avg": [
+      0.1674,
+      0.1301,
+      0.0802
+     ],
+     "coverage": 0.386
+    }
+   ],
+   "variants": 3
+  },
+  "quiver": {
+   "role": "Desert tree",
+   "source": "polyhaven",
+   "asset": "quiver_tree_01",
+   "url": "https://polyhaven.com/a/quiver_tree_01",
+   "name": "Quiver Tree 01",
+   "authors": [
+    "James Ray Cock",
+    "Dario Barresi",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 8880481,
+   "file": "models/quiver.glb",
+   "lod0": "models/quiver_lod0.glb",
+   "tris": {
+    "lod0": 13993,
+    "lod1": 2999,
+    "source": 150124
+   },
+   "bytes": 431980,
+   "bytesLod0": 171320,
+   "bytesLod1": 260660,
+   "height": 6,
+   "radius": 1.43,
+   "kind": "tree",
+   "materials": [
+    {
+     "name": "quiver_tree_01_trunk",
+     "foliage": false,
+     "avg": [
+      0.1539,
+      0.1051,
+      0.0607
+     ],
+     "normal": true
+    },
+    {
+     "name": "quiver_tree_01_leaf",
+     "foliage": true,
+     "avg": [
+      0.2,
+      0.3,
+      0.1
+     ]
+    }
+   ],
+   "variants": 1
+  },
+  "quiver2": {
+   "role": "Desert tree",
+   "source": "polyhaven",
+   "asset": "quiver_tree_02",
+   "url": "https://polyhaven.com/a/quiver_tree_02",
+   "name": "Quiver Tree 02",
+   "authors": [
+    "Dario Barresi",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 4547871,
+   "file": "models/quiver2.glb",
+   "lod0": "models/quiver2_lod0.glb",
+   "tris": {
+    "lod0": 11998,
+    "lod1": 2599,
+    "source": 82074
+   },
+   "bytes": 305056,
+   "bytesLod0": 134588,
+   "bytesLod1": 170468,
+   "height": 4.5,
+   "radius": 1.41,
+   "kind": "tree",
+   "materials": [
+    {
+     "name": "quiver_tree_02",
+     "foliage": false,
+     "avg": [
+      0.0994,
+      0.0877,
+      0.0398
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 1
+  },
+  "shrub3": {
+   "role": "Shrub",
+   "source": "polyhaven",
+   "asset": "shrub_03",
+   "url": "https://polyhaven.com/a/shrub_03",
+   "name": "Shrub 03",
+   "authors": [
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 1707862,
+   "file": "models/shrub3.glb",
+   "lod0": "models/shrub3_lod0.glb",
+   "tris": {
+    "lod0": 2385,
+    "lod1": 698,
+    "source": 2385
+   },
+   "bytes": 80824,
+   "bytesLod0": 27828,
+   "bytesLod1": 52996,
+   "height": 1,
+   "radius": 0.28,
+   "kind": "plant",
+   "materials": [
+    {
+     "name": "shrub_03",
+     "foliage": true,
+     "avg": [
+      0.2393,
+      0.2311,
+      0.0215
+     ],
+     "coverage": 0.25
+    }
+   ],
+   "variants": 4
+  },
+  "shrub4": {
+   "role": "Shrub",
+   "source": "polyhaven",
+   "asset": "shrub_04",
+   "url": "https://polyhaven.com/a/shrub_04",
+   "name": "Shrub 04",
+   "authors": [
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 1950420,
+   "file": "models/shrub4.glb",
+   "lod0": "models/shrub4_lod0.glb",
+   "tris": {
+    "lod0": 3985,
+    "lod1": 834,
+    "source": 27327
+   },
+   "bytes": 101120,
+   "bytesLod0": 61772,
+   "bytesLod1": 39348,
+   "height": 1.3,
+   "radius": 1.99,
+   "kind": "plant",
+   "materials": [
+    {
+     "name": "shrub_04",
+     "foliage": true,
+     "avg": [
+      0.1815,
+      0.1352,
+      0.0779
+     ],
+     "coverage": 0.375
+    }
+   ],
+   "variants": 1
+  },
+  "rooibos": {
+   "role": "Desert bush",
+   "source": "polyhaven",
+   "asset": "wild_rooibos_bush",
+   "url": "https://polyhaven.com/a/wild_rooibos_bush",
+   "name": "Wild Rooibos Bush",
+   "authors": [
+    "James Ray Cock",
+    "Jenelle van Heerden"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 2555384,
+   "file": "models/rooibos.glb",
+   "lod0": "models/rooibos_lod0.glb",
+   "tris": {
+    "lod0": 2539,
+    "lod1": 584,
+    "source": 13151
+   },
+   "bytes": 133712,
+   "bytesLod0": 56576,
+   "bytesLod1": 77136,
+   "height": 1.1,
+   "radius": 1.05,
+   "kind": "plant",
+   "materials": [
+    {
+     "name": "wild_rooibos_bush_twigs",
+     "foliage": true,
+     "avg": [
+      0.0815,
+      0.0597,
+      0.0329
+     ],
+     "coverage": 0.383
+    },
+    {
+     "name": "wild_rooibos_bush_leaves",
+     "foliage": true,
+     "avg": [
+      0.0815,
+      0.0597,
+      0.0329
+     ],
+     "coverage": 0.383
+    },
+    {
+     "name": "wild_rooibos_bush",
+     "foliage": false,
+     "avg": [
+      0.0102,
+      0.0075,
+      0.0041
+     ]
+    }
+   ],
+   "variants": 5
+  },
+  "tallgrass": {
+   "role": "Tall grass clump",
+   "source": "polyhaven",
+   "asset": "grass_medium_01",
+   "url": "https://polyhaven.com/a/grass_medium_01",
+   "name": "Grass Medium 01",
+   "authors": [
+    "Rob Tuytel",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 3713817,
+   "file": "models/tallgrass.glb",
+   "lod0": "models/tallgrass_lod0.glb",
+   "tris": {
+    "lod0": 1200,
+    "lod1": 300,
+    "source": 6422
+   },
+   "bytes": 172964,
+   "bytesLod0": 24700,
+   "bytesLod1": 148264,
+   "height": 0.55,
+   "radius": 0.7,
+   "kind": "plant",
+   "materials": [
+    {
+     "name": "grass_medium_01",
+     "foliage": true,
+     "avg": [
+      0.0781,
+      0.0809,
+      0.0161
+     ],
+     "coverage": 0.159
+    }
+   ],
+   "variants": 17
+  },
+  "tallgrass2": {
+   "role": "Tall grass clump",
+   "source": "polyhaven",
+   "asset": "grass_medium_02",
+   "url": "https://polyhaven.com/a/grass_medium_02",
+   "name": "Grass Medium 02",
+   "authors": [
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 912091,
+   "file": "models/tallgrass2.glb",
+   "lod0": "models/tallgrass2_lod0.glb",
+   "tris": {
+    "lod0": 900,
+    "lod1": 260,
+    "source": 2489
+   },
+   "bytes": 66812,
+   "bytesLod0": 17816,
+   "bytesLod1": 48996,
+   "height": 0.5,
+   "radius": 0.4,
+   "kind": "plant",
+   "materials": [
+    {
+     "name": "grass_medium_02",
+     "foliage": true,
+     "avg": [
+      0.2883,
+      0.2858,
+      0.1257
+     ],
+     "coverage": 0.101
+    }
+   ],
+   "variants": 5
+  },
+  "celandine": {
+   "role": "Wildflower",
+   "source": "polyhaven",
+   "asset": "celandine_01",
+   "url": "https://polyhaven.com/a/celandine_01",
+   "name": "Celandine 01",
+   "authors": [
+    "Rob Tuytel",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 1822066,
+   "file": "models/celandine.glb",
+   "lod0": "models/celandine_lod0.glb",
+   "tris": {
+    "lod0": 1200,
+    "lod1": 300,
+    "source": 4301
+   },
+   "bytes": 123036,
+   "bytesLod0": 21820,
+   "bytesLod1": 101216,
+   "height": 0.3,
+   "radius": 0.22,
+   "kind": "plant",
+   "materials": [
+    {
+     "name": "celandine_01",
+     "foliage": true,
+     "avg": [
+      0.1563,
+      0.1764,
+      0.0229
+     ],
+     "coverage": 0.435
+    }
+   ],
+   "variants": 5
+  },
+  "dandelion": {
+   "role": "Wildflower",
+   "source": "polyhaven",
+   "asset": "dandelion_01",
+   "url": "https://polyhaven.com/a/dandelion_01",
+   "name": "Dandelion 01",
+   "authors": [
+    "Rob Tuytel",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 3230906,
+   "file": "models/dandelion.glb",
+   "lod0": "models/dandelion_lod0.glb",
+   "tris": {
+    "lod0": 1200,
+    "lod1": 299,
+    "source": 23542
+   },
+   "bytes": 107004,
+   "bytesLod0": 19316,
+   "bytesLod1": 87688,
+   "height": 0.28,
+   "radius": 0.29,
+   "kind": "plant",
+   "materials": [
+    {
+     "name": "dandelion_01",
+     "foliage": true,
+     "avg": [
+      0.1961,
+      0.1531,
+      0.0154
+     ],
+     "coverage": 0.489
+    }
+   ],
+   "variants": 5
+  },
+  "gazania": {
+   "role": "Desert flower",
+   "source": "polyhaven",
+   "asset": "flower_gazania",
+   "url": "https://polyhaven.com/a/flower_gazania",
+   "name": "Flower Gazania",
+   "authors": [
+    "James Ray Cock",
+    "Jenelle van Heerden"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 2959066,
+   "file": "models/gazania.glb",
+   "lod0": "models/gazania_lod0.glb",
+   "tris": {
+    "lod0": 1193,
+    "lod1": 264,
+    "source": 3540
+   },
+   "bytes": 112076,
+   "bytesLod0": 27348,
+   "bytesLod1": 84728,
+   "height": 0.25,
+   "radius": 0.3,
+   "kind": "plant",
+   "materials": [
+    {
+     "name": "flower_gazania",
+     "foliage": true,
+     "avg": [
+      0.2382,
+      0.1382,
+      0.0179
+     ],
+     "coverage": 0.333
+    }
+   ],
+   "variants": 8
+  },
+  "succulent": {
+   "role": "Desert succulent",
+   "source": "polyhaven",
+   "asset": "cheiridopsis_succulent",
+   "url": "https://polyhaven.com/a/cheiridopsis_succulent",
+   "name": "Cheiridopsis Succulent",
+   "authors": [
+    "James Ray Cock",
+    "Jenelle van Heerden"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 4281073,
+   "file": "models/succulent.glb",
+   "lod0": "models/succulent_lod0.glb",
+   "tris": {
+    "lod0": 872,
+    "lod1": 499,
+    "source": 16477
+   },
+   "bytes": 76520,
+   "bytesLod0": 18824,
+   "bytesLod1": 57696,
+   "height": 0.3,
+   "radius": 0.33,
+   "kind": "plant",
+   "materials": [
+    {
+     "name": "cheiridopsis_succulent",
+     "foliage": false,
+     "avg": [
+      0.2691,
+      0.2457,
+      0.172
+     ]
+    },
+    {
+     "name": "cheiridopsis_succulent_flower",
+     "foliage": true,
+     "avg": [
+      0.2729,
+      0.2485,
+      0.1738
+     ],
+     "coverage": 0.993
+    }
+   ],
+   "variants": 9
+  },
+  "boulder2": {
+   "role": "Desert boulder",
+   "source": "polyhaven",
+   "asset": "namaqualand_boulder_02",
+   "url": "https://polyhaven.com/a/namaqualand_boulder_02",
+   "name": "Namaqualand Boulder 02",
+   "authors": [
+    "Greg Zaal",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 5139304,
+   "file": "models/boulder2.glb",
+   "lod0": "models/boulder2_lod0.glb",
+   "tris": {
+    "lod0": 2398,
+    "lod1": 500,
+    "source": 97964
+   },
+   "bytes": 394652,
+   "bytesLod0": 33564,
+   "bytesLod1": 361088,
+   "height": 1.8,
+   "radius": 2.75,
+   "kind": "rock",
+   "materials": [
+    {
+     "name": "boulder_02",
+     "foliage": false,
+     "avg": [
+      0.1387,
+      0.0776,
+      0.0375
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 1
+  },
+  "boulder3": {
+   "role": "Desert boulder",
+   "source": "polyhaven",
+   "asset": "namaqualand_boulder_05",
+   "url": "https://polyhaven.com/a/namaqualand_boulder_05",
+   "name": "Namaqualand Boulder 05",
+   "authors": [
+    "Jenelle van Heerden",
+    "Dario Barresi"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 4699992,
+   "file": "models/boulder3.glb",
+   "lod0": "models/boulder3_lod0.glb",
+   "tris": {
+    "lod0": 2398,
+    "lod1": 500,
+    "source": 89618
+   },
+   "bytes": 337508,
+   "bytesLod0": 25760,
+   "bytesLod1": 311748,
+   "height": 1.4,
+   "radius": 1.9,
+   "kind": "rock",
+   "materials": [
+    {
+     "name": "namaqualand_boulder_05",
+     "foliage": false,
+     "avg": [
+      0.3818,
+      0.2665,
+      0.1512
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 1
+  },
+  "rock1": {
+   "role": "Rock",
+   "source": "polyhaven",
+   "asset": "rock_07",
+   "url": "https://polyhaven.com/a/rock_07",
+   "name": "Rock 07",
+   "authors": [
+    "Jenelle van Heerden"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 2184088,
+   "file": "models/rock1.glb",
+   "lod0": "models/rock1_lod0.glb",
+   "tris": {
+    "lod0": 1198,
+    "lod1": 300,
+    "source": 14844
+   },
+   "bytes": 186524,
+   "bytesLod0": 15016,
+   "bytesLod1": 171508,
+   "height": 0.7,
+   "radius": 0.85,
+   "kind": "rock",
+   "materials": [
+    {
+     "name": "rock_07",
+     "foliage": false,
+     "avg": [
+      0.1761,
+      0.1071,
+      0.0587
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 1
+  },
+  "rock2": {
+   "role": "Rock",
+   "source": "polyhaven",
+   "asset": "rock_09",
+   "url": "https://polyhaven.com/a/rock_09",
+   "name": "Rock 09",
+   "authors": [
+    "Jenelle van Heerden"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 1964421,
+   "file": "models/rock2.glb",
+   "lod0": "models/rock2_lod0.glb",
+   "tris": {
+    "lod0": 1200,
+    "lod1": 300,
+    "source": 12416
+   },
+   "bytes": 170696,
+   "bytesLod0": 14568,
+   "bytesLod1": 156128,
+   "height": 0.6,
+   "radius": 1.5,
+   "kind": "rock",
+   "materials": [
+    {
+     "name": "rock_09",
+     "foliage": false,
+     "avg": [
+      0.0773,
+      0.0435,
+      0.0186
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 1
+  },
+  "stone": {
+   "role": "Stone",
+   "source": "polyhaven",
+   "asset": "stone_01",
+   "url": "https://polyhaven.com/a/stone_01",
+   "name": "Stone 01",
+   "authors": [
+    "Dario Barresi",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 3724420,
+   "file": "models/stone.glb",
+   "lod0": "models/stone_lod0.glb",
+   "tris": {
+    "lod0": 800,
+    "lod1": 240,
+    "source": 53520
+   },
+   "bytes": 203072,
+   "bytesLod0": 11420,
+   "bytesLod1": 191652,
+   "height": 0.4,
+   "radius": 0.46,
+   "kind": "rock",
+   "materials": [
+    {
+     "name": "stone_01",
+     "foliage": false,
+     "avg": [
+      0.2161,
+      0.1036,
+      0.057
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 1
+  },
+  "mossrocks": {
+   "role": "Mossy rock set",
+   "source": "polyhaven",
+   "asset": "rock_moss_set_01",
+   "url": "https://polyhaven.com/a/rock_moss_set_01",
+   "name": "Rock Moss Set 01",
+   "authors": [
+    "Kless Gyzen"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 1937065,
+   "file": "models/mossrocks.glb",
+   "lod0": "models/mossrocks_lod0.glb",
+   "tris": {
+    "lod0": 2400,
+    "lod1": 600,
+    "source": 16548
+   },
+   "bytes": 183028,
+   "bytesLod0": 23260,
+   "bytesLod1": 159768,
+   "height": 0.6,
+   "radius": 0.82,
+   "kind": "rock",
+   "materials": [
+    {
+     "name": "rock_moss_set_01",
+     "foliage": false,
+     "avg": [
+      0.0465,
+      0.0289,
+      0.0112
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 6
+  },
+  "log": {
+   "role": "Fallen log",
+   "source": "polyhaven",
+   "asset": "dead_tree_trunk",
+   "url": "https://polyhaven.com/a/dead_tree_trunk",
+   "name": "Dead Tree Trunk",
+   "authors": [
+    "Rob Tuytel"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 4787539,
+   "file": "models/log.glb",
+   "lod0": "models/log_lod0.glb",
+   "tris": {
+    "lod0": 2400,
+    "lod1": 498,
+    "source": 101802
+   },
+   "bytes": 254100,
+   "bytesLod0": 26408,
+   "bytesLod1": 227692,
+   "height": 0.8,
+   "radius": 4.21,
+   "kind": "rock",
+   "materials": [
+    {
+     "name": "dead_tree_trunk",
+     "foliage": false,
+     "avg": [
+      0.039,
+      0.0269,
+      0.0113
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 1
+  },
+  "stump": {
+   "role": "Tree stump",
+   "source": "polyhaven",
+   "asset": "tree_stump_01",
+   "url": "https://polyhaven.com/a/tree_stump_01",
+   "name": "Tree Stump 01",
+   "authors": [
+    "Rob Tuytel"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 3939674,
+   "file": "models/stump.glb",
+   "lod0": "models/stump_lod0.glb",
+   "tris": {
+    "lod0": 1595,
+    "lod1": 399,
+    "source": 41046
+   },
+   "bytes": 380928,
+   "bytesLod0": 22516,
+   "bytesLod1": 358412,
+   "height": 0.6,
+   "radius": 0.99,
+   "kind": "rock",
+   "materials": [
+    {
+     "name": "tree_stump_01",
+     "foliage": false,
+     "avg": [
+      0.1123,
+      0.0752,
+      0.0355
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 1
+  },
+  "bin": {
+   "role": "Trash can",
+   "source": "polyhaven",
+   "asset": "metal_trash_can",
+   "url": "https://polyhaven.com/a/metal_trash_can",
+   "name": "Metal Trash Can",
+   "authors": [
+    "GurJas Studios"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "sourceBytes": 4994983,
+   "file": "models/bin.glb",
+   "lod0": "models/bin_lod0.glb",
+   "tris": {
+    "lod0": 2000,
+    "lod1": 498,
+    "source": 4928
+   },
+   "bytes": 185496,
+   "bytesLod0": 26028,
+   "bytesLod1": 159468,
+   "height": 0.9,
+   "radius": 0.3,
+   "kind": "prop",
+   "materials": [
+    {
+     "name": "metal_trash_can_rust",
+     "foliage": false,
+     "avg": [
+      0.0747,
+      0.0482,
+      0.0298
+     ],
+     "normal": true
+    }
+   ],
+   "variants": 8
+  }
+ },
+ "hdris": {
+  "dawn": {
+   "role": "Dawn sky",
+   "source": "polyhaven",
+   "asset": "kiara_1_dawn",
+   "url": "https://polyhaven.com/a/kiara_1_dawn",
+   "name": "Kiara 1 Dawn",
+   "authors": [
+    "Greg Zaal"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "file": "hdri/dawn.hdr",
+   "bytes": 1475077,
+   "sunDir": [
+    0.7167,
+    0.1044,
+    0.6895
+   ],
+   "sunElevDeg": 6,
+   "sunAzDeg": 133.9,
+   "meanLuminance": 1.4838,
+   "peakLuminance": 46.2,
+   "hasSun": true
+  },
+  "morning": {
+   "role": "Clear morning sky",
+   "source": "polyhaven",
+   "asset": "autumn_field_puresky",
+   "url": "https://polyhaven.com/a/autumn_field_puresky",
+   "name": "Autumn Field (Pure Sky)",
+   "authors": [
+    "Jarod Guest",
+    "Sergej Majboroda"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "file": "hdri/morning.hdr",
+   "bytes": 1092974,
+   "sunDir": [
+    0.7049,
+    0.4856,
+    0.517
+   ],
+   "sunElevDeg": 29.1,
+   "sunAzDeg": 126.3,
+   "meanLuminance": 1.7829,
+   "peakLuminance": 113777.9,
+   "hasSun": true
+  },
+  "midday": {
+   "role": "Midday sky, partly cloudy",
+   "source": "polyhaven",
+   "asset": "kloofendal_48d_partly_cloudy_puresky",
+   "url": "https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky",
+   "name": "Kloofendal 48d Partly Cloudy (Pure Sky)",
+   "authors": [
+    "Greg Zaal",
+    "Jarod Guest"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "file": "hdri/midday.hdr",
+   "bytes": 1435119,
+   "sunDir": [
+    0.554,
+    0.7421,
+    0.3774
+   ],
+   "sunElevDeg": 47.9,
+   "sunAzDeg": 124.3,
+   "meanLuminance": 1.1588,
+   "peakLuminance": 60449.8,
+   "hasSun": true
+  },
+  "golden": {
+   "role": "Golden hour sky",
+   "source": "polyhaven",
+   "asset": "evening_road_01_puresky",
+   "url": "https://polyhaven.com/a/evening_road_01_puresky",
+   "name": "Evening Road 01 (Pure Sky)",
+   "authors": [
+    "Jarod Guest",
+    "Sergej Majboroda"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "file": "hdri/golden.hdr",
+   "bytes": 1309268,
+   "sunDir": [
+    0.7524,
+    0.248,
+    0.6103
+   ],
+   "sunElevDeg": 14.4,
+   "sunAzDeg": 129,
+   "meanLuminance": 1.2441,
+   "peakLuminance": 17.3,
+   "hasSun": false
+  },
+  "dusk": {
+   "role": "Dusk sky",
+   "source": "polyhaven",
+   "asset": "kiara_9_dusk",
+   "url": "https://polyhaven.com/a/kiara_9_dusk",
+   "name": "Kiara 9 Dusk",
+   "authors": [
+    "Greg Zaal"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "file": "hdri/dusk.hdr",
+   "bytes": 1508114,
+   "sunDir": [
+    0.7649,
+    0.0967,
+    0.6368
+   ],
+   "sunElevDeg": 5.6,
+   "sunAzDeg": 129.8,
+   "meanLuminance": 1.6725,
+   "peakLuminance": 23.2,
+   "hasSun": false
+  },
+  "night": {
+   "role": "Night sky",
+   "source": "polyhaven",
+   "asset": "dikhololo_night",
+   "url": "https://polyhaven.com/a/dikhololo_night",
+   "name": "Dikhololo Night",
+   "authors": [
+    "Greg Zaal"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "file": "hdri/night.hdr",
+   "bytes": 1745132,
+   "sunDir": [
+    0.5184,
+    0.2632,
+    -0.8136
+   ],
+   "sunElevDeg": 15.3,
+   "sunAzDeg": 32.5,
+   "meanLuminance": 0.1583,
+   "peakLuminance": 72.6,
+   "hasSun": true
+  },
+  "clear": {
+   "role": "Extra sky variety: clear midday",
+   "source": "polyhaven",
+   "asset": "kloofendal_43d_clear_puresky",
+   "url": "https://polyhaven.com/a/kloofendal_43d_clear_puresky",
+   "name": "Kloofendal 43d Clear (Pure Sky)",
+   "authors": [
+    "Greg Zaal"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "file": "hdri/clear.hdr",
+   "bytes": 1184531,
+   "sunDir": [
+    0.591,
+    0.681,
+    0.4323
+   ],
+   "sunElevDeg": 42.9,
+   "sunAzDeg": 126.2,
+   "meanLuminance": 1.4604,
+   "peakLuminance": 71667.1,
+   "hasSun": true
+  },
+  "sunset": {
+   "role": "Extra sky variety: soft sunset",
+   "source": "polyhaven",
+   "asset": "belfast_sunset_puresky",
+   "url": "https://polyhaven.com/a/belfast_sunset_puresky",
+   "name": "Belfast Sunset (Pure Sky)",
+   "authors": [
+    "Greg Zaal",
+    "Dimitrios Savva",
+    "Jarod Guest"
+   ],
+   "license": "CC0 1.0",
+   "licenseUrl": "https://polyhaven.com/license",
+   "licenseEvidence": "License page states all assets are CC0 (public domain).",
+   "file": "hdri/sunset.hdr",
+   "bytes": 1190247,
+   "sunDir": [
+    0.6633,
+    0.0719,
+    0.7449
+   ],
+   "sunElevDeg": 4.1,
+   "sunAzDeg": 138.3,
+   "meanLuminance": 1.377,
+   "peakLuminance": 24.5,
+   "hasSun": false
+  }
+ },
+ "procedural": {
+  "water_normal": {
+   "role": "Tileable water ripple normal map",
+   "file": "textures/water_normal.webp",
+   "bytes": 34294,
+   "source": "procedural",
+   "license": "original work"
+  },
+  "cloud_noise": {
+   "role": "Tileable cloud noise (Perlin-Worley)",
+   "file": "textures/cloud_noise.webp",
+   "bytes": 75668,
+   "source": "procedural",
+   "license": "original work"
+  },
+  "detail_noise": {
+   "role": "Tileable detail noise for breaking up tiling",
+   "file": "textures/detail_noise.webp",
+   "bytes": 34764,
+   "source": "procedural",
+   "license": "original work"
+  }
+ },
+ "totals": {
+  "textures": 28010486,
+  "models": 13136828,
+  "hdris": 10940462,
+  "shippedBytes": 52087776,
+  "sourceBytes": 1588585780
+ },
+ "generated": "2026-11-16T21:01:34.082Z"
+}
