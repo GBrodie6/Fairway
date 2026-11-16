@@ -6,7 +6,7 @@ Raw downloads live in `asset-src/` and processed files in `public/assets/`. Both
 
 No asset contains a real person's likeness or name, and nothing comes from a commercial game.
 
-Shipped size: **49.67 MB** (textures 26.71 MB, models 12.53 MB, HDRIs 10.43 MB).
+Shipped size: **49.54 MB** (textures 26.71 MB, models 12.53 MB, HDRIs 10.30 MB).
 
 ## PBR texture sets
 
@@ -74,14 +74,14 @@ Shipped size: **49.67 MB** (textures 26.71 MB, models 12.53 MB, HDRIs 10.43 MB).
 
 | Id | Role | Asset | License | Sun elevation | Shipped |
 | --- | --- | --- | --- | --- | --- |
-| dawn | Dawn sky | [Kiara 1 Dawn](https://polyhaven.com/a/kiara_1_dawn) | CC0 1.0 | 6 deg | 1.41 MB |
-| morning | Clear morning sky | [Autumn Field (Pure Sky)](https://polyhaven.com/a/autumn_field_puresky) | CC0 1.0 | 29.1 deg | 1.04 MB |
-| midday | Midday sky, partly cloudy | [Kloofendal 48d Partly Cloudy (Pure Sky)](https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky) | CC0 1.0 | 47.9 deg | 1.37 MB |
-| golden | Golden hour sky | [Evening Road 01 (Pure Sky)](https://polyhaven.com/a/evening_road_01_puresky) | CC0 1.0 | 14.4 deg | 1.25 MB |
-| dusk | Dusk sky | [Kiara 9 Dusk](https://polyhaven.com/a/kiara_9_dusk) | CC0 1.0 | 5.6 deg | 1.44 MB |
+| dawn | Dawn sky | [Kiara 1 Dawn](https://polyhaven.com/a/kiara_1_dawn) | CC0 1.0 | 6 deg | 1.39 MB |
+| morning | Clear morning sky | [Autumn Field (Pure Sky)](https://polyhaven.com/a/autumn_field_puresky) | CC0 1.0 | 29.1 deg | 1.02 MB |
+| midday | Midday sky, partly cloudy | [Kloofendal 48d Partly Cloudy (Pure Sky)](https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky) | CC0 1.0 | 47.9 deg | 1.35 MB |
+| golden | Golden hour sky | [Evening Road 01 (Pure Sky)](https://polyhaven.com/a/evening_road_01_puresky) | CC0 1.0 | 14.4 deg | 1.23 MB |
+| dusk | Dusk sky | [Kiara 9 Dusk](https://polyhaven.com/a/kiara_9_dusk) | CC0 1.0 | 5.6 deg | 1.42 MB |
 | night | Night sky | [Dikhololo Night](https://polyhaven.com/a/dikhololo_night) | CC0 1.0 | 15.3 deg | 1.66 MB |
-| clear | Extra sky variety: clear midday | [Kloofendal 43d Clear (Pure Sky)](https://polyhaven.com/a/kloofendal_43d_clear_puresky) | CC0 1.0 | 42.9 deg | 1.13 MB |
-| sunset | Extra sky variety: soft sunset | [Belfast Sunset (Pure Sky)](https://polyhaven.com/a/belfast_sunset_puresky) | CC0 1.0 | 4.1 deg | 1.14 MB |
+| clear | Extra sky variety: clear midday | [Kloofendal 43d Clear (Pure Sky)](https://polyhaven.com/a/kloofendal_43d_clear_puresky) | CC0 1.0 | 42.9 deg | 1.11 MB |
+| sunset | Extra sky variety: soft sunset | [Belfast Sunset (Pure Sky)](https://polyhaven.com/a/belfast_sunset_puresky) | CC0 1.0 | 4.1 deg | 1.12 MB |
 
 ## Generated in this repo (original work)
 

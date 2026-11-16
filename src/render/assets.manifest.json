@@ -2215,7 +2215,7 @@
    "licenseUrl": "https://polyhaven.com/license",
    "licenseEvidence": "License page states all assets are CC0 (public domain).",
    "file": "hdri/dawn.hdr",
-   "bytes": 1475077,
+   "bytes": 1461901,
    "sunDir": [
     0.7167,
     0.1044,
@@ -2223,9 +2223,14 @@
    ],
    "sunElevDeg": 6,
    "sunAzDeg": 133.9,
-   "meanLuminance": 1.4838,
-   "peakLuminance": 46.2,
-   "hasSun": true
+   "meanLuminance": 1.3399,
+   "peakLuminance": 13.4,
+   "hasSun": true,
+   "sourcePeakLuminance": 46.2,
+   "sourceMeanLuminance": 1.4838,
+   "sunClampedTexels": 2426,
+   "width": 1024,
+   "height": 512
   },
   "morning": {
    "role": "Clear morning sky",
@@ -2241,7 +2246,7 @@
    "licenseUrl": "https://polyhaven.com/license",
    "licenseEvidence": "License page states all assets are CC0 (public domain).",
    "file": "hdri/morning.hdr",
-   "bytes": 1092974,
+   "bytes": 1068721,
    "sunDir": [
     0.7049,
     0.4856,
@@ -2249,9 +2254,14 @@
    ],
    "sunElevDeg": 29.1,
    "sunAzDeg": 126.3,
-   "meanLuminance": 1.7829,
-   "peakLuminance": 113777.9,
-   "hasSun": true
+   "meanLuminance": 0.4136,
+   "peakLuminance": 16,
+   "hasSun": true,
+   "sourcePeakLuminance": 113777.9,
+   "sourceMeanLuminance": 1.7829,
+   "sunClampedTexels": 74,
+   "width": 1024,
+   "height": 512
   },
   "midday": {
    "role": "Midday sky, partly cloudy",
@@ -2267,7 +2277,7 @@
    "licenseUrl": "https://polyhaven.com/license",
    "licenseEvidence": "License page states all assets are CC0 (public domain).",
    "file": "hdri/midday.hdr",
-   "bytes": 1435119,
+   "bytes": 1415476,
    "sunDir": [
     0.554,
     0.7421,
@@ -2275,9 +2285,14 @@
    ],
    "sunElevDeg": 47.9,
    "sunAzDeg": 124.3,
-   "meanLuminance": 1.1588,
-   "peakLuminance": 60449.8,
-   "hasSun": true
+   "meanLuminance": 0.4496,
+   "peakLuminance": 10.4,
+   "hasSun": true,
+   "sourcePeakLuminance": 60449.8,
+   "sourceMeanLuminance": 1.1588,
+   "sunClampedTexels": 353,
+   "width": 1024,
+   "height": 512
   },
   "golden": {
    "role": "Golden hour sky",
@@ -2293,7 +2308,7 @@
    "licenseUrl": "https://polyhaven.com/license",
    "licenseEvidence": "License page states all assets are CC0 (public domain).",
    "file": "hdri/golden.hdr",
-   "bytes": 1309268,
+   "bytes": 1291832,
    "sunDir": [
     0.7524,
     0.248,
@@ -2301,9 +2316,14 @@
    ],
    "sunElevDeg": 14.4,
    "sunAzDeg": 129,
-   "meanLuminance": 1.2441,
-   "peakLuminance": 17.3,
-   "hasSun": false
+   "meanLuminance": 1.2427,
+   "peakLuminance": 11.2,
+   "hasSun": false,
+   "sourcePeakLuminance": 17.3,
+   "sourceMeanLuminance": 1.2441,
+   "sunClampedTexels": 166,
+   "width": 1024,
+   "height": 512
   },
   "dusk": {
    "role": "Dusk sky",
@@ -2318,7 +2338,7 @@
    "licenseUrl": "https://polyhaven.com/license",
    "licenseEvidence": "License page states all assets are CC0 (public domain).",
    "file": "hdri/dusk.hdr",
-   "bytes": 1508114,
+   "bytes": 1493971,
    "sunDir": [
     0.7649,
     0.0967,
@@ -2326,9 +2346,14 @@
    ],
    "sunElevDeg": 5.6,
    "sunAzDeg": 129.8,
-   "meanLuminance": 1.6725,
-   "peakLuminance": 23.2,
-   "hasSun": false
+   "meanLuminance": 1.6623,
+   "peakLuminance": 15.1,
+   "hasSun": false,
+   "sourcePeakLuminance": 23.2,
+   "sourceMeanLuminance": 1.6725,
+   "sunClampedTexels": 774,
+   "width": 1024,
+   "height": 512
   },
   "night": {
    "role": "Night sky",
@@ -2343,7 +2368,7 @@
    "licenseUrl": "https://polyhaven.com/license",
    "licenseEvidence": "License page states all assets are CC0 (public domain).",
    "file": "hdri/night.hdr",
-   "bytes": 1745132,
+   "bytes": 1741019,
    "sunDir": [
     0.5184,
     0.2632,
@@ -2351,9 +2376,14 @@
    ],
    "sunElevDeg": 15.3,
    "sunAzDeg": 32.5,
-   "meanLuminance": 0.1583,
-   "peakLuminance": 72.6,
-   "hasSun": true
+   "meanLuminance": 0.1564,
+   "peakLuminance": 1.4,
+   "hasSun": true,
+   "sourcePeakLuminance": 72.6,
+   "sourceMeanLuminance": 0.1583,
+   "sunClampedTexels": 564,
+   "width": 1024,
+   "height": 512
   },
   "clear": {
    "role": "Extra sky variety: clear midday",
@@ -2368,7 +2398,7 @@
    "licenseUrl": "https://polyhaven.com/license",
    "licenseEvidence": "License page states all assets are CC0 (public domain).",
    "file": "hdri/clear.hdr",
-   "bytes": 1184531,
+   "bytes": 1158826,
    "sunDir": [
     0.591,
     0.681,
@@ -2376,9 +2406,14 @@
    ],
    "sunElevDeg": 42.9,
    "sunAzDeg": 126.2,
-   "meanLuminance": 1.4604,
-   "peakLuminance": 71667.1,
-   "hasSun": true
+   "meanLuminance": 0.4829,
+   "peakLuminance": 13.1,
+   "hasSun": true,
+   "sourcePeakLuminance": 71667.1,
+   "sourceMeanLuminance": 1.4604,
+   "sunClampedTexels": 69,
+   "width": 1024,
+   "height": 512
   },
   "sunset": {
    "role": "Extra sky variety: soft sunset",
@@ -2395,7 +2430,7 @@
    "licenseUrl": "https://polyhaven.com/license",
    "licenseEvidence": "License page states all assets are CC0 (public domain).",
    "file": "hdri/sunset.hdr",
-   "bytes": 1190247,
+   "bytes": 1169840,
    "sunDir": [
     0.6633,
     0.0719,
@@ -2403,9 +2438,14 @@
    ],
    "sunElevDeg": 4.1,
    "sunAzDeg": 138.3,
-   "meanLuminance": 1.377,
-   "peakLuminance": 24.5,
-   "hasSun": false
+   "meanLuminance": 1.3318,
+   "peakLuminance": 12.4,
+   "hasSun": false,
+   "sourcePeakLuminance": 24.5,
+   "sourceMeanLuminance": 1.377,
+   "sunClampedTexels": 1953,
+   "width": 1024,
+   "height": 512
   }
  },
  "procedural": {
@@ -2434,9 +2474,9 @@
  "totals": {
   "textures": 28010486,
   "models": 13136828,
-  "hdris": 10940462,
-  "shippedBytes": 52087776,
-  "sourceBytes": 1588585780
+  "hdris": 10801586,
+  "shippedBytes": 51948900,
+  "sourceBytes": 1588582977
  },
- "generated": "2026-11-16T21:01:34.082Z"
+ "generated": "2026-11-16T22:41:19.536Z"
 }

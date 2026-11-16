@@ -132,3 +132,43 @@ describe('procedural generators', () => {
     expect(Number.isFinite(r.sunAzDeg)).toBe(true);
   });
 });
+
+describe('HDR encode and sun clamp', () => {
+  it('round-trips an image through the RGBE encoder within RGBE precision', async () => {
+    const { encodeHdr, decodeHdr } = await import('../scripts/assets/hdri.mjs');
+    const w = 16, h = 8;
+    const data = new Float32Array(w * h * 3);
+    for (let i = 0; i < data.length; i++) data[i] = i % 7 === 0 ? 0 : Math.abs(Math.sin(i * 1.3)) * (i % 5 === 0 ? 900 : 2);
+    // A flat run, to exercise the run-length path.
+    for (let x = 0; x < w; x++) for (let c = 0; c < 3; c++) data[(3 * w + x) * 3 + c] = 0.5;
+    const back = decodeHdr(encodeHdr({ width: w, height: h, data }));
+    expect(back.width).toBe(w); expect(back.height).toBe(h);
+    for (let p = 0; p < w * h; p++) {
+      const m = Math.max(data[p * 3], data[p * 3 + 1], data[p * 3 + 2]);
+      for (let c = 0; c < 3; c++) expect(Math.abs(back.data[p * 3 + c] - data[p * 3 + c])).toBeLessThanOrEqual(m / 100 + 1e-6);
+    }
+  });
+  it('clampSun caps the sun without touching the sky', async () => {
+    const { clampSun, analyzeHdr } = await import('../scripts/assets/hdri.mjs');
+    const w = 64, h = 32;
+    const data = new Float32Array(w * h * 3).fill(0.5);
+    const sunIdx = (8 * w + 20) * 3;
+    data[sunIdx] = data[sunIdx + 1] = data[sunIdx + 2] = 40000;
+    const img = { width: w, height: h, data };
+    const before = analyzeHdr(img);
+    const n = clampSun(img, before, 9);
+    expect(n).toBe(1);
+    expect(data[sunIdx]).toBeLessThan(before.meanLuminance * 9.01);
+    expect(data[0]).toBe(0.5);
+  });
+  it('every shipped HDRI has had its sun clamped and kept the 1k size', () => {
+    for (const [id, hh] of Object.entries(manifest.hdris)) {
+      if (hh.failed) continue;
+      expect(hh.width, id).toBe(1024);
+      expect(hh.height, id).toBe(512);
+      // The ceiling is nine times the mean of the original map (RGBE rounding allows 1 percent).
+      expect(hh.peakLuminance, id).toBeLessThanOrEqual(hh.sourceMeanLuminance * 9 * 1.01 + 0.05);
+      expect(hh.sourcePeakLuminance, id).toBeGreaterThanOrEqual(hh.peakLuminance);
+    }
+  });
+});

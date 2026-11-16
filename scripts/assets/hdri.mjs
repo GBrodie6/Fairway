@@ -1,6 +1,6 @@
 // HDRI handling: decode Radiance .hdr, locate the sun (or moon), and report sky statistics.
 // The .hdr is shipped as-is at its 1k baked size; the game rotates it to match the game sun.
-import { readFileSync, copyFileSync, mkdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 
 export function decodeHdr(buf) {
@@ -78,10 +78,74 @@ export function analyzeHdr({ width: w, height: h, data }) {
   };
 }
 
+// Radiance RGBE encoder with the standard per-channel run-length scheme.
+export function encodeHdr({ width: w, height: h, data }) {
+  const header = Buffer.from(`#?RADIANCE\nFORMAT=32-bit_rle_rgbe\n\n-Y ${h} +X ${w}\n`, 'ascii');
+  const chunks = [header];
+  const rgbe = new Uint8Array(w * 4);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 3;
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      const v = Math.max(r, g, b);
+      if (v < 1e-32) { rgbe[x] = rgbe[w + x] = rgbe[2 * w + x] = rgbe[3 * w + x] = 0; continue; }
+      let e = Math.ceil(Math.log2(v));
+      if (Math.pow(2, e) === v) e += 1;
+      const sc = 256 / Math.pow(2, e);
+      rgbe[x] = Math.min(255, Math.floor(r * sc)); rgbe[w + x] = Math.min(255, Math.floor(g * sc)); rgbe[2 * w + x] = Math.min(255, Math.floor(b * sc)); rgbe[3 * w + x] = e + 128;
+    }
+    const out = [2, 2, (w >> 8) & 255, w & 255];
+    for (let c = 0; c < 4; c++) {
+      const row = rgbe.subarray(c * w, (c + 1) * w);
+      let x = 0;
+      while (x < w) {
+        let run = 1;
+        while (x + run < w && run < 127 && row[x + run] === row[x]) run++;
+        if (run >= 3) { out.push(128 + run, row[x]); x += run; continue; }
+        // Literal span: up to the next run of three or more.
+        let n = 0;
+        const start = x;
+        while (x < w && n < 128) {
+          let r2 = 1;
+          while (x + r2 < w && r2 < 3 && row[x + r2] === row[x]) r2++;
+          if (r2 >= 3) break;
+          x++; n++;
+        }
+        out.push(n);
+        for (let k = 0; k < n; k++) out.push(row[start + k]);
+      }
+    }
+    chunks.push(Buffer.from(out));
+  }
+  return Buffer.concat(chunks);
+}
+
+// The game lights the scene with its own sun, so the photographed sun disc must not be counted
+// a second time through the environment map (it showed up as a glare path on the ground).
+// Texels far brighter than the sky are scaled down to a ceiling. Size stays 1k.
+export function clampSun(img, analysis, k = 9) {
+  const { width: w, height: h, data } = img;
+  const cap = analysis.meanLuminance * k;
+  let clamped = 0;
+  for (let i = 0; i < w * h; i++) {
+    const l = 0.2126 * data[i * 3] + 0.7152 * data[i * 3 + 1] + 0.0722 * data[i * 3 + 2];
+    if (l > cap) { const sc = cap / l; data[i * 3] *= sc; data[i * 3 + 1] *= sc; data[i * 3 + 2] *= sc; clamped++; }
+  }
+  return clamped;
+}
+
 export function processHdri(entry, srcPath, outDir) {
-  const info = analyzeHdr(decodeHdr(readFileSync(srcPath)));
+  const img = decodeHdr(readFileSync(srcPath));
+  const before = analyzeHdr(img);
+  const clampedTexels = clampSun(img, before);
+  const after = analyzeHdr(img);
   mkdirSync(outDir, { recursive: true });
   const name = `${entry.id}.hdr`;
-  copyFileSync(srcPath, path.join(outDir, name));
-  return { file: `hdri/${name}`, bytes: statSync(path.join(outDir, name)).size, ...info };
+  writeFileSync(path.join(outDir, name), encodeHdr(img));
+  // The sun direction comes from the original map (the clamp flattens the peak).
+  return {
+    file: `hdri/${name}`, bytes: statSync(path.join(outDir, name)).size,
+    ...before, meanLuminance: after.meanLuminance, peakLuminance: after.peakLuminance, sourcePeakLuminance: before.peakLuminance, sourceMeanLuminance: before.meanLuminance,
+    sunClampedTexels: clampedTexels, width: img.width, height: img.height,
+  };
 }

@@ -217,7 +217,9 @@ void main() {
     color = mix(color, fogCol, f);
   }
 #ifdef USE_SHAFTS
-  color += uShaftColor * texture2D(tShafts, vUv).r * uShaftStrength;
+  // Shafts are light scattered in the air along the view ray, so nearby ground gets almost
+  // none of it. Without this the rays read as a wet sheen on the grass under the sun.
+  color += uShaftColor * texture2D(tShafts, vUv).r * uShaftStrength * (isSky ? 1.0 : smoothstep(25.0, 420.0, dist));
 #endif
 #ifdef USE_BLOOM
   color += texture2D(tBloom, vUv).rgb * (uBloomStrength / max(uExposure, 1e-4));

@@ -52,7 +52,7 @@ async function boot() {
   loop.add('world', (dt, t) => app.world.update(dt, t));
   loop.add('render', (dt, t, realDt) => engine.render(app.world.scene, app.world.camera, t, realDt));
   if (params.debug) {
-    app.debug = createDebugOverlay(ui, { engine, loop, getExtra: () => `terrain build ${app.world.buildMs.toFixed(0)} ms  terrain tris ${(app.world.terrainView.triangles / 1000).toFixed(0)}k  assets ${(assets.stats.bytes / 1048576).toFixed(1)} MB in ${assets.stats.requests} req` });
+    app.debug = createDebugOverlay(ui, { engine, loop, getExtra: () => `terrain build ${app.world.buildMs.toFixed(0)} ms  terrain tris ${(app.world.terrainView.triangles / 1000).toFixed(0)}k\ntrees ${app.world.vegetation.counts.trees} (lod0 ${app.world.vegetation.drawn.lod0} lod1 ${app.world.vegetation.drawn.lod1} impostor ${app.world.vegetation.drawn.impostor})  plants ${app.world.vegetation.drawn.small}/${app.world.vegetation.counts.plants}  veg tris ${(app.world.vegetation.triangles / 1000).toFixed(0)}k\n  assets ${(assets.stats.bytes / 1048576).toFixed(1)} MB in ${assets.stats.requests} req` });
     loop.add('debug', (dt, t, realDt) => app.debug.update(realDt), { profile: false });
   }
 

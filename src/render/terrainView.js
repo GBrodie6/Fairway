@@ -572,9 +572,11 @@ export function createTerrainView({ terrain, course, lighting, tier, assets, man
     }
     const idx = [];
     for (let j = 0; j < h - 1; j++) for (let i = 0; i < w - 1; i++) {
-      // Skip the cells fully inside the detailed grid (keep one overlapping ring).
+      // Skip every cell inside the detailed grid. The two meshes then overlap only in the 4 m
+      // inset band, where the terrain function and the outer function are identical. (An
+      // earlier version kept a 30 m ring, and full-height mesas poked through the play area.)
       const xa = xs[i], xb = xs[i + 1], za = zs[j], zb = zs[j + 1];
-      if (xa >= ix0 + 30 && xb <= ix1 - 30 && za >= iz0 + 30 && zb <= iz1 - 30) continue;
+      if (xa >= ix0 - 0.01 && xb <= ix1 + 0.01 && za >= iz0 - 0.01 && zb <= iz1 + 0.01) continue;
       const a = j * w + i, b = a + 1, d = a + w, e2 = d + 1;
       idx.push(a, d, b, b, d, e2);
     }

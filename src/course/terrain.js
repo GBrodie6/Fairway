@@ -200,7 +200,9 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
       const wild = smoothstep(-6, 34, out);
       // Big relief (mesas, ridges) keeps its distance from the play area.
       // The noise makes canyon walls wander instead of running parallel to the hole.
-      const m = macro(x, z, wild, smoothstep(8, 96, out + fbm2(x / 64, z / 64, seed + 41, 3) * 44));
+      // Whatever the noise says, the relief is at full strength before the grid edge, because
+      // the outer landscape applies all of it and the two must meet.
+      const m = macro(x, z, wild, Math.max(smoothstep(8, 96, out + fbm2(x / 64, z / 64, seed + 41, 3) * 44), smoothstep(58, 80, out)));
       const c = profAt(s);
       // Inside the corridor the land settles toward the centerline profile.
       const wc = th.corridorFlat * (1 - smoothstep(-14, 30, out));

@@ -12,6 +12,8 @@ import { createGreenProps } from './greenProps.js';
 import { createDecals } from './decals.js';
 import { createSky } from './sky.js';
 import { createWater } from './water.js';
+import { createVegetation } from './vegetation.js';
+import { createGrass } from './grass.js';
 import { DEG, clamp } from '../core/math.js';
 import { fin } from '../core/guards.js';
 
@@ -38,7 +40,11 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
   scene.add(world.water.group);
   const waterGroup = world.water.group;
   world.waterGroup = waterGroup;
-  world.systems.push(world.sky, world.water);
+  world.vegetation = createVegetation(world, engine);
+  scene.add(world.vegetation.group);
+  world.grass = createGrass(world, engine);
+  scene.add(world.grass.group);
+  world.systems.push(world.sky, world.water, world.vegetation, world.grass);
   world.greenProps = createGreenProps(world);
   scene.add(world.greenProps.group);
   world.decals = createDecals(world);
@@ -64,7 +70,7 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
     p.fogBase = world.terrain ? world.terrain.heightAt(world.terrain.tee.x, world.terrain.tee.z) - 4 : 0;
     p.contrast = tod.grade.contrast; p.saturation = tod.grade.saturation;
     p.tint.setRGB(tod.grade.tint[0], tod.grade.tint[1], tod.grade.tint[2]);
-    p.shaftStrength = tod.shafts * 0.5;
+    p.shaftStrength = tod.shafts * 0.3;
     p.shaftColor.copy(sunCol);
     // Heat shimmer over the desert floor in daylight.
     p.shimmer = world.courseId === 'desert' && !tod.night && tod.sunElev > 15 ? 1 : 0;
@@ -148,10 +154,10 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
   world.qaView = (name) => {
     const t = world.terrain, h = world.holeData;
     const H = (x, z) => t.heightAt(x, z);
-    const look = (px, py, pz, lx, ly, lz) => { camera.position.set(px, py, pz); camera.lookAt(lx, ly, lz); camera.updateMatrixWorld(true); world.terrainView.updateLod(camera, true); };
+    const look = (px, py, pz, lx, ly, lz) => { camera.position.set(px, py, pz); camera.lookAt(lx, ly, lz); camera.updateMatrixWorld(true); world.terrainView.updateLod(camera, true); if (world.vegetation) world.vegetation.forceUpdate(); };
     const mid = h.line[Math.floor(h.line.length * 0.55)];
     const fwd = { x: Math.sin(world.addressHeading), z: -Math.cos(world.addressHeading) };
-    if (name === 'address') { world.placeAddressCamera(t.tee.x, t.tee.z, world.addressHeading); world.terrainView.updateLod(camera, true); return true; }
+    if (name === 'address') { world.placeAddressCamera(t.tee.x, t.tee.z, world.addressHeading); world.terrainView.updateLod(camera, true); if (world.vegetation) world.vegetation.forceUpdate(); return true; }
     if (name === 'flyover') {
       const px = t.tee.x - fwd.x * 70, pz = t.tee.z - fwd.z * 70;
       look(px, H(t.tee.x, t.tee.z) + 58, pz, mid.x, H(mid.x, mid.z), mid.z);
