@@ -1,0 +1,37 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Model viewer (dev tool)</title>
+<style>html,body{margin:0;height:100%;background:#8fa3b5;overflow:hidden}canvas{display:block}</style></head>
+<body><script type="module">
+// Dev-only QA tool: renders one processed model LOD on a neutral stage for screenshots.
+import * as THREE from 'three';
+import { createAssets } from '../src/render/assets.js';
+const q = new URLSearchParams(location.search);
+const id = q.get('id') || 'oak', lod = q.get('lod') || '1', az = Number(q.get('az') || 30);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x9fb4c8);
+scene.add(new THREE.HemisphereLight(0xcfe2ff, 0x5c5a48, 1.6));
+const sun = new THREE.DirectionalLight(0xfff2dd, 3.2); sun.position.set(4, 8, 5); scene.add(sun);
+const ground = new THREE.Mesh(new THREE.CircleGeometry(60, 48).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x4f7a3a, roughness: 1 }));
+scene.add(ground);
+const assets = createAssets({ enabled: true, base: '/assets/' });
+const m = await assets.model(id, { lod0: lod === '0' });
+const parts = lod === '0' ? m.lod0 : m.lod1;
+let tris = 0;
+for (const p of parts) {
+  const mat = p.material;
+  if (mat.alphaTest > 0 || mat.transparent) { mat.transparent = false; mat.alphaTest = 0.42; mat.side = THREE.DoubleSide; }
+  scene.add(new THREE.Mesh(p.geometry, mat));
+  tris += (p.geometry.index ? p.geometry.index.count : p.geometry.attributes.position.count) / 3;
+}
+const h = m.info.height, r = Math.max(m.info.radius, h * 0.3);
+const cam = new THREE.PerspectiveCamera(35, innerWidth / innerHeight, 0.05, 500);
+const d = Math.max(h, r * 2) * 1.75;
+cam.position.set(Math.sin(az * Math.PI / 180) * d, h * 0.55, Math.cos(az * Math.PI / 180) * d);
+cam.lookAt(0, h * 0.48, 0);
+renderer.render(scene, cam);
+window.__viewer = { ready: true, tris, id, lod, height: h, radius: m.info.radius };
+</script></body></html>
