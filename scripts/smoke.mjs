@@ -159,6 +159,21 @@ async function runEngineChecks(browser, baseUrl, courseId, failures) {
       if (r.width !== Math.round(640 * caps[r.tier])) fail(`tier ${r.tier} buffer width ${r.width}`);
       if (!Number.isFinite(r.luma) || r.luma < 20) fail(`tier ${r.tier} rendered a bad frame (luma ${r.luma})`);
     }
+    // Image-based lighting must be rotated to the game sun (mirror-probe measurement).
+    out.envSun = await page.evaluate(async () => {
+      const res = {};
+      for (const t of ['morning', 'midday', 'dawn']) {
+        await window.__fw.setTimeOfDay(t); await window.__fw.settle();
+        const r = window.__fw.envSunCheck();
+        res[t] = r.ok ? { source: r.source, azimuthErrorDeg: +r.azimuthErrorDeg.toFixed(1), angleDeg: +r.angleDeg.toFixed(1) } : r;
+      }
+      await window.__fw.setTimeOfDay('midday');
+      return res;
+    });
+    for (const [t, r] of Object.entries(out.envSun)) {
+      if (r.ok === false) fail(`environment check for ${t} found no reflection (${r.reason})`);
+      else if (String(r.source).startsWith('hdri') && Math.abs(r.azimuthErrorDeg) > 8) fail(`HDRI lighting for ${t} is ${r.azimuthErrorDeg} degrees off the sun azimuth`);
+    }
     await page.setViewportSize({ width: 360, height: 640 });
     await page.waitForFunction(() => window.__fw.info().orientation === 'portrait', null, { timeout: 15000 }).catch(() => fail('orientation did not switch to portrait after a resize'));
     out.portrait = await page.evaluate(() => { const m = window.__fw.measure(); const i = window.__fw.info(); return { orientation: i.orientation, width: m.width, height: m.height, luma: +m.luma.toFixed(1) }; });
@@ -193,6 +208,7 @@ function printTable(summary) {
   const e = summary.engineChecks;
   if (e && e.contextLoss) {
     console.log(`engine: context loss ${e.contextLoss.supported ? `restored (luma ${e.contextLoss.lumaBefore.toFixed(1)} -> ${e.contextLoss.lumaAfter.toFixed(1)}, ${e.contextLoss.framesAfter} frames after)` : 'not testable'}; tiers ${(e.tiers || []).map((t) => `${t.tier}@${t.pixelRatio}x`).join(' ')}; portrait ${e.portrait ? e.portrait.width + 'x' + e.portrait.height : 'n/a'}; debug overlay ${e.debugOverlay ? 'present' : 'missing'}`);
+    if (e.envSun) console.log('engine: lighting environment versus sun azimuth: ' + Object.entries(e.envSun).map(([t, r]) => `${t} ${r.source} ${r.azimuthErrorDeg} deg`).join('; '));
   }
 }
 

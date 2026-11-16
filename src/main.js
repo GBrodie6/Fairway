@@ -33,10 +33,18 @@ async function boot() {
 
   app.setTimeOfDay = async (id) => { app.world.setTimeOfDay(id); };
   app.setCourse = async (id, hole = 1) => { await app.world.loadHole(id, hole); };
+  // A tier change rebuilds the world: shadow cascades, material variants, and instance
+  // counts are all baked into it.
   app.setTier = async (id) => {
     if (id === engine.tier.id) return;
+    const prev = app.world;
     engine.setTier(id);
-    await app.world.rebuildForTier();
+    const next = createWorld(engine, { courseId: prev.courseId, todId: prev.todId, hole: prev.hole, assets });
+    if (prev.wind) next.wind = { ...prev.wind };
+    await next.loadHole(prev.courseId, prev.hole);
+    app.world = next;
+    prev.dispose();
+    for (const fn of app.onWorld || []) fn(next);
   };
 
   await app.world.loadHole(courseId, params.hole || 1);

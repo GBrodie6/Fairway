@@ -118,9 +118,11 @@ export function createEngine({ container, tierId = 'medium', renderScale = 1 }) 
       post.measureLumaAsync();
     }
     const m = post.state.measured;
-    if (m.luma > 0.5 && m.age < 0.5 && !m.used) {
+    if (m.age < 0.5 && !m.used) {
       m.used = true;
-      const ratio = clamp(ex.target / m.luma, 0.5, 2);
+      // A near-black frame still drives the meter (floor of 1), otherwise a jump from midday
+      // to night would leave the exposure stuck and the screen black.
+      const ratio = clamp(ex.target / Math.max(m.luma, 1), 0.5, 2);
       // Display luma responds sub-linearly to exposure through the tone curve, so damp the step.
       const step = Math.pow(ratio, clamp(ex.speed * 0.22, 0.1, 0.9));
       ex.value = clamp(ex.value * step, ex.min, ex.max);
@@ -142,15 +144,15 @@ export function createEngine({ container, tierId = 'medium', renderScale = 1 }) 
   };
 
   // Synchronously converge exposure for capture and measurement. Deterministic.
-  engine.settleExposure = (scene, camera, time, iterations = 14) => {
+  engine.settleExposure = (scene, camera, time, iterations = 28) => {
     const ex = engine.exposure;
     let luma = 0;
     for (let i = 0; i < iterations; i++) {
       post.state.exposure = ex.value;
       post.render(scene, camera, time);
       luma = post.measureLumaSync();
-      if (!ex.auto || luma < 0.5) break;
-      const ratio = clamp(ex.target / luma, 0.4, 2.5);
+      if (!ex.auto) break;
+      const ratio = clamp(ex.target / Math.max(luma, 1), 0.4, 2.5);
       if (Math.abs(ratio - 1) < 0.004) break;
       ex.value = clamp(ex.value * Math.pow(ratio, 0.75), ex.min, ex.max);
     }

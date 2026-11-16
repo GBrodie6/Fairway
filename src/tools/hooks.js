@@ -36,6 +36,8 @@ export function installHooks(app) {
     async settle() { await app.world.whenSettled(); return true; },
     // Renderer versus physics: surface ids rendered by the real shader against terrain queries.
     surfaceAgreement(samples) { return app.world.surfaceAgreement(samples); },
+    // Image-based lighting versus the game sun (see world.envSunCheck).
+    envSunCheck() { return app.world.envSunCheck(); },
     // Move the camera for QA shots without touching game state.
     view(name) { return app.world.qaView ? app.world.qaView(name) : false; },
     // Force a WebGL context loss and restore, to prove the app survives it.

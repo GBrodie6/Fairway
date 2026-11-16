@@ -1,5 +1,5 @@
 {
-  "enforceLuma": false,
+  "enforceLuma": true,
   "courses": ["parkland", "links", "desert"],
-  "note": "enforceLuma is switched on in Stage 4 once the sky and exposure are real. courses lists the courses that exist so far."
+  "note": "enforceLuma was switched on in Stage 4. Day presets must land in 140 to 160 mean luma with under 2 percent clipped pixels, night in 50 to 76. courses lists the courses that are gated so far."
 }

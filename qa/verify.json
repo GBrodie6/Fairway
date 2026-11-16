@@ -1,23 +1,23 @@
 {
- "when": "2026-11-16T21:30:31.279Z",
+ "when": "2026-11-16T22:07:46.540Z",
  "steps": [
   {
    "name": "unit tests",
    "ok": true,
-   "seconds": 16.2,
-   "passed": 180,
+   "seconds": 17.8,
+   "passed": 182,
    "failed": 0
   },
   {
    "name": "production build",
    "ok": true,
-   "seconds": 0.8,
-   "distBytes": 53102860
+   "seconds": 0.7,
+   "distBytes": 53120494
   },
   {
    "name": "headless smoke",
    "ok": true,
-   "seconds": 150.8
+   "seconds": 232.8
   }
  ],
  "ok": true

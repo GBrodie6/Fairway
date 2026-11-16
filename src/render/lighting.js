@@ -27,6 +27,8 @@ export function createLighting(scene, camera, tier) {
 
   const lighting = {
     csm, hemi, sunDir, sunColor: new THREE.Color(1, 1, 1), sunIntensity: 3,
+    // Sun color scaled by its intensity. Shaders that add their own sun terms use this.
+    sunRadiance: new THREE.Color(3, 3, 3),
     // Register a material. hooks are extra onBeforeCompile functions (terrain splat, wind sway,
     // foliage shading), composed after the cascade hook. key keeps program caches distinct.
     setup(material, hooks = [], key = '') {
@@ -47,6 +49,7 @@ export function createLighting(scene, camera, tier) {
       csm.lightDirection.copy(sunDir).negate();
       lighting.sunColor.copy(color);
       lighting.sunIntensity = intensity;
+      lighting.sunRadiance.copy(color).multiplyScalar(intensity);
       for (const l of csm.lights) { l.color.copy(color); l.intensity = intensity; }
     },
     setAmbient(sky, ground, intensity) {

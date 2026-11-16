@@ -24,9 +24,15 @@ try {
   await page.screenshot({ path: out });
   // Extra named views: "flyover,green,bunker" writes out-flyover.png and so on.
   for (const v of views ? views.split(',') : []) {
-    const ok = await page.evaluate((name) => { const r = window.__fw.view(name); window.__fw.measure(); return r; }, v);
-    console.log('view', v, ok);
-    await page.screenshot({ path: out.replace(/\.png$/, `-${v}.png`) });
+    // "tod:dusk" switches the preset instead of moving the camera.
+    const ok = await page.evaluate(async (name) => {
+      let r = true;
+      if (name.startsWith('tod:')) { await window.__fw.setTimeOfDay(name.slice(4)); await window.__fw.settle(); } else r = window.__fw.view(name);
+      const m = window.__fw.measure();
+      return { ok: r, luma: +m.luma.toFixed(1), clip: +m.clippedPct.toFixed(2), exp: +m.exposure.toFixed(2), env: window.__fw.app.world.sky.envSource };
+    }, v);
+    console.log('view', v, JSON.stringify(ok));
+    await page.screenshot({ path: out.replace(/\.png$/, `-${v.replace(':', '_')}.png`) });
   }
 } catch (e) { console.log('FAILED', e.message.split('\n')[0]); }
 if (errors.length) console.log('ERRORS', errors.length, errors.slice(0, 4).map((e) => e.text.slice(0, 500)));

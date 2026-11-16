@@ -196,3 +196,18 @@ describe('course and preset registries', () => {
     expect(bandFor('night').max).toBeLessThan(100);
   });
 });
+
+describe('exposure meter math', () => {
+  // The controller multiplies exposure by clamp(target / max(luma, 1)) each step. From a black
+  // frame it must keep climbing (the bug the gate caught was a bail-out below luma 0.5).
+  const step = (target, luma, lo = 0.4, hi = 2.5) => Math.min(hi, Math.max(lo, target / Math.max(luma, 1)));
+  it('a black frame still raises exposure at the maximum rate', () => {
+    expect(step(62, 0.1)).toBe(2.5);
+    expect(step(150, 0)).toBe(2.5);
+  });
+  it('a blown-out frame lowers it, and a frame on target leaves it alone', () => {
+    expect(step(150, 255)).toBeLessThan(1);
+    expect(step(150, 150)).toBe(1);
+    expect(Number.isFinite(step(150, NaN))).toBe(false);
+  });
+});

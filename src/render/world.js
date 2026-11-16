@@ -10,43 +10,15 @@ import { createTerrainView, createSurfaceIdMaterial } from './terrainView.js';
 import { MANIFEST } from './assets.js';
 import { createGreenProps } from './greenProps.js';
 import { createDecals } from './decals.js';
+import { createSky } from './sky.js';
+import { createWater } from './water.js';
 import { DEG, clamp } from '../core/math.js';
 import { fin } from '../core/guards.js';
-
-// Water surface for a pond or stream: one quad per grid cell that touches the body, so the
-// surface follows the real shoreline instead of covering a rectangle (which would flood any
-// bunker or hollow nearby).
-export function waterGeometry(terrain, body) {
-  const { nx, x0, z0, bodyId } = terrain;
-  const pos = [], idx = [];
-  const vmap = new Map();
-  const vert = (ix, iz) => {
-    const key = iz * nx + ix;
-    let v = vmap.get(key);
-    if (v === undefined) { v = pos.length / 3; vmap.set(key, v); pos.push(x0 + ix, 0, z0 + iz); }
-    return v;
-  };
-  for (let iz = Math.max(0, body.iz0); iz < Math.min(terrain.nz - 1, body.iz1); iz++) {
-    for (let ix = Math.max(0, body.ix0); ix < Math.min(nx - 1, body.ix1); ix++) {
-      const k = iz * nx + ix;
-      if (bodyId[k] !== body.id && bodyId[k + 1] !== body.id && bodyId[k + nx] !== body.id && bodyId[k + nx + 1] !== body.id) continue;
-      const a = vert(ix, iz), b = vert(ix + 1, iz), c = vert(ix, iz + 1), d = vert(ix + 1, iz + 1);
-      idx.push(a, c, b, b, c, d);
-    }
-  }
-  if (!idx.length) return null;
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3));
-  g.setIndex(idx);
-  g.computeVertexNormals();
-  g.computeBoundingSphere();
-  return g;
-}
 
 export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(55, engine.width / engine.height, 0.3, 14000);
-  let lighting = createLighting(scene, camera, engine.tier);
+  const lighting = createLighting(scene, camera, engine.tier);
 
   const world = {
     scene, camera, lighting, assets,
@@ -58,41 +30,15 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
     baseFov: 55,
   };
 
-  // --- sky (replaced by the atmospheric sky in the sky module when present) ---
-  const skyMat = new THREE.ShaderMaterial({
-    side: THREE.BackSide, depthWrite: false, depthTest: false,
-    uniforms: { uSunDir: { value: new THREE.Vector3() }, uZenith: { value: new THREE.Color() }, uHorizon: { value: new THREE.Color() }, uSun: { value: new THREE.Color() } },
-    vertexShader: 'varying vec3 vDir; void main(){ vDir = position; vec4 p = modelViewMatrix * vec4(position, 0.0); gl_Position = projectionMatrix * vec4(p.xyz, 1.0); gl_Position.z = gl_Position.w; }',
-    fragmentShader: 'varying vec3 vDir; uniform vec3 uSunDir; uniform vec3 uZenith; uniform vec3 uHorizon; uniform vec3 uSun; void main(){ vec3 d = normalize(vDir); float h = clamp(d.y, 0.0, 1.0); vec3 c = mix(uHorizon, uZenith, pow(h, 0.5)); float s = max(dot(d, uSunDir), 0.0); c += uSun * (pow(s, 600.0) * 30.0 + pow(s, 12.0) * 0.25); gl_FragColor = vec4(c, 1.0); }',
-  });
-  const sky = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 16), skyMat);
-  sky.frustumCulled = false; sky.renderOrder = -1000;
-  scene.add(sky);
-  world.sky = { mesh: sky, material: skyMat };
-
-  // --- water (simple reflective planes until the water shader lands) ---
-  const waterGroup = new THREE.Group();
-  scene.add(waterGroup);
-  function buildWater() {
-    for (const c of [...waterGroup.children]) { c.geometry.dispose(); waterGroup.remove(c); }
-    const mat = new THREE.MeshStandardMaterial({ color: 0x1f4a5c, roughness: 0.12, metalness: 0.0, envMapIntensity: 1.0 });
-    lighting.setup(mat, [], 'waterSimple');
-    for (const b of world.terrain.bodies) {
-      const g = b.type === 'sea' ? new THREE.PlaneGeometry(30000, 30000).rotateX(-Math.PI / 2) : waterGeometry(world.terrain, b);
-      if (!g) continue;
-      const m = new THREE.Mesh(g, mat);
-      m.position.y = b.level;
-      m.receiveShadow = true;
-      m.userData.water = true;
-      m.userData.body = b;
-      waterGroup.add(m);
-    }
-  }
-  world.waterGroup = waterGroup;
-
   // Game wind as a steady vector (m/s). The game sets this; the flag, grass, trees, clouds,
   // and water all read it.
   world.wind = { x: 2.2, z: -0.8 };
+  world.sky = createSky(world, engine);
+  world.water = createWater(world, engine);
+  scene.add(world.water.group);
+  const waterGroup = world.water.group;
+  world.waterGroup = waterGroup;
+  world.systems.push(world.sky, world.water);
   world.greenProps = createGreenProps(world);
   scene.add(world.greenProps.group);
   world.decals = createDecals(world);
@@ -109,29 +55,19 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
     const sunCol = new THREE.Color(tod.sunColor[0], tod.sunColor[1], tod.sunColor[2]);
     lighting.setSun(world.sunDir, sunCol, tod.sunIntensity);
     const fogC = new THREE.Color(tod.fog.color[0], tod.fog.color[1], tod.fog.color[2]);
-    lighting.setAmbient(fogC.clone().lerp(new THREE.Color(0.55, 0.7, 1.0), 0.5), new THREE.Color(0.32, 0.36, 0.2), tod.ambient * (tod.night ? 0.16 : 1.0));
-    const day = clamp(tod.sunElev / 30, 0, 1);
-    skyMat.uniforms.uSunDir.value.copy(world.sunDir);
-    if (tod.night) {
-      skyMat.uniforms.uZenith.value.setRGB(0.004, 0.008, 0.02);
-      skyMat.uniforms.uHorizon.value.setRGB(0.012, 0.02, 0.045);
-      skyMat.uniforms.uSun.value.setRGB(0.3, 0.36, 0.5);
-    } else {
-      skyMat.uniforms.uZenith.value.setRGB(0.1 + 0.05 * day, 0.22 + 0.2 * day, 0.5 + 0.35 * day);
-      skyMat.uniforms.uHorizon.value.setRGB(0.9 * tod.fog.color[0], 0.9 * tod.fog.color[1], 0.9 * tod.fog.color[2]);
-      skyMat.uniforms.uSun.value.copy(sunCol);
-    }
+    // The environment map carries the sky light. The hemisphere light is only a small fill.
+    lighting.setAmbient(fogC.clone().lerp(new THREE.Color(0.55, 0.7, 1.0), 0.5), new THREE.Color(0.32, 0.36, 0.2), tod.ambient * (tod.night ? 0.03 : 0.16));
     const p = engine.post.state;
     p.sunDir.copy(world.sunDir);
     p.fogColor.copy(fogC);
-    if (tod.night) p.fogColor.multiplyScalar(0.25);
-    p.fogSunColor.copy(sunCol);
     p.fogDensity = tod.fog.density; p.fogHaze = tod.fog.haze; p.fogHeight = tod.fog.height; p.fogMax = tod.fog.max;
     p.fogBase = world.terrain ? world.terrain.heightAt(world.terrain.tee.x, world.terrain.tee.z) - 4 : 0;
     p.contrast = tod.grade.contrast; p.saturation = tod.grade.saturation;
     p.tint.setRGB(tod.grade.tint[0], tod.grade.tint[1], tod.grade.tint[2]);
     p.shaftStrength = tod.shafts * 0.5;
     p.shaftColor.copy(sunCol);
+    // Heat shimmer over the desert floor in daylight.
+    p.shimmer = world.courseId === 'desert' && !tod.night && tod.sunElev > 15 ? 1 : 0;
     engine.exposure.target = tod.targetLuma;
     engine.exposure.min = tod.exposure[0]; engine.exposure.max = tod.exposure[1];
     if (world.terrainView) world.terrainView.uniforms.uDew.value = tod.dew;
@@ -174,7 +110,6 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
     world.holeData = holeData; world.terrain = terrain;
     world.terrainView = createTerrainView({ terrain, course, lighting, tier: engine.tier, assets, manifest: MANIFEST, engine });
     scene.add(world.terrainView.group);
-    buildWater();
     world.setTimeOfDay(world.todId);
     // Address view from the tee toward the first landing area or the green.
     const aimS = Math.min(holeData.length, holeData.par === 3 ? holeData.length : 235);
@@ -203,8 +138,6 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
 
   world.update = (dt, t) => {
     world.time = t;
-    sky.position.copy(camera.position);
-    sky.scale.setScalar(camera.far * 0.9);
     if (world.terrainView) { world.terrainView.updateLod(camera); world.terrainView.update(dt); }
     for (const s of world.systems) if (s.update) s.update(dt, t, world);
     lighting.update();
@@ -289,6 +222,64 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
     return false;
   };
 
+  // QA: is the image-based lighting really rotated to the game sun? Render a mirror ball lit
+  // only by the environment, find the brightest reflection, and compare its direction with
+  // the sun direction the rest of the scene uses.
+  world.envSunCheck = () => {
+    const size = 160;
+    const probe = new THREE.Scene();
+    probe.environment = scene.environment;
+    probe.environmentRotation.copy(scene.environmentRotation);
+    probe.environmentIntensity = 1;
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 48), new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 1, roughness: 0 }));
+    probe.add(ball);
+    // Look along the horizontal direction away from the sun so the sun reflects near the center.
+    const s = world.sunDir;
+    const hx = s.x, hz = s.z, hl = Math.hypot(hx, hz) || 1;
+    const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+    cam.position.set((hx / hl) * 3, 0, (hz / hl) * 3);
+    cam.lookAt(0, 0, 0);
+    cam.updateMatrixWorld(true);
+    const rt = new THREE.WebGLRenderTarget(size, size, { type: THREE.FloatType, depthBuffer: true });
+    engine.renderer.setRenderTarget(rt);
+    engine.renderer.setClearColor(0x000000, 1);
+    engine.renderer.clear();
+    engine.renderer.render(probe, cam);
+    const buf = new Float32Array(size * size * 4);
+    engine.renderer.readRenderTargetPixels(rt, 0, 0, size, size, buf);
+    engine.renderer.setRenderTarget(null);
+    // Luminance-weighted centroid of the brightest reflections.
+    let max = 0;
+    for (let i = 0; i < buf.length; i += 4) max = Math.max(max, buf[i] + buf[i + 1] + buf[i + 2]);
+    const right = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 0), upv = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 1);
+    const view = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 2).negate();
+    const acc = new THREE.Vector3(), n = new THREE.Vector3(), r = new THREE.Vector3();
+    let wsum = 0;
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+      const i = (y * size + x) * 4;
+      const l = buf[i] + buf[i + 1] + buf[i + 2];
+      if (l < max * 0.5) continue;
+      const u = ((x + 0.5) / size) * 2 - 1, v = ((y + 0.5) / size) * 2 - 1;
+      const d2 = u * u + v * v;
+      if (d2 > 0.96) continue;
+      // Sphere normal at this pixel, then the mirror direction for the view ray.
+      n.copy(right).multiplyScalar(u).addScaledVector(upv, v).addScaledVector(view, -Math.sqrt(1 - d2));
+      r.copy(view).addScaledVector(n, -2 * view.dot(n));
+      acc.addScaledVector(r, l); wsum += l;
+    }
+    rt.dispose(); ball.geometry.dispose(); ball.material.dispose();
+    if (!wsum) return { ok: false, reason: 'no bright reflection found', source: world.sky.envSource };
+    acc.normalize();
+    const azOf = (v3) => (Math.atan2(v3.x, -v3.z) * 180) / Math.PI;
+    let dAz = azOf(acc) - azOf(s);
+    dAz = ((dAz + 540) % 360) - 180;
+    return {
+      ok: true, source: world.sky.envSource, hasSun: world.sky.hdriInfo ? world.sky.hdriInfo.hasSun : null,
+      angleDeg: (Math.acos(clamp(acc.dot(s), -1, 1)) * 180) / Math.PI, azimuthErrorDeg: dAz,
+      sunElevDeg: (Math.asin(s.y) * 180) / Math.PI, brightElevDeg: (Math.asin(acc.y) * 180) / Math.PI,
+    };
+  };
+
   // QA: render the terrain top-down with flat surface ids and compare against the physics.
   world.surfaceAgreement = (samples = 96) => {
     const t = world.terrain, v = world.terrainView;
@@ -354,18 +345,15 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
     return { samples: total, agree, agreePct: total ? (agree / total) * 100 : 0, maxHeightError: heightErr, heightSamples: heightN };
   };
 
+  const onRestore = () => { if (world.sky && world.sky.restore) world.sky.restore(); };
+  engine.listeners.restore.add(onRestore);
+
   world.dispose = () => {
     if (world.terrainView) world.terrainView.dispose();
     for (const s of world.systems) if (s.dispose) s.dispose();
     lighting.dispose();
-  };
-
-  // Tier changes rebuild the tier-dependent parts (shadow cascades, material variants).
-  world.rebuildForTier = async () => {
-    lighting.dispose();
-    lighting = createLighting(scene, camera, engine.tier);
-    world.lighting = lighting;
-    await world.loadHole(world.courseId, world.hole);
+    engine.listeners.restore.delete(onRestore);
+    scene.traverse((o) => { if (o.isMesh && o.geometry) o.geometry.dispose(); });
   };
 
   world.todId = todId;

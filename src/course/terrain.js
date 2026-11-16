@@ -415,7 +415,7 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
       const wl = nearLevel[k];
       if (wl > NO_WATER + 1) {
         const above = height[k] - wl;
-        masks.shore[k] = Math.round(255 * (1 - smoothstep(0.08, 0.5, above)) * (gs > 0.5 ? 1 : 0) * (bunkerSdf[k] > 1.5 ? 1 : 0));
+        masks.shore[k] = Math.round(255 * (1 - smoothstep(0.04, 0.3, above)) * (gs > 0.5 ? 1 : 0) * (bunkerSdf[k] > 1.5 ? 1 : 0));
       }
       // Tree density: none on the play area, ramping up beyond it. Clear of water and paths.
       let td = smoothstep(0, 12, out - th.trees.margin * 0.5) * clamp(th.trees.density, 0, 1.2);

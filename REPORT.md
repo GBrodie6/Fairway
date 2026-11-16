@@ -125,3 +125,48 @@ SwiftShader (software rendering), so frame times from it are not representative 
   water shaders (Stage 4), decal persistence across holes inside a round (the game state does
   that in Stage 9). The top-down maps in `scripts/tools/map-hole.mjs` were used to review
   every layout change.
+
+## Stage 4: sky, light, atmosphere
+
+- `render/sky.js`: analytic atmospheric scattering (Preetham: Rayleigh and Mie), a sun disc with
+  limb darkening that dims toward the horizon, a moon and stars at night, and a procedural
+  cloud layer on a plane above the camera, lit from the sun's side (one or two light samples
+  per tier) with a forward-scattering silver lining, drifting with the game wind.
+- Six presets: dawn, morning, midday, golden hour, dusk, night (`render/timeOfDay.js`). The
+  sun's compass bearing is rotated by each hole's routing, so the light differs hole to hole.
+- Image-based lighting from the eight Poly Haven 1k HDRIs, prefiltered with PMREM, rotated so
+  the HDRI's sun matches the game sun, and normalized by each map's own mean luminance. A
+  prefilter of the procedural sky is used for first paint and whenever the HDRIs are absent.
+- Cascaded shadow maps (three's CSM addon): 1, 2, 3, or 4 cascades by tier with PCF soft
+  filtering. Every lit material is registered through `lighting.setup`.
+- GTAO at half resolution from the scene depth (high and ultra), bloom on thresholded HDR
+  highlights only, light shafts at low sun (quarter resolution radial blur from the sky
+  mask), height fog with aerial perspective tied to the sky's horizon color, heat shimmer on
+  the desert course by day, dew glints on grass at dawn and morning, depth of field wired for
+  replay and flyover cameras.
+- `render/water.js`: a physically based surface on MeshStandardMaterial (sun specular, Fresnel
+  sky reflection from the environment, cascaded shadows) with Beer-Lambert depth color from
+  the real ground height under each vertex, three wind-driven normal layers, a foam line at
+  the bank, and surf bands on the sea. Pond meshes follow the actual shoreline.
+- Auto exposure is a closed loop on measured display luma (like a camera meter).
+- Evidence:
+  - Luma and clipping, enforced in the gate since this stage (`qa/smoke.json`): all 24
+    course, preset, and orientation combinations are inside their bands. Day presets measured
+    148.9 to 150.9 against the 140 to 160 band with at most 0.48 percent clipped pixels; night
+    measured 61.8 to 62.4 against its 50 to 76 band.
+  - A mirror-probe measurement in the gate confirms the HDRI lighting is rotated to the sun:
+    azimuth error -0.1 degrees (morning), -0.1 (midday), 1.1 (dawn); 5.6 at golden hour and
+    -0.9 at dusk, where the HDRI sun is behind cloud.
+  - Screenshots of every preset were reviewed while tuning (`scripts/tools/shot.mjs`).
+- Defects the enforced gate caught and that were fixed: dusk clipped about 3 percent of
+  pixels; the exposure controller gave up on a near-black frame, so switching from midday to
+  night left a black screen (this would have hit the live game too).
+- Honest limits:
+  - The HDRI sun elevation only matches as closely as each photograph allows: 13 degrees
+    lower than the game sun at midday. The night HDRI's brightest region is a horizon glow,
+    not a high moon, so night ambient light does not come from the moon's direction.
+  - Meeting a 140 to 160 mean luma at dusk and dawn means those presets are brighter than a
+    physically exposed photograph would be. They carry the mood through color, not darkness.
+  - Clouds are a single lit layer, not volumetric. Water has no planar reflection of trees.
+  - Light shafts, GTAO, and depth of field ran without errors on the high tier in headless
+    Chrome, but how they look on a real GPU at full resolution has not been judged.

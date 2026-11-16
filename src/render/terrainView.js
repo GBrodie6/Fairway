@@ -129,6 +129,7 @@ const FRAG_MAIN = /* glsl */ `
   vec3 tNormalW = vec3(0.0, 1.0, 0.0);
   float tRough = 0.9;
   float tOcc = 1.0;
+  float tSpec = 0.2;
   vec3 tEmis = vec3(0.0);
   {
     vec2 pw = vWPos.xz;
@@ -193,6 +194,7 @@ const FRAG_MAIN = /* glsl */ `
 
     vec3 nAcc = vec3(0.0);
     float rAcc = 0.0;
+    float sAcc = 0.0;
     float farK = smoothstep(22.0, 150.0, vdist);
     float detailK = 1.0 - smoothstep(160.0, 420.0, vdist);
     for (int i = 0; i < NS; i++) {
@@ -275,15 +277,23 @@ const FRAG_MAIN = /* glsl */ `
         c *= 1.0 - lipIn * 0.2;
       } else if (i == 4) {
         c *= 0.62;
-        r = 0.28;
+        r = 0.42;
       } else if (i == 2) {
         c *= 0.86 + 0.14 * nB;
       }
+      // A field of grass scatters light in every direction: almost no mirror-like sheen, even
+      // at grazing angles. Sand, paths, and rock keep a little, wet ground keeps most.
+      float sp = (i == 4) ? 0.85 : (i == 12 || i == 8 || i == 5 || i == 3) ? 0.3 : (i == 2 ? 0.2 : 0.1);
       tAlbedo += c * w;
       nAcc.xy += tn * w;
       rAcc += r * w;
+      sAcc += sp * w;
     }
+    // Specular anti-aliasing: grass blades are glossy up close but a field of them is matte,
+    // and sub-pixel normal detail would otherwise sparkle.
+    tSpec = sAcc;
     tRough = clamp(rAcc, 0.05, 1.0);
+    tRough = mix(tRough, 1.0, 0.35 + 0.45 * smoothstep(12.0, 110.0, vdist));
     // Grass lip around a bunker catches the light.
     float lipOut = smoothstep(0.36, 0.5, bunkerM) * (1.0 - smoothstep(0.5, 0.52, bunkerM));
     tAlbedo *= 1.0 + lipOut * 0.1;
@@ -308,11 +318,16 @@ const FRAG_MAIN = /* glsl */ `
       // Dew: sparse droplets, each with its own facet, glinting toward the sun.
       vec2 cell = floor(pw * 70.0);
       float h1 = tHash(cell);
-      if (h1 > 0.988) {
+      // One droplet per cell, a point rather than a tile.
+      float pt = smoothstep(0.4, 0.05, length(fract(pw * 70.0) - 0.5));
+      // Droplets only read as points while a droplet is bigger than a pixel. Past that the
+      // glints would average into a false sheen under the sun, so they fade out.
+      pt *= 1.0 - smoothstep(0.35, 0.9, max(fwidth(pw.x), fwidth(pw.y)) * 70.0);
+      if (h1 > 0.985 && pt > 0.0) {
         vec3 fn = normalize(tNormalW + (vec3(tHash(cell + 3.1), 0.0, tHash(cell + 9.7)) - vec3(0.5, 0.0, 0.5)) * 1.3);
         vec3 V = normalize(cameraPosition - vWPos);
         float sp = pow(max(dot(fn, normalize(V + uSunDirW)), 0.0), 90.0);
-        tEmis = uSunCol * sp * uDew * 14.0 * grassW * (1.0 - smoothstep(26.0, 46.0, vdist));
+        tEmis = uSunCol * sp * pt * uDew * 5.0 * grassW * (1.0 - smoothstep(26.0, 46.0, vdist));
       }
     }
 #endif
@@ -331,7 +346,7 @@ function patchTerrainShader(shader, uniforms, outer) {
     .replace('#include <map_fragment>', FRAG_MAIN)
     .replace('#include <roughnessmap_fragment>', 'float roughnessFactor = tRough;')
     .replace('#include <normal_fragment_maps>', 'normal = normalize((viewMatrix * vec4(tNormalW, 0.0)).xyz);')
-    .replace('#include <aomap_fragment>', '#include <aomap_fragment>\n  reflectedLight.indirectDiffuse *= tOcc;\n  reflectedLight.directDiffuse *= mix(1.0, tOcc, 0.55);')
+    .replace('#include <aomap_fragment>', '#include <aomap_fragment>\n  reflectedLight.indirectDiffuse *= tOcc;\n  reflectedLight.directDiffuse *= mix(1.0, tOcc, 0.55);\n  reflectedLight.directSpecular *= tSpec;\n  reflectedLight.indirectSpecular *= tSpec;')
     .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n  totalEmissiveRadiance += tEmis;');
 }
 
@@ -395,7 +410,7 @@ export function createTerrainView({ terrain, course, lighting, tier, assets, man
     uGreen: { value: new THREE.Vector4(hole.green.x, hole.green.z, hole.green.ax, hole.green.az) },
     uTee: { value: new THREE.Vector4(hole.tees[0].x, hole.tees[0].z, hole.tees[0].tx, hole.tees[0].tz) },
     uPlayDir: { value: playDir },
-    uSunDirW: { value: lighting.sunDir }, uSunCol: { value: lighting.sunColor },
+    uSunDirW: { value: lighting.sunDir }, uSunCol: { value: lighting.sunRadiance },
     uDew: { value: 0 }, uSnowLine: { value: 1e6 }, uCanopy: { value: new THREE.Color(0.03, 0.07, 0.02) },
     uCup: { value: new THREE.Vector3(terrain.pin.x, terrain.pin.z, 0.054) },
   };
