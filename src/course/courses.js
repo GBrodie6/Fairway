@@ -14,6 +14,7 @@ theme: {
       water: { pond: 0.36, frontPond: 0.5, stream: 0.14, sea: 0 },
       trees: { density: 1.0, margin: 6, forest: 1.0 }, corridorFlat: 0.82, stimp: 10.5,
     },
+    backdrop: { amp: 85, wave: 700, ridged: false, power: 1.5, canopy: [0.028, 0.065, 0.02] },
     wind: { min: 2, max: 11, gustiness: 0.25 },
   },
   {
@@ -28,6 +29,7 @@ theme: {
       water: { pond: 0.05, frontPond: 0.1, stream: 0.22, sea: 0.62 },
       trees: { density: 0.04, margin: 14, forest: 0.0 }, corridorFlat: 0.6, stimp: 9.5,
     },
+    backdrop: { amp: 50, wave: 620, ridged: false, power: 1.7, canopy: [0.07, 0.085, 0.035] },
     wind: { min: 8, max: 24, gustiness: 0.55 },
   },
   {
@@ -42,6 +44,7 @@ theme: {
       water: { pond: 0.2, frontPond: 0.3, stream: 0, sea: 0 },
       trees: { density: 0.16, margin: 4, forest: 0.0 }, corridorFlat: 0.85, stimp: 11,
     },
+    backdrop: { amp: 300, wave: 760, ridged: true, power: 2.8, canopy: [0.12, 0.09, 0.05] },
     wind: { min: 3, max: 15, gustiness: 0.35 },
   },
   {
@@ -56,6 +59,7 @@ theme: {
       water: { pond: 0.28, frontPond: 0.35, stream: 0.2, sea: 0 },
       trees: { density: 1.15, margin: 5, forest: 1.2 }, corridorFlat: 0.78, stimp: 10.5,
     },
+    backdrop: { amp: 950, wave: 1150, ridged: true, power: 1.9, snowLine: 330, canopy: [0.02, 0.05, 0.025] },
     wind: { min: 3, max: 16, gustiness: 0.45 },
   },
   {
@@ -70,6 +74,7 @@ theme: {
       water: { pond: 0.4, frontPond: 0.55, stream: 0.05, sea: 0.5 },
       trees: { density: 0.55, margin: 8, forest: 0.5 }, corridorFlat: 0.85, stimp: 10,
     },
+    backdrop: { amp: 340, wave: 800, ridged: true, power: 2.1, canopy: [0.02, 0.08, 0.02] },
     wind: { min: 4, max: 17, gustiness: 0.4 },
   },
 ]);

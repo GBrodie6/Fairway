@@ -30,6 +30,7 @@ export async function runSmoke() {
   const rows = [];
   const failures = [];
   let engineChecks = null;
+  const agreement = [];
   const outDir = path.join(root, 'qa');
   mkdirSync(path.join(outDir, 'tmp'), { recursive: true });
   const courses = COURSES.filter((c) => (gate.courses ? gate.courses.includes(c.id) : true)).filter((c) => !courseFilter || courseFilter.includes(c.id));
@@ -45,7 +46,18 @@ export async function runSmoke() {
         try {
           await page.goto(url, { waitUntil: 'load', timeout: 120000 });
           await page.waitForFunction(() => window.__fw && window.__fw.ready === true, null, { timeout: 180000 });
+          // Heavy assets load after first paint. Measure with them on the GPU.
+          await page.evaluate(() => window.__fw.settle());
           loaded = true;
+          if (view.name === 'landscape') {
+            // Renderer versus physics: surface ids drawn by the real terrain shader and vertex
+            // heights from the real mesh, compared against the terrain queries the ball uses.
+            const ag = await page.evaluate(() => window.__fw.surfaceAgreement(96));
+            agreement.push({ course: course.id, ...ag, agreePct: +ag.agreePct.toFixed(2), maxHeightError: +ag.maxHeightError.toFixed(4) });
+            if (!(ag.agreePct >= 99)) failures.push(`${course.id}: renderer and physics agree on only ${ag.agreePct.toFixed(2)}% of ${ag.samples} surface samples`);
+            if (!(ag.maxHeightError < 0.02)) failures.push(`${course.id}: mesh height differs from physics height by ${ag.maxHeightError.toFixed(3)} m`);
+            if (!(ag.samples > 5000 && ag.heightSamples > 1000)) failures.push(`${course.id}: agreement check sampled too little (${ag.samples}, ${ag.heightSamples})`);
+          }
         } catch (err) {
           failures.push(`${course.id}/${view.name}: app did not become ready (${String(err.message).split('\n')[0]})`);
         }
@@ -97,7 +109,7 @@ export async function runSmoke() {
   const summary = {
     when: new Date().toISOString(), executablePath, software, tier, enforceLuma,
     note: 'Software rendering (SwiftShader). Luma and clipping are valid; frame time is not representative of a real GPU.',
-    seconds: +((Date.now() - started) / 1000).toFixed(1), rows, engineChecks, failures,
+    seconds: +((Date.now() - started) / 1000).toFixed(1), rows, agreement, engineChecks, failures,
   };
   writeFileSync(path.join(outDir, 'smoke.json'), JSON.stringify(summary, null, 1));
   return summary;
@@ -114,6 +126,7 @@ async function runEngineChecks(browser, baseUrl, courseId, failures) {
   try {
     await page.goto(`${baseUrl}/?course=${courseId}&tod=midday&tier=low&smoke=1&debug=1`, { waitUntil: 'load', timeout: 120000 });
     await page.waitForFunction(() => window.__fw && window.__fw.ready === true, null, { timeout: 180000 });
+    await page.evaluate(() => window.__fw.settle());
     out.contextLoss = await page.evaluate(async () => {
       const before = window.__fw.measure();
       const f0 = window.__fw.info().frame;
@@ -129,10 +142,10 @@ async function runEngineChecks(browser, baseUrl, courseId, failures) {
       if (!(Math.abs(cl.lumaAfter - cl.lumaBefore) < 8)) fail(`image changed after context restore: luma ${cl.lumaBefore.toFixed(1)} -> ${cl.lumaAfter.toFixed(1)}`);
       if (!(cl.framesAfter > 0)) fail('the frame loop did not continue after context restore');
     }
-    out.tiers = await page.evaluate(() => {
+    out.tiers = await page.evaluate(async () => {
       const rows = [];
       for (const t of ['low', 'medium', 'high', 'ultra', 'low']) {
-        window.__fw.setTier(t);
+        await window.__fw.setTier(t);
         const m = window.__fw.measure();
         const i = window.__fw.info();
         rows.push({ tier: i.tier, width: m.width, height: m.height, pixelRatio: i.pixelRatio, luma: +m.luma.toFixed(1), calls: m.calls });
@@ -176,6 +189,7 @@ function printTable(summary) {
   const inBand = summary.rows.filter((r) => r.lumaOk && r.clipOk).length;
   console.log(`\n${summary.rows.length} combinations in ${summary.seconds}s, ${inBand} inside the luma and clipping bands (enforced: ${summary.enforceLuma}). * marks a row outside its band.`);
   console.log(summary.note);
+  for (const a of summary.agreement || []) console.log(`agreement ${a.course}: renderer and physics agree on ${a.agreePct}% of ${a.samples} surface samples; max mesh height error ${a.maxHeightError} m over ${a.heightSamples} vertices`);
   const e = summary.engineChecks;
   if (e && e.contextLoss) {
     console.log(`engine: context loss ${e.contextLoss.supported ? `restored (luma ${e.contextLoss.lumaBefore.toFixed(1)} -> ${e.contextLoss.lumaAfter.toFixed(1)}, ${e.contextLoss.framesAfter} frames after)` : 'not testable'}; tiers ${(e.tiers || []).map((t) => `${t.tier}@${t.pixelRatio}x`).join(' ')}; portrait ${e.portrait ? e.portrait.width + 'x' + e.portrait.height : 'n/a'}; debug overlay ${e.debugOverlay ? 'present' : 'missing'}`);

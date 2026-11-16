@@ -6,6 +6,7 @@ import { guardStats } from '../core/guards.js';
 export function installHooks(app) {
   const fw = {
     ready: false,
+    settled: false,
     version: 1,
     get app() { return app; },
     get errors() {
@@ -29,8 +30,14 @@ export function installHooks(app) {
       return engine.measureFrame(world.scene, world.camera, loop.time);
     },
     async setTimeOfDay(id) { await app.setTimeOfDay(id); return app.world.todId; },
-    async setCourse(id, hole) { await app.setCourse(id, hole); return app.world.courseId; },
-    setTier(id) { app.setTier(id); return app.engine.tier.id; },
+    async setCourse(id, hole) { await app.setCourse(id, hole); await app.world.whenSettled(); return app.world.courseId; },
+    async setTier(id) { await app.setTier(id); await app.world.whenSettled(); return app.engine.tier.id; },
+    // Wait until lazily loaded assets for the current hole are on the GPU.
+    async settle() { await app.world.whenSettled(); return true; },
+    // Renderer versus physics: surface ids rendered by the real shader against terrain queries.
+    surfaceAgreement(samples) { return app.world.surfaceAgreement(samples); },
+    // Move the camera for QA shots without touching game state.
+    view(name) { return app.world.qaView ? app.world.qaView(name) : false; },
     // Force a WebGL context loss and restore, to prove the app survives it.
     async loseContext(ms = 200) {
       const gl = app.engine.renderer.getContext();

@@ -78,3 +78,50 @@ SwiftShader (software rendering), so frame times from it are not representative 
   budget. Raw download cache: 1.5 GB in `asset-src/` (not in git).
 - Known weak spots: the conifers (`fir`, `pine`) come from sapling scans and are thin; LOD1
   foliage is visibly sparser than LOD0 up close.
+
+## Stage 3: terrain and courses
+
+- `src/course/layout.js`: deterministic hole generator (routing with doglegs, fairway width
+  profile, green outline with harmonics, tee boxes, greenside and fairway bunkers, ponds,
+  streams, coastline, cart path, pin candidates, marker anchors). The old course generator was
+  not available, so this is new.
+- `src/course/terrain.js`: one 1 m heightfield and one set of surface masks per hole. Macro
+  land, a corridor that settles toward the smoothed centerline profile, fairway undulation,
+  raised greens with tilt, internal contour, optional tier, mounds and collection hollows,
+  flat tee pads, bunker bowls with a lip that is higher on the target side, ponds and streams
+  that take their level from the surrounding land with graded banks, a beach and sea shelf on
+  coastal holes, dunes on the links, and mesas and rock bands in the desert. Pins are cut only
+  where the finished green is under 4.5 percent.
+- `src/render/terrainView.js`: chunked LOD mesh with skirts, an outer landscape that samples
+  the same macro function out to several kilometers with range-dependent relief (hills, mesas,
+  mountains), and a splat shader injected into MeshStandardMaterial. It blends tiling PBR
+  texture array layers from per-texel masks in painter's order, with world-space mapping,
+  triplanar projection on rock, a second rotated scale plus low-frequency noise to break
+  tiling, maximum anisotropy per tier, mowing stripes, checker, and diagonal cuts that follow
+  the centerline on fairways and run straight on greens and tees (albedo plus a normal lean),
+  raked ridges and a damp lip band in bunkers, and dew glints.
+- Greens: a real hole cut in the surface by the shader with a liner and visible lip, a
+  flagstick, and a flag simulated as Verlet cloth driven by the wind (`greenProps.js`).
+  Ball marks, divots, sand craters, and footprints are instanced decals (`decals.js`).
+- Three flagship courses, each 18 holes and par 72: Alderwick Park (parkland), Saltmarrow
+  Links (coastal links), Cinder Mesa (desert). Alpine and tropical are defined but not gated
+  until a later pass.
+- Physics reads the same data the renderer uploads. Evidence:
+  - Unit tests (`tests/course.test.js`, 21 tests): all 54 flagship holes build finite terrain
+    with the tee on a tee box, every pin on the green and under 6 percent slope, the fairway
+    centerline on fairway, no bunker flooded, bunkers are bowls with a lip; `heightAt` matches
+    the mesh triangulation; `surfaceAt` matches the uploaded mask bytes; mask edges sit within
+    12 cm of the layout geometry; a simulated drive lands and stops in bounds on real terrain.
+  - Headless GPU check in the smoke gate: the real terrain shader renders surface ids top down
+    and they are compared to `terrain.groundSurfaceAt`. Agreement: parkland 99.98 percent,
+    links 99.98 percent, desert 99.97 percent of 27,648 samples each. Mesh vertex height
+    versus `heightAt`: at most 0.0001 m over more than 5,000 vertices per course.
+- Bugs the tests caught and that were fixed at the source: a sign error in the routing
+  rotation, pins on tier slopes, a bunker placed on a fairway centerline by a shared scratch
+  object, a bunker flooded by a nearby pond's water level.
+- Verify: 180 tests pass, build passes, smoke 24 of 24 with zero console errors.
+- Terrain build time (Node, this machine): 0.2 to 0.6 s per hole. Not measured on a phone.
+- Not yet done at this stage: trees (the density field exists, Stage 5), the real sky and
+  water shaders (Stage 4), decal persistence across holes inside a round (the game state does
+  that in Stage 9). The top-down maps in `scripts/tools/map-hole.mjs` were used to review
+  every layout change.
