@@ -1,0 +1,79 @@
+// The frame loop. Each subsystem is registered with a label and wrapped so that a throw in
+// one of them is logged and skipped while every other subsystem, and the next frame, still run.
+import { guarded } from './guards.js';
+
+export function createLoop({ timescale = 1 } = {}) {
+  const systems = [];
+  const stats = { frame: 0, dt: 0, cpuMs: 0, cpuAvg: 0, fps: 0, perSystem: {}, lastError: null };
+  let running = false, rafId = 0, last = 0, simTime = 0, fpsAcc = 0, fpsFrames = 0;
+  let minInterval = 0, lastRendered = 0, dirty = true, onDemand = false;
+
+  function add(label, fn, { profile = true } = {}) {
+    const g = guarded(label, fn);
+    systems.push({ label, run: g, profile });
+    stats.perSystem[label] = 0;
+    return () => {
+      const i = systems.findIndex((s) => s.run === g);
+      if (i >= 0) systems.splice(i, 1);
+    };
+  }
+
+  function frame(now) {
+    if (!running) return;
+    rafId = requestAnimationFrame(frame);
+    if (!Number.isFinite(now)) now = performance.now();
+    if (minInterval > 0 && now - lastRendered < minInterval - 1) return;
+    if (onDemand && !dirty) { last = now; return; }
+    step(now);
+  }
+
+  // One frame. Exposed so tests and capture tools can advance deterministically.
+  function step(now = performance.now(), fixedDt) {
+    const rawDt = last ? (now - last) / 1000 : 1 / 60;
+    last = now; lastRendered = now; dirty = false;
+    // Clamp so a background tab or a long stall cannot produce a giant step.
+    const realDt = Number.isFinite(fixedDt) ? fixedDt : Math.min(Math.max(rawDt, 0), 0.1);
+    const dt = realDt * loop.timescale;
+    simTime += dt;
+    const t0 = performance.now();
+    for (let i = 0; i < systems.length; i++) {
+      const s = systems[i];
+      if (s.profile) {
+        const a = performance.now();
+        s.run(dt, simTime, realDt);
+        const ms = performance.now() - a;
+        stats.perSystem[s.label] = stats.perSystem[s.label] * 0.9 + ms * 0.1;
+      } else s.run(dt, simTime, realDt);
+    }
+    stats.cpuMs = performance.now() - t0;
+    stats.cpuAvg = stats.cpuAvg ? stats.cpuAvg * 0.92 + stats.cpuMs * 0.08 : stats.cpuMs;
+    stats.dt = realDt;
+    stats.frame++;
+    fpsAcc += rawDt; fpsFrames++;
+    if (fpsAcc >= 0.5) { stats.fps = fpsFrames / fpsAcc; fpsAcc = 0; fpsFrames = 0; }
+  }
+
+  const loop = {
+    timescale,
+    stats,
+    add,
+    step,
+    get time() { return simTime; },
+    get running() { return running; },
+    start() {
+      if (running) return;
+      running = true; last = 0;
+      rafId = requestAnimationFrame(frame);
+    },
+    stop() {
+      running = false;
+      cancelAnimationFrame(rafId);
+    },
+    // Cap the frame rate (0 = uncapped). Used for idle menus and battery saving.
+    setMaxFps(fps) { minInterval = fps > 0 ? 1000 / fps : 0; },
+    // Render-on-demand: when enabled, frames only run after invalidate().
+    setOnDemand(v) { onDemand = !!v; dirty = true; },
+    invalidate() { dirty = true; },
+  };
+  return loop;
+}

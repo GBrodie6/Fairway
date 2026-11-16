@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#16324a"/><stop offset="0.45" stop-color="#3f6f8a"/><stop offset="0.72" stop-color="#f2b98a"/><stop offset="1" stop-color="#f7d9a8"/>
+    </linearGradient>
+    <linearGradient id="hillA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f8a4a"/><stop offset="1" stop-color="#1f5a33"/></linearGradient>
+    <linearGradient id="hillB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#58a85a"/><stop offset="1" stop-color="#2c7440"/></linearGradient>
+    <radialGradient id="sun" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff6d8"/><stop offset="0.5" stop-color="#ffe2a0" stop-opacity="0.75"/><stop offset="1" stop-color="#ffd28a" stop-opacity="0"/></radialGradient>
+    <clipPath id="clip"><rect x="0" y="0" width="512" height="512" rx="112.64" ry="112.64"/></clipPath>
+  </defs>
+  <g clip-path="url(#clip)">
+    <rect width="512" height="512" fill="url(#sky)"/>
+    <circle cx="153.6" cy="286.72" r="133.12" fill="url(#sun)"/>
+    <path d="M 0 317.44 C 128 256, 256 266.24, 368.64 307.2 S 537.6 286.72, 512 307.2 L 512 512 L 0 512 Z" fill="url(#hillA)"/>
+    <path d="M 0 378.88 C 153.6 307.2, 317.44 307.2, 512 368.64 L 512 512 L 0 512 Z" fill="url(#hillB)"/>
+    <path d="M -51.2 512 L 122.88000000000001 296.96 L 174.07999999999998 296.96 L 0 512 Z" fill="#ffffff" opacity="0.07"/>
+    <path d="M 51.2 512 L 225.28000000000003 296.96 L 276.48 296.96 L 102.4 512 Z" fill="#ffffff" opacity="0"/>
+    <path d="M 153.60000000000002 512 L 327.68000000000006 296.96 L 378.88 296.96 L 204.8 512 Z" fill="#ffffff" opacity="0.07"/>
+    <path d="M 256.00000000000006 512 L 430.08000000000004 296.96 L 481.2800000000001 296.96 L 307.20000000000005 512 Z" fill="#ffffff" opacity="0"/>
+    <path d="M 358.40000000000003 512 L 532.48 296.96 L 583.6800000000001 296.96 L 409.6 512 Z" fill="#ffffff" opacity="0.07"/>
+    <path d="M 460.8 512 L 634.88 296.96 L 686.08 296.96 L 512 512 Z" fill="#ffffff" opacity="0"/>
+    <path d="M 563.2 512 L 737.2800000000001 296.96 L 788.48 296.96 L 614.4000000000001 512 Z" fill="#ffffff" opacity="0.07"/>
+    <ellipse cx="317.44" cy="358.4" rx="61.44" ry="15.36" fill="#7bd07a" opacity="0.85"/>
+    <rect x="314.88" y="153.6" width="8.192" height="204.8" rx="4.096" fill="#f6f3ea"/>
+    <path d="M 323.072 153.6 L 424.96 184.32 L 323.072 220.16 Z" fill="#e8553d"/>
+    <ellipse cx="317.44" cy="359.424" rx="11.264" ry="4.096" fill="#143a22"/>
+    <circle cx="184.32" cy="409.6" r="23.04" fill="#ffffff"/>
+    <circle cx="190.464" cy="415.744" r="23.04" fill="#000000" opacity="0.08"/>
+  </g>
+</svg>

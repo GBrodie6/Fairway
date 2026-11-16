@@ -1,0 +1,35 @@
+{
+  "name": "fairway-next",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Fairway Next: a calm, touch-first browser golf game with sim-grade rendering.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4173",
+    "test": "vitest run",
+    "smoke": "node scripts/smoke.mjs",
+    "verify": "node scripts/verify.mjs",
+    "assets": "node scripts/assets/pipeline.mjs",
+    "assets:download": "node scripts/assets/pipeline.mjs --only=download",
+    "assets:licenses": "node scripts/assets/license-check.mjs",
+    "icons": "node scripts/icons.mjs",
+    "bot": "node scripts/bot.mjs",
+    "contact": "node scripts/contact-sheet.mjs",
+    "perf": "node scripts/perf.mjs"
+  },
+  "dependencies": {
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@gltf-transform/core": "^4.5.1",
+    "@gltf-transform/extensions": "^4.5.1",
+    "@gltf-transform/functions": "^4.5.1",
+    "meshoptimizer": "^1.3.0",
+    "playwright-core": "^1.63.0",
+    "sharp": "^0.35.5",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
+  }
+}

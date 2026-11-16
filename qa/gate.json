@@ -1,0 +1,5 @@
+{
+  "enforceLuma": false,
+  "courses": ["parkland", "links", "desert"],
+  "note": "enforceLuma is switched on in Stage 4 once the sky and exposure are real. courses lists the courses that exist so far."
+}
