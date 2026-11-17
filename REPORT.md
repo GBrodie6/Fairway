@@ -293,3 +293,38 @@ SwiftShader (software rendering), so frame times from it are not representative 
   line. `settings.showGolfer` stays false and is not offered in the settings screen.
 - What a human would need to do: supply a rigged, licensed golfer with a swing animation;
   the camera rig already has an address framing that would leave room for it.
+
+## Stage 8: swing and controls
+
+- `ui/swingStick.js`: the stick is a DOM view over the tested gesture logic. It docks to the
+  bottom right, or the bottom left with "Swing stick on the left". Its travel scales with
+  screen height (27 percent, 96 to 190 px) and the stick size setting, so a thumb reaches
+  full power on a small phone. Coalesced pointer samples are fed in order. A green mark
+  shows the power this shot needs (from `solvePower`), the knob and fill follow the thumb,
+  and the result shows the tempo grade. Left-handed golfers get mirrored face and path
+  (tested in `tests/gesture.test.js`).
+- `ui/input.js`: drag on the course to aim, with pointer acceleration (slow drags are five
+  times finer), the mouse wheel for fine aim, hold-to-repeat nudge buttons (0.25 degrees),
+  "Aim here" from the map, free look, keyboard (arrows or WASD aim and club, Shift for 0.1
+  degree steps, Space for a three-press meter, 1 to 4 shot type, M map, R replay, L look,
+  C recenter, Escape back), and gamepad (A meter, B back, X map, Y replay, bumpers club,
+  triggers shot type, d-pad and left stick aim, right stick look, Start pause). Haptics use
+  `navigator.vibrate` and gamepad rumble when present. Every handler checks for finite
+  input before it reaches the game; the game re-checks.
+- First-run tutorial: three short steps (aim, backswing, strike) that advance on the real
+  action, can be skipped, and can be shown again from Settings.
+- Evidence (`scripts/tools/controls.mjs`, headless Chrome, 640x360):
+  - Keyboard through the DevTools Input domain: Down changed Driver to 3 wood, Up twice
+    returned to Driver (clamped), two Right presses turned the aim exactly 1.0 degree
+    (0.0174 rad), 2 selected Punch, M opened the map, Escape closed it, and Space three
+    times (0.8 s, then the strike as the marker returned) gave 73 percent power graded
+    Perfect and launched the shot.
+  - Gamepad: browser automation cannot emulate a controller, so the tool replaces
+    `navigator.getGamepads` with a scripted pad. This proves the mapping, not real hardware:
+    right and left bumpers changed club, the left stick turned the aim, X opened the map, B
+    closed it, Start paused, B resumed, and three A presses gave 64 percent power, Perfect,
+    and launched the shot. The meter reads the pad's own timestamps (`Gamepad.timestamp`).
+  - Touch and mouse swings: see Stage 6 (portrait touch round, landscape mouse shots).
+  - Screenshots: `qa/proof/stage8/`.
+- Not verified: real controllers, real vibration, thumb reach on physical phones of
+  different sizes, and how the stick feels at 120 Hz.

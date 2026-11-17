@@ -64,8 +64,11 @@ try {
   await press(2); const g4 = await st(); await press(1); const g5 = await st();
   await press(9); const g6 = await st(); await press(1); const g7 = await st();
   console.log('gamepad', JSON.stringify({ start: g0.club, rb: g1.club, lb: g2.club, stickAim: +(g3.aim - g2.aim).toFixed(4), xMap: g4.map, bClose: !g5.map, startPause: g6.modal, bResume: g7.modal }));
-  await press(0); await frames(8); await press(0); await frames(3); await press(0);
-  console.log('gamepad meter', JSON.stringify(await page.evaluate(() => { const r = window.__fw.ui.hud.stick.lastResult; return r && { power: +r.power.toFixed(2), label: r.tempoLabel }; })), 'phase', (await st()).phase);
+  // The pad reports when each press happened (Gamepad.timestamp); presses are a frame apart.
+  const padPress = async (b, at) => { await page.evaluate(([i, t]) => { window.__pad.timestamp = t; window.__pad.buttons[i] = { pressed: true, value: 1 }; }, [b, at]); await frames(1); await page.evaluate((i) => { window.__pad.buttons[i] = { pressed: false, value: 0 }; }, b); await frames(1); };
+  const now = await page.evaluate(() => performance.now());
+  await padPress(0, now); await padPress(0, now + 700); await padPress(0, now + 700 + (700 / 1100) * 370);
+  console.log('gamepad meter', JSON.stringify(await page.evaluate(() => { const r = window.__fw.ui.hud.stick.lastResult; return r && { power: +r.power.toFixed(3), label: r.tempoLabel }; })), 'phase', (await st()).phase);
   await page.screenshot({ path: `${prefix}-gamepad.png` });
 } catch (e) { console.log('FAILED', e.message.split('\n')[0]); await page.screenshot({ path: `${prefix}-failed.png` }).catch(() => {}); }
 if (errors.length) console.log('ERRORS', errors.length, errors.slice(0, 5).map((e) => e.text.slice(0, 300)));

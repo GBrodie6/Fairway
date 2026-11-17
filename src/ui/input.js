@@ -95,7 +95,9 @@ export function createInput({ view, game, getWorld, settings, hud, actions, hapt
     const lx = ax(2), ly = ax(3);
     if (lx || ly) getWorld().rig.look(-lx * 1.8 * dt, ly * 1.2 * dt);
     if (ph !== 'aim') return;
-    if (presses[0]) hud.stick.meterPress();
+    // The pad's own timestamp is when the button changed, which is closer to the press than
+    // the frame that polled it.
+    if (presses[0]) hud.stick.meterPress(gp.timestamp > 0 ? gp.timestamp : performance.now());
     if (presses[2]) actions.map();
     if (presses[3]) actions.replay();
     if (presses[4]) game.selectClub(-1);
