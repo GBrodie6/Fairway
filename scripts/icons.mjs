@@ -55,4 +55,9 @@ for (const [name, size, opts] of targets) {
   await sharp(Buffer.from(svg(Math.max(size, 256), opts))).resize(size, size).png({ compressionLevel: 9 }).toFile(path.join(out, name));
 }
 writeFileSync(path.join(out, 'icon.svg'), svg(512));
+// App Store icon: 1024 px, full bleed, no transparency. Kept out of the shipped web build.
+const storeDir = path.join(root, 'ios-assets');
+mkdirSync(storeDir, { recursive: true });
+await sharp(Buffer.from(svg(1024, { maskable: true }))).flatten({ background: '#0f1a14' }).png({ compressionLevel: 9 }).toFile(path.join(storeDir, 'AppIcon-1024.png'));
+console.log('App Store icon written to ios-assets/AppIcon-1024.png');
 console.log('icons written to public/icons:', targets.map((t) => t[0]).join(', '));

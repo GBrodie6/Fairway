@@ -89,6 +89,11 @@ async function boot() {
   // otherwise the main menu shows over the course.
   if (params.mode) await app.ui.screens.startQuick({ courseId, mode: params.mode, holes: params.holes || 9, startHole: params.hole || 1, tod: todId, seed: params.seed });
   else if (!app.openChallengeFromHash()) app.ui.screens.menu();
+  // Offline support: the service worker precaches the app shell and caches assets as they are
+  // used. Not in QA runs, so every run measures a cold network load.
+  if ('serviceWorker' in navigator && import.meta.env.PROD && !params.smoke && !params.bot && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('./sw.js').catch((e) => console.warn('[fairway] service worker not registered:', e && e.message));
+  }
   // A challenge link pasted into an open tab only changes the hash.
   window.addEventListener('hashchange', () => { if (!app.game.state.round) app.openChallengeFromHash(); });
   // The heavy assets arrive after first paint.

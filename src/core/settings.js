@@ -22,6 +22,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   haptics: true,
   showGolfer: false,
   spinViz: false,
+  powerGuide: true, // the green power mark on the swing stick
   tutorialDone: false,
   stickScale: 1,
   showFps: false,

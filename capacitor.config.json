@@ -1,0 +1,12 @@
+{
+  "appId": "app.fairwaynext.game",
+  "appName": "Fairway Next",
+  "webDir": "dist",
+  "backgroundColor": "#0f1a14",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#0f1a14",
+    "scrollEnabled": false,
+    "allowsLinkPreview": false
+  }
+}

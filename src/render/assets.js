@@ -14,6 +14,9 @@ export const MANIFEST = manifest;
 
 export function createAssets({ enabled = ASSETS_PRESENT, onBytes, base = './assets/' } = {}) {
   const BASE = base;
+  // Asset file names are stable, so every URL carries the manifest's generation stamp. A new
+  // asset build changes the stamp, which lets the host cache these files as immutable.
+  const V = `?v=${versionStamp()}`;
   const gltf = new GLTFLoader();
   gltf.setMeshoptDecoder(MeshoptDecoder);
   const hdr = new HDRLoader();
@@ -26,7 +29,7 @@ export function createAssets({ enabled = ASSETS_PRESENT, onBytes, base = './asse
   };
 
   async function bitmap(file, { flipY = false } = {}) {
-    const res = await fetch(BASE + file);
+    const res = await fetch(BASE + file + V);
     if (!res.ok) throw new Error(`HTTP ${res.status} ${file}`);
     const blob = await res.blob();
     stats.requests++; stats.bytes += blob.size;
@@ -101,7 +104,7 @@ export function createAssets({ enabled = ASSETS_PRESENT, onBytes, base = './asse
       if (!assets.has('models', id)) return Promise.resolve(null);
       const rec = manifest.models[id];
       return once(`m:${id}:${lod0 ? 1 : 0}`, async () => {
-        const base = await once(`mf:${rec.file}`, () => gltf.loadAsync(BASE + rec.file));
+        const base = await once(`mf:${rec.file}`, () => gltf.loadAsync(BASE + rec.file + V));
         if (!base) return null;
         // The files store quantized positions with a dequantization transform on the node.
         // Bake it into float positions so instancing can treat every part as model space.
@@ -128,7 +131,7 @@ export function createAssets({ enabled = ASSETS_PRESENT, onBytes, base = './asse
         stats.requests++; stats.bytes += rec.bytesLod1 || 0;
         let l0 = null;
         if (lod0) {
-          const g0 = await once(`mf:${rec.lod0}`, () => gltf.loadAsync(BASE + rec.lod0));
+          const g0 = await once(`mf:${rec.lod0}`, () => gltf.loadAsync(BASE + rec.lod0 + V));
           if (g0) {
             // LOD0 ships geometry only. Reuse the textured materials from the LOD1 file by name.
             const byName = new Map(lod1.map((p) => [p.name, p.material]));
@@ -144,7 +147,7 @@ export function createAssets({ enabled = ASSETS_PRESENT, onBytes, base = './asse
       if (!assets.has('hdris', id)) return Promise.resolve(null);
       const rec = manifest.hdris[id];
       return once(`h:${id}`, async () => {
-        const tex = await hdr.loadAsync(BASE + rec.file);
+        const tex = await hdr.loadAsync(BASE + rec.file + V);
         tex.mapping = THREE.EquirectangularReflectionMapping;
         stats.requests++; stats.bytes += rec.bytes;
         return { texture: tex, info: rec };
@@ -152,4 +155,11 @@ export function createAssets({ enabled = ASSETS_PRESENT, onBytes, base = './asse
     },
   };
   return assets;
+}
+
+export function versionStamp() {
+  const g = String((MANIFEST && MANIFEST.generated) || 'dev');
+  let h = 2166136261;
+  for (let i = 0; i < g.length; i++) { h ^= g.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  return h.toString(36);
 }

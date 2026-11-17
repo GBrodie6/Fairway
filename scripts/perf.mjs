@@ -23,14 +23,22 @@ const { browser, software } = await launchBrowser();
 const rows = [];
 for (const course of courses) {
   for (const tier of tiers) {
-    const page = await browser.newPage({ viewport: { width: 640, height: 360 }, deviceScaleFactor: 1 });
+    // A fresh context per run: no HTTP cache, no service worker, a cold first visit.
+    const context = await browser.newContext({ viewport: { width: 640, height: 360 }, deviceScaleFactor: 1 });
+    const page = await context.newPage();
     const errors = trackErrors(page);
+    const req0 = server.requests.length;
     const t0 = Date.now();
     await page.goto(`${server.url}/?course=${course}&tod=midday&tier=${tier}&hole=1&smoke=1`, { waitUntil: 'load', timeout: 180000 });
     await page.waitForFunction(() => window.__fw && window.__fw.ready === true, null, { timeout: 240000 });
     const readyMs = Date.now() - t0;
+    const reqReady = server.requests.length;
     await page.evaluate(() => window.__fw.settle());
     const settledMs = Date.now() - t0;
+    const reqSettled = server.requests.length;
+    const kind = (p) => (/\.(js|css|html|webmanifest)$/.test(p) || p === '/' ? 'app' : p.includes('/textures/') ? 'textures' : p.includes('/models/') ? 'models' : p.includes('/hdri/') ? 'hdri' : 'other');
+    const sumBytes = (list) => { const o = { total: 0, requests: list.length }; for (const q of list) { o.total += q.bytes; o[kind(q.path)] = (o[kind(q.path)] || 0) + q.bytes; } return o; };
+    const network = { firstPaint: sumBytes(server.requests.slice(req0, reqReady)), settled: sumBytes(server.requests.slice(req0, reqSettled)), notFound: server.requests.slice(req0, reqSettled).filter((q) => q.status === 404).map((q) => q.path) };
     const r = await page.evaluate(async () => {
       const fw = window.__fw, w = fw.app.world;
       const groups = [w.vegetation.group, w.grass.group, w.props.group];
@@ -49,8 +57,8 @@ for (const course of courses) {
         assetBytes: fw.app.assets.stats.bytes, assetRequests: fw.app.assets.stats.requests, buildMs: w.buildMs,
       };
     });
-    rows.push({ course, tier, readyMs, settledMs, consoleErrors: errors.length, ...r, withinBudget: r.after.calls <= r.budget.drawCalls && r.after.triangles <= r.budget.triangles });
-    await page.close();
+    rows.push({ course, tier, readyMs, settledMs, network, consoleErrors: errors.length, ...r, withinBudget: r.after.calls <= r.budget.drawCalls && r.after.triangles <= r.budget.triangles });
+    await context.close();
   }
 }
 await browser.close();
@@ -63,5 +71,13 @@ console.log(pad('course', 9), pad('tier', 7), pad('draws', 14), pad('triangles',
 for (const r of rows) {
   console.log(pad(r.course, 9), pad(r.tier, 7), pad(`${r.before.calls} -> ${r.after.calls}`, 14), pad(`${(r.before.triangles / 1000).toFixed(0)}k -> ${(r.after.triangles / 1000).toFixed(0)}k`, 22),
     pad(`${r.budget.drawCalls} / ${(r.budget.triangles / 1000).toFixed(0)}k`, 16), pad((r.memory.textures / 1048576).toFixed(0), 7), pad((r.memory.renderTargets / 1048576).toFixed(0), 6), pad(r.cpuAvg.toFixed(1), 7), r.withinBudget ? 'yes' : 'OVER');
+}
+console.log('');
+console.log(pad('course', 9), pad('tier', 7), pad('first paint MB', 15), pad('settled MB', 11), pad('app', 6), pad('tex', 6), pad('models', 7), pad('hdri', 6), pad('ready s', 8), 'settled s');
+const mb = (b) => ((b || 0) / 1048576).toFixed(2);
+for (const r of rows) {
+  const n = r.network;
+  console.log(pad(r.course, 9), pad(r.tier, 7), pad(mb(n.firstPaint.total), 15), pad(mb(n.settled.total), 11), pad(mb(n.settled.app), 6), pad(mb(n.settled.textures), 6), pad(mb(n.settled.models), 7), pad(mb(n.settled.hdri), 6), pad((r.readyMs / 1000).toFixed(1), 8), (r.settledMs / 1000).toFixed(1));
+  if (n.notFound.length) console.log('  404:', n.notFound.join(', '));
 }
 console.log(out.note);

@@ -24,8 +24,11 @@ const shots = !!args.shots;
 const tier = args.tier || 'low';
 
 export async function runSmoke() {
-  if (!existsSync(path.join(dist, 'index.html'))) throw new Error('dist/ is missing. Run "npm run build" first.');
-  const server = await serveStatic(dist);
+  if (!process.env.FAIRWAY_URL && !existsSync(path.join(dist, 'index.html'))) throw new Error('dist/ is missing. Run "npm run build" first.');
+  // FAIRWAY_URL runs the same checks against a deployed site instead of the local build.
+  const live = process.env.FAIRWAY_URL ? process.env.FAIRWAY_URL.replace(/\/+$/, '') : null;
+  const server = live ? { url: live, close: async () => {} } : await serveStatic(dist);
+  if (live) console.log(`smoke against ${live}`);
   const { browser, executablePath, software } = await launchBrowser();
   const rows = [];
   const failures = [];

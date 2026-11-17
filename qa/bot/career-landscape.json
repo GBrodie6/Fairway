@@ -1,0 +1,797 @@
+{
+ "course": "parkland",
+ "view": "landscape",
+ "holes": 18,
+ "tier": "low",
+ "scale": 0.6,
+ "timescale": 4,
+ "mode": "stroke",
+ "software": true,
+ "input": "mouse",
+ "started": "2026-11-17T13:02:48.258Z",
+ "shots": [
+  {
+   "hole": 1,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 350.87,
+   "after": 350.87,
+   "ideal": 1,
+   "power": 1,
+   "tempo": "Perfect",
+   "ratio": 2.95,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 25.5
+  },
+  {
+   "hole": 1,
+   "club": "I6",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 135.05,
+   "after": 9.1,
+   "ideal": 0.916,
+   "power": 0.963,
+   "tempo": "Good, a little quick",
+   "ratio": 3.52,
+   "read": null,
+   "result": "You to play",
+   "sec": 20.5
+  },
+  {
+   "hole": 1,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 9.1,
+   "after": 8.68,
+   "ideal": 0.657,
+   "power": 0.657,
+   "tempo": "Good, a little quick",
+   "ratio": 3.96,
+   "read": {
+    "drags": 4,
+    "taps": 2,
+    "leftDeg": -0.08,
+    "breakM": 1.26
+   },
+   "result": "Ellis Vale to playWatching",
+   "sec": 23.4
+  },
+  {
+   "hole": 1,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.18,
+   "after": 0.18,
+   "ideal": 0.545,
+   "power": 0.544,
+   "tempo": "Rushed",
+   "ratio": 4.52,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par4 strokes",
+   "sec": 16
+  },
+  {
+   "hole": 2,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 349.34,
+   "after": 349.34,
+   "ideal": 0.899,
+   "power": 0.926,
+   "tempo": "Perfect",
+   "ratio": 3.29,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 24.7
+  },
+  {
+   "hole": 2,
+   "club": "I8",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 123.76,
+   "after": 117.6,
+   "ideal": 0.863,
+   "power": 0.846,
+   "tempo": "Perfect",
+   "ratio": 3.33,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 24.8
+  },
+  {
+   "hole": 2,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 4.7,
+   "after": 0.15,
+   "ideal": 0.69,
+   "power": 0.692,
+   "tempo": "Rushed",
+   "ratio": 2.34,
+   "read": {
+    "drags": 1,
+    "taps": 0,
+    "leftDeg": 0.11,
+    "breakM": 0.19
+   },
+   "result": "Ellis Vale to playWatching",
+   "sec": 19.2
+  },
+  {
+   "hole": 3,
+   "club": "I7",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 133.92,
+   "after": 133.92,
+   "ideal": 0.874,
+   "power": 0.895,
+   "tempo": "Perfect",
+   "ratio": 3.3,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 25.7
+  },
+  {
+   "hole": 3,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 10.08,
+   "after": 9.71,
+   "ideal": 0.635,
+   "power": 0.623,
+   "tempo": "Good, a little quick",
+   "ratio": 3.56,
+   "read": {
+    "drags": 4,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 1.18
+   },
+   "result": "Ellis Vale to playWatching",
+   "sec": 13.4
+  },
+  {
+   "hole": 3,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.39,
+   "after": 0.39,
+   "ideal": 0.544,
+   "power": 0.533,
+   "tempo": "Perfect",
+   "ratio": 2.93,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par3 strokes",
+   "sec": 10.3
+  },
+  {
+   "hole": 4,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 472.33,
+   "after": 472.33,
+   "ideal": 1,
+   "power": 0.984,
+   "tempo": "Good, a little quick",
+   "ratio": 3.5,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 16.2
+  },
+  {
+   "hole": 4,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 273.81,
+   "after": 270.08,
+   "ideal": 1,
+   "power": 1,
+   "tempo": "Perfect",
+   "ratio": 3.39,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 15.7
+  },
+  {
+   "hole": 4,
+   "club": "GW",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 80.65,
+   "after": 7.78,
+   "ideal": 0.859,
+   "power": 0.861,
+   "tempo": "Good, a little quick",
+   "ratio": 3.66,
+   "read": null,
+   "result": "You to play",
+   "sec": 19.3
+  },
+  {
+   "hole": 4,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 7.78,
+   "after": 2.21,
+   "ideal": 0.69,
+   "power": 0.689,
+   "tempo": "Perfect",
+   "ratio": 3.2,
+   "read": {
+    "drags": 4,
+    "taps": 2,
+    "leftDeg": 0.05,
+    "breakM": 0.35
+   },
+   "result": "Ellis Vale to playWatching",
+   "sec": 20.8
+  },
+  {
+   "hole": 5,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 351.24,
+   "after": 351.24,
+   "ideal": 0.896,
+   "power": 0.936,
+   "tempo": "Perfect",
+   "ratio": 3.21,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 23.6
+  },
+  {
+   "hole": 5,
+   "club": "I8",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 126.51,
+   "after": 120.93,
+   "ideal": 0.896,
+   "power": 0.961,
+   "tempo": "Good, a little quick",
+   "ratio": 3.72,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 20.6
+  },
+  {
+   "hole": 5,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 12.46,
+   "after": 9.73,
+   "ideal": 0.682,
+   "power": 0.641,
+   "tempo": "Rushed",
+   "ratio": 2.35,
+   "read": {
+    "drags": 1,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -0.4
+   },
+   "result": "Ellis Vale to playWatching",
+   "sec": 14.1
+  },
+  {
+   "hole": 5,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 1.7,
+   "after": 0.43,
+   "ideal": 0.641,
+   "power": 0.654,
+   "tempo": "Perfect",
+   "ratio": 3.37,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Ellis Vale to playWatching",
+   "sec": 13.1
+  },
+  {
+   "hole": 6,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 369.49,
+   "after": 369.49,
+   "ideal": 1,
+   "power": 0.983,
+   "tempo": "Good, a little slow",
+   "ratio": 2.47,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 16.2
+  },
+  {
+   "hole": 6,
+   "club": "I4",
+   "shot": "full",
+   "lie": "Deep rough",
+   "before": 168.35,
+   "after": 129.08,
+   "ideal": 1,
+   "power": 0.935,
+   "tempo": "Perfect",
+   "ratio": 3.24,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 9.6
+  },
+  {
+   "hole": 6,
+   "club": "I5",
+   "shot": "full",
+   "lie": "Deep rough",
+   "before": 96.63,
+   "after": 11.93,
+   "ideal": 1,
+   "power": 1,
+   "tempo": "Perfect",
+   "ratio": 2.81,
+   "read": null,
+   "result": "You to play",
+   "sec": 9.9
+  },
+  {
+   "hole": 6,
+   "club": "SW",
+   "shot": "chip",
+   "lie": "Rough",
+   "before": 11.93,
+   "after": 4.18,
+   "ideal": 0.53,
+   "power": 0.514,
+   "tempo": "Perfect",
+   "ratio": 3.07,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 12.2
+  },
+  {
+   "hole": 6,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 2.02,
+   "after": 0.65,
+   "ideal": 0.69,
+   "power": 0.685,
+   "tempo": "Perfect",
+   "ratio": 3.11,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Ellis Vale to playWatching",
+   "sec": 8.9
+  },
+  {
+   "hole": 7,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 458.56,
+   "after": 458.56,
+   "ideal": 0.832,
+   "power": 0.809,
+   "tempo": "Good, a little quick",
+   "ratio": 3.71,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 14.8
+  },
+  {
+   "hole": 7,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 255.54,
+   "after": 198.46,
+   "ideal": 0.828,
+   "power": 0.821,
+   "tempo": "Good, a little quick",
+   "ratio": 3.65,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 16.3
+  },
+  {
+   "hole": 7,
+   "club": "LW",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 61.11,
+   "after": 22.48,
+   "ideal": 0.79,
+   "power": 0.778,
+   "tempo": "Good, a little quick",
+   "ratio": 4.04,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 13.3
+  },
+  {
+   "hole": 7,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.84,
+   "after": 0.25,
+   "ideal": 0.561,
+   "power": 0.551,
+   "tempo": "Decelerated",
+   "ratio": 1.18,
+   "read": {
+    "drags": 3,
+    "taps": 1,
+    "leftDeg": -0.03,
+    "breakM": -0.05
+   },
+   "result": "Ellis Vale to playWatching",
+   "sec": 10.3
+  },
+  {
+   "hole": 8,
+   "club": "I7",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 141.76,
+   "after": 141.76,
+   "ideal": 0.89,
+   "power": 0.897,
+   "tempo": "Good, a little quick",
+   "ratio": 3.58,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 15
+  },
+  {
+   "hole": 8,
+   "club": "SW",
+   "shot": "chip",
+   "lie": "Rough",
+   "before": 11.9,
+   "after": 0.62,
+   "ideal": 0.543,
+   "power": 0.539,
+   "tempo": "Good, a little quick",
+   "ratio": 3.97,
+   "read": null,
+   "result": "You to play",
+   "sec": 11.2
+  },
+  {
+   "hole": 8,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.62,
+   "after": 0.59,
+   "ideal": 0.636,
+   "power": 0.655,
+   "tempo": "Good, a little quick",
+   "ratio": 4.23,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Ellis Vale to playWatching",
+   "sec": 10
+  },
+  {
+   "hole": 9,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 305.19,
+   "after": 305.19,
+   "ideal": 0.865,
+   "power": 0.839,
+   "tempo": "Good, a little quick",
+   "ratio": 3.58,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 14.9
+  },
+  {
+   "hole": 9,
+   "club": "I9",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 111.26,
+   "after": 73.19,
+   "ideal": 0.899,
+   "power": 0.938,
+   "tempo": "Good, a little quick",
+   "ratio": 3.59,
+   "read": null,
+   "result": "Ellis Vale to playWatching",
+   "sec": 15.1
+  },
+  {
+   "hole": 9,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 19.91,
+   "after": 3.95,
+   "ideal": 0.69,
+   "power": 0.702,
+   "tempo": "Rushed",
+   "ratio": 2.32,
+   "read": {
+    "drags": 3,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -1.38
+   },
+   "result": "Ellis Vale to playWatching",
+   "sec": 14.6
+  },
+  {
+   "hole": 9,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.15,
+   "after": 0.1,
+   "ideal": 0.519,
+   "power": 0.527,
+   "tempo": "Good, a little quick",
+   "ratio": 3.73,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Ellis Vale to playWatching",
+   "sec": 8.5
+  }
+ ],
+ "holesPlayed": [
+  {
+   "hole": 1,
+   "par": 4,
+   "strokes": [
+    4,
+    4
+   ]
+  },
+  {
+   "hole": 2,
+   "par": 4,
+   "strokes": [
+    3,
+    4
+   ]
+  },
+  {
+   "hole": 3,
+   "par": 3,
+   "strokes": [
+    3,
+    4
+   ]
+  },
+  {
+   "hole": 4,
+   "par": 5,
+   "strokes": [
+    4,
+    5
+   ]
+  },
+  {
+   "hole": 5,
+   "par": 4,
+   "strokes": [
+    4,
+    4
+   ]
+  },
+  {
+   "hole": 6,
+   "par": 4,
+   "strokes": [
+    5,
+    5
+   ]
+  },
+  {
+   "hole": 7,
+   "par": 5,
+   "strokes": [
+    4,
+    8
+   ]
+  },
+  {
+   "hole": 8,
+   "par": 3,
+   "strokes": [
+    3,
+    3
+   ]
+  },
+  {
+   "hole": 9,
+   "par": 4,
+   "strokes": [
+    4,
+    4
+   ]
+  }
+ ],
+ "result": {
+  "scores": [
+   [
+    4,
+    3,
+    3,
+    4,
+    4,
+    5,
+    4,
+    3,
+    4
+   ],
+   [
+    4,
+    4,
+    4,
+    5,
+    4,
+    5,
+    8,
+    3,
+    4
+   ]
+  ],
+  "players": [
+   "You",
+   "Ellis Vale"
+  ],
+  "complete": true,
+  "holes": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8
+  ],
+  "mode": "stroke",
+  "standings": "-2"
+ },
+ "errors": [],
+ "stuck": [],
+ "timing": {
+  "bootSec": 24.737,
+  "totalMin": 15.4,
+  "shots": 34,
+  "secPerShot": 16.1
+ },
+ "before": {
+  "player": "You",
+  "rounds": 0,
+  "history": [],
+  "daily": {},
+  "achievements": [],
+  "inProgress": false,
+  "career": {
+   "level": 1,
+   "xp": 0,
+   "points": 0,
+   "tier": 1,
+   "results": [],
+   "titles": 0
+  }
+ },
+ "after": {
+  "player": "You",
+  "rounds": 1,
+  "history": [
+   {
+    "id": "1794921489248-1483416315",
+    "date": 1794921489248,
+    "courseId": "links",
+    "mode": "stroke",
+    "holes": 9,
+    "strokes": 34,
+    "par": 36,
+    "toPar": -2,
+    "birdies": 3,
+    "putts": 13,
+    "eventId": "s0t1e0"
+   }
+  ],
+  "daily": {},
+  "achievements": [
+   "first-round",
+   "birdie",
+   "under-par",
+   "career-win"
+  ],
+  "inProgress": false,
+  "career": {
+   "level": 2,
+   "xp": 209,
+   "points": 3,
+   "tier": 1,
+   "results": [
+    {
+     "name": "Spring Medal",
+     "position": 1,
+     "total": 34,
+     "toPar": -2,
+     "field": 8
+    }
+   ],
+   "titles": 1
+  }
+ },
+ "guard": {
+  "count": 0,
+  "last": null,
+  "bySystem": {}
+ },
+ "consoleErrors": [],
+ "summary": {
+  "holes": 9,
+  "strokes": 34,
+  "par": 36,
+  "putts": 13,
+  "tempo": {
+   "Perfect": 13,
+   "Good, a little quick": 15,
+   "Rushed": 4,
+   "Good, a little slow": 1,
+   "Decelerated": 1
+  },
+  "stuck": 0,
+  "consoleErrors": 0,
+  "guardErrors": 0,
+  "toPar": -2
+ }
+}

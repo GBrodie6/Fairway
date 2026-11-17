@@ -67,7 +67,7 @@ export function createHud(root, { game, settings, haptic, actions }) {
   el.appendChild(bottom);
   const stick = createSwingStick(stickCol, {
     settings, haptic,
-    getIdeal: () => (game.state.phase === 'aim' ? game.suggestedPower() : 0),
+    getIdeal: () => (game.state.phase === 'aim' && settings.powerGuide !== false ? game.suggestedPower() : 0),
     onSwing: (res) => { if (!game.swing(res)) stick.feedback(''); },
   });
   // Replay controls: camera angle and done. The replay runs at half speed.

@@ -14,6 +14,8 @@ await server.listen();
 const { browser } = await launchBrowser();
 const ctx = await browser.newContext({ viewport: { width: Number(w), height: Number(h) }, deviceScaleFactor: 1 });
 const page = await ctx.newPage();
+ctx.setDefaultNavigationTimeout(180000);
+ctx.setDefaultTimeout(120000);
 const errors = trackErrors(page);
 const shot = (name) => page.screenshot({ path: `${prefix}-${name}.png` });
 const click = async (name) => { await page.getByRole('button', { name, exact: true }).first().click(); await page.waitForTimeout(250); };
@@ -59,6 +61,38 @@ try {
   await page.waitForTimeout(800);
   await shot('challenge-bad');
   log('tampered', await page.$eval('.sheet', (e) => e.textContent.slice(0, 160)));
+  // Audio: unlocked by the clicks above; render each sound offline and measure it.
+  const audio = await page.evaluate(async () => {
+    const a = window.__fw.app.audio;
+    a.unlock();
+    await new Promise((r) => setTimeout(r, 300));
+    const club = (id, kind) => ({ id, kind, putter: id === 'PT' });
+    const out = { ready: a.ready, state: a.ctx && a.ctx.state };
+    const probes = {
+      driver: (x) => x.strike(club('DR', 'wood'), 1, 1), iron: (x) => x.strike(club('I7', 'iron'), 0.9, 1), putt: (x) => x.strike(club('PT', 'putter'), 0.5, 1),
+      landGreen: (x) => x.land(5, 12, true), landSand: (x) => x.land(7, 15, true), splash: (x) => x.splash(), cup: (x) => x.cup(), whoosh: (x) => x.whoosh(1), silence: () => {},
+    };
+    for (const [k, f] of Object.entries(probes)) out[k] = await a.probe(f, 1.0);
+    return out;
+  });
+  console.log('audio', JSON.stringify(audio));
+  // Share a round from the pause menu, then open the link in a fresh tab.
+  await page.goto('about:blank');
+  await page.goto(`${base}&mode=stroke&holes=3&course=links&seed=99&bot=1`, { waitUntil: 'load', timeout: 180000 });
+  await page.waitForFunction(() => window.__fw && window.__fw.ready && ['intro', 'aim'].includes(window.__fw.phase()), null, { timeout: 240000 });
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(300);
+  await shot('pause');
+  await click('Share this round');
+  const link = await page.$eval('.sheet input[aria-label="Challenge link"]', (e) => e.value);
+  await shot('share');
+  const p3 = await ctx.newPage();
+  await p3.goto(link, { waitUntil: 'load', timeout: 180000 });
+  await p3.waitForFunction(() => window.__fw && window.__fw.ready, null, { timeout: 240000 });
+  await p3.waitForTimeout(500);
+  console.log('shared link', link.length, 'chars;', await p3.$eval('.sheet', (e) => e.textContent.slice(0, 140)));
+  await p3.screenshot({ path: `${prefix}-shared-open.png` });
+  await p3.close();
 } catch (e) { console.log('FAILED', e.message.split('\n')[0]); await shot('failed').catch(() => {}); }
 if (errors.length) console.log('ERRORS', errors.length, errors.slice(0, 5).map((e) => e.text.slice(0, 400)));
 await browser.close();

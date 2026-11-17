@@ -116,6 +116,17 @@ export function createGame(app) {
     state.aim = state.aimRef;
     state.putt = null;
     computeIdeal();
+    // Default to a club that reaches with some margin: step up while the shot needs more
+    // than about 92 percent of a full swing.
+    if (!onGreen && state.shotType.id === 'full' && !state.target.layup) {
+      const allowed = CLUBS.filter((c) => !c.putter && !(c.id === 'DR' && st.lie !== SURFACES.TEE) && !(c.kind === 'wood' && (st.lie === SURFACES.DEEP_ROUGH || st.lie === SURFACES.BUNKER || st.lie === SURFACES.WETLAND)));
+      for (let guard = 0; guard < 3 && state.idealPower > 0.92; guard++) {
+        const i = allowed.indexOf(state.club);
+        if (i <= 0) break;
+        state.club = allowed[i - 1];
+        computeIdeal();
+      }
+    }
     // The flag comes out for short putts.
     w.greenProps.setFlagVisible(!(onGreen && state.distToPin < 7));
     w.grassCenter = null;
