@@ -475,3 +475,35 @@ only when that course is played. Target "first load under 10 MB": met on every t
   including why a Git-connected build would ship without the downloaded assets and how to
   avoid it. `npm run smoke` can be pointed at a live URL with `FAIRWAY_URL`.
 - README written. No live URL exists to test.
+
+## Stage 12: multiplayer
+
+- Challenge links (`game/share.js`): the round setup (course, holes, seed, time of day) and
+  every player's scores, packed into the URL hash (never sent to a server). Wind, pins, and
+  lies are seeded from the round, so everyone who opens the link plays the same conditions.
+  Opening a link shows the standings and offers to play; at the end the player sends the
+  merged scores back the same way (up to four players). A pasted link in an open tab also
+  works (hash change).
+- Validation: every field is checked (version, course, hole indices, seed, score range per
+  hole par, number of players, duplicate names; markup is stripped from names), and a
+  checksum catches damage and casual edits. It is not security: the checksum key ships with
+  the game, so a determined player can forge a link. That is stated in the code and here.
+- Tests: `tests/share.test.js` (round trip, edits detected, nine kinds of impossible content
+  rejected, merging and standings).
+- Browser evidence (`scripts/tools/menus.mjs`, `qa/proof/stage12/`): a valid link opened to the
+  challenge screen ("Cinder Mesa, 3 holes, Golden hour", Sam 12 (E) through 3); a link with
+  two characters changed, pasted into an open tab, showed "This link was changed or damaged,
+  so its scores cannot be trusted."; Share this round from the pause menu produced a
+  145-character link that opened in a new tab to the challenge screen. A bug found here: the
+  link carried the sharer's own URL parameters, so it started a quick round instead; links are
+  now built from the page address alone.
+- Pass and play (`qa/bot/passplay-landscape.json`): set up through the real controls (three
+  holes of skins, two players on one device). The game announced each player's turn, the
+  bot played both, holes 1 and 2 were halved and carried, and Player 2 won all three skins
+  on hole 3 with a birdie.
+- Resume (`qa/bot/resume-portrait.json`): a quick round saved after hole 1; the page was
+  reloaded; the menu offered "Resume round" first; the round continued at hole 2 and finished
+  (33, -3); the save then held the round in history and no round in progress.
+- Real-time play: not available. A static site has no server to relay live turns. Behind
+  `?online` the main menu shows "Online play (experimental)", which explains this and points
+  to challenge links and pass and play.

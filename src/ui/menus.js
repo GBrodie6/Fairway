@@ -141,6 +141,15 @@ export function installMenus(app, ui) {
     );
   }));
 
+  // ---------- real-time play (behind ?online only) ----------
+  // A static site has no server to relay live turns, so this build does not offer it. The
+  // flag exists so the menu entry and its explanation can be reviewed.
+  if (app.params.online) screens.register('online', () => screens.show('online', () => sheet('',
+    h('h2', { class: 'h', text: 'Online play' }),
+    h('p', { class: 'muted', text: 'Playing live against someone on another device needs a server to pass turns between you, and this version of the game is a static site with no server. It is switched off.' }),
+    h('p', { class: 'muted', text: 'You can still play friends two ways: a challenge link (pause, then Share this round), where each of you plays the same holes in the same wind and the scores travel inside the link, or pass and play on one device.' }),
+    h('div', { class: 'grid2' }, back(), btn('Pass and play', () => screens.registry.passplay(), 'btn primary')))));
+
   // ---------- challenge links (async multiplayer) ----------
   async function share(url, title) {
     try { if (navigator.share) { await navigator.share({ title, url }); return 'shared'; } } catch { /* cancelled */ }

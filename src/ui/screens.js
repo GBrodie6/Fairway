@@ -65,6 +65,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
       h('div', { class: 'grid2' },
         btn('Driving range', () => startRange()),
         screens.registry.passplay ? btn('Pass and play', () => screens.registry.passplay()) : btn('Two players', () => screens.setup({ players: 2 }))),
+      screens.registry.online ? btn('Online play (experimental)', () => screens.registry.online()) : null,
       h('div', { class: 'grid2' },
         screens.registry.stats ? btn('Stats and history', () => screens.registry.stats()) : null,
         screens.registry.settings ? btn('Settings', () => screens.registry.settings()) : null),
