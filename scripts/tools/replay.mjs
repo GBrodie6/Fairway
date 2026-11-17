@@ -13,19 +13,19 @@ const server = await serveStatic(path.resolve('dist'));
 const { browser } = await launchBrowser();
 const ctx = await browser.newContext({ viewport: { width: 844, height: 390 }, deviceScaleFactor: 1 });
 const page = await ctx.newPage();
-ctx.setDefaultTimeout(180000);
+ctx.setDefaultTimeout(600000);
 const errors = trackErrors(page);
 const pointer = await createPointer(page, {});
 const shot = (n) => page.screenshot({ path: `${prefix}-${n}.png` });
 const tapText = async (t) => {
-  const r = await page.evaluate((x) => { const b = [...document.querySelectorAll('#ui button')].find((e) => e.textContent.trim() === x && e.offsetParent !== null); if (!b) return null; const q = b.getBoundingClientRect(); return { x: q.x + q.width / 2, y: q.y + q.height / 2 }; }, t);
+  const r = await page.evaluate((x) => { const b = [...document.querySelectorAll('#ui button')].find((e) => e.textContent.trim() === x && e.offsetParent !== null); if (!b) return null; b.scrollIntoView({ block: 'center' }); const q = b.getBoundingClientRect(); return { x: q.x + q.width / 2, y: q.y + q.height / 2 }; }, t);
   if (!r) throw new Error(`no button ${t}`);
   await pointer.tap(r.x, r.y); await page.waitForTimeout(250);
 };
 const out = {};
 try {
   // Par 3 (parkland hole 4) so the second shot is usually a putt.
-  await page.goto(`${server.url}/?mode=stroke&course=parkland&hole=4&holes=1&tier=medium&scale=0.7&timescale=4&bot=1&seed=21`, { waitUntil: 'load' });
+  await page.goto(`${server.url}/?mode=stroke&course=parkland&hole=4&holes=1&tier=low&scale=0.6&timescale=4&bot=1&seed=21`, { waitUntil: 'load' });
   await page.waitForFunction(() => window.__fw && window.__fw.ready, null);
   if ((await waitPhase(page, ['intro', 'aim'])) === 'intro') await clickSel(page, pointer, '.intro-skip');
   await waitPhase(page, 'aim');
@@ -35,8 +35,11 @@ try {
   out.afterTee = await page.evaluate(() => ({ lie: window.__fw.gameView().lieName, dist: +window.__fw.gameView().distToPin.toFixed(1), canReplay: window.__fw.gameView().canReplay }));
   // Replay: the real button, then each angle from the replay bar.
   await clickSel(page, pointer, '[aria-label="Replay the last shot"]');
+  await page.waitForFunction(() => { const b = document.querySelector('.replaybar'); return b && !b.classList.contains('hidden'); });
   out.replayPhase = await page.evaluate(() => window.__fw.phase());
   for (const a of ['Follow', 'Landing', 'Side', 'High']) {
+    // A replay that finished on its own returns to aim; start it again from the button.
+    if ((await page.evaluate(() => window.__fw.phase())) !== 'replay') { await clickSel(page, pointer, '[aria-label="Replay the last shot"]'); await page.waitForFunction(() => { const b = document.querySelector('.replaybar'); return b && !b.classList.contains('hidden'); }); }
     await tapText(a);
     await page.waitForTimeout(1200);
     await shot(`angle-${a.toLowerCase()}`);

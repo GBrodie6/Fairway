@@ -58,11 +58,12 @@ export const TOD = Object.freeze({
     id: 'night', label: 'Night', night: true,
     // The "sun" is the moon here: cool, dim, high.
     sunElev: 48, sunAz: 150, sunColor: [0.62, 0.74, 1.0], sunIntensity: 0.22,
-    skyTint: [0.5, 0.62, 1.0], turbidity: 2.0, rayleigh: 1.0, mie: 0.004,
+    skyTint: [0.62, 0.7, 0.95], turbidity: 2.0, rayleigh: 1.0, mie: 0.004,
     ambient: 0.5, envIntensity: 0.5,
     fog: { density: 0.0004, haze: 0.00004, height: 40, color: [0.1, 0.14, 0.24], max: 0.7 },
     cloudCover: 0.25, cloudColor: [0.5, 0.58, 0.8], dew: 0.3, shafts: 0, stars: 1,
-    grade: { contrast: 1.06, saturation: 0.82, tint: [0.92, 0.98, 1.1] },
+    // Under moonlight the eye loses color (rod vision): strongly desaturated and shifted blue.
+    grade: { contrast: 1.08, saturation: 0.48, tint: [0.88, 0.97, 1.14] },
     // Moonlight should read as night: a clearly darker frame with the ball and flag still legible.
     targetLuma: 62, exposure: [0.5, 60], hdri: 'night',
   },

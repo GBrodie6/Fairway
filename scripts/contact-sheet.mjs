@@ -41,6 +41,7 @@ async function sheet(files, labels, cols, out) {
 for (const course of courses) {
   // 1. Every time-of-day preset from the address view, medium tier.
   const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
+  ctx.setDefaultTimeout(240000); ctx.setDefaultNavigationTimeout(240000);
   const page = await ctx.newPage();
   const errors = trackErrors(page);
   await page.goto(`${server.url}/?course=${course}&tod=${TOD_ORDER[0]}&tier=medium&hole=1&smoke=1`, { waitUntil: 'load', timeout: 180000 });
@@ -65,7 +66,11 @@ for (const course of courses) {
   // 2. Close-ups at every tier, golden hour where the light is hardest, morning for the rest.
   const cf = [], cl = [];
   for (const tier of tiers) {
+    // Resume: a tier whose close-ups all exist is not rendered again.
+    const have = CLOSE.map((v) => path.join(outDir, 'raw', `${course}-${tier}-${v}.png`));
+    if (!args.fresh && have.every((f) => existsSync(f))) { for (let k = 0; k < CLOSE.length; k++) { cf.push(have[k]); cl.push(`${course} ${tier} ${CLOSE[k]}`); } console.log(course, tier, 'close-ups reused'); continue; }
     const c2 = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
+    c2.setDefaultTimeout(240000); c2.setDefaultNavigationTimeout(240000);
     const p2 = await c2.newPage();
     await p2.goto(`${server.url}/?course=${course}&tod=morning&tier=${tier}&hole=1&smoke=1`, { waitUntil: 'load', timeout: 180000 });
     await p2.waitForFunction(() => window.__fw && window.__fw.ready, null, { timeout: 240000 });

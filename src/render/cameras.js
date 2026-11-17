@@ -96,8 +96,21 @@ export function createCameraRig(world, engine) {
       const mx = (a.x + l.x) / 2, mz = (a.z + l.z) / 2;
       const dx = l.x - a.x, dz = l.z - a.z, len = Math.hypot(dx, dz) || 1;
       const off = clamp(len * 0.75, 12, 190);
-      const cx = mx - (dz / len) * off, cz = mz + (dx / len) * off;
-      dPos.set(cx, (t.inBounds(cx, cz, 1) ? H(cx, cz) : a.y) + 4 + (c.apex || 0) * 0.35, cz);
+      // Pick the side and distance with the fewest trees, so the camera is not inside the
+      // tree line, and lift it over any canopy that remains between it and the ball.
+      if (!c.sidePick) {
+        let best = null;
+        for (const sgn of [1, -1]) for (const f of [1, 0.75, 0.5, 0.3]) {
+          const o = off * f, px = mx - (dz / len) * o * sgn, pz = mz + (dx / len) * o * sgn;
+          let dens = 0;
+          for (let k = 0; k <= 4; k++) { const q = k / 4, sx = mx + (px - mx) * q, sz = mz + (pz - mz) * q; if (t.inBounds(sx, sz, 1) && t.treeDensityAt) dens += t.treeDensityAt(sx, sz); }
+          const score = dens * 3 - f;
+          if (!best || score < best.score) best = { score, px, pz, dens };
+        }
+        c.sidePick = best;
+      }
+      const cx = c.sidePick.px, cz = c.sidePick.pz;
+      dPos.set(cx, (t.inBounds(cx, cz, 1) ? H(cx, cz) : a.y) + 4 + (c.apex || 0) * 0.35 + (c.sidePick.dens > 0.3 ? 16 : 0), cz);
       dTgt.set(b.x, b.y, b.z);
       rig.posRate = 30; rig.tgtRate = 6;
     } else if (rig.mode === 'high') {

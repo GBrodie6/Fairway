@@ -109,7 +109,9 @@ void main() {
   vec3 sky = (Lin + vec3(0.1) * Fex) * 0.04 + vec3(0.0, 0.0003, 0.00075);
   sky = pow(max(sky, vec3(0.0)), vec3(1.0 / 2.15)) * uTint * uGain;
   // By moonlight the same scattering applies at a tiny fraction of the energy.
-  sky = mix(sky, sky * vec3(0.009, 0.013, 0.024), uNight);
+  // Moonlit sky: dark and only slightly blue. (0.009, 0.013, 0.024) read as royal blue once
+  // auto exposure lifted the night frame.
+  sky = mix(sky, sky * vec3(0.010, 0.0125, 0.017), uNight);
 
   // Haze band: the sky meets the fogged land at the horizon in the same color.
   float hz = pow(1.0 - clamp(elev, 0.0, 1.0), 9.0) * uHaze;

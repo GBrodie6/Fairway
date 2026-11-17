@@ -147,7 +147,7 @@ export function createHud(root, { game, settings, haptic, actions }) {
     if (replaying) for (const b of angleBtns) b.setAttribute('aria-pressed', b.dataset.angle === v.replayAngle ? 'true' : 'false');
     bottom.style.visibility = replaying ? 'hidden' : 'visible';
     aimrow.classList.toggle('hidden', !aiming);
-    controls.style.visibility = v.human ? 'visible' : 'hidden';
+    controls.style.visibility = v.human && v.phase !== 'replay' ? 'visible' : 'hidden';
     skip.classList.toggle('hidden', v.phase !== 'intro');
     const showHud = v.phase !== 'intro' && v.phase !== 'loading' && v.phase !== 'summary' && v.phase !== 'done';
     hud.setVisible(showHud);

@@ -281,6 +281,14 @@ SwiftShader (software rendering), so frame times from it are not representative 
     (about 14 under for 18) and could not be beaten. Measured on parkland holes 1 to 6:
     skill 0.3 about +1.2 per hole, 0.5 about +0.6, 0.8 about -0.2.
 - Tests: 208 plus new UI formatting and map transform tests; all pass.
+- Replay, palettes, reduced motion (`scripts/tools/replay.mjs`, production build, added
+  after the replay bar was built): the replay button entered the replay; Follow, Landing,
+  Side, and High each switched the camera rig; Done returned to aiming. Three defects found
+  and fixed from these frames: the side camera sat inside the tree line (it now picks the
+  side and distance with the fewest trees and lifts over canopy), the club card stayed visible
+  during replays, and changing the color palette rebuilt the putting grid hidden. With reduce
+  motion on, a new round went straight to the shot with no flyover. Frames:
+  `qa/proof/stage6/replay-angles-and-grid-palettes.jpg`.
 - Not verified: feel on a real touch screen and real frame pacing; haptics (headless has no
   vibration); the bot's putt read by dragging overshoots (it applies the aim it reads back,
   so this is a driver accuracy issue, revisited in Stage 15).

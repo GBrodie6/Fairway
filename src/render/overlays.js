@@ -132,7 +132,8 @@ export function createOverlays(world) {
 
   const ov = {
     group, gridTriangles: 0, hazard: null,
-    setPalette(id) { palette = PALETTES[id] || PALETTES.off; if (grid) buildGrid(); },
+    // Rebuilding the grid for a new palette keeps it shown if it was shown.
+    setPalette(id) { palette = PALETTES[id] || PALETTES.off; if (grid) { const vis = grid.visible; buildGrid(); grid.visible = vis; } },
     loadHole() { buildGrid(); ov.hide(); },
     hide() { aimLine.visible = false; puttLine.visible = false; ring.visible = false; if (grid) grid.visible = false; },
     /**
