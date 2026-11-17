@@ -71,8 +71,8 @@ async function boot() {
   loop.add('game', (dt) => app.game.update(dt));
   loop.add('camera', (dt) => { if (app.world.rig.enabled) app.world.rig.update(dt); });
   loop.add('world', (dt, t) => app.world.update(dt, t));
-  loop.add('ui', (dt) => app.ui.update(dt), { profile: false });
-  loop.add('audio', (dt) => app.audio.update(dt, app.world, app.game), { profile: false });
+  loop.add('ui', (dt) => app.ui.update(dt));
+  loop.add('audio', (dt) => app.audio.update(dt, app.world, app.game));
   loop.add('render', (dt, t, realDt) => engine.render(app.world.scene, app.world.camera, t, realDt));
   if (params.debug) {
     app.debug = createDebugOverlay(ui, { engine, loop, getExtra: () => `terrain build ${app.world.buildMs.toFixed(0)} ms  terrain tris ${(app.world.terrainView.triangles / 1000).toFixed(0)}k\ntrees ${app.world.vegetation.counts.trees} (lod0 ${app.world.vegetation.drawn.lod0} lod1 ${app.world.vegetation.drawn.lod1} impostor ${app.world.vegetation.drawn.impostor})  plants ${app.world.vegetation.drawn.small}/${app.world.vegetation.counts.plants}  veg tris ${(app.world.vegetation.triangles / 1000).toFixed(0)}k\n  assets ${(assets.stats.bytes / 1048576).toFixed(1)} MB in ${assets.stats.requests} req` });
@@ -84,6 +84,7 @@ async function boot() {
   // Two frames so the first real image is on screen before the boot veil lifts.
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
   bootEl.classList.add('hide');
+  fw.readyAt = performance.now();
   fw.ready = true;
   // A round can start straight from the URL (used by the QA bot and for shared links),
   // otherwise the main menu shows over the course.

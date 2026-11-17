@@ -6,14 +6,14 @@ Raw downloads live in `asset-src/` and processed files in `public/assets/`. Both
 
 No asset contains a real person's likeness or name, and nothing comes from a commercial game.
 
-Shipped size: **49.54 MB** (textures 26.71 MB, models 12.53 MB, HDRIs 10.30 MB).
+Shipped size: **41.89 MB** (textures 19.06 MB, models 12.53 MB, HDRIs 10.30 MB).
 
 ## PBR texture sets
 
 | Id | Role | Source | Asset | License | Sizes | Shipped |
 | --- | --- | --- | --- | --- | --- | --- |
-| fairway | Closely mown fairway grass | ambientcg | [Grass 005](https://ambientcg.com/view?id=Grass005) | CC0 1.0 | 512, 1024, 2048 | 5.08 MB |
-| green | Tee box and putting green grass | ambientcg | [Grass 008](https://ambientcg.com/view?id=Grass008) | CC0 1.0 | 512, 1024, 2048 | 4.85 MB |
+| fairway | Closely mown fairway grass | ambientcg | [Grass 005](https://ambientcg.com/view?id=Grass005) | CC0 1.0 | 512, 1024 | 1.21 MB |
+| green | Tee box and putting green grass | ambientcg | [Grass 008](https://ambientcg.com/view?id=Grass008) | CC0 1.0 | 512, 1024 | 1.07 MB |
 | rough | Rough grass | ambientcg | [Grass 004](https://ambientcg.com/view?id=Grass004) | CC0 1.0 | 512, 1024 | 1.47 MB |
 | deeprough | Deep rough grass | ambientcg | [Grass 001](https://ambientcg.com/view?id=Grass001) | CC0 1.0 | 512, 1024 | 1.34 MB |
 | fescue | Links fescue rough | polyhaven | [Withered Grass](https://polyhaven.com/a/withered_grass) | CC0 1.0 | 512, 1024 | 1.40 MB |

@@ -178,13 +178,23 @@ export function createScreens(root, { app, game, settings, ui, save }) {
   };
 
   // --- round end ---
+  function headline(r, stand) {
+    const t = stand.totals;
+    if (r.players.length === 1) return `${t[0].strokes}  (${fmtToPar(t[0].toPar)})`;
+    if (r.mode === 'stroke' || r.mode === 'daily') {
+      const order = t.map((x, i) => ({ ...x, i })).sort((a, b) => a.strokes - b.strokes);
+      const margin = order[1].strokes - order[0].strokes;
+      return margin === 0 ? `Tied on ${order[0].strokes}` : `${order[0].name} wins by ${margin}`;
+    }
+    return stand.text;
+  }
   screens.roundEnd = (r) => {
     if (!r) return;
     const stand = standings(r);
     if (screens.onRoundEnd) screens.onRoundEnd(r, stand);
     show('done', () => sheet('wide',
       h('h2', { class: 'h center', text: 'Round complete' }),
-      h('div', { class: 'big', text: r.players.length === 1 ? `${stand.totals[0].strokes}  (${fmtToPar(stand.totals[0].toPar)})` : stand.text }),
+      h('div', { class: 'big', text: headline(r, stand) }),
       h('p', { class: 'muted center', text: courseById(r.courseId).name }),
       scorecardTable(r),
       screens.roundEndExtra ? screens.roundEndExtra() : null,

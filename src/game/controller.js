@@ -170,8 +170,9 @@ export function createGame(app) {
   // Solved once per club or shot-type change (not on every aim drag) and cached.
   function computeIdeal() {
     if (state.club.putter || !state.target) { state.idealPower = 0.5; return; }
-    const chipLike = state.shotType.id === 'chip' || state.target.layup;
-    state.idealPower = solvePower(W().terrain, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aimRef, profile: state.profile }, windAt, state.clock, state.target, chipLike ? 'end' : 'carry');
+    // Solve for where the ball stops, not where it lands: with only part of the roll allowed
+    // for, approaches to firm or downhill greens ran 20 yards past the pin in play tests.
+    state.idealPower = solvePower(W().terrain, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aimRef, profile: state.profile }, windAt, state.clock, state.target, 'end');
   }
   game.suggestedPower = () => {
     if (state.club.putter) return state.putt ? state.putt.idealPower : 0.5;

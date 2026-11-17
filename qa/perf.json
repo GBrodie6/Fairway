@@ -1,27 +1,60 @@
 {
- "when": "2026-11-17T02:30:42.748Z",
+ "when": "2026-11-17T13:29:35.023Z",
  "software": true,
  "note": "SwiftShader software rendering. Counts, CPU subsystem time, and memory are valid; frame time on a real GPU is not measured here.",
  "rows": [
   {
    "course": "parkland",
    "tier": "low",
-   "readyMs": 5406,
-   "settledMs": 10149,
+   "readyMs": 4229,
+   "settledMs": 10137,
+   "network": {
+    "firstPaint": {
+     "total": 9083753,
+     "requests": 45,
+     "app": 1057184,
+     "hdri": 1415476,
+     "textures": 2414900,
+     "models": 4194048
+    },
+    "polledAtReady": {
+     "total": 9085466,
+     "requests": 46,
+     "app": 1059329,
+     "textures": 2414900,
+     "hdri": 1415476,
+     "models": 4194048,
+     "other": 1713
+    },
+    "settled": {
+     "total": 9120230,
+     "requests": 47,
+     "app": 1059329,
+     "textures": 2449664,
+     "hdri": 1415476,
+     "models": 4194048,
+     "other": 1713
+    },
+    "notFound": []
+   },
    "consoleErrors": 0,
    "before": {
-    "calls": 26,
+    "calls": 27,
     "triangles": 33025
    },
    "after": {
-    "calls": 59,
+    "calls": 60,
     "triangles": 214194
    },
    "perSystem": {
-    "world": 0.475421019608566,
-    "render": 43.25123893110895
+    "game": 0.0026588814342449,
+    "camera": 0.0012157665526993187,
+    "world": 0.5219265499937723,
+    "ui": 0.021212915413794626,
+    "audio": 0.003625607824787753,
+    "render": 34.49363492798115
    },
-   "cpuAvg": 254.83599728591176,
+   "cpuAvg": 221.5846615429908,
    "memory": {
     "renderTargets": 2764800,
     "textures": 35474260.080000006
@@ -50,28 +83,61 @@
    "crowd": 60,
    "assetBytes": 8059188,
    "assetRequests": 41,
-   "buildMs": 289.1000000000058,
+   "buildMs": 234,
    "withinBudget": true
   },
   {
    "course": "parkland",
    "tier": "medium",
-   "readyMs": 8053,
-   "settledMs": 17348,
+   "readyMs": 6876,
+   "settledMs": 15906,
+   "network": {
+    "firstPaint": {
+     "total": 9083753,
+     "requests": 45,
+     "app": 1057184,
+     "hdri": 1415476,
+     "textures": 2414900,
+     "models": 4194048
+    },
+    "polledAtReady": {
+     "total": 9085466,
+     "requests": 46,
+     "app": 1059329,
+     "hdri": 1415476,
+     "textures": 2414900,
+     "models": 4194048,
+     "other": 1713
+    },
+    "settled": {
+     "total": 9120230,
+     "requests": 47,
+     "app": 1059329,
+     "hdri": 1415476,
+     "textures": 2449664,
+     "models": 4194048,
+     "other": 1713
+    },
+    "notFound": []
+   },
    "consoleErrors": 0,
    "before": {
-    "calls": 36,
+    "calls": 37,
     "triangles": 62334
    },
    "after": {
-    "calls": 78,
+    "calls": 79,
     "triangles": 421481
    },
    "perSystem": {
-    "world": 0.6503196491127549,
-    "render": 59.78281430416133
+    "game": 0.011447407788492557,
+    "camera": 0,
+    "world": 0.5357097454087472,
+    "ui": 0.02028790937823493,
+    "audio": 0,
+    "render": 58.19631071793636
    },
-   "cpuAvg": 283.1149798109055,
+   "cpuAvg": 267.5934659390679,
    "memory": {
     "renderTargets": 7676640,
     "textures": 35474260.080000006
@@ -100,28 +166,61 @@
    "crowd": 140,
    "assetBytes": 8059188,
    "assetRequests": 41,
-   "buildMs": 261.69999999998254,
+   "buildMs": 261.79999999981374,
    "withinBudget": true
   },
   {
    "course": "parkland",
    "tier": "high",
-   "readyMs": 10747,
-   "settledMs": 29377,
+   "readyMs": 9171,
+   "settledMs": 22679,
+   "network": {
+    "firstPaint": {
+     "total": 15837207,
+     "requests": 45,
+     "app": 1057184,
+     "hdri": 1415476,
+     "textures": 9168354,
+     "models": 4194048
+    },
+    "polledAtReady": {
+     "total": 15838920,
+     "requests": 46,
+     "app": 1059329,
+     "hdri": 1415476,
+     "textures": 9168354,
+     "models": 4194048,
+     "other": 1713
+    },
+    "settled": {
+     "total": 19374084,
+     "requests": 64,
+     "app": 1059329,
+     "hdri": 1415476,
+     "textures": 9203118,
+     "models": 7694448,
+     "other": 1713
+    },
+    "notFound": []
+   },
    "consoleErrors": 0,
    "before": {
-    "calls": 41,
+    "calls": 42,
     "triangles": 66104
    },
    "after": {
-    "calls": 106,
+    "calls": 107,
     "triangles": 928249
    },
    "perSystem": {
-    "world": 0.7087877813063659,
-    "render": 145.07168494248197
+    "game": 0.00720964120307531,
+    "camera": 0,
+    "world": 0.8210975439957597,
+    "ui": 0.02976220899498442,
+    "audio": 0,
+    "render": 110.45531047980292
    },
-   "cpuAvg": 435.6476847746452,
+   "cpuAvg": 489.6559835069602,
    "memory": {
     "renderTargets": 14243040,
     "textures": 119150624.88000001
@@ -150,28 +249,61 @@
    "crowd": 260,
    "assetBytes": 18313042,
    "assetRequests": 58,
-   "buildMs": 295.5,
+   "buildMs": 265.59999999962747,
    "withinBudget": true
   },
   {
    "course": "parkland",
    "tier": "ultra",
-   "readyMs": 12553,
-   "settledMs": 35061,
+   "readyMs": 10362,
+   "settledMs": 32751,
+   "network": {
+    "firstPaint": {
+     "total": 15837207,
+     "requests": 45,
+     "app": 1057184,
+     "hdri": 1415476,
+     "textures": 9168354,
+     "models": 4194048
+    },
+    "polledAtReady": {
+     "total": 15838920,
+     "requests": 46,
+     "app": 1059329,
+     "hdri": 1415476,
+     "textures": 9168354,
+     "models": 4194048,
+     "other": 1713
+    },
+    "settled": {
+     "total": 19374084,
+     "requests": 64,
+     "app": 1059329,
+     "hdri": 1415476,
+     "textures": 9203118,
+     "models": 7694448,
+     "other": 1713
+    },
+    "notFound": []
+   },
    "consoleErrors": 0,
    "before": {
-    "calls": 44,
+    "calls": 45,
     "triangles": 91060
    },
    "after": {
-    "calls": 111,
+    "calls": 112,
     "triangles": 1591540
    },
    "perSystem": {
-    "world": 1.4500486021153853,
-    "render": 219.5549017609797
+    "game": 0.01564722728778351,
+    "camera": 0,
+    "world": 0.6963563431393226,
+    "ui": 0.05491992650511321,
+    "audio": 0.0013508517252214653,
+    "render": 208.73810504258978
    },
-   "cpuAvg": 699.2680735006971,
+   "cpuAvg": 372.35386432862015,
    "memory": {
     "renderTargets": 14243040,
     "textures": 119150624.88000001
@@ -200,7 +332,7 @@
    "crowd": 278,
    "assetBytes": 18313042,
    "assetRequests": 58,
-   "buildMs": 303.3999999999651,
+   "buildMs": 258.20000000018626,
    "withinBudget": true
   }
  ]

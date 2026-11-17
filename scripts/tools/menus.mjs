@@ -87,10 +87,11 @@ try {
   const link = await page.$eval('.sheet input[aria-label="Challenge link"]', (e) => e.value);
   await shot('share');
   const p3 = await ctx.newPage();
-  await p3.goto(link, { waitUntil: 'load', timeout: 180000 });
+  // The dev server needs the same test parameters the rest of this run uses.
+  await p3.goto(link.replace('/#', '/?tier=low&noassets#'), { waitUntil: 'load', timeout: 180000 });
   await p3.waitForFunction(() => window.__fw && window.__fw.ready, null, { timeout: 240000 });
   await p3.waitForTimeout(500);
-  console.log('shared link', link.length, 'chars;', await p3.$eval('.sheet', (e) => e.textContent.slice(0, 140)));
+  console.log('shared link', link.slice(0, 40) + '...', link.length, 'chars;', await p3.$eval('.sheet', (e) => e.textContent.slice(0, 140)));
   await p3.screenshot({ path: `${prefix}-shared-open.png` });
   await p3.close();
 } catch (e) { console.log('FAILED', e.message.split('\n')[0]); await shot('failed').catch(() => {}); }

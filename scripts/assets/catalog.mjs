@@ -10,11 +10,13 @@
 
 export const USER_AGENT = 'fairway-next-asset-pipeline/0.1';
 
-// sizes: resolutions shipped. 2048 is only shipped for the surfaces the camera sits on.
+// sizes: resolutions shipped. 2048 was dropped in Stage 11: at 1024 the fairway and green
+// already give about one texel per pixel at the closest putting camera on a 1080p screen, and
+// no tier sampled the 2048 files (8 MB shipped for nothing).
 // flatten: remove large-scale brightness variation so tiling is less visible.
 export const TEXTURES = [
-  { id: 'fairway', role: 'Closely mown fairway grass', source: 'ambientcg', asset: 'Grass005', alt: { source: 'ambientcg', asset: 'Grass006' }, sizes: [512, 1024, 2048], flatten: 0.8, scale: 2.2, fallback: { color: [0.36, 0.55, 0.2], rough: 0.9, grain: 0.5 } },
-  { id: 'green', role: 'Tee box and putting green grass', source: 'ambientcg', asset: 'Grass008', alt: { source: 'ambientcg', asset: 'Grass007' }, sizes: [512, 1024, 2048], flatten: 0.9, scale: 1.6, fallback: { color: [0.4, 0.6, 0.22], rough: 0.88, grain: 0.3 } },
+  { id: 'fairway', role: 'Closely mown fairway grass', source: 'ambientcg', asset: 'Grass005', alt: { source: 'ambientcg', asset: 'Grass006' }, sizes: [512, 1024], flatten: 0.8, scale: 2.2, fallback: { color: [0.36, 0.55, 0.2], rough: 0.9, grain: 0.5 } },
+  { id: 'green', role: 'Tee box and putting green grass', source: 'ambientcg', asset: 'Grass008', alt: { source: 'ambientcg', asset: 'Grass007' }, sizes: [512, 1024], flatten: 0.9, scale: 1.6, fallback: { color: [0.4, 0.6, 0.22], rough: 0.88, grain: 0.3 } },
   { id: 'rough', role: 'Rough grass', source: 'ambientcg', asset: 'Grass004', alt: { source: 'ambientcg', asset: 'Grass003' }, sizes: [512, 1024], flatten: 0.7, scale: 2.6, fallback: { color: [0.3, 0.45, 0.16], rough: 0.95, grain: 0.8 } },
   { id: 'deeprough', role: 'Deep rough grass', source: 'ambientcg', asset: 'Grass001', alt: { source: 'ambientcg', asset: 'Grass002' }, sizes: [512, 1024], flatten: 0.6, scale: 3.0, fallback: { color: [0.2, 0.34, 0.12], rough: 0.97, grain: 1.0 } },
   { id: 'fescue', role: 'Links fescue rough', source: 'polyhaven', asset: 'withered_grass', alt: { source: 'polyhaven', asset: 'sparse_grass' }, sizes: [512, 1024], flatten: 0.6, scale: 3.0, fallback: { color: [0.5, 0.46, 0.22], rough: 0.96, grain: 1.0 } },

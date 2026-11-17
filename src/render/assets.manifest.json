@@ -31,14 +31,9 @@
      "a": "textures/fairway_a_1024.webp",
      "n": "textures/fairway_n_1024.jpg",
      "bytes": 1049220
-    },
-    "2048": {
-     "a": "textures/fairway_a_2048.webp",
-     "n": "textures/fairway_n_2048.jpg",
-     "bytes": 4060917
     }
    },
-   "bytes": 5326669
+   "bytes": 1265752
   },
   "green": {
    "role": "Tee box and putting green grass",
@@ -70,14 +65,9 @@
      "a": "textures/green_a_1024.webp",
      "n": "textures/green_n_1024.jpg",
      "bytes": 939803
-    },
-    "2048": {
-     "a": "textures/green_a_2048.webp",
-     "n": "textures/green_n_2048.jpg",
-     "bytes": 3963219
     }
    },
-   "bytes": 5085971
+   "bytes": 1122752
   },
   "rough": {
    "role": "Rough grass",
@@ -2472,11 +2462,11 @@
   }
  },
  "totals": {
-  "textures": 28010486,
+  "textures": 19986350,
   "models": 13136828,
   "hdris": 10801586,
-  "shippedBytes": 51948900,
-  "sourceBytes": 1588582977
+  "shippedBytes": 43924764,
+  "sourceBytes": 1588582352
  },
- "generated": "2026-11-16T22:41:19.536Z"
+ "generated": "2026-11-17T13:34:08.691Z"
 }

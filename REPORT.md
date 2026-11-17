@@ -328,3 +328,150 @@ SwiftShader (software rendering), so frame times from it are not representative 
   - Screenshots: `qa/proof/stage8/`.
 - Not verified: real controllers, real vibration, thumb reach on physical phones of
   different sizes, and how the stick feels at 120 Hz.
+
+## Stage 9: game modes and career
+
+- Modes: quick round (9 or 18 holes; stroke, match, skins, closest to the pin; optional
+  computer rival), driving range, daily challenge, pass and play, challenge links (Stage 12),
+  and a career. Rounds save after every hole and can be resumed from the main menu.
+- `game/career.js` (pure functions): golfer creation, five attributes (50 is the neutral
+  golfer and gives exactly the base physics profile, so the calibrated carry ladder is
+  untouched for a new player), equipment with a gain and a cost on every non-standard item and
+  unlocks by level, XP and levels with three attribute points per level, a season of nine
+  events in three tiers (club series of 9 holes, regional and championship of 18) with
+  qualification (top three, or any event winner, move up; a failed tier is replayed next
+  season), eleven invented rivals with persistent skill, form, and wins, ranking points, and
+  a seeded statistical model for the rest of the field.
+- The rival model was fitted to the planner's own AI on real holes (parkland 1 to 6, three
+  seeds per skill) and a test keeps them within 0.35 strokes per hole of each other.
+- `game/save.js`: versioned save (v3) with step-by-step migrations from v1 and v2, validation
+  of every field (a corrupt, future, or tampered save falls back cleanly), history of the last
+  100 rounds, aggregate stats (scoring, putts, fairways, greens in regulation, birdies, longest
+  drive), the daily challenge's best score and attempts per day, twelve achievements, and the
+  resumable round.
+- Tests: `tests/career.test.js` (16) and the round rules in `tests/game.test.js`.
+- Browser evidence, the QA bot tapping real buttons on the production build
+  (`qa/bot/career-landscape.json`): Career, Begin, Play event; nine holes of the Spring Medal
+  at Saltmarrow Links against a computer rival who played visible turns (the rival shot 41,
+  +5, including an 8 on a par 5); the bot shot 34 (-2) and won. The save afterwards showed
+  level 2, 209 XP, 3 points to spend, the event result (1st of 8), the round in history, and
+  four achievements (first round, birdie, under par, career win), and no round in progress.
+- Difficulty note from the bots: a player who pulls exactly to the green power mark controls
+  distance almost perfectly, so the bot scores under par. That suits a calm game; a "Power
+  guide" setting now turns the mark off for a harder game.
+
+## Stage 11: performance
+
+Method: `npm run perf` on the production build, headless Chrome, SwiftShader, parkland hole 1
+at midday, 640x360, a fresh browser context per run (no cache, no service worker). Draw calls
+and triangles from `renderer.info`, CPU time per system from the game loop's own timers.
+Frame time on a real GPU was not measured: SwiftShader rasterizes on the CPU inside the
+render call, so its render time says nothing about a phone or a laptop GPU.
+
+| Tier | Draw calls | Triangles | Budget | Texture MB (GPU) | Render targets MB | JavaScript per frame | SwiftShader render |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| low | 60 | 214k | 140 / 220k | 34 | 3 | 0.55 ms | 34 ms |
+| medium | 79 | 421k | 220 / 500k | 34 | 7 | 0.57 ms | 58 ms |
+| high | 107 | 928k | 320 / 1,100k | 114 | 14 | 0.86 ms | 110 ms |
+| ultra | 112 | 1,592k | 420 / 2,000k | 114 | 14 | 0.77 ms | 209 ms |
+
+"JavaScript per frame" is the game, camera, world (vegetation LOD, grass, water, sky, props),
+UI, and audio systems together: under 1 ms on this machine at every tier, so the CPU side
+leaves the whole frame budget to the GPU.
+
+Download size (build output 42 MB after the change below):
+
+| Tier | Bytes before the first frame, 20 Mbps link | First frame at | Everything for the hole |
+| --- | --- | --- | --- |
+| low | 5.6 MB (app 1.0, tree models 4.0, textures 0.6) | 4.0 s | 8.7 MB, settled at 8.9 s |
+| high | 3.6 MB | 2.8 s | 18.5 MB, settled at 25.9 s |
+
+The first frame needs the app and the trees' low-detail models; terrain textures, high-detail
+tree models, and the HDRI stream in after it and cross-fade in. Other courses' assets load
+only when that course is played. Target "first load under 10 MB": met on every tier. Target
+"total shipped under 60 MB": met (about 43 MB).
+
+- Change: the 2048 px fairway and green textures (8 MB) were shipped but no tier used them.
+  At 1024 px they give about 465 texels per meter, about one texel per pixel at the closest
+  putting camera on a 1080p screen, so 2048 was dropped from the asset catalog instead of
+  adding a second texture array to the terrain shader.
+- Change: the putt read is solved once per ball position (it had been solved on every aim
+  change, about 130 ms each).
+- Targets not verifiable here: 60 fps on a mid-range laptop at high and 30 fps on a phone at
+  low. The counts above sit inside the per-tier budgets that were set for those targets, and
+  the CPU side is under 1 ms, but only a real device can confirm the frame rate.
+
+## Stage 13: PWA and iOS packaging
+
+- `manifest.webmanifest` with procedural icons (including maskable ones), standalone display,
+  theme colors; iOS meta tags in `index.html`.
+- Service worker (`src/sw/sw-template.js`, written into `dist/sw.js` at build time with the
+  exact list of files in that build): the app shell is precached on install; game assets are
+  cached the first time they load, so a hole played once can be played offline; old shells
+  and assets from an older asset build are dropped on activation. Every asset URL now carries
+  the asset build's stamp (`?v=`), so the host can cache them as immutable. The worker is not
+  registered in QA runs (`smoke`, `bot`) so those always measure a cold load.
+- Evidence (`scripts/tools/offline.mjs`): after one online visit the worker was active and
+  controlling the page with 10 shell files and 41 game assets cached. With the network cut,
+  a reload booted, sent zero requests to the server, rendered the course with its HDRI
+  lighting from the cache (luma 148.6, no clipping), and showed the main menu, with no
+  console errors.
+- iOS: `capacitor.config.json` and `IOS.md` (prerequisites, build and sync commands, Xcode
+  settings, behavior inside the app, privacy answers, submission steps, and what to check on
+  a real phone), and a 1024 px opaque App Store icon (`ios-assets/AppIcon-1024.png`). Not built:
+  an iOS build needs a Mac with Xcode and an Apple Developer account, which this Linux
+  machine does not have. Capacitor itself was not installed.
+
+## Stage 10: interface, settings, accessibility, audio
+
+- Phone-first HUD (`ui/hud.js`, `ui/styles.css`): hole card, score pill, distance to the
+  pin with elevation, wind arrow relative to the aim with a plain label (helping, into, left
+  to right), map and pause buttons, hazard warning, shot result toasts, club card, shot-type
+  segments, fine-aim row, putt read. Glass panels from CSS design tokens, system fonts, safe
+  area insets, compact rules for short landscape screens and narrow portrait screens.
+- Menus (`ui/screens.js`, `ui/menus.js`): main menu, quick-round setup with course cards,
+  pause, scorecard, hole summary, round end, settings, stats and history with achievements,
+  daily challenge, pass and play, career hub, attributes, equipment, standings, challenge
+  links. Sheets scroll when taller than the screen (a centered sheet had cut off its top).
+- Settings: name, golfer handedness, stick on the left, stick size, power guide, aim
+  sensitivity, units (yards and feet or meters), graphics quality (automatic or a fixed tier,
+  applied live), color vision palette for the green grid and warnings, reduce motion (also
+  follows the operating system), ball spin display, vibration, master, effects, ambience,
+  and music volumes. Verified through real controls: changing units to meters and the stick
+  side updated the game and was persisted (`qa/proof/stage6/menus.jpg`).
+- Accessibility, checked by `tests/a11y.test.js`: body text on the glass is at least 7:1 and
+  secondary text at least 4.5:1 against the worst case (the glass over a pure white or pure
+  black scene; the first check failed at 6.76:1 and the glass was made slightly more opaque);
+  primary buttons are at least 7:1; every button style is at least 44 px tall (two were 38 and
+  40). Every icon button has an `aria-label`; toasts and the putt read are live regions;
+  focus is visible for keyboard users. The putting grid's slope direction is carried by
+  moving pulses, not by color alone.
+- Audio (`audio/audio.js`): every sound is generated (noise and oscillators), so no audio
+  asset needed licensing. Ambience: wind that follows the hole's wind, birds by day,
+  crickets at dusk and night, water when the camera is near it, a crowd murmur on tournament
+  holes. Effects: strikes by club type, landings by surface, the cup, lip-outs, splashes, a
+  swing whoosh, cheers. Optional generative music, off by default.
+- Audio evidence: headless Chrome has no speakers, so each sound was rendered into an
+  OfflineAudioContext and measured (`scripts/tools/menus.mjs`): driver peak 0.47 (RMS
+  0.024), iron 0.51, putt 0.30, landing on the green 0.07, in sand 0.18, splash 0.41, cup
+  0.25, whoosh 0.04; a silent control measured exactly 0. The live context reached the
+  running state after a tap. Nothing about how it sounds was checked by ear.
+
+## Stage 14: hosting and deploy
+
+- Static site, as required. `vercel.json`: immutable caching for `/assets/*` (hashed bundles
+  and version-stamped game assets), revalidation for the HTML, manifest, and service worker,
+  explicit types for `.glb` and `.hdr`, an SPA fallback that leaves missing assets as real
+  404s, and basic security headers. `scripts/lib/serve.mjs` applies the same headers locally,
+  so the smoke test, bot, offline test, and perf runs all exercise them.
+- Vercel limits read from Vercel's documentation on 2026-11-17 (limits page last updated
+  2026-09-16; Hobby and fair-use pages 2026-11-12): CLI uploads 100 MB on Hobby, 15,000 files
+  per CLI deployment, no per-file limit stated, 45-minute builds, 100 GB fast data transfer as
+  a fair-use guideline. This build is about 43 MB in about 170 files. Details in `DEPLOY.md`.
+- Deployment: not done. `vercel --version` reported 65.17.0; `vercel whoami` reported
+  "Logged out."; `vercel --prod` failed with "Error: No existing credentials found." (full
+  output in `DEPLOY.md`). The CLI suggested `vercel deploy --temporary`, which publishes to a
+  public URL outside your account; that was not used. `DEPLOY.md` has the exact commands,
+  including why a Git-connected build would ship without the downloaded assets and how to
+  avoid it. `npm run smoke` can be pointed at a live URL with `FAIRWAY_URL`.
+- README written. No live URL exists to test.

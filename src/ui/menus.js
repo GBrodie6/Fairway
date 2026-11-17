@@ -150,7 +150,7 @@ export function installMenus(app, ui) {
     const r = game.state.round;
     if (!r) return;
     const ch = context && context.kind === 'challenge' ? toCompact(mergeIntoChallenge(context.challenge, save.player.name, r.scores[0])) : makeChallenge(r);
-    const url = challengeUrl(location.href, ch);
+    const url = challengeUrl(location.origin + location.pathname, ch);
     screens.show('share', () => sheet('',
       h('h2', { class: 'h', text: 'Challenge a friend' }),
       h('p', { class: 'muted', text: 'Send this link. Your friend plays the same holes in the same wind, and can send their scores back the same way. Nothing is uploaded: the scores travel inside the link.' }),
@@ -339,7 +339,7 @@ export function installMenus(app, ui) {
     }
     if (context && context.kind === 'challenge' && screens.lastChallenge) {
       const st = challengeStandings(screens.lastChallenge);
-      const url = challengeUrl(location.href, toCompact(screens.lastChallenge));
+      const url = challengeUrl(location.origin + location.pathname, toCompact(screens.lastChallenge));
       return h('div', {}, h('h3', { class: 'h', text: 'Challenge standings' }), h('div', { class: 'list' }, ...st.map((p) => h('div', { class: 'item' }, h('span', { text: p.name }), h('span', { text: `${p.total} (${fmtToPar(p.toPar)})` })))),
         h('div', { style: { marginTop: '8px' } }, btn('Send your scores back', async (ev) => { const how = await share(url, 'Fairway Next challenge'); ev.target.textContent = how === 'copied' ? 'Link copied' : how === 'shared' ? 'Shared' : url; })));
     }
