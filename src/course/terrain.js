@@ -241,8 +241,13 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
     }
   }
 
-  // --- 3. bunkers: a bowl with a raised lip, higher on the face toward the target ---
+  // --- 3. bunkers: a bowl with a raised grassy lip, a steep face toward the target, a
+  // shallow entry on the low side, and an edge broken up by noise. The noisy distance is
+  // used for the height, the mask, and the interior field alike, so the renderer and the
+  // physics see exactly the same bunker.
   const bunkerSdf = new Float32Array(n).fill(1e9);
+  const bunkerIn = new Uint8Array(n); // 0 outside; inside, distance from the edge in wall widths (0..2 -> 0..255)
+  const bseed = (hole.seed | 0) ^ 0x6b3d;
   for (const b of hole.bunkers) {
     let minX = 1e9, maxX = -1e9, minZ = 1e9, maxZ = -1e9, rMin = 1e9;
     for (const c of b.blobs) { minX = Math.min(minX, c.x - c.r); maxX = Math.max(maxX, c.x + c.r); minZ = Math.min(minZ, c.z - c.r); maxZ = Math.max(maxZ, c.z + c.r); rMin = Math.min(rMin, c.r); }
@@ -250,23 +255,36 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
     const ix0 = Math.max(0, Math.floor((minX - pad - x0) / CELL)), ix1 = Math.min(nx - 1, Math.ceil((maxX + pad - x0) / CELL));
     const iz0 = Math.max(0, Math.floor((minZ - pad - z0) / CELL)), iz1 = Math.min(nz - 1, Math.ceil((maxZ + pad - z0) / CELL));
     const cx = b.blobs[0].x, cz = b.blobs[0].z;
+    // Edge noise: one slow wander only. A finer scallop turned into saw teeth on the 1 m grid
+    // around small pot bunkers.
+    const rough = Math.min(0.85, rMin * 0.17);
     for (let iz = iz0; iz <= iz1; iz++) for (let ix = ix0; ix <= ix1; ix++) {
       const x = x0 + ix * CELL, z = z0 + iz * CELL, k = iz * nx + ix;
-      const d = blobSdf(b.blobs, x, z, 1.6);
+      const d0 = blobSdf(b.blobs, x, z, 1.6);
+      // Noise-broken boundary: a slow wander plus a finer scallop.
+      const d = d0 + (valueNoise2(x * 0.21, z * 0.21, bseed) - 0.5) * rough * 2.2;
       if (d < bunkerSdf[k]) bunkerSdf[k] = d;
       if (d > pad) continue;
       // Which way this point faces from the bunker center, relative to the high face.
       const fx = x - cx, fz = z - cz, fl = Math.hypot(fx, fz) || 1;
       const face = clamp((fx * b.faceX + fz * b.faceZ) / fl, -1, 1);
+      const hi = face * 0.5 + 0.5; // 1 on the high face, 0 on the low entry side
+      // The wall is narrow (steep) under the high face and wide (a walk-in slope) opposite.
+      // (At least 1.25 m: a near-vertical face on the 1 m grid breaks into notches.)
+      const wallW = Math.max(1.25, rMin * (0.66 - 0.3 * hi));
       if (d < 0) {
-        const inner = clamp(-d / (rMin * 0.62), 0, 1);
-        // Steeper wall under the high face, shallow entry on the low side.
+        const inner = clamp(-d / wallW, 0, 1);
         const wall = inner * inner * (3 - 2 * inner);
-        height[k] -= b.depth * wall * (1 - 0.18 * (face * 0.5 + 0.5) * (1 - inner));
+        // A floor that dishes slightly toward the low side, so the bowl is not a flat plate.
+        const dish = 1 - 0.12 * (1 - hi) * inner;
+        height[k] -= b.depth * wall * dish;
+        const v = Math.round(clamp(-d / wallW, 0, 2) * 127.5);
+        if (v > bunkerIn[k]) bunkerIn[k] = v;
       }
-      const lip = b.lip * (0.45 + 0.55 * (face * 0.5 + 0.5));
-      const ring = (d - 0.9) / 1.1;
-      if (ring > -2.2 && ring < 3) height[k] += lip * Math.exp(-ring * ring);
+      // Grassy lip: a crest just outside the sand, highest above the face.
+      const lip = b.lip * (0.4 + 0.6 * hi);
+      const ring = (d - 0.55) / 0.8;
+      if (ring > -2.2 && ring < 3.5) height[k] += lip * Math.exp(-ring * ring);
     }
   }
 
@@ -522,7 +540,7 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
   const pin = pins[((pi % pins.length) + pins.length) % pins.length];
   const terrain = {
     course, hole, cell: CELL, x0, z0, nx, nz, maxX, maxZ,
-    height, normalX, normalZ, slope, masks, trees, waterLevel, nearLevel, bodyId, sField, tField, outside,
+    height, normalX, normalZ, slope, masks, trees, bunkerIn, waterLevel, nearLevel, bodyId, sField, tField, outside,
     bodies, macro, pin: { x: pin.x, z: pin.z }, pins: pins.map((p) => ({ x: p.x, z: p.z })), lateralAt, seaDistAt,
     heightAt, normalAt, surfaceAt, groundSurfaceAt, maskAt, isWater, waterLevelAt, inBounds, isOutOfBounds,
     bounds: { minX: x0 + 6, maxX: maxX - 6, minZ: z0 + 6, maxZ: maxZ - 6 },

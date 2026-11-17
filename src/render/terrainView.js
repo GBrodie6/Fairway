@@ -26,7 +26,7 @@ function dataTex(data, w, h) {
 }
 
 export function buildTerrainTextures(terrain) {
-  const { nx, nz, masks, sField, tField, normalX, normalZ, trees } = terrain;
+  const { nx, nz, masks, sField, tField, normalX, normalZ, trees, bunkerIn } = terrain;
   const n = nx * nz;
   const pack = (a, b, c, d) => {
     const out = new Uint8Array(n * 4);
@@ -46,7 +46,7 @@ export function buildTerrainTextures(terrain) {
     aux[i * 4] = Math.round((normalX[i] * 0.5 + 0.5) * 255);
     aux[i * 4 + 1] = Math.round((normalZ[i] * 0.5 + 0.5) * 255);
     aux[i * 4 + 2] = trees[i];
-    aux[i * 4 + 3] = 255;
+    aux[i * 4 + 3] = bunkerIn ? bunkerIn[i] : 0; // bunker interior: distance from the edge in wall widths
   }
   const tex = {
     m1: dataTex(pack(m.deep, m.waste, m.dirt, m.shore), nx, nz),
@@ -129,6 +129,7 @@ const FRAG_MAIN = /* glsl */ `
   vec3 tNormalW = vec3(0.0, 1.0, 0.0);
   float tRough = 0.9;
   float tOcc = 1.0;
+  vec3 tCav = vec3(1.0);
   float tSpec = 0.2;
   vec3 tEmis = vec3(0.0);
   {
@@ -159,6 +160,7 @@ const FRAG_MAIN = /* glsl */ `
     a[5] = smoothstep(0.2, 0.42, slopeO + (nB - 0.5) * 0.12);
     a[6] = 0.0; a[7] = 0.0; a[8] = 0.0; a[9] = 0.0; a[10] = 0.0; a[11] = 0.0; a[12] = 0.0;
     vec4 mow = vec4(0.5);
+    vec4 aux = vec4(0.5, 0.5, 0.0, 0.0);
     float bunkerM = 0.0;
 #else
     vec2 guv = (pw - uGrid.xy + 0.5) * uGrid.zw;
@@ -196,6 +198,7 @@ const FRAG_MAIN = /* glsl */ `
     float rAcc = 0.0;
     float sAcc = 0.0;
     float farK = smoothstep(22.0, 150.0, vdist);
+    float sandMatte = 1.0;
     float detailK = 1.0 - smoothstep(160.0, 420.0, vdist);
     for (int i = 0; i < NS; i++) {
       float w = wgt[i];
@@ -265,16 +268,41 @@ const FRAG_MAIN = /* glsl */ `
       } else if (i == 9) {
         tn *= 0.7;
       } else if (i == 12) {
-        // Raked sand: fine parallel ridges with a slow wander, fading before they alias.
-        vec2 rd = vec2(0.8, 0.6);
-        float ph = dot(pw, rd) / 0.085 + (nA - 0.5) * 22.0 + (nB - 0.5) * 5.0;
-        float fwp = fwidth(ph);
-        float rk = cos(ph * 6.2832) * (1.0 - smoothstep(0.22, 0.6, fwp));
-        tn = tn * 0.6 + rd * rk * 0.3;
-        c *= 1.0 + rk * 0.04;
-        // Damp, compacted sand just inside the lip.
-        float lipIn = smoothstep(0.5, 0.56, bunkerM) * (1.0 - smoothstep(0.6, 0.78, bunkerM));
-        c *= 1.0 - lipIn * 0.2;
+        // Sand. aux.a is the distance in from the edge, in wall widths (0.5 = the foot of the
+        // face where it meets the floor).
+        float inB = aux.a;
+        vec2 across = vec2(-uPlayDir.y, uPlayDir.x);
+        // Raked sand: fine tine marks and broader furrows, both along the line of play, with a
+        // slow wander. Each fades before it would alias.
+        float ph = dot(pw, across) / 0.085 + (nA - 0.5) * 22.0 + (nB - 0.5) * 5.0;
+        float rk = cos(ph * 6.2832) * (1.0 - smoothstep(0.22, 0.6, fwidth(ph)));
+        float ph2 = dot(pw, across) / 0.34 + (nA - 0.5) * 6.0;
+        float rk2 = cos(ph2 * 6.2832) * (1.0 - smoothstep(0.25, 0.65, fwidth(ph2)));
+        // Raking stops short of the face: the wall is smooth and slumped.
+        float rakeK = smoothstep(0.3, 0.5, inB);
+        // Rake strokes come in patches: some sand is freshly raked, some trodden smooth.
+        float stroke = smoothstep(0.25, 0.65, nB) * 0.8 + 0.2;
+        tn = tn * 0.5 + across * (rk * 0.24 + rk2 * 0.12 * stroke) * rakeK;
+        // Grain: one facet per 2 cm, faded as soon as it is smaller than a pixel.
+        vec2 gc = floor(pw * 48.0);
+        float gfade = 1.0 - smoothstep(0.3, 0.8, max(fwidth(pw.x), fwidth(pw.y)) * 48.0);
+        tn += (vec2(tHash(gc), tHash(gc + 5.3)) - 0.5) * 0.5 * gfade;
+        // Sand is never paper white: a warmer, slightly darker tone with patchy dampness.
+        c *= 0.84 * (1.0 + rk * 0.03 + rk2 * 0.02 * rakeK * stroke);
+        c *= 1.0 - 0.07 * smoothstep(0.55, 0.85, nA);
+        // Damp, darker band at the foot of the face, where water collects.
+        float wet = smoothstep(0.34, 0.47, inB) * (1.0 - smoothstep(0.52, 0.72, inB));
+        c *= 1.0 - wet * 0.3;
+        // Damp sand is darker and matte. A glossier band reflected the blue sky and read as
+        // puddles once the albedo was darkened.
+        r = mix(r, 0.9, wet);
+        sandMatte = 1.0 - wet * 0.85;
+        // The cut edge: a thin strip of shadowed soil right under the turf.
+        // Only where the face is steep does the edge show bare soil; the shallow entry side
+        // runs straight from turf to sand.
+        float steep = smoothstep(0.12, 0.38, 1.0 - baseN.y);
+        float cut = smoothstep(0.5, 0.51, bunkerM) * (1.0 - smoothstep(0.52, 0.56, bunkerM)) * steep;
+        c = mix(c, c * vec3(0.42, 0.36, 0.3), cut);
       } else if (i == 4) {
         c *= 0.62;
         r = 0.42;
@@ -286,6 +314,7 @@ const FRAG_MAIN = /* glsl */ `
       // (Measured: at grazing angles toward a low sun, 10 percent of the highlight still
       // equalled the whole diffuse term and read as a white sheen, so grass keeps 3 percent.)
       float sp = (i == 4) ? 0.85 : (i == 12 || i == 8 || i == 5 || i == 3) ? 0.22 : (i == 2 ? 0.1 : 0.03);
+      if (i == 12) sp *= sandMatte;
       tAlbedo += c * w;
       nAcc.xy += tn * w;
       rAcc += r * w;
@@ -297,8 +326,9 @@ const FRAG_MAIN = /* glsl */ `
     tRough = clamp(rAcc, 0.05, 1.0);
     tRough = mix(tRough, 1.0, 0.35 + 0.45 * smoothstep(12.0, 110.0, vdist));
     // Grass lip around a bunker catches the light.
-    float lipOut = smoothstep(0.36, 0.5, bunkerM) * (1.0 - smoothstep(0.5, 0.52, bunkerM));
-    tAlbedo *= 1.0 + lipOut * 0.1;
+    // The grassy lip: a collar of longer, darker grass around the sand.
+    float lipOut = smoothstep(0.34, 0.47, bunkerM) * (1.0 - smoothstep(0.49, 0.505, bunkerM));
+    tAlbedo *= 1.0 - lipOut * 0.12;
     float grassW = wgt[0] + wgt[1] + wgt[6] + wgt[7] + wgt[9] + wgt[10] + wgt[11];
 #ifdef OUTER_LAND
     // Far woodland reads as canopy, and high ground carries snow.
@@ -311,8 +341,15 @@ const FRAG_MAIN = /* glsl */ `
       tRough = mix(tRough, 0.55, sn);
     }
 #else
-    // Ground under dense trees sits in shade beyond the reach of the shadow maps.
+    // Ground under dense trees sits in shade beyond the reach of the shadow maps, and the
+    // foot of a bunker face sees less sky.
     tOcc = 1.0 - canopy * 0.38;
+    // The foot of a bunker face sees less sky. Only sky light is reduced: sunlight is the
+    // shadow map's job, and dimming it too left the blue sky light dominant (bluish sand).
+    float cavity = smoothstep(0.08, 0.42, aux.a) * (1.0 - smoothstep(0.5, 0.95, aux.a));
+    // Sand in shade is lit by the sky and by warm light bounced off the sand around it, so
+    // its shadows read grey rather than sky blue.
+    tCav = mix(vec3(1.0), vec3(1.12, 1.0, 0.8), wgt[12]) * (1.0 - cavity * 0.35 * wgt[12]);
 #endif
     tNormalW = normalize(baseN + vec3(nAcc.x, 0.0, nAcc.y) * 0.85);
 #ifdef USE_DEW
@@ -348,7 +385,7 @@ function patchTerrainShader(shader, uniforms, outer) {
     .replace('#include <map_fragment>', FRAG_MAIN)
     .replace('#include <roughnessmap_fragment>', 'float roughnessFactor = tRough;')
     .replace('#include <normal_fragment_maps>', 'normal = normalize((viewMatrix * vec4(tNormalW, 0.0)).xyz);')
-    .replace('#include <aomap_fragment>', '#include <aomap_fragment>\n  reflectedLight.indirectDiffuse *= tOcc;\n  reflectedLight.directDiffuse *= mix(1.0, tOcc, 0.55);\n  reflectedLight.directSpecular *= tSpec;\n  reflectedLight.indirectSpecular *= tSpec;')
+    .replace('#include <aomap_fragment>', '#include <aomap_fragment>\n  reflectedLight.indirectDiffuse *= tOcc * tCav;\n  reflectedLight.directDiffuse *= mix(1.0, tOcc, 0.55);\n  reflectedLight.directSpecular *= tSpec;\n  reflectedLight.indirectSpecular *= tSpec;')
     .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n  totalEmissiveRadiance += tEmis;');
 }
 

@@ -195,9 +195,39 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
       const b = h.bunkers[0];
       if (!b) return false;
       const c = b.blobs[0];
-      const dx = c.x - h.green.x, dz = c.z - h.green.z, l = Math.hypot(dx, dz) || 1;
-      const px = c.x + (dx / l) * (c.r + 7), pz = c.z + (dz / l) * (c.r + 7);
+      // From the short grass between the bunker and the centerline (nothing grows there).
+      let near = h.line[0], nd = 1e9;
+      for (const p of h.line) { const d = Math.hypot(p.x - c.x, p.z - c.z); if (d < nd) { nd = d; near = p; } }
+      const ux = (near.x - c.x) / (nd || 1), uz = (near.z - c.z) / (nd || 1);
+      const px = c.x + ux * (c.r + 7), pz = c.z + uz * (c.r + 7);
       look(px, H(px, pz) + 2.0, pz, c.x, H(c.x, c.z) + 0.2, c.z);
+      return true;
+    }
+    if (name === 'bunkermid' || name === 'bunkertop') {
+      // The same bunker from 30 m back on the tee side, and from above at a steep angle.
+      const b = h.bunkers[0];
+      if (!b) return false;
+      const c = b.blobs[0];
+      const fl = Math.hypot(b.faceX, b.faceZ) || 1, dx = b.faceX / fl, dz = b.faceZ / fl, l = 1;
+      if (name === 'bunkermid') {
+        // On the centerline about 30 m back toward the tee, as a player approaching it.
+        let ni = 0, nd = 1e9;
+        h.line.forEach((p, i) => { const d = Math.hypot(p.x - c.x, p.z - c.z); if (d < nd) { nd = d; ni = i; } });
+        let j = ni;
+        while (j > 0 && Math.hypot(h.line[j].x - c.x, h.line[j].z - c.z) < c.r + 28) j--;
+        const p = h.line[j];
+        look(p.x, Math.max(H(p.x, p.z), H(c.x, c.z)) + 3.5, p.z, c.x, H(c.x, c.z), c.z);
+      } else {
+        const px = c.x - (dx / l) * (c.r * 0.8 + 3), pz = c.z - (dz / l) * (c.r * 0.8 + 3);
+        look(px, H(c.x, c.z) + c.r * 1.5 + 9, pz, c.x, H(c.x, c.z), c.z);
+      }
+      return true;
+    }
+    if (name === 'tee') {
+      // The tee box from the side: markers, the mown tee, and the hole beyond.
+      const lat = { x: -fwd.z, z: fwd.x };
+      const px = t.tee.x + lat.x * 7 - fwd.x * 4, pz = t.tee.z + lat.z * 7 - fwd.z * 4;
+      look(px, H(px, pz) + 1.6, pz, t.tee.x + fwd.x * 6, H(t.tee.x, t.tee.z) + 0.3, t.tee.z + fwd.z * 6);
       return true;
     }
     if (name === 'water') {

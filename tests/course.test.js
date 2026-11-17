@@ -208,6 +208,32 @@ describe('terrain: the one surface and elevation function', () => {
     for (let a = 0; a < 6.28; a += 0.3) rim = Math.max(rim, t.heightAt(b.x + Math.cos(a) * (b.r + 1), b.z + Math.sin(a) * (b.r + 1)));
     expect(rim - floor).toBeGreaterThan(0.45);
   });
+  it('bunkers have depth, a lip, a broken edge, and an interior field on every flagship hole', () => {
+    for (const course of FLAGSHIP) for (let i = 0; i < 18; i += 3) {
+      const t = get(course, i);
+      for (const bk of t.hole.bunkers) {
+        const b = bk.blobs[0];
+        // Lip to floor: the highest ground just outside the sand against the floor.
+        const floor = t.heightAt(b.x, b.z);
+        let rim = -1e9;
+        for (let a = 0; a < 6.28; a += 0.2) rim = Math.max(rim, t.heightAt(b.x + Math.cos(a) * (b.r + 0.8), b.z + Math.sin(a) * (b.r + 0.8)));
+        expect(rim - floor, `${course.id} ${i + 1}`).toBeGreaterThan(0.7);
+        // The sand edge is not a circle: along rays from the center it wanders.
+        const radii = [];
+        for (let a = 0; a < 6.28; a += 0.26) {
+          let r = 0;
+          while (r < b.r * 2.5 && t.groundSurfaceAt(b.x + Math.cos(a) * r, b.z + Math.sin(a) * r) === SURFACES.BUNKER) r += 0.1;
+          radii.push(r);
+        }
+        const mean = radii.reduce((x, y) => x + y, 0) / radii.length;
+        const sd = Math.sqrt(radii.reduce((x, y) => x + (y - mean) ** 2, 0) / radii.length);
+        if (bk.blobs.length === 1) expect(sd / mean, `${course.id} ${i + 1} edge`).toBeGreaterThan(0.02);
+        // The interior field the renderer uses for the damp band is set inside the sand.
+        const k = Math.round((b.z - t.z0) / t.cell) * t.nx + Math.round((b.x - t.x0) / t.cell);
+        expect(t.bunkerIn[k]).toBeGreaterThan(60);
+      }
+    }
+  });
 
   it('a simulated drive on the real terrain lands, rolls, and stops in bounds with no NaN', () => {
     for (const course of FLAGSHIP) {

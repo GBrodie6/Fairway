@@ -341,7 +341,7 @@ export function generateHole(course, index) {
         if (greenSdf(green, cx, cz) > r2 + 1.2) blobs.push({ x: cx, z: cz, r: r2 });
       }
     }
-    bunkers.push({ kind: 'green', blobs, depth: rng.range(th.bunkers.depth[0], th.bunkers.depth[1]), lip: rng.range(0.25, 0.5), faceX: -dx, faceZ: -dz });
+    bunkers.push({ kind: 'green', blobs, depth: rng.range(th.bunkers.depth[0], th.bunkers.depth[1]), lip: rng.range(0.35, 0.6), faceX: -dx, faceZ: -dz });
     usedAng.push(ang);
     i++;
   }
@@ -361,7 +361,7 @@ export function generateHole(course, index) {
         const t = br * rng.range(0.9, 1.3);
         blobs.push({ x: P.x + P.tx * t, z: P.z + P.tz * t, r: br * rng.range(0.6, 0.85) });
       }
-      bunkers.push({ kind: 'fairway', blobs, depth: rng.range(th.bunkers.depth[0], th.bunkers.depth[1]) * 0.85, lip: rng.range(0.2, 0.4), faceX: P.tx, faceZ: P.tz });
+      bunkers.push({ kind: 'fairway', blobs, depth: rng.range(th.bunkers.depth[0], th.bunkers.depth[1]) * 0.85, lip: rng.range(0.28, 0.48), faceX: P.tx, faceZ: P.tz });
       i++;
     }
   }
