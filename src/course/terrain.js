@@ -409,7 +409,9 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
       }
       // Worn dirt along the path edge and in scattered patches under trees.
       const wear = fbm2(x / 7, z / 7, seed + 23, 2);
-      masks.dirt[k] = toByte(Math.min(pathD[k] - hole.path.half - 0.4 - wear * 1.0, out > 10 && wear > 0.6 ? (0.6 - wear) * 30 : 60));
+      // Worn ground only along the path edge. (Scattered pale patches under the trees read as
+      // grey slabs between the trunks and were removed.)
+      masks.dirt[k] = toByte(pathD[k] - hole.path.half - 0.4 - wear * 1.0);
       // Rock on steep ground outside the maintained area.
       const sl = slope[k];
       masks.rock[k] = out > 2 ? Math.round(255 * smoothstep(0.62, 1.0, sl + (desert ? 0.12 : 0) + (th.macroAmp > 9 ? 0.06 : 0))) : 0;

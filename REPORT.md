@@ -170,3 +170,54 @@ SwiftShader (software rendering), so frame times from it are not representative 
   - Clouds are a single lit layer, not volumetric. Water has no planar reflection of trees.
   - Light shafts, GTAO, and depth of field ran without errors on the high tier in headless
     Chrome, but how they look on a real GPU at full resolution has not been judged.
+
+## Stage 5: vegetation and props
+
+- `render/vegetation.js`: GPU-instanced trees from the downloaded models with per-instance
+  scale, rotation, and tint, wind sway in the vertex shader from the game wind vector, two
+  mesh LODs plus a billboard impostor baked at load from the same model (four views), and
+  per-instance frustum culling on the CPU. Placement is deterministic per hole from the
+  terrain's tree density field, so tree lines follow the corridor. Species come in stands.
+  A ring of impostor-only forest continues over the outer landscape so the woods do not stop
+  at the edge of the mapped ground. Understory (shrubs, ferns), ground cover (tall grass
+  clumps, wildflowers in drifts), reeds at the water's edge, and rocks use the same system.
+- Tree shadows are cast by two crossed alpha-tested cards per tree textured from the baked
+  impostor. Drawing each tree mesh into every shadow cascade had tripled the triangle count.
+- Foliage shading: softened normals, back-lit translucency, and reduced specular, so leaves do
+  not go black on the shaded side.
+- `render/grass.js`: near-camera instanced blades in a square that wraps around the camera.
+  Each blade is placed on the GPU from the terrain height texture, sized by the surface masks
+  (none on greens, sand, or paths; short on fairway; tall in deep rough), colored from the
+  ground beneath it, lit with the ground's up-facing normal, and bent by the wind.
+  Checked in screenshots at address and in the rough on all three courses: it reads as grass
+  (the links fescue especially), not spikes. Blade density is about 60 per square meter on the
+  high tier, which is still sparse next to real turf.
+- `render/proceduralPlants.js`: palms, a columnar cactus, and reeds built in code, because
+  neither source has CC0 models of them.
+- `render/props.js`: tee markers, a hole sign with live text, a bench, ball washer and bin,
+  yardage posts, sprinkler heads, footbridges where the path crosses a stream, a clubhouse
+  with out-buildings on the opening and closing holes, grandstands with an instanced crowd
+  that bobs when it cheers on tournament holes, distant flags, and a flock of birds. Static
+  pieces are merged into one vertex-colored mesh.
+- Budgets per tier and measured `renderer.info` on parkland hole 1 at midday, before and
+  after vegetation, grass, and props (`npm run perf`, `qa/perf.json`). Counts include shadow
+  and post passes.
+
+  | Tier | Budget (draws / triangles) | Before | After | Within budget |
+  | --- | --- | --- | --- | --- |
+  | low | 140 / 220k | 26 / 33k | 59 / 214k | yes |
+  | medium | 220 / 500k | 36 / 62k | 78 / 421k | yes |
+  | high | 320 / 1,100k | 41 / 66k | 106 / 928k | yes |
+  | ultra | 420 / 2,000k | 44 / 91k | 111 / 1,592k | yes |
+
+- Defects found by measurement and fixed: a bright patch on the ground under a low sun turned
+  out to be three things added together (screen-space light shafts over near ground, sun-side
+  haze applied at close range, and the grazing-angle highlight on grass), each isolated by
+  switching one term off and reading back the same pixels; the HDRI's own sun disc is now
+  clamped in the asset pipeline because the game's sun already supplies it; a mesa slab that
+  floated over the desert fairway was the outer landscape overlapping the play area.
+- Verify: 185 tests, build, and smoke all pass; 24 of 24 combinations inside the luma bands.
+- Honest limits: trees are young scanned specimens scaled up, so canopies are thinner than a
+  mature course's; LOD1 is visibly sparser than LOD0 and the switch to impostors is a pop,
+  not a blend; props are simple procedural shapes; the crowd is flat cards; cart path edges
+  have no curbs; low tier sits within 3 percent of its triangle budget on parkland.

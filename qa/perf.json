@@ -1,0 +1,207 @@
+{
+ "when": "2026-11-17T02:30:42.748Z",
+ "software": true,
+ "note": "SwiftShader software rendering. Counts, CPU subsystem time, and memory are valid; frame time on a real GPU is not measured here.",
+ "rows": [
+  {
+   "course": "parkland",
+   "tier": "low",
+   "readyMs": 5406,
+   "settledMs": 10149,
+   "consoleErrors": 0,
+   "before": {
+    "calls": 26,
+    "triangles": 33025
+   },
+   "after": {
+    "calls": 59,
+    "triangles": 214194
+   },
+   "perSystem": {
+    "world": 0.475421019608566,
+    "render": 43.25123893110895
+   },
+   "cpuAvg": 254.83599728591176,
+   "memory": {
+    "renderTargets": 2764800,
+    "textures": 35474260.080000006
+   },
+   "budget": {
+    "drawCalls": 140,
+    "triangles": 220000
+   },
+   "veg": {
+    "counts": {
+     "trees": 3144,
+     "plants": 1655,
+     "rocks": 6
+    },
+    "drawn": {
+     "lod0": 0,
+     "lod1": 22,
+     "impostor": 1811,
+     "small": 62
+    },
+    "triangles": 130575
+   },
+   "grass": 9000,
+   "terrainTris": 35916,
+   "propTris": 1466,
+   "crowd": 60,
+   "assetBytes": 8059188,
+   "assetRequests": 41,
+   "buildMs": 289.1000000000058,
+   "withinBudget": true
+  },
+  {
+   "course": "parkland",
+   "tier": "medium",
+   "readyMs": 8053,
+   "settledMs": 17348,
+   "consoleErrors": 0,
+   "before": {
+    "calls": 36,
+    "triangles": 62334
+   },
+   "after": {
+    "calls": 78,
+    "triangles": 421481
+   },
+   "perSystem": {
+    "world": 0.6503196491127549,
+    "render": 59.78281430416133
+   },
+   "cpuAvg": 283.1149798109055,
+   "memory": {
+    "renderTargets": 7676640,
+    "textures": 35474260.080000006
+   },
+   "budget": {
+    "drawCalls": 220,
+    "triangles": 500000
+   },
+   "veg": {
+    "counts": {
+     "trees": 5574,
+     "plants": 2616,
+     "rocks": 1
+    },
+    "drawn": {
+     "lod0": 0,
+     "lod1": 40,
+     "impostor": 3006,
+     "small": 122
+    },
+    "triangles": 239229
+   },
+   "grass": 22000,
+   "terrainTris": 66080,
+   "propTris": 1466,
+   "crowd": 140,
+   "assetBytes": 8059188,
+   "assetRequests": 41,
+   "buildMs": 261.69999999998254,
+   "withinBudget": true
+  },
+  {
+   "course": "parkland",
+   "tier": "high",
+   "readyMs": 10747,
+   "settledMs": 29377,
+   "consoleErrors": 0,
+   "before": {
+    "calls": 41,
+    "triangles": 66104
+   },
+   "after": {
+    "calls": 106,
+    "triangles": 928249
+   },
+   "perSystem": {
+    "world": 0.7087877813063659,
+    "render": 145.07168494248197
+   },
+   "cpuAvg": 435.6476847746452,
+   "memory": {
+    "renderTargets": 14243040,
+    "textures": 119150624.88000001
+   },
+   "budget": {
+    "drawCalls": 320,
+    "triangles": 1100000
+   },
+   "veg": {
+    "counts": {
+     "trees": 8433,
+     "plants": 2993,
+     "rocks": 1
+    },
+    "drawn": {
+     "lod0": 8,
+     "lod1": 70,
+     "impostor": 4276,
+     "small": 172
+    },
+    "triangles": 607647
+   },
+   "grass": 48000,
+   "terrainTris": 85716,
+   "propTris": 1466,
+   "crowd": 260,
+   "assetBytes": 18313042,
+   "assetRequests": 58,
+   "buildMs": 295.5,
+   "withinBudget": true
+  },
+  {
+   "course": "parkland",
+   "tier": "ultra",
+   "readyMs": 12553,
+   "settledMs": 35061,
+   "consoleErrors": 0,
+   "before": {
+    "calls": 44,
+    "triangles": 91060
+   },
+   "after": {
+    "calls": 111,
+    "triangles": 1591540
+   },
+   "perSystem": {
+    "world": 1.4500486021153853,
+    "render": 219.5549017609797
+   },
+   "cpuAvg": 699.2680735006971,
+   "memory": {
+    "renderTargets": 14243040,
+    "textures": 119150624.88000001
+   },
+   "budget": {
+    "drawCalls": 420,
+    "triangles": 2000000
+   },
+   "veg": {
+    "counts": {
+     "trees": 12693,
+     "plants": 2777,
+     "rocks": 0
+    },
+    "drawn": {
+     "lod0": 16,
+     "lod1": 110,
+     "impostor": 5825,
+     "small": 183
+    },
+    "triangles": 1029258
+   },
+   "grass": 90000,
+   "terrainTris": 123024,
+   "propTris": 1466,
+   "crowd": 278,
+   "assetBytes": 18313042,
+   "assetRequests": 58,
+   "buildMs": 303.3999999999651,
+   "withinBudget": true
+  }
+ ]
+}
