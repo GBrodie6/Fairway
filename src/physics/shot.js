@@ -9,7 +9,7 @@ export const SHOT_TYPES = Object.freeze({
   FULL: { id: 'full', name: 'Full', speed: 1, launch: 1, spin: 1 },
   PUNCH: { id: 'punch', name: 'Punch', speed: 0.9, launch: 0.58, spin: 0.75 },
   FLOP: { id: 'flop', name: 'Flop', speed: 0.72, launch: 1.4, spin: 1.05, wedgeOnly: true },
-  CHIP: { id: 'chip', name: 'Chip', speed: 0.42, launch: 0.62, spin: 0.5 },
+  CHIP: { id: 'chip', name: 'Chip', speed: 0.42, launch: 0.85, spin: 0.8 },
   PUTT: { id: 'putt', name: 'Putt', speed: 1, launch: 0, spin: 0 },
 });
 export const shotTypeById = (id) => Object.values(SHOT_TYPES).find((s) => s.id === id) || SHOT_TYPES.FULL;
@@ -26,11 +26,14 @@ export const BASE_PROFILE = Object.freeze({
   forgiveness: 1, // tempo error multiplier
 });
 
-// Ball speed as a fraction of full for a given power fraction. Linear, with a floor so a tiny
-// swing still moves the ball.
+// Ball speed as a fraction of full for a given power fraction. Linear, with a small floor so a
+// tiny swing still moves the ball. The floor was 0.3 until Stage 6 play testing showed that a
+// 13 m chip then needed under 6 percent of the stick, below what a thumb can place reliably.
+export const POWER_FLOOR = 0.12;
 export function powerToSpeedFactor(power) {
-  const p = clamp(power, 0, 1.1);
-  return 0.3 + 0.7 * p;
+  // Overswing past 100 percent is capped at 8 percent more speed.
+  const p = clamp(power, 0, 1 + 0.08 / (1 - POWER_FLOOR));
+  return POWER_FLOOR + (1 - POWER_FLOOR) * p;
 }
 
 export const MAX_PUTT_SPEED = 9.0; // m/s at 100 percent, about a 240 ft putt on a stimp 10 green
@@ -145,6 +148,6 @@ export function suggestClub(distance, { lie = SURFACES.FAIRWAY, profile = BASE_P
   }
   // carry scales close to linearly with the speed factor, so invert it for a starting power.
   const ratio = clamp(eff / best.full, 0, 1);
-  const power = clamp((Math.pow(ratio, 0.62) - 0.3) / 0.7, 0.05, 1);
+  const power = clamp((Math.pow(ratio, 0.62) - POWER_FLOOR) / (1 - POWER_FLOOR), 0.05, 1);
   return { club: best.club, power };
 }

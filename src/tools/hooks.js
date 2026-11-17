@@ -9,6 +9,12 @@ export function installHooks(app) {
     settled: false,
     version: 1,
     get app() { return app; },
+    get game() { return app.game; },
+    get ui() { return app.ui; },
+    // Read model of the round for the QA bot. The bot acts only through real input events.
+    gameView() { return app.game ? app.game.view() : null; },
+    phase() { return app.game ? app.game.state.phase : 'boot'; },
+    rect(selector) { const el = document.querySelector(selector); if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; },
     get errors() {
       return { count: [...guardStats.errors.values()].reduce((a, b) => a + b, 0), last: guardStats.last, bySystem: Object.fromEntries(guardStats.errors) };
     },

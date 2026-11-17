@@ -30,6 +30,29 @@ export function predictShot(terrain, { x, z, lie, club, shotType, aim, power = 1
 // as the hole on level ground.
 // needed is the pace the putt solver found: an uphill putt needs more than level ground does,
 // and the ceiling must always leave room above it or the hole would be out of reach.
+// Power (0..1) that sends the ball the right distance toward `target`, found by bisection on
+// the same prediction the aim overlay draws. mode 'carry' lands short of the target by part of
+// the expected roll (approach shots), 'end' finishes at the target (chips and layups).
+export function solvePower(terrain, shot, windAt, t0, target, mode = 'carry') {
+  const want = Math.hypot(target.x - shot.x, target.z - shot.z);
+  const fx = Math.sin(shot.aim), fz = -Math.cos(shot.aim);
+  const reach = (power) => {
+    const r = predictShot(terrain, { ...shot, power }, windAt, t0);
+    const ref = mode === 'end' ? r.end : (r.carryPoint || r.end);
+    const along = (ref.x - shot.x) * fx + (ref.z - shot.z) * fz;
+    return mode === 'end' ? along : along + Math.min(6, Math.max(0, r.total - r.carry) * 0.5);
+  };
+  // The stick ignores swings shallower than 6 percent, so never suggest less than 7.
+  let lo = 0.07, hi = 1;
+  if (reach(hi) <= want) return 1;
+  if (reach(lo) >= want) return lo;
+  for (let i = 0; i < 9; i++) {
+    const mid = (lo + hi) / 2;
+    if (reach(mid) < want) lo = mid; else hi = mid;
+  }
+  return clamp((lo + hi) / 2, 0.07, 1);
+}
+
 export function puttCeiling(distance, needed = 0) {
   const level = Math.sqrt(2 * 0.549 * (distance * 1.8 + 1.2));
   return clamp(Math.max(level, needed * 1.45), 1.4, MAX_PUTT_SPEED);

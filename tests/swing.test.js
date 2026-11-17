@@ -23,7 +23,7 @@ describe('swing math', () => {
       prev = s;
     }
     expect(powerToSpeedFactor(1)).toBeCloseTo(1, 10);
-    expect(powerToSpeedFactor(-3)).toBeCloseTo(0.3, 10);
+    expect(powerToSpeedFactor(-3)).toBeCloseTo(0.12, 10);
     expect(powerToSpeedFactor(9)).toBeLessThanOrEqual(1.08);
   });
   it('open face starts right and curves right, closed face the opposite', () => {

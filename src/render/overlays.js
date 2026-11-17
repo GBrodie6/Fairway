@@ -30,7 +30,9 @@ function ribbon(maxPts, color, opacity) {
   // pts: flat [x,z,...] laid on the terrain, or [x,y,z,...] when y is given.
   mesh.setPath = (terrain, pts, width, stride = 2, lift = 0.05) => {
     const n = Math.min(maxPts, Math.floor(pts.length / stride));
+    const wf = typeof width === 'function' ? width : null;
     for (let i = 0; i < n; i++) {
+      if (wf) width = wf(i, n);
       const x = pts[i * stride], z = pts[i * stride + stride - 1];
       const j = Math.min(n - 1, i + 1), k = Math.max(0, i - 1);
       let dx = pts[j * stride] - pts[k * stride], dz = pts[j * stride + stride - 1] - pts[k * stride + stride - 1];
@@ -62,10 +64,12 @@ export function createOverlays(world) {
   // Green grid: lines and arrows in one mesh each, colored per vertex by slope.
   const gridMat = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -5, polygonOffsetUnits: -5,
-    uniforms: { uT: { value: 0 }, uOpacity: { value: 0.8 } },
-    vertexShader: 'attribute vec3 color; attribute float aFlow; varying vec3 vC; varying float vF; void main(){ vC = color; vF = aFlow; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    uniforms: { uT: { value: 0 }, uOpacity: { value: 0.55 } },
+    // The grid fades out close to the camera so it never fills the screen, and far away so
+    // it does not shimmer.
+    vertexShader: 'attribute vec3 color; attribute float aFlow; varying vec3 vC; varying float vF; varying float vD; void main(){ vC = color; vF = aFlow; vec4 mv = modelViewMatrix * vec4(position, 1.0); vD = -mv.z; gl_Position = projectionMatrix * mv; }',
     // Arrows carry a pulse that runs downhill, so direction reads without relying on color.
-    fragmentShader: 'uniform float uT; uniform float uOpacity; varying vec3 vC; varying float vF; void main(){ float pulse = vF < -0.5 ? 1.0 : 0.55 + 0.45 * sin((vF - uT * 0.9) * 6.2832); gl_FragColor = vec4(vC * 1.6, uOpacity * pulse); }',
+    fragmentShader: 'uniform float uT; uniform float uOpacity; varying vec3 vC; varying float vF; varying float vD; void main(){ float pulse = vF < -0.5 ? 0.8 : 0.55 + 0.45 * sin((vF - uT * 0.9) * 6.2832); float fade = smoothstep(1.2, 3.2, vD) * (1.0 - smoothstep(22.0, 40.0, vD)); gl_FragColor = vec4(vC * 1.15, uOpacity * pulse * fade); }',
   });
   let grid = null;
   const slopeColor = (s, out) => {
@@ -98,16 +102,16 @@ export function createOverlays(world) {
       t.normalAt(x + 0.5, z + 0.5, n);
       const sl = Math.hypot(n.x, n.z) / n.y;
       slopeColor(sl, c);
-      if (onGreen(x + 1, z)) quad(x, z, x + 1, z, 0.012, -1, -1);
-      if (onGreen(x, z + 1)) quad(x, z, x, z + 1, 0.012, -1, -1);
+      if (onGreen(x + 1, z)) quad(x, z, x + 1, z, 0.008, -1, -1);
+      if (onGreen(x, z + 1)) quad(x, z, x, z + 1, 0.008, -1, -1);
       // Downhill arrow in the cell center, longer on steeper ground.
       if (sl > 0.004 && onGreen(x + 0.5, z + 0.5)) {
         const dl = Math.hypot(n.x, n.z) || 1, dx = n.x / dl, dz = n.z / dl;
-        const len = clamp(0.16 + sl * 6, 0.16, 0.44);
+        const len = clamp(0.1 + sl * 4, 0.1, 0.3);
         const cx = x + 0.5, cz = z + 0.5;
         const base = pos.length / 3;
         const tipx = cx + dx * len, tipz = cz + dz * len, bx = cx - dx * len, bz = cz - dz * len;
-        const w = 0.085;
+        const w = 0.06;
         pos.push(tipx, t.heightAt(tipx, tipz) + 0.04, tipz, bx - dz * w, t.heightAt(bx, bz) + 0.04, bz + dx * w, bx + dz * w, t.heightAt(bx, bz) + 0.04, bz - dx * w);
         for (let q = 0; q < 3; q++) col.push(c[0], c[1], c[2]);
         const ph = (cx * 0.37 + cz * 0.23) % 1;
@@ -140,10 +144,13 @@ export function createOverlays(world) {
       puttLine.visible = false; if (grid) grid.visible = false;
       const land = prediction.carryPoint || prediction.end;
       const dist = Math.hypot(land.x - from.x, land.z - from.z);
+      // The line starts a few meters ahead of the ball and widens with distance, so it reads
+      // as a thin guide near the camera and stays visible out at the landing area.
       const n = clamp(Math.ceil(dist / 5), 2, MAX_LINE);
+      const start = Math.min(3, dist * 0.3) / Math.max(dist, 1e-3);
       const pts = [];
-      for (let i = 0; i < n; i++) { const f = i / (n - 1); pts.push(from.x + (land.x - from.x) * f, from.z + (land.z - from.z) * f); }
-      aimLine.setPath(t, pts, 0.07 + dist * 0.0009);
+      for (let i = 0; i < n; i++) { const f = start + (1 - start) * (i / (n - 1)); pts.push(from.x + (land.x - from.x) * f, from.z + (land.z - from.z) * f); }
+      aimLine.setPath(t, pts, (i, m) => 0.02 + dist * (start + (1 - start) * (i / (m - 1))) * 0.0016);
       aimLine.visible = true;
       // Ring: lateral radius from the angle spread at this distance, depth from the distance spread.
       const lat = Math.max(1.2, Math.tan((disp.lateralDeg * Math.PI) / 180) * dist), dep = Math.max(1.5, disp.distFrac * dist * 1.6);
@@ -151,6 +158,7 @@ export function createOverlays(world) {
       ring.position.set(fin(land.x), y + 0.06, fin(land.z));
       ring.rotation.y = -aim;
       ring.scale.set(lat, 1, dep);
+      ov.ringSize = { lat, depth: dep };
       ring.visible = true;
       // Hazard check on where the ball is predicted to land and to finish.
       const landS = t.inBounds(land.x, land.z, 1) ? t.surfaceAt(land.x, land.z) : -1;

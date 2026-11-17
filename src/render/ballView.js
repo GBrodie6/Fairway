@@ -164,14 +164,14 @@ export function createBallView(world, engine) {
       // Rebuild the ribbon facing the camera.
       const tp = view.tracePoints, n = tp.length / 3;
       if (n >= 2) {
-        const width = 0.05;
+        const width = 0.03;
         for (let i = 0; i < n; i++) {
           p0.set(tp[i * 3], tp[i * 3 + 1], tp[i * 3 + 2]);
           const j = Math.min(n - 1, i + 1), k = Math.max(0, i - 1);
           dir.set(tp[j * 3] - tp[k * 3], tp[j * 3 + 1] - tp[k * 3 + 1], tp[j * 3 + 2] - tp[k * 3 + 2]).normalize();
           toCam.copy(cam).sub(p0);
           const d = toCam.length();
-          side.crossVectors(dir, toCam).normalize().multiplyScalar(width + d * 0.0016);
+          side.crossVectors(dir, toCam).normalize().multiplyScalar(width + d * 0.0011);
           tracePos[i * 6] = p0.x + side.x; tracePos[i * 6 + 1] = p0.y + side.y; tracePos[i * 6 + 2] = p0.z + side.z;
           tracePos[i * 6 + 3] = p0.x - side.x; tracePos[i * 6 + 4] = p0.y - side.y; tracePos[i * 6 + 5] = p0.z - side.z;
           const a = 0.25 + 0.75 * (i / (n - 1));

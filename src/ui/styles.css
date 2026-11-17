@@ -20,7 +20,7 @@
   --safe-r: env(safe-area-inset-right, 0px);
 }
 #ui { position: absolute; inset: 0; pointer-events: none; font-family: var(--font); color: var(--ink); font-size: 15px; line-height: 1.3; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; overflow: hidden; }
-#ui button { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+:where(#ui button) { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 #ui button:focus-visible, #ui [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .glass { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22); }
 .hidden { display: none !important; }
@@ -44,7 +44,7 @@
 .wind .v { font-size: 17px; font-weight: 600; line-height: 1; }
 .wind .u { font-size: 11px; color: var(--ink-dim); letter-spacing: 0.08em; text-transform: uppercase; }
 .iconbtn { width: var(--tap); height: var(--tap); display: grid; place-items: center; border-radius: 14px; }
-.iconbtn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.iconbtn svg, .arrow svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .iconbtn[disabled] { opacity: 0.35; }
 .pin { position: absolute; left: 50%; top: calc(12px + var(--safe-t)); transform: translateX(-50%); padding: 7px 16px 8px; text-align: center; pointer-events: none; }
 .pin .d { font-size: 24px; font-weight: 600; line-height: 1.05; }

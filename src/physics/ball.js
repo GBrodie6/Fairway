@@ -220,7 +220,7 @@ export function simulateShot(launch, env, opts = {}) {
         const rollSolution = (5 * vt - 2 * u * sp.grip) / 7;
         let vtAfter = Math.max(vt - slideDrop, rollSolution);
         // Turf deformation (pitch mark) absorbs forward speed on steep, hard impacts.
-        if (vtAfter > 0) vtAfter *= 1 - sp.soft * clamp(impact / 18, 0, 1);
+        if (vtAfter > 0) vtAfter *= 1 - sp.soft * clamp(0.25 + impact / 18, 0, 1);
         if (vtAfter < -0.35 * vt - 1.5) vtAfter = -0.35 * vt - 1.5; // limit spin-back
         // Spin lost to the turf.
         s.spin *= clamp(1 - sp.grip * 0.75, 0.05, 1);

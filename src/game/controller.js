@@ -3,7 +3,7 @@
 // It owns no rendering and no DOM. It drives the world, the camera rig, the ball view, and
 // the overlays, and tells the UI and audio what happened through events.
 import { createRound, beginHole, applyShot, nextTurn, completeHole, holeFinished, standings, currentHoleIndex, parOf, playerDone } from './round.js';
-import { predictShot, solvePutt, simulatePutt, puttCeiling, dropPoint, aiPlan, chooseTarget, simulateFrom } from './planner.js';
+import { predictShot, solvePower, solvePutt, simulatePutt, puttCeiling, dropPoint, aiPlan, chooseTarget, simulateFrom } from './planner.js';
 import { computeLaunch, suggestClub, SHOT_TYPES, shotTypeById, BASE_PROFILE, dispersion, nominalCarry } from '../physics/shot.js';
 import { simulateShot, samplePath, BALL_RADIUS } from '../physics/ball.js';
 import { CLUBS, PUTTER } from '../physics/clubs.js';
@@ -114,6 +114,7 @@ export function createGame(app) {
     state.aimRef = headingTo(st.x, st.z, state.target.x, state.target.z);
     state.aim = state.aimRef;
     state.putt = null;
+    computeIdeal();
     // The flag comes out for short putts.
     w.greenProps.setFlagVisible(!(onGreen && state.distToPin < 7));
     w.grassCenter = null;
@@ -150,16 +151,16 @@ export function createGame(app) {
     }
     emit('aim', null);
   }
-  // Power that would carry to the target with the current club (1 when the club is all needed).
+  // Power that sends the ball to the target with the current club, shot type, lie, and wind.
+  // Solved once per club or shot-type change (not on every aim drag) and cached.
+  function computeIdeal() {
+    if (state.club.putter || !state.target) { state.idealPower = 0.5; return; }
+    const chipLike = state.shotType.id === 'chip' || state.target.layup;
+    state.idealPower = solvePower(W().terrain, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aimRef, profile: state.profile }, windAt, state.clock, state.target, chipLike ? 'end' : 'carry');
+  }
   game.suggestedPower = () => {
     if (state.club.putter) return state.putt ? state.putt.idealPower : 0.5;
-    const t = W().terrain;
-    const d = Math.hypot(state.target.x - state.ball.x, state.target.z - state.ball.z);
-    if (state.shotType.id === 'chip') return clamp(d / 34 + 0.12, 0.12, 1);
-    const full = nominalCarry(state.club, state.profile, state.shotType);
-    const lieK = 1 - (state.lie === SURFACES.TEE ? 0 : 0);
-    const want = (d + (t.heightAt(state.target.x, state.target.z) - t.heightAt(state.ball.x, state.ball.z)) * 0.9) / lieK;
-    return clamp((Math.pow(clamp(want / full, 0, 1), 0.62) - 0.3) / 0.7, 0.05, 1);
+    return state.idealPower ?? 0.8;
   };
 
   // --- player input (all guarded: ignored outside the aim phase) ---
@@ -180,6 +181,7 @@ export function createGame(app) {
     if (state.club.putter) state.shotType = SHOT_TYPES.PUTT; else if (state.shotType.id === 'putt') state.shotType = SHOT_TYPES.FULL;
     if (state.shotType.wedgeOnly && state.club.kind !== 'wedge') state.shotType = SHOT_TYPES.FULL;
     W().rig.ctx = addressCtx();
+    computeIdeal();
     refresh();
     emit('club', state.club);
   };
@@ -188,6 +190,7 @@ export function createGame(app) {
     const st = shotTypeById(id);
     if (st.id === 'putt' || (st.wedgeOnly && state.club.kind !== 'wedge')) return;
     state.shotType = st;
+    computeIdeal();
     refresh();
     emit('club', state.club);
   };
@@ -335,8 +338,9 @@ export function createGame(app) {
     const r = state.round;
     const holeIdx = currentHoleIndex(r), par = parOf(r);
     const strokes = r.state.map((s) => s.strokes);
+    const slot = r.hole;
     const over = completeHole(r);
-    state.holeSummary = { holeIdx, par, strokes, standings: standings(r), over };
+    state.holeSummary = { holeIdx, slot, par, strokes, standings: standings(r), over };
     W().overlays.hide();
     setPhase('summary');
     emit('holeEnd', state.holeSummary);

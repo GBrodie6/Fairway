@@ -42,12 +42,12 @@ export function createCameraRig(world, engine) {
     const b = rig.ballPos;
     if (rig.mode === 'address' || rig.mode === 'free') {
       const putt = !!c.putt;
-      const back = putt ? clamp(2.2 + (c.distance || 3) * 0.12, 2.4, 5) : 5.2, up = putt ? 1.15 + (c.distance || 3) * 0.02 : 2.1;
+      const back = putt ? clamp(2.6 + (c.distance || 3) * 0.15, 2.8, 6.5) : 5.2, up = putt ? 1.35 + (c.distance || 3) * 0.05 : 2.1;
       const h = (c.aim || 0) + rig.yaw;
       const fx = Math.sin(h), fz = -Math.cos(h);
       const cx = c.x - fx * back, cz = c.z - fz * back;
       dPos.set(cx, Math.max(H(cx, cz) + 0.5, H(c.x, c.z) + up - 0.4) + (putt ? 0.35 : 0.4), cz);
-      const ahead = putt ? Math.max(3, (c.distance || 3) * 0.75) : 70;
+      const ahead = putt ? Math.max(1.5, (c.distance || 3) * 0.6) : 70;
       const lx = c.x + fx * ahead, lz = c.z + fz * ahead;
       const ly = putt ? H(lx, lz) + 0.1 : H(c.x, c.z) + 0.9 + (H(lx, lz) - H(c.x, c.z)) * 0.5;
       dTgt.set(lx, ly + Math.tan(rig.pitch) * ahead, lz);
@@ -73,7 +73,8 @@ export function createCameraRig(world, engine) {
       let fx = c.dirX ?? 0, fz = c.dirZ ?? -1;
       if (sp > 1) { fx = v.x / sp; fz = v.z / sp; }
       const back = 7 + clamp(sp * 0.1, 0, 9);
-      const cx = b.x - fx * back, cz = b.z - fz * back;
+      // A little to the right of the line so the arc of the tracer reads as a curve.
+      const cx = b.x - fx * back - fz * 2.4, cz = b.z - fz * back + fx * 2.4;
       const gy = t.inBounds(cx, cz, 1) ? H(cx, cz) : b.y - 2;
       dPos.set(cx, Math.max(gy + 1.6, b.y + 1.6 - clamp(v.y * 0.05, -1.5, 1.5)), cz);
       dTgt.copy(b);

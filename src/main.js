@@ -9,6 +9,8 @@ import { COURSE_IDS } from './course/courses.js';
 import { TOD_ORDER } from './render/timeOfDay.js';
 import { createDebugOverlay } from './ui/debug.js';
 import { installHooks } from './tools/hooks.js';
+import { createGame } from './game/controller.js';
+import { createUI } from './ui/ui.js';
 
 async function boot() {
   const params = readUrlParams();
@@ -49,7 +51,17 @@ async function boot() {
 
   await app.world.loadHole(courseId, params.hole || 1);
 
+  app.game = createGame(app);
+  app.onWorld = [() => { app.game.onWorldChanged(); if (app.ui) app.ui.applySettings(); }];
+  app.ui = createUI(app);
+  app.ui.applySettings();
+
+  // Order matters: the game advances the ball, the rig follows it, the world animates, then
+  // the HUD reads the settled state and the frame renders.
+  loop.add('game', (dt) => app.game.update(dt));
+  loop.add('camera', (dt) => { if (app.world.rig.enabled) app.world.rig.update(dt); });
   loop.add('world', (dt, t) => app.world.update(dt, t));
+  loop.add('ui', (dt) => app.ui.update(dt), { profile: false });
   loop.add('render', (dt, t, realDt) => engine.render(app.world.scene, app.world.camera, t, realDt));
   if (params.debug) {
     app.debug = createDebugOverlay(ui, { engine, loop, getExtra: () => `terrain build ${app.world.buildMs.toFixed(0)} ms  terrain tris ${(app.world.terrainView.triangles / 1000).toFixed(0)}k\ntrees ${app.world.vegetation.counts.trees} (lod0 ${app.world.vegetation.drawn.lod0} lod1 ${app.world.vegetation.drawn.lod1} impostor ${app.world.vegetation.drawn.impostor})  plants ${app.world.vegetation.drawn.small}/${app.world.vegetation.counts.plants}  veg tris ${(app.world.vegetation.triangles / 1000).toFixed(0)}k\n  assets ${(assets.stats.bytes / 1048576).toFixed(1)} MB in ${assets.stats.requests} req` });
@@ -62,6 +74,10 @@ async function boot() {
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
   bootEl.classList.add('hide');
   fw.ready = true;
+  // A round can start straight from the URL (used by the QA bot and for shared links),
+  // otherwise the main menu shows over the course.
+  if (params.mode) await app.ui.screens.startQuick({ courseId, mode: params.mode, holes: params.holes || 9, startHole: params.hole || 1, tod: todId, seed: params.seed });
+  else app.ui.screens.menu();
   // The heavy assets arrive after first paint.
   app.world.whenSettled().then(() => { fw.settled = true; });
 }

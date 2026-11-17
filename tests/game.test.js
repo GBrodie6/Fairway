@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { createRound, beginHole, applyShot, nextTurn, completeHole, holeFinished, standings, validateRound, holesFor, parOf, MODES, currentHoleIndex } from '../src/game/round.js';
-import { solvePutt, simulatePutt, puttCeiling, aiPlan, playHoleAI, chooseTarget, dropPoint, predictShot, maxCarryFrom } from '../src/game/planner.js';
+import { solvePutt, simulatePutt, puttCeiling, solvePower, aiPlan, playHoleAI, chooseTarget, dropPoint, predictShot, maxCarryFrom } from '../src/game/planner.js';
 import { COURSES, courseById } from '../src/course/courses.js';
 import { getHole } from '../src/course/layout.js';
 import { buildTerrain } from '../src/course/terrain.js';
 import { SURFACES } from '../src/physics/surfaces.js';
 import { CLUB_BY_ID } from '../src/physics/clubs.js';
+import { shotTypeById } from '../src/physics/shot.js';
 import { createRng } from '../src/core/rng.js';
 import { createWind } from '../src/physics/wind.js';
 import { YARD } from '../src/core/math.js';
@@ -186,6 +187,27 @@ describe('planner on real terrain', () => {
     const r = predictShot(t, { x: t.tee.x, z: t.tee.z, lie: SURFACES.TEE, club: CLUB_BY_ID.DR, aim, power: 1 });
     expect(r.carry / YARD).toBeGreaterThan(225);
     expect(r.carry / YARD).toBeLessThan(275);
+  });
+  it('solvePower finds the power for a target, including bunker and rough power loss', () => {
+    const t = T('parkland', 0);
+    const P = (i) => t.hole.line[i];
+    const from = { x: P(60).x, z: P(60).z };
+    const target = { x: t.pin.x, z: t.pin.z };
+    const aim = Math.atan2(target.x - from.x, -(target.z - from.z));
+    const want = Math.hypot(target.x - from.x, target.z - from.z);
+    for (const [lie, club, type] of [[SURFACES.FAIRWAY, 'PW', 'full'], [SURFACES.ROUGH, 'GW', 'full'], [SURFACES.BUNKER, 'LW', 'full'], [SURFACES.FAIRWAY, 'SW', 'chip']]) {
+      const sh = { x: from.x, z: from.z, lie, club: CLUB_BY_ID[club], shotType: shotTypeById(type), aim };
+      const d = type === 'chip' ? 20 : Math.min(want, 40);
+      const p = solvePower(t, { ...sh }, undefined, 0, { x: from.x + Math.sin(aim) * d, z: from.z - Math.cos(aim) * d }, type === 'chip' ? 'end' : 'carry');
+      expect(p).toBeGreaterThan(0.02);
+      expect(p).toBeLessThanOrEqual(1);
+      const r = predictShot(t, { ...sh, power: p });
+      const ref = type === 'chip' ? r.end : r.carryPoint;
+      const got = Math.hypot(ref.x - from.x, ref.z - from.z) + (type === 'chip' ? 0 : Math.min(6, (r.total - r.carry) * 0.5));
+      expect(Math.abs(got - d)).toBeLessThan(1.5);
+    }
+    // A target beyond the club's reach asks for full power.
+    expect(solvePower(t, { x: from.x, z: from.z, lie: SURFACES.FAIRWAY, club: CLUB_BY_ID.LW, shotType: shotTypeById('full'), aim }, undefined, 0, { x: from.x + Math.sin(aim) * 300, z: from.z - Math.cos(aim) * 300 })).toBe(1);
   });
   it('dropPoint returns dry ground no nearer the hole than the water', () => {
     for (const cid of ['parkland', 'links', 'desert']) for (let i = 0; i < 18; i++) {
