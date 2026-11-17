@@ -212,7 +212,9 @@ void main() {
     float integral = abs(k) < 1e-3 ? 1.0 : (1.0 - exp(-k)) / k;
     float tau = dist * (uFogHaze + uFogDensity * exp(-(uCamPos.y - uFogBase) / uFogHeight) * integral);
     float f = min(1.0 - exp(-max(tau, 0.0)), uFogMax);
-    float sunAmt = pow(max(dot(ray, uSunDir), 0.0), 6.0);
+    // The bright sun-side tint needs a long path through haze to build up. Applied at close
+    // range it reads as a wet sheen on the ground below the sun.
+    float sunAmt = pow(max(dot(ray, uSunDir), 0.0), 4.0) * smoothstep(60.0, 700.0, dist);
     vec3 fogCol = mix(uFogColor, uFogSunColor, sunAmt * 0.7);
     color = mix(color, fogCol, f);
   }

@@ -14,6 +14,7 @@ import { createSky } from './sky.js';
 import { createWater } from './water.js';
 import { createVegetation } from './vegetation.js';
 import { createGrass } from './grass.js';
+import { createProps } from './props.js';
 import { DEG, clamp } from '../core/math.js';
 import { fin } from '../core/guards.js';
 
@@ -44,7 +45,9 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
   scene.add(world.vegetation.group);
   world.grass = createGrass(world, engine);
   scene.add(world.grass.group);
-  world.systems.push(world.sky, world.water, world.vegetation, world.grass);
+  world.props = createProps(world, engine);
+  scene.add(world.props.group);
+  world.systems.push(world.sky, world.water, world.vegetation, world.grass, world.props);
   world.greenProps = createGreenProps(world);
   scene.add(world.greenProps.group);
   world.decals = createDecals(world);

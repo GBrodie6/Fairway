@@ -263,7 +263,7 @@ export function createSky(world, engine) {
     const f = tod.fog.color;
     uniforms.uHorizon.value.setRGB(f[0], f[1], f[2]).multiplyScalar(tod.night ? 0.02 : tod.horizonGain ?? 0.5);
     uniforms.uHaze.value = clamp(0.55 + tod.fog.density * 260, 0.4, 1);
-    uniforms.uSunDisc.value = tod.night ? 1.6 : 46;
+    uniforms.uSunDisc.value = tod.night ? 1.6 : 26;
     uniforms.uStars.value = tod.stars;
     uniforms.uCloudCover.value = tod.cloudCover * (w.course && w.course.cloudBias ? w.course.cloudBias : 1);
     const cc = tod.cloudColor;
@@ -275,7 +275,7 @@ export function createSky(world, engine) {
     // Fog must match what the sky shows at the horizon.
     engine.post.state.fogColor.copy(uniforms.uHorizon.value);
     // Haze toward the sun brightens and takes the sun's hue, relative to the horizon it joins.
-    engine.post.state.fogSunColor.copy(uniforms.uHorizon.value).multiply(uniforms.uSunColor.value).multiplyScalar(tod.night ? 1.2 : 1.9);
+    engine.post.state.fogSunColor.copy(uniforms.uHorizon.value).multiply(uniforms.uSunColor.value).multiplyScalar(tod.night ? 1.2 : 1.5);
     const key = tod.id + ':' + w.sunDir.x.toFixed(3) + w.sunDir.z.toFixed(3);
     if (key !== envKey) {
       envKey = key;

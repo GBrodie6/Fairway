@@ -113,7 +113,7 @@ export function createGrass(world, engine) {
       .replace('#include <common>', '#include <common>\nvarying vec3 vGColor;\nvarying float vGY;')
       .replace('#include <map_fragment>', 'diffuseColor.rgb = vGColor;')
       .replace('#include <normal_fragment_maps>', 'normal = normalize((viewMatrix * vec4(0.0, 1.0, 0.0, 0.0)).xyz);')
-      .replace('#include <aomap_fragment>', '#include <aomap_fragment>\n  reflectedLight.directSpecular *= 0.12;\n  reflectedLight.indirectSpecular *= 0.12;\n  reflectedLight.indirectDiffuse *= 0.72 + 0.28 * vGY;');
+      .replace('#include <aomap_fragment>', '#include <aomap_fragment>\n  reflectedLight.directSpecular *= 0.04;\n  reflectedLight.indirectSpecular *= 0.04;\n  reflectedLight.indirectDiffuse *= 0.72 + 0.28 * vGY;');
   }], 'grass');
 
   const mesh = new THREE.Mesh(geo, material);

@@ -283,7 +283,9 @@ const FRAG_MAIN = /* glsl */ `
       }
       // A field of grass scatters light in every direction: almost no mirror-like sheen, even
       // at grazing angles. Sand, paths, and rock keep a little, wet ground keeps most.
-      float sp = (i == 4) ? 0.85 : (i == 12 || i == 8 || i == 5 || i == 3) ? 0.3 : (i == 2 ? 0.2 : 0.1);
+      // (Measured: at grazing angles toward a low sun, 10 percent of the highlight still
+      // equalled the whole diffuse term and read as a white sheen, so grass keeps 3 percent.)
+      float sp = (i == 4) ? 0.85 : (i == 12 || i == 8 || i == 5 || i == 3) ? 0.22 : (i == 2 ? 0.1 : 0.03);
       tAlbedo += c * w;
       nAcc.xy += tn * w;
       rAcc += r * w;
