@@ -77,7 +77,7 @@ for (const course of courses) {
     await p2.evaluate(() => { const s = document.querySelector('.screen'); if (s) s.style.display = 'none'; });
     await p2.evaluate(() => window.__fw.settle());
     for (const v of CLOSE) {
-      const ok = await p2.evaluate(async (name) => { const r = window.__fw.view(name); await new Promise((res) => setTimeout(res, name === 'flyover' ? 1500 : 200)); window.__fw.measure(); return r; }, v);
+      const ok = await p2.evaluate(async (name) => { const r = window.__fw.view(name); await new Promise((res) => setTimeout(res, name === 'flyover' ? 1500 : 200)); window.__fw.measure(6); return r; }, v);
       const f = path.join(outDir, 'raw', `${course}-${tier}-${v}.png`);
       await p2.screenshot({ path: f });
       cf.push(f); cl.push(`${course} ${tier} ${v}${ok === false ? ' (no such feature, nearest view)' : ''}`);

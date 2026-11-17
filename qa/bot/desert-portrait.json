@@ -1,0 +1,1443 @@
+{
+ "course": "desert",
+ "view": "portrait",
+ "holes": 18,
+ "tier": "low",
+ "scale": 0.6,
+ "timescale": 4,
+ "mode": "stroke",
+ "software": true,
+ "input": "touch",
+ "started": "2026-11-17T16:14:14.704Z",
+ "shots": [
+  {
+   "hole": 1,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 390.64,
+   "after": 170.01,
+   "ideal": 0.928,
+   "power": 0.924,
+   "tempo": "Perfect",
+   "ratio": 3.31,
+   "read": null,
+   "result": "FairwayCarry 229 yd  Total 244 yd  186 yd to pin",
+   "sec": 32.7
+  },
+  {
+   "hole": 1,
+   "club": "I4",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 170.01,
+   "after": 10.41,
+   "ideal": 0.903,
+   "power": 0.889,
+   "tempo": "Perfect",
+   "ratio": 2.97,
+   "read": null,
+   "result": "GreenCarry 173 yd  Total 185 yd  11 yd to pin",
+   "sec": 34.2
+  },
+  {
+   "hole": 1,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 10.41,
+   "after": 0.13,
+   "ideal": 0.69,
+   "power": 0.688,
+   "tempo": "Good, a little quick",
+   "ratio": 3.6,
+   "read": {
+    "drags": 3,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -1.09
+   },
+   "result": "Green0.4 ft left",
+   "sec": 28.6
+  },
+  {
+   "hole": 1,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.13,
+   "after": 0.13,
+   "ideal": 0.537,
+   "power": 0.552,
+   "tempo": "Perfect",
+   "ratio": 3.37,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par4 strokes",
+   "sec": 23.5
+  },
+  {
+   "hole": 2,
+   "club": "I6",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 159.9,
+   "after": 7.08,
+   "ideal": 0.89,
+   "power": 0.847,
+   "tempo": "Perfect",
+   "ratio": 3.16,
+   "read": null,
+   "result": "GreenCarry 155 yd  Total 168 yd  8 yd to pin",
+   "sec": 34.9
+  },
+  {
+   "hole": 2,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 7.08,
+   "after": 0.07,
+   "ideal": 0.69,
+   "power": 0.676,
+   "tempo": "Good, a little quick",
+   "ratio": 3.74,
+   "read": {
+    "drags": 1,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0.07
+   },
+   "result": "Green0.2 ft left",
+   "sec": 25.6
+  },
+  {
+   "hole": 2,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.07,
+   "after": 0.07,
+   "ideal": 0.469,
+   "power": 0.469,
+   "tempo": "Perfect",
+   "ratio": 3.09,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par3 strokes",
+   "sec": 21
+  },
+  {
+   "hole": 3,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 487.51,
+   "after": 273.21,
+   "ideal": 0.894,
+   "power": 0.884,
+   "tempo": "Good, a little quick",
+   "ratio": 3.56,
+   "read": null,
+   "result": "FairwayCarry 214 yd  Total 236 yd  299 yd to pin",
+   "sec": 41.1
+  },
+  {
+   "hole": 3,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 273.21,
+   "after": 74.01,
+   "ideal": 0.899,
+   "power": 0.878,
+   "tempo": "Perfect",
+   "ratio": 3.02,
+   "read": null,
+   "result": "FairwayCarry 188 yd  Total 218 yd  81 yd to pin",
+   "sec": 34.6
+  },
+  {
+   "hole": 3,
+   "club": "SW",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 74.01,
+   "after": 2.59,
+   "ideal": 0.797,
+   "power": 0.823,
+   "tempo": "Perfect",
+   "ratio": 3.43,
+   "read": null,
+   "result": "GreenCarry 77 yd  Total 83 yd  3 yd to pin",
+   "sec": 30
+  },
+  {
+   "hole": 3,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 2.59,
+   "after": 2.59,
+   "ideal": 0.643,
+   "power": 0.616,
+   "tempo": "Perfect",
+   "ratio": 3.21,
+   "read": {
+    "drags": 1,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -0.05
+   },
+   "result": "Birdie4 strokes",
+   "sec": 27.9
+  },
+  {
+   "hole": 4,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 309.63,
+   "after": 93.17,
+   "ideal": 0.91,
+   "power": 0.911,
+   "tempo": "Good, a little quick",
+   "ratio": 3.81,
+   "read": null,
+   "result": "FairwayCarry 219 yd  Total 238 yd  102 yd to pin",
+   "sec": 31.1
+  },
+  {
+   "hole": 4,
+   "club": "GW",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 93.17,
+   "after": 9.18,
+   "ideal": 0.87,
+   "power": 0.865,
+   "tempo": "Good, a little quick",
+   "ratio": 3.45,
+   "read": null,
+   "result": "GreenCarry 96 yd  Total 101 yd  10 yd to pin",
+   "sec": 31.2
+  },
+  {
+   "hole": 4,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 9.18,
+   "after": 0.42,
+   "ideal": 0.69,
+   "power": 0.703,
+   "tempo": "Perfect",
+   "ratio": 3.27,
+   "read": {
+    "drags": 4,
+    "taps": 6,
+    "leftDeg": -3.03,
+    "breakM": 2.22
+   },
+   "result": "Green1.4 ft left",
+   "sec": 29.1
+  },
+  {
+   "hole": 4,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.42,
+   "after": 0.42,
+   "ideal": 0.531,
+   "power": 0.552,
+   "tempo": "Perfect",
+   "ratio": 3.14,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par4 strokes",
+   "sec": 22.4
+  },
+  {
+   "hole": 5,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 355.48,
+   "after": 135.69,
+   "ideal": 0.872,
+   "power": 0.858,
+   "tempo": "Perfect",
+   "ratio": 3.39,
+   "read": null,
+   "result": "FairwayCarry 217 yd  Total 240 yd  148 yd to pin",
+   "sec": 30.9
+  },
+  {
+   "hole": 5,
+   "club": "I8",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 135.69,
+   "after": 9.28,
+   "ideal": 0.865,
+   "power": 0.837,
+   "tempo": "Perfect",
+   "ratio": 3.23,
+   "read": null,
+   "result": "FringeCarry 130 yd  Total 138 yd  10 yd to pin",
+   "sec": 29.7
+  },
+  {
+   "hole": 5,
+   "club": "SW",
+   "shot": "chip",
+   "lie": "Fringe",
+   "before": 9.28,
+   "after": 0.55,
+   "ideal": 0.398,
+   "power": 0.398,
+   "tempo": "Perfect",
+   "ratio": 3.15,
+   "read": null,
+   "result": "GreenCarry 5 yd  Total 10 yd  1 yd to pin",
+   "sec": 25.1
+  },
+  {
+   "hole": 5,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.55,
+   "after": 0.55,
+   "ideal": 0.671,
+   "power": 0.699,
+   "tempo": "Good, a little quick",
+   "ratio": 3.5,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par4 strokes",
+   "sec": 24.3
+  },
+  {
+   "hole": 6,
+   "club": "I7",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 144.45,
+   "after": 6.91,
+   "ideal": 0.905,
+   "power": 0.899,
+   "tempo": "Perfect",
+   "ratio": 2.8,
+   "read": null,
+   "result": "FringeCarry 150 yd  Total 154 yd  8 yd to pin",
+   "sec": 31
+  },
+  {
+   "hole": 6,
+   "club": "SW",
+   "shot": "chip",
+   "lie": "Fringe",
+   "before": 6.91,
+   "after": 0.47,
+   "ideal": 0.302,
+   "power": 0.295,
+   "tempo": "Good, a little quick",
+   "ratio": 3.57,
+   "read": null,
+   "result": "GreenCarry 3 yd  Total 7 yd  1 yd to pin",
+   "sec": 28.2
+  },
+  {
+   "hole": 6,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.47,
+   "after": 0.47,
+   "ideal": 0.623,
+   "power": 0.613,
+   "tempo": "Perfect",
+   "ratio": 3.37,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par3 strokes",
+   "sec": 27.2
+  },
+  {
+   "hole": 7,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 353.18,
+   "after": 156.92,
+   "ideal": 1,
+   "power": 1,
+   "tempo": "Good, a little quick",
+   "ratio": 3.76,
+   "read": null,
+   "result": "FairwayCarry 209 yd  Total 215 yd  172 yd to pin",
+   "sec": 28.9
+  },
+  {
+   "hole": 7,
+   "club": "W5",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 156.92,
+   "after": 8.81,
+   "ideal": 0.903,
+   "power": 0.917,
+   "tempo": "Good, a little quick",
+   "ratio": 4,
+   "read": null,
+   "result": "FringeCarry 162 yd  Total 164 yd  10 yd to pin",
+   "sec": 27.6
+  },
+  {
+   "hole": 7,
+   "club": "SW",
+   "shot": "chip",
+   "lie": "Fringe",
+   "before": 8.81,
+   "after": 0.78,
+   "ideal": 0.469,
+   "power": 0.466,
+   "tempo": "Good, a little quick",
+   "ratio": 3.47,
+   "read": null,
+   "result": "GreenCarry 6 yd  Total 10 yd  1 yd to pin",
+   "sec": 22.3
+  },
+  {
+   "hole": 7,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.78,
+   "after": 0.78,
+   "ideal": 0.69,
+   "power": 0.724,
+   "tempo": "Perfect",
+   "ratio": 3.19,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par4 strokes",
+   "sec": 25.1
+  },
+  {
+   "hole": 8,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 482.64,
+   "after": 274.07,
+   "ideal": 1,
+   "power": 1,
+   "tempo": "Good, a little quick",
+   "ratio": 3.5,
+   "read": null,
+   "result": "FairwayCarry 224 yd  Total 231 yd  300 yd to pin",
+   "sec": 32.6
+  },
+  {
+   "hole": 8,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 274.07,
+   "after": 86.05,
+   "ideal": 1,
+   "power": 0.977,
+   "tempo": "Perfect",
+   "ratio": 3.44,
+   "read": null,
+   "result": "FairwayCarry 200 yd  Total 206 yd  94 yd to pin",
+   "sec": 30.9
+  },
+  {
+   "hole": 8,
+   "club": "PW",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 86.05,
+   "after": 4.34,
+   "ideal": 0.87,
+   "power": 0.881,
+   "tempo": "Good, a little slow",
+   "ratio": 2.5,
+   "read": null,
+   "result": "GreenCarry 95 yd  Total 96 yd  5 yd to pin",
+   "sec": 28.5
+  },
+  {
+   "hole": 8,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 4.34,
+   "after": 4.34,
+   "ideal": 0.582,
+   "power": 0.569,
+   "tempo": "Perfect",
+   "ratio": 3.38,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Birdie4 strokes",
+   "sec": 28.6
+  },
+  {
+   "hole": 9,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 353.34,
+   "after": 135.51,
+   "ideal": 0.912,
+   "power": 0.895,
+   "tempo": "Perfect",
+   "ratio": 3.15,
+   "read": null,
+   "result": "FairwayCarry 227 yd  Total 242 yd  148 yd to pin",
+   "sec": 30.2
+  },
+  {
+   "hole": 9,
+   "club": "I7",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 135.51,
+   "after": 4.33,
+   "ideal": 0.883,
+   "power": 0.9,
+   "tempo": "Perfect",
+   "ratio": 2.69,
+   "read": null,
+   "result": "GreenCarry 145 yd  Total 150 yd  5 yd to pin",
+   "sec": 26.6
+  },
+  {
+   "hole": 9,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 4.33,
+   "after": 0.33,
+   "ideal": 0.661,
+   "power": 0.642,
+   "tempo": "Perfect",
+   "ratio": 3.15,
+   "read": {
+    "drags": 4,
+    "taps": 6,
+    "leftDeg": 3.86,
+    "breakM": -1
+   },
+   "result": "Green1.1 ft left",
+   "sec": 29.3
+  },
+  {
+   "hole": 9,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.33,
+   "after": 0.33,
+   "ideal": 0.537,
+   "power": 0.535,
+   "tempo": "Perfect",
+   "ratio": 3.24,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par4 strokes",
+   "sec": 26.6
+  },
+  {
+   "hole": 10,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 512.11,
+   "after": 292.47,
+   "ideal": 0.954,
+   "power": 0.966,
+   "tempo": "Perfect",
+   "ratio": 3.29,
+   "read": null,
+   "result": "FairwayCarry 237 yd  Total 247 yd  320 yd to pin",
+   "sec": 31.8
+  },
+  {
+   "hole": 10,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 292.47,
+   "after": 98.28,
+   "ideal": 0.959,
+   "power": 0.962,
+   "tempo": "Good, a little slow",
+   "ratio": 2.38,
+   "read": null,
+   "result": "FairwayCarry 205 yd  Total 214 yd  107 yd to pin",
+   "sec": 30
+  },
+  {
+   "hole": 10,
+   "club": "PW",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 98.28,
+   "after": 6.2,
+   "ideal": 0.852,
+   "power": 0.854,
+   "tempo": "Perfect",
+   "ratio": 3.35,
+   "read": null,
+   "result": "GreenCarry 104 yd  Total 106 yd  7 yd to pin",
+   "sec": 35.7
+  },
+  {
+   "hole": 10,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 6.2,
+   "after": 0.11,
+   "ideal": 0.69,
+   "power": 0.675,
+   "tempo": "Perfect",
+   "ratio": 3.37,
+   "read": {
+    "drags": 1,
+    "taps": 1,
+    "leftDeg": 0.01,
+    "breakM": -0.26
+   },
+   "result": "Green0.4 ft left",
+   "sec": 28.7
+  },
+  {
+   "hole": 10,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.11,
+   "after": 0.11,
+   "ideal": 0.5,
+   "power": 0.509,
+   "tempo": "Good, a little quick",
+   "ratio": 3.51,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par5 strokes",
+   "sec": 24.9
+  },
+  {
+   "hole": 11,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 392.03,
+   "after": 170.32,
+   "ideal": 0.914,
+   "power": 0.907,
+   "tempo": "Perfect",
+   "ratio": 3.24,
+   "read": null,
+   "result": "First cutCarry 232 yd  Total 248 yd  186 yd to pin",
+   "sec": 31.1
+  },
+  {
+   "hole": 11,
+   "club": "W3",
+   "shot": "full",
+   "lie": "First cut",
+   "before": 170.32,
+   "after": 14.68,
+   "ideal": 0.923,
+   "power": 0.965,
+   "tempo": "Good, a little quick",
+   "ratio": 4.08,
+   "read": null,
+   "result": "BunkerCarry 183 yd  Total 183 yd  16 yd to pin",
+   "sec": 24.3
+  },
+  {
+   "hole": 11,
+   "club": "LW",
+   "shot": "full",
+   "lie": "Bunker",
+   "before": 14.68,
+   "after": 4.1,
+   "ideal": 0.309,
+   "power": 0.316,
+   "tempo": "Good, a little quick",
+   "ratio": 3.98,
+   "read": null,
+   "result": "GreenCarry 7 yd  Total 12 yd  4 yd to pin",
+   "sec": 25.5
+  },
+  {
+   "hole": 11,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 4.1,
+   "after": 0.15,
+   "ideal": 0.69,
+   "power": 0.66,
+   "tempo": "Good, a little quick",
+   "ratio": 3.51,
+   "read": {
+    "drags": 3,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -0.37
+   },
+   "result": "Green0.5 ft left",
+   "sec": 22.5
+  },
+  {
+   "hole": 11,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.15,
+   "after": 0.15,
+   "ideal": 0.519,
+   "power": 0.527,
+   "tempo": "Perfect",
+   "ratio": 2.93,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Bogey5 strokes",
+   "sec": 22
+  },
+  {
+   "hole": 12,
+   "club": "I5",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 166.5,
+   "after": 16.09,
+   "ideal": 0.912,
+   "power": 0.902,
+   "tempo": "Perfect",
+   "ratio": 2.77,
+   "read": null,
+   "result": "GreenCarry 157 yd  Total 164 yd  18 yd to pin",
+   "sec": 28.3
+  },
+  {
+   "hole": 12,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 16.09,
+   "after": 1.09,
+   "ideal": 0.69,
+   "power": 0.714,
+   "tempo": "Perfect",
+   "ratio": 3.14,
+   "read": {
+    "drags": 3,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -1.59
+   },
+   "result": "Green3.6 ft left",
+   "sec": 26.7
+  },
+  {
+   "hole": 12,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 1.09,
+   "after": 1.09,
+   "ideal": 0.582,
+   "power": 0.598,
+   "tempo": "Good, a little quick",
+   "ratio": 3.9,
+   "read": {
+    "drags": 2,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0.05
+   },
+   "result": "Par3 strokes",
+   "sec": 23.7
+  },
+  {
+   "hole": 13,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 386.07,
+   "after": 178.34,
+   "ideal": 0.945,
+   "power": 0.901,
+   "tempo": "Good, a little quick",
+   "ratio": 3.77,
+   "read": null,
+   "result": "FairwayCarry 216 yd  Total 228 yd  195 yd to pin",
+   "sec": 29.1
+  },
+  {
+   "hole": 13,
+   "club": "W5",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 178.34,
+   "after": 7.45,
+   "ideal": 0.912,
+   "power": 0.941,
+   "tempo": "Perfect",
+   "ratio": 3.04,
+   "read": null,
+   "result": "GreenCarry 196 yd  Total 203 yd  8 yd to pin",
+   "sec": 31
+  },
+  {
+   "hole": 13,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 7.45,
+   "after": 7.45,
+   "ideal": 0.641,
+   "power": 0.647,
+   "tempo": "Good, a little quick",
+   "ratio": 3.47,
+   "read": {
+    "drags": 1,
+    "taps": 1,
+    "leftDeg": 0.06,
+    "breakM": -0.31
+   },
+   "result": "Birdie3 strokes",
+   "sec": 29.3
+  },
+  {
+   "hole": 14,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 332.02,
+   "after": 130.56,
+   "ideal": 0.896,
+   "power": 0.825,
+   "tempo": "Perfect",
+   "ratio": 3.2,
+   "read": null,
+   "result": "FairwayCarry 207 yd  Total 223 yd  143 yd to pin",
+   "sec": 31.1
+  },
+  {
+   "hole": 14,
+   "club": "I8",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 130.56,
+   "after": 13,
+   "ideal": 0.896,
+   "power": 0.824,
+   "tempo": "Perfect",
+   "ratio": 3.4,
+   "read": null,
+   "result": "RoughCarry 121 yd  Total 129 yd  14 yd to pin",
+   "sec": 28.4
+  },
+  {
+   "hole": 14,
+   "club": "SW",
+   "shot": "chip",
+   "lie": "Rough",
+   "before": 13,
+   "after": 1.44,
+   "ideal": 0.556,
+   "power": 0.544,
+   "tempo": "Good, a little quick",
+   "ratio": 3.45,
+   "read": null,
+   "result": "GreenCarry 5 yd  Total 13 yd  2 yd to pin",
+   "sec": 25.5
+  },
+  {
+   "hole": 14,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 1.44,
+   "after": 1.44,
+   "ideal": 0.69,
+   "power": 0.698,
+   "tempo": "Good, a little quick",
+   "ratio": 3.69,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par4 strokes",
+   "sec": 22.7
+  },
+  {
+   "hole": 15,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 483.72,
+   "after": 267.77,
+   "ideal": 0.845,
+   "power": 0.84,
+   "tempo": "Good, a little quick",
+   "ratio": 3.5,
+   "read": null,
+   "result": "FairwayCarry 212 yd  Total 236 yd  293 yd to pin",
+   "sec": 29.1
+  },
+  {
+   "hole": 15,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 267.77,
+   "after": 61.94,
+   "ideal": 0.854,
+   "power": 0.871,
+   "tempo": "Perfect",
+   "ratio": 3.12,
+   "read": null,
+   "result": "FairwayCarry 200 yd  Total 226 yd  68 yd to pin",
+   "sec": 31.2
+  },
+  {
+   "hole": 15,
+   "club": "LW",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 61.94,
+   "after": 4.97,
+   "ideal": 0.799,
+   "power": 0.807,
+   "tempo": "Perfect",
+   "ratio": 3.27,
+   "read": null,
+   "result": "GreenCarry 65 yd  Total 70 yd  5 yd to pin",
+   "sec": 27.7
+  },
+  {
+   "hole": 15,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 4.97,
+   "after": 4.97,
+   "ideal": 0.69,
+   "power": 0.691,
+   "tempo": "Good, a little quick",
+   "ratio": 3.83,
+   "read": {
+    "drags": 2,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0.3
+   },
+   "result": "Birdie4 strokes",
+   "sec": 29.7
+  },
+  {
+   "hole": 16,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 176.1,
+   "after": 5.05,
+   "ideal": 0.894,
+   "power": 0.899,
+   "tempo": "Good, a little quick",
+   "ratio": 3.51,
+   "read": null,
+   "result": "GreenCarry 189 yd  Total 194 yd  6 yd to pin",
+   "sec": 28.8
+  },
+  {
+   "hole": 16,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 5.05,
+   "after": 1.18,
+   "ideal": 0.688,
+   "power": 0.747,
+   "tempo": "Perfect",
+   "ratio": 2.71,
+   "read": {
+    "drags": 4,
+    "taps": 6,
+    "leftDeg": 3.23,
+    "breakM": -1.11
+   },
+   "result": "Green3.9 ft left",
+   "sec": 26
+  },
+  {
+   "hole": 16,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 1.18,
+   "after": 1.18,
+   "ideal": 0.69,
+   "power": 0.687,
+   "tempo": "Good, a little quick",
+   "ratio": 3.72,
+   "read": {
+    "drags": 4,
+    "taps": 1,
+    "leftDeg": -0.95,
+    "breakM": 0.18
+   },
+   "result": "Par3 strokes",
+   "sec": 26.7
+  },
+  {
+   "hole": 17,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 379.23,
+   "after": 151.2,
+   "ideal": 0.994,
+   "power": 1,
+   "tempo": "Perfect",
+   "ratio": 3.17,
+   "read": null,
+   "result": "FairwayCarry 243 yd  Total 252 yd  165 yd to pin",
+   "sec": 31.9
+  },
+  {
+   "hole": 17,
+   "club": "I4",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 151.2,
+   "after": 9.66,
+   "ideal": 0.872,
+   "power": 0.894,
+   "tempo": "Good, a little quick",
+   "ratio": 3.93,
+   "read": null,
+   "result": "GreenCarry 159 yd  Total 166 yd  11 yd to pin",
+   "sec": 31
+  },
+  {
+   "hole": 17,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 9.66,
+   "after": 5.88,
+   "ideal": 0.684,
+   "power": 0.688,
+   "tempo": "Good, a little slow",
+   "ratio": 2.47,
+   "read": {
+    "drags": 4,
+    "taps": 6,
+    "leftDeg": 1.81,
+    "breakM": -1.98
+   },
+   "result": "Green19 ft left",
+   "sec": 36.3
+  },
+  {
+   "hole": 17,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 5.88,
+   "after": 0.26,
+   "ideal": 0.69,
+   "power": 0.676,
+   "tempo": "Good, a little quick",
+   "ratio": 3.58,
+   "read": {
+    "drags": 4,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -0.89
+   },
+   "result": "Green0.9 ft left",
+   "sec": 29.5
+  },
+  {
+   "hole": 17,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.26,
+   "after": 0.26,
+   "ideal": 0.565,
+   "power": 0.557,
+   "tempo": "Perfect",
+   "ratio": 3.45,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Bogey5 strokes",
+   "sec": 23.2
+  },
+  {
+   "hole": 18,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 359.65,
+   "after": 131.06,
+   "ideal": 0.983,
+   "power": 1,
+   "tempo": "Perfect",
+   "ratio": 3.23,
+   "read": null,
+   "result": "FairwayCarry 242 yd  Total 251 yd  143 yd to pin",
+   "sec": 34.9
+  },
+  {
+   "hole": 18,
+   "club": "I7",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 131.06,
+   "after": 8.96,
+   "ideal": 0.876,
+   "power": 0.9,
+   "tempo": "Perfect",
+   "ratio": 3.41,
+   "read": null,
+   "result": "GreenCarry 142 yd  Total 146 yd  10 yd to pin",
+   "sec": 28.8
+  },
+  {
+   "hole": 18,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 8.96,
+   "after": 0.28,
+   "ideal": 0.663,
+   "power": 0.653,
+   "tempo": "Perfect",
+   "ratio": 3.44,
+   "read": {
+    "drags": 3,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0.85
+   },
+   "result": "Green0.9 ft left",
+   "sec": 24.4
+  },
+  {
+   "hole": 18,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.28,
+   "after": 0.28,
+   "ideal": 0.546,
+   "power": 0.524,
+   "tempo": "Perfect",
+   "ratio": 3.43,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par4 strokes",
+   "sec": 29.3
+  }
+ ],
+ "holesPlayed": [
+  {
+   "hole": 1,
+   "par": 4,
+   "strokes": [
+    4
+   ]
+  },
+  {
+   "hole": 2,
+   "par": 3,
+   "strokes": [
+    3
+   ]
+  },
+  {
+   "hole": 3,
+   "par": 5,
+   "strokes": [
+    4
+   ]
+  },
+  {
+   "hole": 4,
+   "par": 4,
+   "strokes": [
+    4
+   ]
+  },
+  {
+   "hole": 5,
+   "par": 4,
+   "strokes": [
+    4
+   ]
+  },
+  {
+   "hole": 6,
+   "par": 3,
+   "strokes": [
+    3
+   ]
+  },
+  {
+   "hole": 7,
+   "par": 4,
+   "strokes": [
+    4
+   ]
+  },
+  {
+   "hole": 8,
+   "par": 5,
+   "strokes": [
+    4
+   ]
+  },
+  {
+   "hole": 9,
+   "par": 4,
+   "strokes": [
+    4
+   ]
+  },
+  {
+   "hole": 10,
+   "par": 5,
+   "strokes": [
+    5
+   ]
+  },
+  {
+   "hole": 11,
+   "par": 4,
+   "strokes": [
+    5
+   ]
+  },
+  {
+   "hole": 12,
+   "par": 3,
+   "strokes": [
+    3
+   ]
+  },
+  {
+   "hole": 13,
+   "par": 4,
+   "strokes": [
+    3
+   ]
+  },
+  {
+   "hole": 14,
+   "par": 4,
+   "strokes": [
+    4
+   ]
+  },
+  {
+   "hole": 15,
+   "par": 5,
+   "strokes": [
+    4
+   ]
+  },
+  {
+   "hole": 16,
+   "par": 3,
+   "strokes": [
+    3
+   ]
+  },
+  {
+   "hole": 17,
+   "par": 4,
+   "strokes": [
+    5
+   ]
+  },
+  {
+   "hole": 18,
+   "par": 4,
+   "strokes": [
+    4
+   ]
+  }
+ ],
+ "result": {
+  "scores": [
+   [
+    4,
+    3,
+    4,
+    4,
+    4,
+    3,
+    4,
+    4,
+    4,
+    5,
+    5,
+    3,
+    3,
+    4,
+    4,
+    3,
+    5,
+    4
+   ]
+  ],
+  "players": [
+   "You"
+  ],
+  "complete": true,
+  "holes": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "mode": "stroke",
+  "standings": "70  (-2)"
+ },
+ "errors": [],
+ "stuck": [],
+ "timing": {
+  "bootSec": 9.032,
+  "totalMin": 45,
+  "shots": 70,
+  "secPerShot": 28.6
+ },
+ "after": {
+  "player": "You",
+  "rounds": 1,
+  "history": [
+   {
+    "id": "1794934754199-1625032427",
+    "date": 1794934754199,
+    "courseId": "desert",
+    "mode": "stroke",
+    "holes": 18,
+    "strokes": 70,
+    "par": 72,
+    "toPar": -2,
+    "birdies": 4,
+    "putts": 29,
+    "eventId": null
+   }
+  ],
+  "daily": {},
+  "achievements": [
+   "first-round",
+   "birdie",
+   "under-par"
+  ],
+  "inProgress": false,
+  "career": null
+ },
+ "guard": {
+  "count": 0,
+  "last": null,
+  "bySystem": {}
+ },
+ "consoleErrors": [],
+ "summary": {
+  "holes": 18,
+  "strokes": 70,
+  "par": 72,
+  "putts": 29,
+  "tempo": {
+   "Perfect": 41,
+   "Good, a little quick": 26,
+   "Good, a little slow": 3
+  },
+  "stuck": 0,
+  "consoleErrors": 0,
+  "guardErrors": 0,
+  "toPar": -2
+ }
+}

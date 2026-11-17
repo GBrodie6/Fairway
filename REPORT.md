@@ -1,6 +1,7 @@
 # Fairway Next: stage report
 
 Running log, one section per stage: what changed, evidence, commit, test counts, asset size.
+The final report (stage table, numbers, what needs a real device, known gaps) is at the end.
 Evidence is always a test, a measurement, or a headless Chrome run. Headless Chrome uses
 SwiftShader (software rendering), so frame times from it are not representative of a real GPU.
 
@@ -368,6 +369,41 @@ SwiftShader (software rendering), so frame times from it are not representative 
   distance almost perfectly, so the bot scores under par. That suits a calm game; a "Power
   guide" setting now turns the mark off for a harder game.
 
+## Stage 10: interface, settings, accessibility, audio
+
+- Phone-first HUD (`ui/hud.js`, `ui/styles.css`): hole card, score pill, distance to the
+  pin with elevation, wind arrow relative to the aim with a plain label (helping, into, left
+  to right), map and pause buttons, hazard warning, shot result toasts, club card, shot-type
+  segments, fine-aim row, putt read. Glass panels from CSS design tokens, system fonts, safe
+  area insets, compact rules for short landscape screens and narrow portrait screens.
+- Menus (`ui/screens.js`, `ui/menus.js`): main menu, quick-round setup with course cards,
+  pause, scorecard, hole summary, round end, settings, stats and history with achievements,
+  daily challenge, pass and play, career hub, attributes, equipment, standings, challenge
+  links. Sheets scroll when taller than the screen (a centered sheet had cut off its top).
+- Settings: name, golfer handedness, stick on the left, stick size, power guide, aim
+  sensitivity, units (yards and feet or meters), graphics quality (automatic or a fixed tier,
+  applied live), color vision palette for the green grid and warnings, reduce motion (also
+  follows the operating system), ball spin display, vibration, master, effects, ambience,
+  and music volumes. Verified through real controls: changing units to meters and the stick
+  side updated the game and was persisted (`qa/proof/stage6/menus.jpg`).
+- Accessibility, checked by `tests/a11y.test.js`: body text on the glass is at least 7:1 and
+  secondary text at least 4.5:1 against the worst case (the glass over a pure white or pure
+  black scene; the first check failed at 6.76:1 and the glass was made slightly more opaque);
+  primary buttons are at least 7:1; every button style is at least 44 px tall (two were 38 and
+  40). Every icon button has an `aria-label`; toasts and the putt read are live regions;
+  focus is visible for keyboard users. The putting grid's slope direction is carried by
+  moving pulses, not by color alone.
+- Audio (`audio/audio.js`): every sound is generated (noise and oscillators), so no audio
+  asset needed licensing. Ambience: wind that follows the hole's wind, birds by day,
+  crickets at dusk and night, water when the camera is near it, a crowd murmur on tournament
+  holes. Effects: strikes by club type, landings by surface, the cup, lip-outs, splashes, a
+  swing whoosh, cheers. Optional generative music, off by default.
+- Audio evidence: headless Chrome has no speakers, so each sound was rendered into an
+  OfflineAudioContext and measured (`scripts/tools/menus.mjs`): driver peak 0.47 (RMS
+  0.024), iron 0.51, putt 0.30, landing on the green 0.07, in sand 0.18, splash 0.41, cup
+  0.25, whoosh 0.04; a silent control measured exactly 0. The live context reached the
+  running state after a tap. Nothing about how it sounds was checked by ear.
+
 ## Stage 11: performance
 
 Method: `npm run perf` on the production build, headless Chrome, SwiftShader, parkland hole 1
@@ -409,81 +445,6 @@ only when that course is played. Target "first load under 10 MB": met on every t
   low. The counts above sit inside the per-tier budgets that were set for those targets, and
   the CPU side is under 1 ms, but only a real device can confirm the frame rate.
 
-## Stage 13: PWA and iOS packaging
-
-- `manifest.webmanifest` with procedural icons (including maskable ones), standalone display,
-  theme colors; iOS meta tags in `index.html`.
-- Service worker (`src/sw/sw-template.js`, written into `dist/sw.js` at build time with the
-  exact list of files in that build): the app shell is precached on install; game assets are
-  cached the first time they load, so a hole played once can be played offline; old shells
-  and assets from an older asset build are dropped on activation. Every asset URL now carries
-  the asset build's stamp (`?v=`), so the host can cache them as immutable. The worker is not
-  registered in QA runs (`smoke`, `bot`) so those always measure a cold load.
-- Evidence (`scripts/tools/offline.mjs`): after one online visit the worker was active and
-  controlling the page with 10 shell files and 41 game assets cached. With the network cut,
-  a reload booted, sent zero requests to the server, rendered the course with its HDRI
-  lighting from the cache (luma 148.6, no clipping), and showed the main menu, with no
-  console errors.
-- iOS: `capacitor.config.json` and `IOS.md` (prerequisites, build and sync commands, Xcode
-  settings, behavior inside the app, privacy answers, submission steps, and what to check on
-  a real phone), and a 1024 px opaque App Store icon (`ios-assets/AppIcon-1024.png`). Not built:
-  an iOS build needs a Mac with Xcode and an Apple Developer account, which this Linux
-  machine does not have. Capacitor itself was not installed.
-
-## Stage 10: interface, settings, accessibility, audio
-
-- Phone-first HUD (`ui/hud.js`, `ui/styles.css`): hole card, score pill, distance to the
-  pin with elevation, wind arrow relative to the aim with a plain label (helping, into, left
-  to right), map and pause buttons, hazard warning, shot result toasts, club card, shot-type
-  segments, fine-aim row, putt read. Glass panels from CSS design tokens, system fonts, safe
-  area insets, compact rules for short landscape screens and narrow portrait screens.
-- Menus (`ui/screens.js`, `ui/menus.js`): main menu, quick-round setup with course cards,
-  pause, scorecard, hole summary, round end, settings, stats and history with achievements,
-  daily challenge, pass and play, career hub, attributes, equipment, standings, challenge
-  links. Sheets scroll when taller than the screen (a centered sheet had cut off its top).
-- Settings: name, golfer handedness, stick on the left, stick size, power guide, aim
-  sensitivity, units (yards and feet or meters), graphics quality (automatic or a fixed tier,
-  applied live), color vision palette for the green grid and warnings, reduce motion (also
-  follows the operating system), ball spin display, vibration, master, effects, ambience,
-  and music volumes. Verified through real controls: changing units to meters and the stick
-  side updated the game and was persisted (`qa/proof/stage6/menus.jpg`).
-- Accessibility, checked by `tests/a11y.test.js`: body text on the glass is at least 7:1 and
-  secondary text at least 4.5:1 against the worst case (the glass over a pure white or pure
-  black scene; the first check failed at 6.76:1 and the glass was made slightly more opaque);
-  primary buttons are at least 7:1; every button style is at least 44 px tall (two were 38 and
-  40). Every icon button has an `aria-label`; toasts and the putt read are live regions;
-  focus is visible for keyboard users. The putting grid's slope direction is carried by
-  moving pulses, not by color alone.
-- Audio (`audio/audio.js`): every sound is generated (noise and oscillators), so no audio
-  asset needed licensing. Ambience: wind that follows the hole's wind, birds by day,
-  crickets at dusk and night, water when the camera is near it, a crowd murmur on tournament
-  holes. Effects: strikes by club type, landings by surface, the cup, lip-outs, splashes, a
-  swing whoosh, cheers. Optional generative music, off by default.
-- Audio evidence: headless Chrome has no speakers, so each sound was rendered into an
-  OfflineAudioContext and measured (`scripts/tools/menus.mjs`): driver peak 0.47 (RMS
-  0.024), iron 0.51, putt 0.30, landing on the green 0.07, in sand 0.18, splash 0.41, cup
-  0.25, whoosh 0.04; a silent control measured exactly 0. The live context reached the
-  running state after a tap. Nothing about how it sounds was checked by ear.
-
-## Stage 14: hosting and deploy
-
-- Static site, as required. `vercel.json`: immutable caching for `/assets/*` (hashed bundles
-  and version-stamped game assets), revalidation for the HTML, manifest, and service worker,
-  explicit types for `.glb` and `.hdr`, an SPA fallback that leaves missing assets as real
-  404s, and basic security headers. `scripts/lib/serve.mjs` applies the same headers locally,
-  so the smoke test, bot, offline test, and perf runs all exercise them.
-- Vercel limits read from Vercel's documentation on 2026-11-17 (limits page last updated
-  2026-09-16; Hobby and fair-use pages 2026-11-12): CLI uploads 100 MB on Hobby, 15,000 files
-  per CLI deployment, no per-file limit stated, 45-minute builds, 100 GB fast data transfer as
-  a fair-use guideline. This build is about 43 MB in about 170 files. Details in `DEPLOY.md`.
-- Deployment: not done. `vercel --version` reported 65.17.0; `vercel whoami` reported
-  "Logged out."; `vercel --prod` failed with "Error: No existing credentials found." (full
-  output in `DEPLOY.md`). The CLI suggested `vercel deploy --temporary`, which publishes to a
-  public URL outside your account; that was not used. `DEPLOY.md` has the exact commands,
-  including why a Git-connected build would ship without the downloaded assets and how to
-  avoid it. `npm run smoke` can be pointed at a live URL with `FAIRWAY_URL`.
-- README written. No live URL exists to test.
-
 ## Stage 12: multiplayer
 
 - Challenge links (`game/share.js`): the round setup (course, holes, seed, time of day) and
@@ -515,3 +476,206 @@ only when that course is played. Target "first load under 10 MB": met on every t
 - Real-time play: not available. A static site has no server to relay live turns. Behind
   `?online` the main menu shows "Online play (experimental)", which explains this and points
   to challenge links and pass and play.
+
+## Stage 13: PWA and iOS packaging
+
+- `manifest.webmanifest` with procedural icons (including maskable ones), standalone display,
+  theme colors; iOS meta tags in `index.html`.
+- Service worker (`src/sw/sw-template.js`, written into `dist/sw.js` at build time with the
+  exact list of files in that build): the app shell is precached on install; game assets are
+  cached the first time they load, so a hole played once can be played offline; old shells
+  and assets from an older asset build are dropped on activation. Every asset URL now carries
+  the asset build's stamp (`?v=`), so the host can cache them as immutable. The worker is not
+  registered in QA runs (`smoke`, `bot`) so those always measure a cold load.
+- Evidence (`scripts/tools/offline.mjs`): after one online visit the worker was active and
+  controlling the page with 10 shell files and 41 game assets cached. With the network cut,
+  a reload booted, sent zero requests to the server, rendered the course with its HDRI
+  lighting from the cache (luma 148.6, no clipping), and showed the main menu, with no
+  console errors.
+- iOS: `capacitor.config.json` and `IOS.md` (prerequisites, build and sync commands, Xcode
+  settings, behavior inside the app, privacy answers, submission steps, and what to check on
+  a real phone), and a 1024 px opaque App Store icon (`ios-assets/AppIcon-1024.png`). Not built:
+  an iOS build needs a Mac with Xcode and an Apple Developer account, which this Linux
+  machine does not have. Capacitor itself was not installed.
+
+## Stage 14: hosting and deploy
+
+- Static site, as required. `vercel.json`: immutable caching for `/assets/*` (hashed bundles
+  and version-stamped game assets), revalidation for the HTML, manifest, and service worker,
+  explicit types for `.glb` and `.hdr`, an SPA fallback that leaves missing assets as real
+  404s, and basic security headers. `scripts/lib/serve.mjs` applies the same headers locally,
+  so the smoke test, bot, offline test, and perf runs all exercise them.
+- Vercel limits read from Vercel's documentation on 2026-11-17 (limits page last updated
+  2026-09-16; Hobby and fair-use pages 2026-11-12): CLI uploads 100 MB on Hobby, 15,000 files
+  per CLI deployment, no per-file limit stated, 45-minute builds, 100 GB fast data transfer as
+  a fair-use guideline. This build is about 43 MB in about 170 files. Details in `DEPLOY.md`.
+- Deployment: not done. `vercel --version` reported 65.17.0; `vercel whoami` reported
+  "Logged out."; `vercel --prod` failed with "Error: No existing credentials found." (full
+  output in `DEPLOY.md`). The CLI suggested `vercel deploy --temporary`, which publishes to a
+  public URL outside your account; that was not used. `DEPLOY.md` has the exact commands,
+  including why a Git-connected build would ship without the downloaded assets and how to
+  avoid it. `npm run smoke` can be pointed at a live URL with `FAIRWAY_URL`.
+- README written. No live URL exists to test.
+
+## Stage 15: QA bot, contact sheets, realism review
+
+### QA bot
+
+`scripts/bot.mjs` plays complete rounds on the production build (`dist/`, served with the
+`vercel.json` headers). Portrait runs (390x844) use touch, landscape runs (844x390) use the
+mouse, both through the DevTools Input domain with planned timestamps. Every shot is a pull
+and push on the swing stick: power from the green mark with a 3 percent random spread, tempo
+between about 2.5 and 3.6, a small sideways drift; putts are read by dragging the aim (slow
+drags get the fine gain) and finishing with the fine-aim buttons. The bot never calls a game
+method to act. Low tier, render scale 0.6, game time running four times faster per frame
+(`?timescale=4`) so a round fits in under an hour of software rendering. Reports are in
+`qa/bot/*.json`, screenshots in `qa/bot/shots/`.
+
+| Run | Input | Holes | Score | Shots | Putts | Putt reads within 0.25 deg | Perfect tempo | Stuck | Console errors | Guard errors | Minutes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| alpine-landscape | mouse | 18 | 69 (-3) | 69 | 24 | 23/24 | 40 of 69 | 0 | 0 | 0 | 50.1 |
+| alpine-portrait | touch | 18 | 65 (-7) | 65 | 28 | 23/28 | 40 of 65 | 0 | 0 | 0 | 71.8 |
+| career-landscape | mouse | 9 | 34 (-2) | 34 | 13 | 13/13 | 13 of 34 | 0 | 0 | 0 | 15.4 |
+| daily-portrait | touch | 3 | 14 (+3) | 14 | 6 | 5/6 | 6 of 14 | 0 | 0 | 0 | 14.8 |
+| desert-landscape | mouse | 18 | 66 (-6) | 66 | 27 | 26/27 | 29 of 66 | 0 | 0 | 0 | 35.1 |
+| desert-portrait | touch | 18 | 70 (-2) | 70 | 29 | 24/29 | 41 of 70 | 0 | 0 | 0 | 45 |
+| links-landscape | mouse | 18 | 72 (E) | 72 | 31 | 30/31 | 34 of 72 | 0 | 0 | 0 | 42.3 |
+| links-portrait | touch | 18 | 72 (E) | 72 | 30 | 24/30 | 51 of 72 | 0 | 0 | 0 | 48.5 |
+| parkland-landscape | mouse | 18 | 65 (-7) | 65 | 27 | 26/27 | 31 of 65 | 0 | 0 | 0 | 57.5 |
+| parkland-portrait | touch | 18 | 65 (-7) | 65 | 23 | 22/23 | 35 of 65 | 0 | 0 | 0 | 65.7 |
+| passplay-landscape | mouse | 3 | 12 (-1) | 23 | 9 | 9/9 | 12 of 23 | 0 | 0 | 0 | 15.1 |
+| resume-portrait | touch | 9 | 33 (-3) | 33 | 12 | 12/12 | 18 of 33 | 0 | 0 | 0 | 31.4 |
+| tropical-landscape | mouse | 18 | 72 (E) | 72 | 26 | 26/26 | 35 of 72 | 0 | 0 | 0 | 49.2 |
+| tropical-portrait | touch | 18 | 64 (-8) | 64 | 25 | 21/25 | 38 of 64 | 0 | 0 | 0 | 41.8 |
+
+- Every course was played for a full 18 holes in both orientations: zero stuck states, zero
+  console errors, zero guard errors in 14 runs and 784 shots.
+- The bot finishes well under par on most courses because it pulls exactly to the power
+  mark. Distance control is therefore easy for anyone who follows the mark; the Power guide
+  setting turns it off. Real players' scores are unknown.
+- Putt reads: the bot's own drag correction landed within 0.25 degrees of the solved line on
+  most putts; the misses were drags that overshot and were not fully corrected (a limit of
+  the bot, not the game).
+
+### Contact sheets
+
+`npm run contact` (`scripts/contact-sheet.mjs`): every course at every time-of-day preset
+from the address view (medium tier), and close-ups of the green, a bunker, water, the tree
+line, the rough, and the flyover at each of the four tiers, on hole 1 of each course. Sheets
+are in `qa/contact/` (`<course>-times.jpg`, `<course>-closeups.jpg`); raw frames are not
+committed. Where hole 1 has no water, that panel shows the nearest view instead.
+
+Luma and clipping of the 3D view per course and preset (`qa/contact/luma.json`, medium tier;
+bands: day 140 to 160 with at most 2 percent clipped, night 50 to 76):
+
+| Course | Dawn | Morning | Midday | Golden | Dusk | Night |
+| --- | --- | --- | --- | --- | --- | --- |
+| parkland | 148.9, 0% | 150, 0% | 149.9, 0% | 149, 0.05% | 148.8, 0.01% | 61.8, 0.01% |
+| links | 149.3, 0.02% | 150.3, 0.01% | 150.9, 0% | 149.3, 0.01% | 149.4, 0% | 62.2, 0.01% |
+| desert | 149.4, 0% | 150.4, 0% | 150.5, 0% | 149.4, 0.11% | 149.5, 0.02% | 61.9, 0.01% |
+| alpine | 149.6, 1.11% | 150.6, 0.18% | 150.5, 0% | 149.3, 1.3% | 149.4, 0.86% | 61.9, 0.45% |
+| tropical | 149, 0% | 149.6, 0% | 149.7, 0% | 148.8, 0% | 149.1, 0.01% | 61.6, 0.01% |
+
+All 30 inside their bands. Each cell is mean luma (0 to 255) and the percentage of clipped pixels. Alpine clips most (1.3 percent at golden hour: bright snow), still under the 2 percent limit.
+
+### What is not realistic (most noticeable first)
+
+From the contact sheets and the bot screenshots:
+
+1. Bunkers: flat, evenly bright sand laid on the grass like a decal, on every course. No lip,
+   no face, no shadowed edge, no depth; links pot bunkers in particular should be deep with
+   steep revetted faces.
+2. Vegetation: the scanned trees are young specimens scaled up, so canopies are thin and
+   tree lines read as a uniform wall from the tee; the switch from mesh to impostor is a
+   visible pop; the procedural palms, saguaros (a plain green tube), and reeds (plastic-looking
+   spikes) are simple shapes.
+3. Short grass: the fairway and green have no blades (blades grow only off the short grass),
+   so at the putting camera the green looks like printed carpet, and the mowing checkerboard
+   is far too strong on every course.
+4. Water: tropical ponds read as pale, milky blue with a white rim; all water is a flat plane
+   with normal maps, with no wet margins and no foam where the sea meets the links shore.
+5. Props and people: tee markers are plain boxes; the clubhouse, benches, and signs are
+   simple shapes; the crowd is flat cards; there is no golfer, caddie, cart, or rake.
+6. Distant terrain: alpine mountain faces show vertical streaks where the texture stretches
+   down steep slopes; dunes and mesas are smooth heightfield forms with no cliffs.
+7. Night: exposure is lifted on purpose so the ball and flag stay legible (frame luma about
+   62), which reads as a moonlit long exposure rather than real darkness. No lights anywhere.
+8. Pale rocks along the parkland tree line read as grey blobs from the tee.
+9. Sky: one procedural cloud layer, no volumetric clouds; the sky near the horizon is washed
+   out at midday; dawn fog is heavy.
+10. Ball physics simplifications: rigid bounce with a turf-softness term, no grain on the
+    greens, no moisture, one green speed per course all day.
+11. The low tier uses a single shadow cascade, so shadows are soft and short-ranged.
+12. Sounds are synthesized and have not been heard by a person.
+
+Also seen, not realism but QA tooling: the close-up camera used for contact sheets is placed
+by script and can end up inside a plant (desert high-tier bunker, tropical ultra-tier water).
+The game's own cameras were not seen doing this, apart from the replay side angle fixed in
+Stage 6.
+
+## Final report
+
+### Stages
+
+| Stage | What changed | Evidence | Commit |
+| --- | --- | --- | --- |
+| 0 Recon and plan | Old repository empty: everything written fresh. Plan, core math and physics with tests, `npm run verify` gate | PLAN.md; gate output | 581c957 |
+| 1 Engine | Linear HDR pipeline, tiers, debug overlay, resize/DPR/orientation/context loss | smoke engine checks (context loss restored, tiers, orientation) | 44e2d01 |
+| 2 Assets | Poly Haven and ambientCG pipeline, CC0 confirmed per asset, procedural fallback | ASSETS.md, license check | a8d6bb7 |
+| 3 Terrain and courses | Heightfield and masks shared by renderer and physics; three flagship courses (later five) | 99.97 to 99.98 percent renderer and physics agreement | 23afafd |
+| 4 Sky, light, atmosphere | Sky, clouds, six presets, cascaded shadows, AO, IBL aligned to the sun, fog, shafts, water, grade | enforced luma bands | 02dea8f |
+| 5 Vegetation and props | Instanced trees with LODs and impostors, grass, props, per-tier budgets | renderer.info before and after, within budgets | f4a26c3 |
+| 6 Ball, flight, cameras | Ball, tracer, decals, camera rig, replay, aim and putting overlays, controller, HUD, map | real-input runs, `qa/proof/stage6/` | 8e9ade0, 97f1661 |
+| 7 Golfer | Not shipped: no model to evaluate, not faked | REPORT.md Stage 7 | 8e9ade0 |
+| 8 Swing and controls | Stick, touch, mouse, keyboard, gamepad, haptics, tutorial | `scripts/tools/controls.mjs`, `qa/proof/stage8/` | 522667c |
+| 9 Modes and career | Modes, career, versioned saves, stats, achievements | career, daily, pass-and-play bot runs; 16 career and save tests | f1644a6, 60b70c7 |
+| 10 Interface and audio | Menus, settings, accessibility checks, procedural audio | `tests/a11y.test.js`, offline-rendered audio levels | 60b70c7 |
+| 11 Performance | Measured per tier, first frame and settled bytes, dropped unused 2048 textures | `qa/perf.json`, `qa/perf-20mbps.json` | 60b70c7 |
+| 12 Multiplayer | Challenge links, pass and play, resume; real-time behind a flag only | `tests/share.test.js`, bot runs, `qa/proof/stage12/` | aa552bc |
+| 13 PWA and iOS | Service worker, offline play, Capacitor config, IOS.md | offline test (zero requests while offline) | f1644a6, 60b70c7 |
+| 14 Hosting | vercel.json, limits checked, deploy attempted, DEPLOY.md, README | CLI output recorded | f1644a6, 60b70c7 |
+| 15 QA | Bot rounds on every course in both orientations, contact sheets, realism review | `qa/bot/`, `qa/contact/` | final commit on the branch |
+
+### Numbers
+
+- Tests: 243 unit tests, all passing (`npm test`).
+- Gate: `npm run verify` passes: tests, build, and the headless smoke over all five courses,
+  six presets each, landscape and portrait (40 of 40 combinations inside the luma bands).
+- Shipped: about 43 MB in `dist/` (42 MB of processed assets). First frame needs 3.6 to
+  5.6 MB on a 20 Mbps link; one hole's full set is 8.7 MB (low) to 18.5 MB (high).
+- Live URL: none. Not deployed (no Vercel login on this machine; see DEPLOY.md).
+
+### Needs a human eye or a real device (most important first)
+
+1. Frame rate and heat on real phones (low and medium tiers) and laptops (high). Only
+   software rendering was measured; JavaScript per frame is under 1 ms, the rest is the GPU.
+2. The swing stick under a real thumb: comfort, reach, and whether tempo grading feels fair
+   at 60 and 120 Hz.
+3. Rendering on real GPUs and browsers (iOS Safari, Android Chrome, desktop): shading
+   precision, antialiasing, texture arrays, banding.
+4. Difficulty and pacing with real players (the bots shoot between 8 under par and even par).
+5. Sound, by ear: balance, loudness, and whether the synthesized strikes sound like golf.
+6. Layout on notched phones and short landscape screens with real safe-area insets.
+7. Haptics on Android (iOS Safari has no vibration API).
+8. Real gamepads.
+9. Installing as an app and playing offline on iOS and Android.
+10. The deployed site's headers and caching once it is on Vercel.
+11. Color-vision palettes with people who have those color vision types.
+
+### Known gaps
+
+- No golfer model (Stage 7). The camera is ball-first.
+- Not deployed; iOS app not built (needs a Mac, Xcode, and an Apple Developer account).
+- No real-time multiplayer (a static site has no server); challenge links are asynchronous.
+- Challenge-link integrity is a checksum, not security.
+- Saves live in the browser only; clearing site data deletes progress; no cloud sync.
+- The AI aims to land short of the pin with part of the roll allowed for, while the
+  player's power hint solves for where the ball stops; the AI was left on its calibrated
+  method because the rival score model is fitted to it.
+- Career rivals not on screen are scored by a statistical model, not simulated shot by shot.
+- Ultra tier uses the same 1024 px terrain textures as high (2048 was dropped as unused).
+- Contact-sheet close-ups use hole 1 of each course; courses whose hole 1 has no water repeat
+  the nearest view in that panel.
+- The bot's drag-based putt read sometimes overshoots by up to about 4 degrees.
+- Real GPU frame rates, touch feel, haptics, and audio are unverified (see the list above).
+- The realism gaps listed in Stage 15.

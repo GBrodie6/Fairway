@@ -9,3 +9,4 @@ qa/raw/
 .DS_Store
 ios/App/Pods/
 ios/App/build/
+qa/contact/raw/

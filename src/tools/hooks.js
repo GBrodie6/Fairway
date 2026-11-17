@@ -29,10 +29,12 @@ export function installHooks(app) {
       };
     },
     // Settle exposure, render, and measure the 3D viewport. See engine.measureFrame.
-    measure() {
+    // iterations: how many renders exposure may take to settle (default 28). Contact-sheet
+    // close-ups pass a small number; the luma table uses the default.
+    measure(iterations) {
       const { engine, world, loop } = app;
       world.update(0, loop.time);
-      engine.settleExposure(world.scene, world.camera, loop.time);
+      engine.settleExposure(world.scene, world.camera, loop.time, Number.isFinite(iterations) ? iterations : 28);
       return engine.measureFrame(world.scene, world.camera, loop.time);
     },
     async setTimeOfDay(id) { await app.setTimeOfDay(id); return app.world.todId; },
