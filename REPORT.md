@@ -221,3 +221,75 @@ SwiftShader (software rendering), so frame times from it are not representative 
   mature course's; LOD1 is visibly sparser than LOD0 and the switch to impostors is a pop,
   not a blend; props are simple procedural shapes; the crowd is flat cards; cart path edges
   have no curbs; low tier sits within 3 percent of its triangle budget on parkland.
+
+## Stage 6: ball, flight, cameras
+
+- `render/ballView.js`: a PBR ball with a procedural dimple normal map, a contact shadow that
+  softens with height, an optional spin stripe (Settings, Show ball spin), impact debris per
+  surface (turf, sand, water spray), and a camera-facing tracer that thins with distance,
+  with apex and landing markers.
+- `render/decals.js`: divots on turf shots with irons, pitch marks on greens, sand craters,
+  and raked footprints in bunkers. They persist per hole for the round.
+- `render/cameras.js`: address (a lower, closer framing for putts), a six second flyover of
+  each new hole, ball follow (offset to the side so the arc of the tracer reads), a camera
+  waiting at the landing area for long shots, a green camera for putts, free look, impact
+  shake, and replay angles (follow, landing, side, high). Reduced motion turns off the
+  flyover, the landing cut, and shake; it follows the setting or the operating system.
+- `render/overlays.js`: an aim line that starts a few meters ahead of the ball and widens
+  with distance, a landing ring sized from the expected dispersion for this club, lie, wind,
+  and shot type, which turns amber over water, sand, or out of bounds (the HUD names the
+  hazard); on the green, a slope grid colored by steepness with a colorblind-safe ramp per
+  palette, downhill arrows that pulse toward the low side (direction does not depend on
+  color), all lines and arrows merged into one mesh, faded near the camera so it never
+  fills the screen; and the predicted roll for the current aim and pace.
+- `game/controller.js`: the round state machine (intro, aim, flight, settle, summary,
+  replay) driving the world, rig, ball, and overlays, emitting events for the UI and audio.
+  The whole shot is simulated at the strike and played back, so the result, the replay, and
+  a shared round are identical.
+- `game/planner.js`: `solvePower` finds the power for the chosen target by bisection on the
+  same prediction the overlay draws (with lie, wind, and shot type). It replaced a closed
+  form that ignored lie loss and suggested a 6 percent swing for a bunker shot. The putt
+  read is solved once per ball position, not on every aim change (it cost about 130 ms of
+  CPU per drag event on the green).
+- HUD (`ui/hud.js`), hole map with rangefinder (`ui/map.js`: drawn from the same terrain
+  functions as the physics; tap anywhere to read distance from the ball, distance to the
+  pin, and elevation, then "Aim here"), putt read (break and elevation), replay bar.
+- Evidence (headless Chrome, real input events through the DevTools Input domain, the same
+  path Playwright uses, with planned timestamps; see below):
+  - Landscape, mouse, parkland hole 3: drag-to-aim moved the aim and the reset button put it
+    back; the map rangefinder read "323 yd from ball, 113 yd to pin, up 1 ft"; the drive
+    graded Perfect (tempo 3.37) and carried 257 yd, total 289; the 8 iron was flagged
+    "Careful: bunker" before the swing and finished in that bunker.
+  - Portrait, touch, parkland hole 4 (par 3): tee shot to the green, two putts, par. An
+    earlier run (before the chip and putt fixes below) made bogey.
+  - Contact sheets: `qa/proof/stage6/landscape-mouse-shots.jpg`,
+    `portrait-touch-hole.jpg`, `putting-read.jpg`, `menus.jpg`.
+- Why planned timestamps: SwiftShader blocks the page for hundreds of milliseconds per
+  frame, so events paced in real time arrived 600 to 800 ms apart and a 0.8 s backswing
+  was cancelled by the 6 s swing timeout. With planned timestamps the gesture saw the
+  intended timing (a 780/260 ms swing graded at a 3.29 to 3.37 ratio).
+- Design changes made because of play testing (recorded, with the tests that pin them
+  updated or added):
+  - Power floor 0.3 to 0.12 (`physics/shot.js`): a 13 m chip had needed under 6 percent of
+    the stick, below the gesture's minimum. Full-power carries are unchanged (factor 1).
+  - Chip launch 0.62 to 0.85 of full loft and chip spin 0.5 to 0.8; a base turf
+    deformation loss on every landing (`ball.js`). Measured carry to roll on a green, power
+    0.5: lob wedge 5.1 to 10.4 m total (was 4.1 to 22.8), sand wedge 6.0 to 14.0 (was 4.8 to
+    30.2), pitching wedge 7.3 to 22.6, 8 iron 7.4 to 33.2. Full-shot rollout on fairway
+    dropped about 2 to 3 yards (driver 14.8 to 12.3 yd), still inside the tested range.
+  - AI execution errors widened. Before, AI skill 0.8 averaged 0.78 under par per hole
+    (about 14 under for 18) and could not be beaten. Measured on parkland holes 1 to 6:
+    skill 0.3 about +1.2 per hole, 0.5 about +0.6, 0.8 about -0.2.
+- Tests: 208 plus new UI formatting and map transform tests; all pass.
+- Not verified: feel on a real touch screen and real frame pacing; haptics (headless has no
+  vibration); the bot's putt read by dragging overshoots (it applies the aim it reads back,
+  so this is a driver accuracy issue, revisited in Stage 15).
+
+## Stage 7: golfer
+
+- Not shipped. The brief allowed evaluating the old project's Mixamo golfer only if present.
+  The old repository was empty (see PLAN.md), so there is no golfer model to evaluate, and
+  the brief says not to fake one. The game is ball-first: the camera frames the ball and the
+  line. `settings.showGolfer` stays false and is not offered in the settings screen.
+- What a human would need to do: supply a rigged, licensed golfer with a swing animation;
+  the camera rig already has an address framing that would leave room for it.

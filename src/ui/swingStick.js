@@ -127,7 +127,7 @@ export function createSwingStick(parent, { onSwing, onCancel, getIdeal, settings
     else if (st.phase === PHASE.DONE) complete(st.result);
     else if (st.phase === PHASE.CANCELLED) cancelled();
   };
-  el.addEventListener('keydown', (e) => { if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); e.stopPropagation(); if (!e.repeat) stick.meterPress(); } });
+  el.addEventListener('keydown', (e) => { if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); e.stopPropagation(); if (!e.repeat) stick.meterPress(e.timeStamp); } });
 
   // Called every frame for the meter animation and the ideal marker.
   stick.update = () => {

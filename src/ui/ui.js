@@ -21,10 +21,14 @@ export function createUI(app) {
     if (ui.input) ui.input.rumble(Array.isArray(pattern) ? 0.6 : 0.35, Array.isArray(pattern) ? 90 : 40);
   };
   const ui = { root, modal: null };
+  // Reduced motion follows the setting or the operating system preference.
+  const mq = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+  app.motionReduced = () => !!settings.reducedMotion || !!(mq && mq.matches);
+  if (mq && mq.addEventListener) mq.addEventListener('change', () => ui.applySettings());
   const actions = {
     map: () => { if (game.state.round) ui.map.toggle(); },
     pause: () => { if (game.state.round && !ui.modal) ui.screens.pause(); },
-    replay: () => { if (game.replay('follow')) ui.hud.toast('Replay', 'Tap to return', 1400); },
+    replay: () => { if (game.replay('follow')) ui.hud.toast('Replay', 'Half speed. Tap the course to return', 1600); },
     resetAim: () => {
       const st = game.state;
       if (st.target && st.phase === 'aim') game.setAim(headingTo(st.ball.x, st.ball.z, st.target.x, st.target.z));
@@ -85,8 +89,7 @@ export function createUI(app) {
     }
   });
 
-  // The replay ends on any tap.
-  root.addEventListener('pointerdown', () => { if (game.state.phase === 'replay') game.endReplay(); });
+  // A tap on the course ends the replay; the replay bar picks camera angles.
   app.engine.renderer.domElement.addEventListener('pointerdown', () => { if (game.state.phase === 'replay') game.endReplay(); });
 
   ui.update = (dt) => {
@@ -97,7 +100,7 @@ export function createUI(app) {
   ui.applySettings = () => {
     ui.hud.setLayout();
     if (app.world && app.world.overlays) app.world.overlays.setPalette(settings.colorblind);
-    if (app.world && app.world.rig) app.world.rig.reducedMotion = !!settings.reducedMotion;
+    if (app.world && app.world.rig) app.world.rig.reducedMotion = app.motionReduced();
     if (app.world && app.world.ball) app.world.ball.setSpinViz(!!settings.spinViz);
     if (app.audio) app.audio.applySettings(settings);
   };

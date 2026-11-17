@@ -1,9 +1,10 @@
 /* Fairway Next UI. Phone first: calm, uncluttered, soft glass panels, large tap targets.
-   Text on glass is checked for contrast in scripts (white on the panel tint is above 7:1). */
+   Contrast and tap-target sizes are checked by tests/a11y.test.js against the worst case
+   (the glass over a pure white or pure black scene). */
 :root {
   --ink: #f3f6ef;
   --ink-dim: rgba(243, 246, 239, 0.74);
-  --panel: rgba(13, 22, 18, 0.62);
+  --panel: rgba(13, 22, 18, 0.75);
   --panel-solid: #14211b;
   --line: rgba(255, 255, 255, 0.14);
   --accent: #c2e58a;
@@ -67,13 +68,18 @@
 .arrow { width: var(--tap); height: var(--tap); display: grid; place-items: center; border-radius: 12px; font-size: 20px; }
 .arrow:active, .iconbtn:active, .seg button:active { background: rgba(255, 255, 255, 0.12); }
 .seg { display: flex; padding: 3px; gap: 2px; border-radius: 14px; flex-wrap: wrap; }
-.seg button { min-height: 38px; padding: 0 12px; border-radius: 11px; font-size: 13px; color: var(--ink-dim); }
+.seg button { min-height: 44px; padding: 0 12px; border-radius: 11px; font-size: 13px; color: var(--ink-dim); }
 .seg button[aria-pressed="true"] { background: rgba(255, 255, 255, 0.18); color: var(--ink); }
 .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .aimrow { display: flex; gap: 2px; padding: 3px; align-items: center; }
 .aimrow span { font-size: 12px; color: var(--ink-dim); padding: 0 6px; }
 .puttinfo { padding: 8px 12px; font-size: 13px; }
 .puttinfo b { font-size: 15px; }
+
+.replaybar { position: absolute; left: 50%; bottom: calc(16px + var(--safe-b)); transform: translateX(-50%); display: flex; gap: 2px; padding: 4px; border-radius: 16px; max-width: calc(100vw - 24px); flex-wrap: wrap; justify-content: center; }
+.replaybar button { min-height: 44px; padding: 0 14px; border-radius: 12px; font-size: 14px; color: var(--ink-dim); }
+.replaybar button[aria-pressed="true"] { background: rgba(255, 255, 255, 0.18); color: var(--ink); }
+.replaybar .done { color: var(--accent); font-weight: 600; }
 
 /* ---------- swing stick ---------- */
 .stick { position: relative; width: 108px; padding: 10px 0 12px; touch-action: none; user-select: none; -webkit-user-select: none; display: flex; flex-direction: column; align-items: center; }
@@ -89,9 +95,9 @@
 .stick.disabled { opacity: 0.4; pointer-events: none; }
 
 /* ---------- sheets and menus ---------- */
-.screen { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: auto; padding: calc(16px + var(--safe-t)) calc(16px + var(--safe-r)) calc(16px + var(--safe-b)) calc(16px + var(--safe-l)); background: linear-gradient(180deg, rgba(8, 14, 11, 0.16), rgba(8, 14, 11, 0.5)); opacity: 1; transition: opacity 0.3s ease; overflow-y: auto; }
+.screen { position: absolute; inset: 0; display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; justify-items: center; pointer-events: auto; padding: calc(16px + var(--safe-t)) calc(16px + var(--safe-r)) calc(16px + var(--safe-b)) calc(16px + var(--safe-l)); background: linear-gradient(180deg, rgba(8, 14, 11, 0.16), rgba(8, 14, 11, 0.5)); opacity: 1; transition: opacity 0.3s ease; overflow-y: auto; }
 .screen.off { opacity: 0; pointer-events: none; }
-.sheet { width: min(560px, 100%); max-height: 100%; overflow-y: auto; padding: 22px 20px; }
+.sheet { width: min(560px, 100%); margin: auto; padding: 22px 20px; }
 .sheet.wide { width: min(760px, 100%); }
 .title { font-weight: 300; font-size: clamp(28px, 7vw, 44px); letter-spacing: 0.3em; text-transform: uppercase; text-align: center; margin: 0 0 4px; text-indent: 0.3em; }
 .tag { text-align: center; color: var(--ink-dim); margin: 0 0 20px; font-size: 14px; }
@@ -112,7 +118,7 @@ h3.h { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform
 .field { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 4px 0; border-bottom: 1px solid var(--line); }
 .field:last-child { border-bottom: 0; }
 .field label, .field .lab { font-size: 15px; }
-.field select, .field input[type="text"] { font: inherit; color: var(--ink); background: rgba(255, 255, 255, 0.1); border: 1px solid var(--line); border-radius: 10px; min-height: 40px; padding: 0 10px; max-width: 58%; }
+.field select, .field input[type="text"] { font: inherit; color: var(--ink); background: rgba(255, 255, 255, 0.1); border: 1px solid var(--line); border-radius: 10px; min-height: 44px; padding: 0 10px; max-width: 58%; }
 .field input[type="range"] { width: min(46%, 200px); accent-color: var(--accent); min-height: 36px; }
 .field input[type="checkbox"] { width: 24px; height: 24px; accent-color: var(--accent); }
 .field select option { color: #111; }

@@ -53,7 +53,7 @@ export function createInput({ view, game, getWorld, settings, hud, actions, hapt
       case 'ArrowRight': case 'KeyD': e.preventDefault(); game.nudgeAim(step * DEG); break;
       case 'ArrowUp': case 'KeyW': e.preventDefault(); game.selectClub(-1); break;
       case 'ArrowDown': case 'KeyS': e.preventDefault(); game.selectClub(1); break;
-      case 'Space': e.preventDefault(); if (!e.repeat) hud.stick.meterPress(); break;
+      case 'Space': e.preventDefault(); if (!e.repeat) hud.stick.meterPress(e.timeStamp); break;
       case 'Digit1': case 'Digit2': case 'Digit3': case 'Digit4': {
         const types = game.shotTypes(); const t = types[Number(k.slice(5)) - 1]; if (t) game.setShotType(t.id); break;
       }

@@ -11,6 +11,9 @@ import { createDebugOverlay } from './ui/debug.js';
 import { installHooks } from './tools/hooks.js';
 import { createGame } from './game/controller.js';
 import { createUI } from './ui/ui.js';
+import { installMenus } from './ui/menus.js';
+import { createAudio } from './audio/audio.js';
+import { saveSettings } from './core/settings.js';
 
 async function boot() {
   const params = readUrlParams();
@@ -21,12 +24,14 @@ async function boot() {
 
   const engine = createEngine({ container: view, tierId: 'low', renderScale: params.scale || 1 });
   const caps = readCaps(engine.renderer.getContext());
-  const tierId = params.tier || (settings.tier !== 'auto' ? settings.tier : detectTier(caps));
+  const autoTier = detectTier(caps);
+  const tierId = params.tier || (settings.tier !== 'auto' ? settings.tier : autoTier);
   engine.setTier(tierId);
 
   const loop = createLoop({ timescale: params.timescale || 1 });
   const assets = createAssets(params.noassets ? { enabled: false } : {});
-  const app = { engine, loop, params, settings, caps, assets, world: null, debug: null };
+  const app = { engine, loop, params, settings, caps, assets, world: null, debug: null, autoTier };
+  app.saveSettings = () => saveSettings(settings);
 
   const courseId = COURSE_IDS.includes(params.course) ? params.course : COURSE_IDS[0];
   const todId = TOD_ORDER.includes(params.tod) ? params.tod : 'morning';
@@ -53,7 +58,12 @@ async function boot() {
 
   app.game = createGame(app);
   app.onWorld = [() => { app.game.onWorldChanged(); if (app.ui) app.ui.applySettings(); }];
+  app.audio = createAudio(settings);
   app.ui = createUI(app);
+  installMenus(app, app.ui);
+  app.audio.attach(app.game, () => app.world);
+  // Browsers only allow audio after a user gesture.
+  for (const ev of ['pointerdown', 'keydown']) window.addEventListener(ev, () => app.audio.unlock(), { passive: true });
   app.ui.applySettings();
 
   // Order matters: the game advances the ball, the rig follows it, the world animates, then
@@ -62,6 +72,7 @@ async function boot() {
   loop.add('camera', (dt) => { if (app.world.rig.enabled) app.world.rig.update(dt); });
   loop.add('world', (dt, t) => app.world.update(dt, t));
   loop.add('ui', (dt) => app.ui.update(dt), { profile: false });
+  loop.add('audio', (dt) => app.audio.update(dt, app.world, app.game), { profile: false });
   loop.add('render', (dt, t, realDt) => engine.render(app.world.scene, app.world.camera, t, realDt));
   if (params.debug) {
     app.debug = createDebugOverlay(ui, { engine, loop, getExtra: () => `terrain build ${app.world.buildMs.toFixed(0)} ms  terrain tris ${(app.world.terrainView.triangles / 1000).toFixed(0)}k\ntrees ${app.world.vegetation.counts.trees} (lod0 ${app.world.vegetation.drawn.lod0} lod1 ${app.world.vegetation.drawn.lod1} impostor ${app.world.vegetation.drawn.impostor})  plants ${app.world.vegetation.drawn.small}/${app.world.vegetation.counts.plants}  veg tris ${(app.world.vegetation.triangles / 1000).toFixed(0)}k\n  assets ${(assets.stats.bytes / 1048576).toFixed(1)} MB in ${assets.stats.requests} req` });
@@ -77,7 +88,9 @@ async function boot() {
   // A round can start straight from the URL (used by the QA bot and for shared links),
   // otherwise the main menu shows over the course.
   if (params.mode) await app.ui.screens.startQuick({ courseId, mode: params.mode, holes: params.holes || 9, startHole: params.hole || 1, tod: todId, seed: params.seed });
-  else app.ui.screens.menu();
+  else if (!app.openChallengeFromHash()) app.ui.screens.menu();
+  // A challenge link pasted into an open tab only changes the hash.
+  window.addEventListener('hashchange', () => { if (!app.game.state.round) app.openChallengeFromHash(); });
   // The heavy assets arrive after first paint.
   app.world.whenSettled().then(() => { fw.settled = true; });
 }

@@ -32,6 +32,7 @@ export function createGame(app) {
   let rng = createRng(1), holdTimer = 0, afterHold = null, apexShown = false, landShown = false, eventIdx = 0;
   const windAt = (t, h, out) => (state.wind ? state.wind.sample(t, h, out) : out);
   const isHuman = () => state.round && state.round.players[state.turn].kind === 'human';
+  const motionReduced = () => (app.motionReduced ? app.motionReduced() : !!app.settings.reducedMotion);
   const pinDist = (x, z) => Math.hypot(W().terrain.pin.x - x, W().terrain.pin.z - z);
 
   function setPhase(p) { state.phase = p; emit('phase', p); }
@@ -80,7 +81,7 @@ export function createGame(app) {
     w.ball.place(t.tee.x, t.heightAt(t.tee.x, t.tee.z) + BALL_RADIUS, t.tee.z);
     state.busy = false;
     emit('hole', { index: holeIdx, number: holeIdx + 1, par: parOf(r), yards: t.hole.yards });
-    if (!state.fast && !app.settings.reducedMotion && r.mode !== 'range') {
+    if (!state.fast && !motionReduced() && r.mode !== 'range') {
       setPhase('intro');
       w.rig.set('flyover', { duration: 6 });
     } else beginTurn();
@@ -132,7 +133,10 @@ export function createGame(app) {
   function refresh() {
     const w = W(), t = w.terrain;
     if (state.club.putter) {
-      const sol = solvePutt(t, state.ball, t.pin);
+      // The read is solved once per ball position; aim changes only re-roll the preview.
+      const key = `${state.ball.x.toFixed(3)},${state.ball.z.toFixed(3)},${t.pin.x},${t.pin.z}`;
+      if (!state.puttSolve || state.puttSolve.key !== key) state.puttSolve = { key, sol: solvePutt(t, state.ball, t.pin) };
+      const sol = state.puttSolve.sol;
       const ceil = puttCeiling(sol.distance, sol.speed);
       // The line drawn is for the aim the player has now, at the pace that would reach the hole.
       const r = simulatePutt(t, state.ball, state.aim, sol.speed);
@@ -275,7 +279,7 @@ export function createGame(app) {
     // Apex marker once the ball starts down.
     if (!apexShown && !sh.club.putter && w.rig.ballVel.y < 0 && sh.t > 0.3 && r.apex > 4) { apexShown = true; w.ball.showApex(tmp.x, tmp.y, tmp.z); emit('apex', { height: r.apex }); }
     // Long shots cut to a camera waiting near the landing point.
-    if (!sh.landingCam && !sh.club.putter && r.carry > 120 && sh.t > r.hang * 0.6 && !app.settings.reducedMotion && !state.fast) {
+    if (!sh.landingCam && !sh.club.putter && r.carry > 120 && sh.t > r.hang * 0.6 && !motionReduced() && !state.fast) {
       sh.landingCam = true;
       const l = r.carryPoint || r.end;
       w.rig.set('landing', { landing: { x: l.x, y: t.inBounds(l.x, l.z, 1) ? t.heightAt(l.x, l.z) : l.y, z: l.z }, dirX: Math.sin(sh.launch.heading), dirZ: -Math.cos(sh.launch.heading) });
@@ -357,7 +361,7 @@ export function createGame(app) {
   // --- replay ---
   game.replay = (angle = 'follow') => {
     const last = state.lastShot;
-    if (!last || state.phase !== 'aim' || last.club.putter) return false;
+    if (!last || (state.phase !== 'aim' && state.phase !== 'replay') || last.club.putter) return false;
     const w = W(), t = w.terrain, res = last.result;
     state.shot = { ...last, t: 0, speedUp: 0.5, landingCam: true, replay: true };
     apexShown = true; landShown = true; eventIdx = res.events.length;
@@ -366,7 +370,9 @@ export function createGame(app) {
     const l = res.carryPoint || res.end;
     const ctx = { replay: true, from: { x: last.from.x, y: t.heightAt(last.from.x, last.from.z), z: last.from.z }, landing: { x: l.x, y: t.inBounds(l.x, l.z, 1) ? t.heightAt(l.x, l.z) : 0, z: l.z }, apex: res.apex, dirX: Math.sin(last.launch.heading), dirZ: -Math.cos(last.launch.heading) };
     w.rig.set(angle, ctx);
+    w.rig.cut = true;
     state.replaying = true;
+    state.replayAngle = angle;
     setPhase('replay');
     return true;
   };
@@ -418,7 +424,7 @@ export function createGame(app) {
       predicted: state.prediction ? { carry: state.prediction.carry, total: state.prediction.total, lie: state.prediction.lie } : null,
       suggestedPower: state.phase === 'aim' ? game.suggestedPower() : 0,
       hazard: state.hazard, putt: state.putt, message: state.message, aim: state.aim,
-      canReplay: !!(state.lastShot && !state.lastShot.club.putter && state.phase === 'aim'),
+      canReplay: !!(state.lastShot && !state.lastShot.club.putter && state.phase === 'aim'), replayAngle: state.replayAngle || 'follow',
     };
   };
   return game;

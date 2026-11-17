@@ -76,3 +76,40 @@ export async function clickSel(page, pointer, selector) {
   await pointer.tap(r.x + r.w / 2, r.y + r.h / 2);
   return true;
 }
+
+// Turn the aim to a heading the way a player makes a small correction: one slow drag across
+// the course (slow drags get the fine-aim gain), then a few taps on the fine-aim buttons
+// (0.25 degrees each) to finish. Timestamps are planned, so this is cheap under slow rendering.
+export async function aimTo(page, pointer, heading, { maxTaps = 6 } = {}) {
+  const STEP = 0.25 * Math.PI / 180;
+  const delta = async () => {
+    const aim = await page.evaluate(() => window.__fw.game.state.aim);
+    let d = heading - aim;
+    while (d > Math.PI) d -= 2 * Math.PI;
+    while (d < -Math.PI) d += 2 * Math.PI;
+    return d;
+  };
+  let d = await delta();
+  let drags = 0, taps = 0;
+  const vw = page.viewportSize().width;
+  // Radians per pixel at the fine-aim gain; corrected by what each drag actually achieved.
+  let k = await page.evaluate(() => {
+    const st = window.__fw.game.state, w = window.__fw.app.engine.renderer.domElement.parentElement.clientWidth || innerWidth;
+    return ((st.club.putter ? 24 : 70) * Math.PI / 180) * window.__fw.app.settings.aimSensitivity * 0.2 / w;
+  });
+  while (Math.abs(d) > STEP * 1.5 && drags < 4) {
+    const dx = Math.max(-0.45 * vw, Math.min(0.45 * vw, d / k));
+    await dragAim(page, pointer, dx, { ms: Math.abs(dx) / 0.03, y: 0.35, x: dx > 0 ? 0.25 : 0.75 });
+    drags++;
+    const d2 = await delta();
+    const moved = d - d2;
+    if (Math.abs(moved) > 1e-5 && Math.abs(dx) > 1) k = Math.abs(moved / dx);
+    d = d2;
+  }
+  const n = Math.min(maxTaps, Math.round(Math.abs(d) / STEP));
+  if (n) {
+    const r = await rectOf(page, d > 0 ? '[aria-label="Aim right a little"]' : '[aria-label="Aim left a little"]');
+    if (r) for (let i = 0; i < n; i++) { await pointer.tap(r.x + r.w / 2, r.y + r.h / 2); taps++; }
+  }
+  return { drags, taps, left: await delta() };
+}

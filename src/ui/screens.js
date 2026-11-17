@@ -58,7 +58,8 @@ export function createScreens(root, { app, game, settings, ui, save }) {
     h('h1', { class: 'title', text: 'Fairway Next' }),
     h('p', { class: 'tag', text: 'A calm round of golf. One gesture per shot.' }),
     h('div', { class: 'stack' },
-      btn('Quick round', () => screens.setup(), 'btn primary'),
+      app.resumeAvailable && app.resumeAvailable() ? btn('Resume round', () => app.resume(), 'btn primary') : null,
+      btn('Quick round', () => screens.setup(), app.resumeAvailable && app.resumeAvailable() ? 'btn' : 'btn primary'),
       screens.registry.career ? btn('Career', () => screens.registry.career()) : null,
       screens.registry.daily ? btn('Daily challenge', () => screens.registry.daily()) : null,
       h('div', { class: 'grid2' },
@@ -102,7 +103,8 @@ export function createScreens(root, { app, game, settings, ui, save }) {
   };
 
   function playerList() {
-    const me = { id: 'p1', name: settings.playerName || 'You', kind: 'human', handed: settings.handedness, ball: '#ffffff' };
+    const sv = app.save ? app.save().player : { name: 'You', ball: '#ffffff' };
+    const me = { id: 'p1', name: sv.name || 'You', kind: 'human', handed: settings.handedness, ball: sv.ball || '#ffffff' };
     const needsRival = setupState.mode === 'match' || setupState.mode === 'skins';
     if (setupState.players > 1) {
       const cols = ['#ffffff', '#ffd23f', '#7fd1ff', '#ff9e7a'];
@@ -118,7 +120,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
   }
   async function startRange() {
     hide();
-    await game.startRound({ courseId: setupState.courseId, mode: 'range', holeCount: 1, tod: setupState.tod, players: [{ id: 'p1', name: settings.playerName || 'You', kind: 'human' }], seed: Date.now() >>> 0 });
+    await game.startRound({ courseId: setupState.courseId, mode: 'range', holeCount: 1, tod: setupState.tod, players: playerList().slice(0, 1), seed: Date.now() >>> 0 });
   }
   screens.startQuick = (opts) => { Object.assign(setupState, opts); return startQuick(); };
 
@@ -185,7 +187,8 @@ export function createScreens(root, { app, game, settings, ui, save }) {
       h('div', { class: 'big', text: r.players.length === 1 ? `${stand.totals[0].strokes}  (${fmtToPar(stand.totals[0].toPar)})` : stand.text }),
       h('p', { class: 'muted center', text: courseById(r.courseId).name }),
       scorecardTable(r),
-      h('div', { class: 'grid2', style: { marginTop: '14px' } }, btn('Main menu', () => { hide(); game.quit(); }), btn('Play again', () => startQuick(), 'btn primary')),
+      screens.roundEndExtra ? screens.roundEndExtra() : null,
+      h('div', { class: 'grid2', style: { marginTop: '14px' } }, btn('Main menu', () => { hide(); game.quit(); }), app.menuContext && app.menuContext() ? btn('Scorecard', () => screens.scorecard()) : btn('Play again', () => startQuick(), 'btn primary')),
     ));
   };
 

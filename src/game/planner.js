@@ -164,8 +164,8 @@ export function aiPlan(terrain, from, lie, { skill = 0.6, rng, windAt, t0 = 0, p
     const sol = solvePutt(terrain, from, pin);
     const ceil = puttCeiling(sol.distance, sol.speed);
     // Better players read the line and pace more exactly.
-    const heading = sol.heading + g() * (0.25 + (1 - sk) * 1.5) * DEG;
-    const speed = sol.speed * (1 + g() * (0.03 + (1 - sk) * 0.07));
+    const heading = sol.heading + g() * (0.7 + (1 - sk) * 2.4) * DEG;
+    const speed = sol.speed * (1 + g() * (0.06 + (1 - sk) * 0.12));
     return { club: PUTTER, shotType: SHOT_TYPES.PUTT, aim: heading, swing: { power: clamp(speed / ceil, 0.03, 1), face: 0, path: 0, tempoQuality: 1 }, target: pin, puttCeiling: ceil };
   }
   const target = chooseTarget(terrain, from, lie, profile);
@@ -195,7 +195,7 @@ export function aiPlan(terrain, from, lie, { skill = 0.6, rng, windAt, t0 = 0, p
     if (got > 1) power = clamp(power * Math.pow(want / got, 0.8), 0.08, 1);
   }
   const d = dispersion(pick.club, lie, { profile, shotType });
-  const err = 0.35 + (1 - sk) * 1.25;
+  const err = 0.7 + (1 - sk) * 1.6;
   const swing = {
     power: clamp(power * (1 + g() * d.distFrac * err), 0.05, 1),
     face: clamp(g() * d.lateralDeg * 0.55 * err, -7, 7),

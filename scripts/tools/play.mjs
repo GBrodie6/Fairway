@@ -4,7 +4,7 @@ import { createServer } from 'vite';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { launchBrowser, trackErrors } from '../lib/browser.mjs';
-import { waitPhase, createPointer, swing, dragAim, clickSel } from '../lib/drive.mjs';
+import { waitPhase, createPointer, swing, dragAim, clickSel, aimTo } from '../lib/drive.mjs';
 
 const [query = 'mode=stroke&holes=1', prefix = 'qa/tmp/play', shotsArg = '3', w = '960', h = '540', touchArg = '0'] = process.argv.slice(2);
 const touch = touchArg === '1';
@@ -59,7 +59,15 @@ try {
       console.log('map readout', await page.evaluate(() => document.querySelector('.mapwrap .chip').textContent));
       await clickSel(page, pointer, '[aria-label="Close map"]');
     }
-    const v = await view();
+    let v = await view();
+    if (v.putt) {
+      // Read the break: aim along the solved line.
+      const h = await page.evaluate(() => window.__fw.game.state.putt.heading);
+      const taps = await aimTo(page, pointer, h);
+      v = await view();
+      console.log('putt read', JSON.stringify({ ...taps, aim: v.aim, solved: +h.toFixed(4), breakM: v.putt.breakM }));
+      await shot(`${s}-putt-read`);
+    }
     const power = v.putt ? v.putt.ideal : v.ideal;
     const sw = await swing(page, pointer, { power, backMs: v.putt ? 600 : 780, downMs: v.putt ? 220 : 260 });
     const got = await page.evaluate(() => { const r = window.__fw.ui.hud.stick.lastResult; return r && { power: +r.power.toFixed(3), face: +r.face.toFixed(2), path: +r.path.toFixed(2), tempo: r.tempoLabel, ratio: +r.tempoRatio.toFixed(2) }; });

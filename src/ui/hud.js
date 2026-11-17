@@ -70,6 +70,12 @@ export function createHud(root, { game, settings, haptic, actions }) {
     getIdeal: () => (game.state.phase === 'aim' ? game.suggestedPower() : 0),
     onSwing: (res) => { if (!game.swing(res)) stick.feedback(''); },
   });
+  // Replay controls: camera angle and done. The replay runs at half speed.
+  const ANGLES = [['follow', 'Follow'], ['landing', 'Landing'], ['side', 'Side'], ['high', 'High']];
+  const replaybar = h('div', { class: 'replaybar glass hidden', role: 'group', 'aria-label': 'Replay camera' });
+  const angleBtns = ANGLES.map(([id, name]) => h('button', { type: 'button', 'data-angle': id, onclick: () => game.replay(id) }, name));
+  replaybar.append(...angleBtns, h('button', { type: 'button', class: 'done', onclick: () => game.endReplay() }, 'Done'));
+  el.appendChild(replaybar);
   const skip = h('button', { class: 'btn small glass intro-skip hidden', type: 'button', onclick: () => game.skipIntro() }, 'Skip flyover');
   root.appendChild(skip);
 
@@ -136,6 +142,10 @@ export function createHud(root, { game, settings, haptic, actions }) {
       puttinfo.classList.remove('hidden');
     } else puttinfo.classList.add('hidden');
     stick.setEnabled(aiming && v.human);
+    const replaying = v.phase === 'replay';
+    replaybar.classList.toggle('hidden', !replaying);
+    if (replaying) for (const b of angleBtns) b.setAttribute('aria-pressed', b.dataset.angle === v.replayAngle ? 'true' : 'false');
+    bottom.style.visibility = replaying ? 'hidden' : 'visible';
     aimrow.classList.toggle('hidden', !aiming);
     controls.style.visibility = v.human ? 'visible' : 'hidden';
     skip.classList.toggle('hidden', v.phase !== 'intro');
