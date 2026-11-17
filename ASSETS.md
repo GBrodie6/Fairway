@@ -90,9 +90,9 @@ Shipped size: **41.89 MB** (textures 19.06 MB, models 12.53 MB, HDRIs 10.30 MB).
 | water_normal | Tileable water ripple normal map | scripts/assets/procedural.mjs |
 | cloud_noise | Tileable cloud noise (Perlin-Worley) | scripts/assets/procedural.mjs |
 | detail_noise | Tileable detail noise for breaking up tiling | scripts/assets/procedural.mjs |
-| palm | Palm tree | built in code. Reason: Poly Haven has no palm model and ambientCG has no plant models |
-| saguaro | Desert cactus | built in code. Reason: no CC0 cactus model at either source |
-| reeds | Reeds near water | built in code. Reason: no reed model at either source |
+| palm | Palm trees (two variants, with dead-frond boot and coconuts) | built in code. Reason: Poly Haven has no palm model and ambientCG has no plant models |
+| saguaro | Ribbed columnar cactus (three variants: two arms, many arms, young) | built in code. Reason: no CC0 cactus model at either source |
+| reeds | Reed and sedge clumps with cattail heads | built in code. Reason: no reed model at either source |
 | sign | Hole sign and yardage markers | built in code. Reason: no golf sign model at either source; needs live text anyway |
 | fence | Fence posts and rope | built in code. Reason: only a chainlink fence is available, wrong for a golf course |
 | teemarker | Tee markers | built in code. Reason: not available at either source |

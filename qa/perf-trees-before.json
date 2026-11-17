@@ -1,0 +1,672 @@
+{
+ "when": "2026-11-17T21:42:47.737Z",
+ "software": true,
+ "throttleMbps": null,
+ "note": "SwiftShader software rendering. Counts, CPU subsystem time, and memory are valid; frame time on a real GPU is not measured here.",
+ "rows": [
+  {
+   "course": "parkland",
+   "tier": "low",
+   "readyMs": 4322,
+   "settledMs": 10421,
+   "network": {
+    "firstPaint": {
+     "total": 9085810,
+     "requests": 45,
+     "app": 1059241,
+     "hdri": 1415476,
+     "textures": 2414900,
+     "models": 4194048
+    },
+    "polledAtReady": {
+     "total": 9087523,
+     "requests": 46,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 2414900,
+     "models": 4194048,
+     "other": 1713
+    },
+    "settled": {
+     "total": 9122287,
+     "requests": 47,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 2449664,
+     "models": 4194048,
+     "other": 1713
+    },
+    "notFound": []
+   },
+   "consoleErrors": 0,
+   "before": {
+    "calls": 27,
+    "triangles": 33025
+   },
+   "after": {
+    "calls": 60,
+    "triangles": 214194
+   },
+   "perSystem": {
+    "game": 0.022545174847224007,
+    "camera": 0,
+    "world": 0.3248417815017422,
+    "ui": 0.032078756271546466,
+    "audio": 0.00826975352422893,
+    "render": 35.795997697834956
+   },
+   "cpuAvg": 237.56230136408263,
+   "memory": {
+    "renderTargets": 2764800,
+    "textures": 35474260.080000006
+   },
+   "budget": {
+    "drawCalls": 140,
+    "triangles": 220000
+   },
+   "veg": {
+    "counts": {
+     "trees": 3144,
+     "plants": 1655,
+     "rocks": 6
+    },
+    "drawn": {
+     "lod0": 0,
+     "lod1": 22,
+     "impostor": 1811,
+     "small": 62
+    },
+    "triangles": 130575
+   },
+   "grass": 9000,
+   "terrainTris": 35916,
+   "propTris": 1466,
+   "crowd": 60,
+   "assetBytes": 8059188,
+   "assetRequests": 41,
+   "buildMs": 297.20000000298023,
+   "withinBudget": true
+  },
+  {
+   "course": "parkland",
+   "tier": "medium",
+   "readyMs": 5357,
+   "settledMs": 13825,
+   "network": {
+    "firstPaint": {
+     "total": 9085810,
+     "requests": 45,
+     "app": 1059241,
+     "hdri": 1415476,
+     "textures": 2414900,
+     "models": 4194048
+    },
+    "polledAtReady": {
+     "total": 9087523,
+     "requests": 46,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 2414900,
+     "models": 4194048,
+     "other": 1713
+    },
+    "settled": {
+     "total": 9122287,
+     "requests": 47,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 2449664,
+     "models": 4194048,
+     "other": 1713
+    },
+    "notFound": []
+   },
+   "consoleErrors": 0,
+   "before": {
+    "calls": 37,
+    "triangles": 62334
+   },
+   "after": {
+    "calls": 79,
+    "triangles": 421481
+   },
+   "perSystem": {
+    "game": 0.006594421079612508,
+    "camera": 0,
+    "world": 0.5831359162945692,
+    "ui": 0.01601915855383668,
+    "audio": 0,
+    "render": 52.26648559731073
+   },
+   "cpuAvg": 277.5776188473566,
+   "memory": {
+    "renderTargets": 7676640,
+    "textures": 35474260.080000006
+   },
+   "budget": {
+    "drawCalls": 220,
+    "triangles": 500000
+   },
+   "veg": {
+    "counts": {
+     "trees": 5574,
+     "plants": 2616,
+     "rocks": 1
+    },
+    "drawn": {
+     "lod0": 0,
+     "lod1": 40,
+     "impostor": 3006,
+     "small": 122
+    },
+    "triangles": 239229
+   },
+   "grass": 22000,
+   "terrainTris": 66080,
+   "propTris": 1466,
+   "crowd": 140,
+   "assetBytes": 8059188,
+   "assetRequests": 41,
+   "buildMs": 224.20000000298023,
+   "withinBudget": true
+  },
+  {
+   "course": "parkland",
+   "tier": "high",
+   "readyMs": 10053,
+   "settledMs": 29768,
+   "network": {
+    "firstPaint": {
+     "total": 15839264,
+     "requests": 45,
+     "app": 1059241,
+     "hdri": 1415476,
+     "textures": 9168354,
+     "models": 4194048
+    },
+    "polledAtReady": {
+     "total": 15840977,
+     "requests": 46,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 9168354,
+     "models": 4194048,
+     "other": 1713
+    },
+    "settled": {
+     "total": 19376141,
+     "requests": 64,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 9203118,
+     "models": 7694448,
+     "other": 1713
+    },
+    "notFound": []
+   },
+   "consoleErrors": 0,
+   "before": {
+    "calls": 42,
+    "triangles": 66104
+   },
+   "after": {
+    "calls": 107,
+    "triangles": 928249
+   },
+   "perSystem": {
+    "game": 0.02786578077062123,
+    "camera": 0,
+    "world": 0.3010844005354687,
+    "ui": 0.030200410199152483,
+    "audio": 0.0007178979983893666,
+    "render": 248.46166980163332
+   },
+   "cpuAvg": 387.48416801510484,
+   "memory": {
+    "renderTargets": 14243040,
+    "textures": 119150624.88000001
+   },
+   "budget": {
+    "drawCalls": 320,
+    "triangles": 1100000
+   },
+   "veg": {
+    "counts": {
+     "trees": 8433,
+     "plants": 2993,
+     "rocks": 1
+    },
+    "drawn": {
+     "lod0": 8,
+     "lod1": 70,
+     "impostor": 4276,
+     "small": 172
+    },
+    "triangles": 607647
+   },
+   "grass": 48000,
+   "terrainTris": 85716,
+   "propTris": 1466,
+   "crowd": 260,
+   "assetBytes": 18313042,
+   "assetRequests": 58,
+   "buildMs": 253.19999999552965,
+   "withinBudget": true
+  },
+  {
+   "course": "parkland",
+   "tier": "ultra",
+   "readyMs": 11146,
+   "settledMs": 28275,
+   "network": {
+    "firstPaint": {
+     "total": 15839264,
+     "requests": 45,
+     "app": 1059241,
+     "hdri": 1415476,
+     "textures": 9168354,
+     "models": 4194048
+    },
+    "polledAtReady": {
+     "total": 15840977,
+     "requests": 46,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 9168354,
+     "models": 4194048,
+     "other": 1713
+    },
+    "settled": {
+     "total": 19376141,
+     "requests": 64,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 9203118,
+     "models": 7694448,
+     "other": 1713
+    },
+    "notFound": []
+   },
+   "consoleErrors": 0,
+   "before": {
+    "calls": 45,
+    "triangles": 91060
+   },
+   "after": {
+    "calls": 112,
+    "triangles": 1591540
+   },
+   "perSystem": {
+    "game": 0.006488677091799591,
+    "camera": 0,
+    "world": 1.2665119614212996,
+    "ui": 0.015037723855181132,
+    "audio": 0.0015009463753358355,
+    "render": 302.799563722546
+   },
+   "cpuAvg": 601.7270015658378,
+   "memory": {
+    "renderTargets": 14243040,
+    "textures": 119150624.88000001
+   },
+   "budget": {
+    "drawCalls": 420,
+    "triangles": 2000000
+   },
+   "veg": {
+    "counts": {
+     "trees": 12693,
+     "plants": 2777,
+     "rocks": 0
+    },
+    "drawn": {
+     "lod0": 16,
+     "lod1": 110,
+     "impostor": 5825,
+     "small": 183
+    },
+    "triangles": 1029258
+   },
+   "grass": 90000,
+   "terrainTris": 123024,
+   "propTris": 1466,
+   "crowd": 278,
+   "assetBytes": 18313042,
+   "assetRequests": 58,
+   "buildMs": 253.10000000149012,
+   "withinBudget": true
+  },
+  {
+   "course": "tropical",
+   "tier": "low",
+   "readyMs": 4869,
+   "settledMs": 7129,
+   "network": {
+    "firstPaint": {
+     "total": 6469110,
+     "requests": 35,
+     "app": 1059241,
+     "hdri": 1415476,
+     "textures": 2042208,
+     "models": 1950040
+    },
+    "polledAtReady": {
+     "total": 6470823,
+     "requests": 36,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 2042208,
+     "models": 1950040,
+     "other": 1713
+    },
+    "settled": {
+     "total": 6505587,
+     "requests": 37,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 2076972,
+     "models": 1950040,
+     "other": 1713
+    },
+    "notFound": []
+   },
+   "consoleErrors": 0,
+   "before": {
+    "calls": 40,
+    "triangles": 38153
+   },
+   "after": {
+    "calls": 65,
+    "triangles": 124048
+   },
+   "perSystem": {
+    "game": 0.005675164186673286,
+    "camera": 0.004782969071271794,
+    "world": 0.32096365996972304,
+    "ui": 0.07912928758686025,
+    "audio": 0.001094189907619824,
+    "render": 41.33725135439109
+   },
+   "cpuAvg": 175.24565671941247,
+   "memory": {
+    "renderTargets": 2764800,
+    "textures": 34530768.720000006
+   },
+   "budget": {
+    "drawCalls": 140,
+    "triangles": 220000
+   },
+   "veg": {
+    "counts": {
+     "trees": 1949,
+     "plants": 1947,
+     "rocks": 5
+    },
+    "drawn": {
+     "lod0": 0,
+     "lod1": 14,
+     "impostor": 1269,
+     "small": 77
+    },
+    "triangles": 36985
+   },
+   "grass": 9000,
+   "terrainTris": 38088,
+   "propTris": 1238,
+   "crowd": 60,
+   "assetBytes": 5442488,
+   "assetRequests": 31,
+   "buildMs": 369.3999999985099,
+   "withinBudget": true
+  },
+  {
+   "course": "tropical",
+   "tier": "medium",
+   "readyMs": 6856,
+   "settledMs": 11919,
+   "network": {
+    "firstPaint": {
+     "total": 6469110,
+     "requests": 35,
+     "app": 1059241,
+     "hdri": 1415476,
+     "textures": 2042208,
+     "models": 1950040
+    },
+    "polledAtReady": {
+     "total": 6470823,
+     "requests": 36,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 2042208,
+     "models": 1950040,
+     "other": 1713
+    },
+    "settled": {
+     "total": 6505587,
+     "requests": 37,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 2076972,
+     "models": 1950040,
+     "other": 1713
+    },
+    "notFound": []
+   },
+   "consoleErrors": 0,
+   "before": {
+    "calls": 50,
+    "triangles": 67754
+   },
+   "after": {
+    "calls": 84,
+    "triangles": 278824
+   },
+   "perSystem": {
+    "game": 0.03638394413689646,
+    "camera": 0,
+    "world": 0.593216102189949,
+    "ui": 0.029708609474383998,
+    "audio": 0.00205891135162666,
+    "render": 58.9448295699962
+   },
+   "cpuAvg": 387.4183324706245,
+   "memory": {
+    "renderTargets": 7676640,
+    "textures": 34530768.720000006
+   },
+   "budget": {
+    "drawCalls": 220,
+    "triangles": 500000
+   },
+   "veg": {
+    "counts": {
+     "trees": 3578,
+     "plants": 3097,
+     "rocks": 7
+    },
+    "drawn": {
+     "lod0": 0,
+     "lod1": 40,
+     "impostor": 2147,
+     "small": 153
+    },
+    "triangles": 93288
+   },
+   "grass": 22000,
+   "terrainTris": 68000,
+   "propTris": 1238,
+   "crowd": 140,
+   "assetBytes": 5442488,
+   "assetRequests": 31,
+   "buildMs": 366.6000000014901,
+   "withinBudget": true
+  },
+  {
+   "course": "tropical",
+   "tier": "high",
+   "readyMs": 10897,
+   "settledMs": 17918,
+   "network": {
+    "firstPaint": {
+     "total": 12103130,
+     "requests": 35,
+     "app": 1059241,
+     "hdri": 1415476,
+     "textures": 7676228,
+     "models": 1950040
+    },
+    "polledAtReady": {
+     "total": 12104843,
+     "requests": 36,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 7676228,
+     "models": 1950040,
+     "other": 1713
+    },
+    "settled": {
+     "total": 13396031,
+     "requests": 46,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 7710992,
+     "models": 3206464,
+     "other": 1713
+    },
+    "notFound": []
+   },
+   "consoleErrors": 0,
+   "before": {
+    "calls": 53,
+    "triangles": 89468
+   },
+   "after": {
+    "calls": 92,
+    "triangles": 482194
+   },
+   "perSystem": {
+    "game": 0.022260182099709768,
+    "camera": 0.0028242954068952815,
+    "world": 0.7250644211081273,
+    "ui": 0.032649583061040294,
+    "audio": 0.0028242954068952815,
+    "render": 194.70436021305773
+   },
+   "cpuAvg": 742.2568572376039,
+   "memory": {
+    "renderTargets": 14243040,
+    "textures": 109839497.04
+   },
+   "budget": {
+    "drawCalls": 320,
+    "triangles": 1100000
+   },
+   "veg": {
+    "counts": {
+     "trees": 5312,
+     "plants": 4003,
+     "rocks": 2
+    },
+    "drawn": {
+     "lod0": 0,
+     "lod1": 76,
+     "impostor": 3051,
+     "small": 220
+    },
+    "triangles": 141214
+   },
+   "grass": 48000,
+   "terrainTris": 104976,
+   "propTris": 1238,
+   "crowd": 159,
+   "assetBytes": 12332932,
+   "assetRequests": 40,
+   "buildMs": 330,
+   "withinBudget": true
+  },
+  {
+   "course": "tropical",
+   "tier": "ultra",
+   "readyMs": 12533,
+   "settledMs": 29188,
+   "network": {
+    "firstPaint": {
+     "total": 12103130,
+     "requests": 35,
+     "app": 1059241,
+     "hdri": 1415476,
+     "textures": 7676228,
+     "models": 1950040
+    },
+    "polledAtReady": {
+     "total": 12104843,
+     "requests": 36,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 7676228,
+     "models": 1950040,
+     "other": 1713
+    },
+    "settled": {
+     "total": 13396031,
+     "requests": 46,
+     "app": 1061386,
+     "hdri": 1415476,
+     "textures": 7710992,
+     "models": 3206464,
+     "other": 1713
+    },
+    "notFound": []
+   },
+   "consoleErrors": 0,
+   "before": {
+    "calls": 56,
+    "triangles": 101756
+   },
+   "after": {
+    "calls": 104,
+    "triangles": 734220
+   },
+   "perSystem": {
+    "game": 0.005243569341810257,
+    "camera": 0,
+    "world": 0.5493369634717826,
+    "ui": 0.019601931814239307,
+    "audio": 0.0027017033749582088,
+    "render": 130.48461950861528
+   },
+   "cpuAvg": 520.1478769993764,
+   "memory": {
+    "renderTargets": 14243040,
+    "textures": 109839497.04
+   },
+   "budget": {
+    "drawCalls": 420,
+    "triangles": 2000000
+   },
+   "veg": {
+    "counts": {
+     "trees": 8069,
+     "plants": 3810,
+     "rocks": 0
+    },
+    "drawn": {
+     "lod0": 1,
+     "lod1": 110,
+     "impostor": 4286,
+     "small": 193
+    },
+    "triangles": 168220
+   },
+   "grass": 90000,
+   "terrainTris": 117652,
+   "propTris": 1238,
+   "crowd": 159,
+   "assetBytes": 12332932,
+   "assetRequests": 40,
+   "buildMs": 358.1000000014901,
+   "withinBudget": true
+  }
+ ]
+}

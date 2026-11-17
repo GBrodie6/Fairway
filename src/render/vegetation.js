@@ -16,36 +16,39 @@ import { PROCEDURAL_BUILDERS } from './proceduralPlants.js';
 // What grows where. Weights are relative within a list.
 export const MIX = {
   parkland: {
-    trees: [['oak', 3], ['maple', 3], ['elm', 2.5], ['birch', 1.5], ['fir', 0.7]],
-    under: [['bushtree', 1.2], ['shrub2', 1], ['fern', 2.2], ['shrub4', 1]],
+    trees: [['oak', 3], ['maple', 3], ['elm', 2.5], ['birch', 1.5], ['fir', 0.7], ['pine', 0.5], ['jacaranda', 0.3]],
+    under: [['bushtree', 1.2], ['shrub2', 1], ['fern', 2.2], ['shrub4', 1], ['shrub3', 0.8]],
+    logs: [['log', 1], ['stump', 0.7]], logChance: 0.06,
     ground: [['tallgrass', 4], ['tallgrass2', 2], ['celandine', 1], ['dandelion', 1]],
     rocks: [['mossrocks', 1], ['rock1', 0.5], ['stump', 0.6], ['log', 0.5]],
     water: [['reeds', 1]], rockChance: 0.012, groundChance: 0.3, treeScale: [0.8, 1.3],
   },
   links: {
-    trees: [['thorn', 1.4], ['bushtree', 1]],
-    under: [['thorn', 1], ['rooibos', 1.2]],
+    trees: [['thorn', 1.4], ['bushtree', 1], ['pine', 0.35]],
+    under: [['thorn', 1], ['rooibos', 1.2], ['shrub3', 0.6]],
     ground: [['tallgrass2', 6], ['tallgrass', 2], ['dandelion', 0.4]],
     rocks: [['rock1', 1], ['rock2', 1], ['stone', 1.5]],
     water: [['reeds', 1]], rockChance: 0.008, groundChance: 0.42, treeScale: [0.7, 1.15],
   },
   desert: {
-    trees: [['quiver', 2], ['quiver2', 1.4], ['thorn', 2], ['saguaro', 1.6]],
+    trees: [['quiver', 2], ['quiver2', 1.4], ['thorn', 2], ['saguaro', 1.2], ['saguaro2', 0.8], ['saguaro3', 0.9]],
     under: [['rooibos', 3], ['thorn', 1]],
     ground: [['succulent', 2], ['gazania', 0.8], ['tallgrass2', 1.4]],
     rocks: [['boulder2', 1.5], ['boulder3', 1.5], ['rock1', 1], ['rock2', 1], ['stone', 2]],
     water: [['reeds', 1]], rockChance: 0.05, groundChance: 0.16, treeScale: [0.8, 1.4],
   },
   alpine: {
-    trees: [['fir', 4], ['pine', 3], ['birch', 1]],
-    under: [['fern', 2], ['shrub2', 1], ['bushtree', 0.6]],
+    trees: [['fir', 4], ['pine', 3], ['birch', 1], ['elm', 0.3]],
+    under: [['fern', 2], ['shrub2', 1], ['bushtree', 0.6], ['shrub3', 0.6]],
+    logs: [['log', 1], ['stump', 1]], logChance: 0.08,
     ground: [['tallgrass', 3], ['celandine', 1], ['dandelion', 0.6]],
     rocks: [['mossrocks', 2], ['rock2', 1], ['boulder3', 0.8], ['log', 0.7], ['stump', 0.6]],
     water: [['reeds', 1]], rockChance: 0.03, groundChance: 0.26, treeScale: [0.85, 1.45],
   },
   tropical: {
-    trees: [['palm', 5], ['jacaranda', 1.4], ['bushtree', 1]],
-    under: [['fern', 3], ['shrub4', 1], ['bushtree', 1]],
+    trees: [['palm', 3], ['palm2', 2.4], ['jacaranda', 1.4], ['bushtree', 1], ['oak', 0.4]],
+    under: [['fern', 3], ['shrub4', 1], ['bushtree', 1], ['shrub3', 0.8]],
+    logs: [['log', 1]], logChance: 0.03,
     ground: [['tallgrass', 2], ['celandine', 1], ['tallgrass2', 1]],
     rocks: [['rock1', 1], ['boulder2', 0.5]],
     water: [['reeds', 1]], rockChance: 0.008, groundChance: 0.26, treeScale: [0.85, 1.25],
@@ -133,7 +136,7 @@ export function createVegetation(world, engine) {
     const mat = new THREE.MeshStandardMaterial({
       map: src.map || null, normalMap: foliage ? null : src.normalMap || null, color: src.color ? src.color.clone() : 0xffffff,
       roughness: foliage ? 0.7 : 0.9, metalness: 0, side: foliage ? THREE.DoubleSide : THREE.FrontSide,
-      alphaTest: foliage ? 0.42 : 0, envMapIntensity: foliage ? 0.6 : 0.5,
+      alphaTest: foliage ? 0.33 : 0, envMapIntensity: foliage ? 0.6 : 0.5,
     });
     mat.name = part.name;
     if (mat.map) mat.map.anisotropy = Math.min(4, tier.anisotropy);
@@ -143,7 +146,7 @@ export function createVegetation(world, engine) {
     hooks.push(foliage ? foliageHook : woodHook);
     lighting.setup(mat, hooks, `veg:${foliage ? 'f' : 'w'}:${heightM.toFixed(1)}:${amp}:${flutter}`);
     // Shadow pass: same sway, and alpha-tested for leaves.
-    const depth = new THREE.MeshDepthMaterial({ map: foliage ? mat.map : null, alphaTest: foliage ? 0.42 : 0, side: foliage ? THREE.DoubleSide : THREE.FrontSide });
+    const depth = new THREE.MeshDepthMaterial({ map: foliage ? mat.map : null, alphaTest: foliage ? 0.33 : 0, side: foliage ? THREE.DoubleSide : THREE.FrontSide });
     const dh = swayHook(heightM, amp, flutter);
     depth.onBeforeCompile = (shader) => { dh(shader); shader.vertexShader = shader.vertexShader.replace('varying vec3 vVegWorld;', 'vec3 vVegWorld;'); };
     depth.customProgramCacheKey = () => `vegdepth:${foliage ? 'f' : 'w'}:${heightM.toFixed(1)}:${amp}:${flutter}`;
@@ -159,7 +162,7 @@ export function createVegetation(world, engine) {
     const scene = new THREE.Scene();
     const mats = [];
     for (const p of parts) {
-      const m = new THREE.MeshBasicMaterial({ map: p.source.map || null, color: p.source.color ? p.source.color.clone() : 0xffffff, alphaTest: p.foliage ? 0.42 : 0, side: THREE.DoubleSide });
+      const m = new THREE.MeshBasicMaterial({ map: p.source.map || null, color: p.source.color ? p.source.color.clone() : 0xffffff, alphaTest: p.foliage ? 0.33 : 0, side: THREE.DoubleSide });
       mats.push(m);
       scene.add(new THREE.Mesh(p.geometry, m));
     }
@@ -193,7 +196,7 @@ export function createVegetation(world, engine) {
 
     const geo = new THREE.PlaneGeometry(2 * r, h);
     geo.translate(0, h / 2, 0);
-    const mat = new THREE.MeshStandardMaterial({ map: rt.texture, alphaTest: 0.36, roughness: 1, metalness: 0, envMapIntensity: 0.6, side: THREE.DoubleSide });
+    const mat = new THREE.MeshStandardMaterial({ map: rt.texture, alphaTest: 0.3, roughness: 1, metalness: 0, envMapIntensity: 0.6, side: THREE.DoubleSide });
     lighting.setup(mat, [(shader) => {
       Object.assign(shader.uniforms, shared);
       shader.vertexShader = shader.vertexShader
@@ -277,11 +280,13 @@ export function createVegetation(world, engine) {
     const rng = createRng((t.hole.seed ^ 0x9e3779b9) >>> 0);
     const seed = t.hole.seed & 0xffff;
     const out = new Map();
-    const add = (id, x, z, scale, rot, tint) => {
+    // Instance data, 9 floats: x, y, z, scale, rotation, tint r, g, b, and a height factor
+    // (taller or squatter than the model) so no two trees in a line share a silhouette.
+    const add = (id, x, z, scale, rot, tint, vert = 1) => {
       if (!species.get(id)) return;
       let a = out.get(id);
       if (!a) { a = []; out.set(id, a); }
-      a.push(x, t.heightAt(x, z) - 0.04, z, scale, rot, tint[0], tint[1], tint[2]);
+      a.push(x, t.heightAt(x, z) - 0.04, z, scale, rot, tint[0], tint[1], tint[2], vert);
     };
     const n = { x: 0, y: 1, z: 0 };
     // Trees and understory on a jittered grid, thinned by the terrain's tree density.
@@ -291,6 +296,15 @@ export function createVegetation(world, engine) {
       const dens = t.treeDensityAt(x, z);
       const roll = rng.next(), r2 = rng.next(), r3 = rng.next(), r4 = rng.next();
       if (dens <= 0.01) {
+        // A specimen tree now and then just outside a wood, in the rough beyond play.
+        const o = t.outsideAt(x, z);
+        if (o > 8 && o < 26 && roll < 0.035 * tier.treeDensity && mix.trees.length) {
+          const s = t.surfaceAt(x, z);
+          if (s === SURFACES.ROUGH || s === SURFACES.DEEP_ROUGH || s === SURFACES.WASTE) {
+            add(pickWeighted(mix.trees, r2), x, z, mix.treeScale[1] * (0.85 + r3 * 0.3), r4 * 6.28, [0.92, 0.95, 0.9], 0.95 + rng.next() * 0.25);
+            continue;
+          }
+        }
         // Open ground: an occasional rock outside the maintained area.
         if (t.outsideAt(x, z) > 6 && roll < mix.rockChance) {
           const s = t.surfaceAt(x, z);
@@ -302,17 +316,36 @@ export function createVegetation(world, engine) {
       if (surf === SURFACES.WATER || surf === SURFACES.PATH) continue;
       t.normalAt(x, z, n);
       const steep = n.y < 0.8;
-      if (roll < dens * 0.92 * tier.treeDensity && !steep) {
-        // Species come in stands: a slow noise field shifts which species dominates.
+      // Woods are not even: a clustering field makes clumps and clearings, and the edge
+      // of a wood breaks up into single specimen trees standing out in the rough.
+      const clump = fbm2(x / 38, z / 38, seed + 211, 2);
+      const clumpK = clamp(0.08 + 1.4 * smoothstep(-0.3, 0.3, clump), 0, 1.4);
+      const edge = dens < 0.35;
+      if (roll < dens * 0.92 * tier.treeDensity * clumpK && !steep) {
+        // Species come in stands, but stands are mixed: the slow field only biases the pick.
         const stand = fbm2(x / 120, z / 120, seed + 77, 2) * 0.5 + 0.5;
-        const id = pickWeighted(mix.trees, clamp(stand * 0.6 + r2 * 0.4, 0, 0.999));
-        const sc = mix.treeScale[0] + (mix.treeScale[1] - mix.treeScale[0]) * r3 * (0.6 + 0.4 * smoothstep(0, 25, t.outsideAt(x, z)));
-        const shade = 0.82 + r4 * 0.3;
-        add(id, x, z, sc, rng.next() * 6.28, [shade * (0.94 + rng.next() * 0.12), shade, shade * (0.9 + rng.next() * 0.14)]);
+        const id = pickWeighted(mix.trees, clamp(stand * 0.4 + r2 * 0.6, 0, 0.999));
+        // Age and vigor: size, height, and color all vary; trees deeper in the wood are taller.
+        const age = rng.next();
+        const sc = mix.treeScale[0] + (mix.treeScale[1] - mix.treeScale[0]) * (0.25 + 0.75 * age) * (0.65 + 0.35 * smoothstep(0, 25, t.outsideAt(x, z)));
+        const vert = clamp(0.82 + r3 * 0.42 + (edge ? -0.06 : 0.05), 0.75, 1.3);
+        const shade = 0.78 + r4 * 0.36;
+        add(id, x, z, sc, rng.next() * 6.28, [shade * (0.92 + rng.next() * 0.16), shade, shade * (0.88 + rng.next() * 0.18)], vert);
+        // Understory beneath the canopy, and now and then a fallen log.
+        if (rng.next() < 0.45 * tier.propDensity && mix.under.length) {
+          const a = rng.next() * 6.28, rr = 1.5 + rng.next() * 2.5;
+          add(pickWeighted(mix.under, rng.next()), x + Math.cos(a) * rr, z + Math.sin(a) * rr, 0.7 + rng.next() * 0.6, rng.next() * 6.28, [0.88 + rng.next() * 0.2, 0.94, 0.88], 0.85 + rng.next() * 0.3);
+        }
+        if (mix.logs && rng.next() < mix.logChance * tier.propDensity) {
+          const a = rng.next() * 6.28;
+          add(pickWeighted(mix.logs, rng.next()), x + Math.cos(a) * 3, z + Math.sin(a) * 3, 0.8 + rng.next() * 0.5, rng.next() * 6.28, [0.85, 0.85, 0.85]);
+        }
       } else if (roll > 0.55 && r2 < dens * 0.5 * tier.propDensity) {
-        add(pickWeighted(mix.under, r3), x, z, 0.8 + r4 * 0.7, rng.next() * 6.28, [0.9 + rng.next() * 0.2, 0.95, 0.9]);
-      } else if (r2 < mix.rockChance * 0.5) {
-        add(pickWeighted(mix.rocks, r3), x, z, 0.5 + r4 * 0.6, rng.next() * 6.28, [0.8, 0.8, 0.8]);
+        add(pickWeighted(mix.under, r3), x, z, 0.8 + r4 * 0.7, rng.next() * 6.28, [0.9 + rng.next() * 0.2, 0.95, 0.9], 0.85 + rng.next() * 0.3);
+      } else if (r2 < mix.rockChance * 0.3) {
+        // Rocks under trees sit in shade and half in the leaf litter: smaller and darker than
+        // rocks in the open, so they do not read as pale blobs along the tree line.
+        add(pickWeighted(mix.rocks, r3), x, z, 0.4 + r4 * 0.45, rng.next() * 6.28, [0.58, 0.6, 0.56]);
       }
     }
     // Beyond the mapped ground the woodland carries on over the outer landscape, as impostors
@@ -322,7 +355,8 @@ export function createVegetation(world, engine) {
       const O = 12;
       for (let gz = t.z0 - ringW; gz < t.maxZ + ringW; gz += O) for (let gx = t.x0 - ringW; gx < t.maxX + ringW; gx += O) {
         if (gx > t.x0 + 4 && gx < t.maxX - 4 && gz > t.z0 + 4 && gz < t.maxZ - 4) { rng.next(); continue; }
-        if (rng.next() > 0.8 * clamp(forest, 0, 1)) continue;
+        // The second layer: denser than the first and a little taller, so the woods have depth.
+        if (rng.next() > 0.95 * clamp(forest, 0, 1)) continue;
         const x = gx + (rng.next() - 0.5) * O, z = gz + (rng.next() - 0.5) * O;
         const y = outerH(x, z);
         if (w.course.theme.seaLevel !== null && y < w.course.theme.seaLevel + 1.5) continue;
@@ -333,7 +367,7 @@ export function createVegetation(world, engine) {
         if (!a) { a = []; out.set(id, a); }
         const shade = 0.8 + rng.next() * 0.3;
         // Slightly larger, since each one stands in for a patch of forest.
-        a.push(x, y - 0.05, z, (mix.treeScale[0] + mix.treeScale[1]) * 0.5 * (1.05 + rng.next() * 0.45), rng.next() * 6.28, shade, shade, shade * 0.95);
+        a.push(x, y - 0.05, z, (mix.treeScale[0] + mix.treeScale[1]) * 0.5 * (1.05 + rng.next() * 0.45), rng.next() * 6.28, shade, shade, shade * 0.95, 1.0 + rng.next() * 0.3);
       }
     }
     // Ground cover in the rough and on wild ground near play: tall grass clumps and flowers.
@@ -388,7 +422,7 @@ export function createVegetation(world, engine) {
     veg.ready = false;
     const mix = MIX[w.courseId] || MIX.parkland;
     const ids = new Set();
-    for (const key of ['trees', 'under', 'ground', 'rocks', 'water']) for (const [id] of mix[key]) ids.add(id);
+    for (const key of ['trees', 'under', 'ground', 'rocks', 'water', 'logs']) for (const [id] of mix[key] || []) ids.add(id);
     // Models load after first paint. The hole is playable (and physically identical) without them.
     veg.loading = (async () => {
       await Promise.all([...ids].map((id) => loadSpecies(id)));
@@ -397,7 +431,7 @@ export function createVegetation(world, engine) {
       veg.counts = { trees: 0, plants: 0, rocks: 0 };
       for (const [id, arr] of placed) {
         const sp = species.get(id);
-        const count = arr.length / 8;
+        const count = arr.length / 9;
         const data = new Float32Array(arr);
         const isTree = sp.kind === 'tree';
         if (isTree) veg.counts.trees += count; else if (sp.kind === 'plant') veg.counts.plants += count; else veg.counts.rocks += count;
@@ -418,12 +452,24 @@ export function createVegetation(world, engine) {
       lastCam.set(1e9, 0, 0);
     })();
   };
+  // QA: the instance of a species nearest to a point, for close-up shots.
+  veg.nearest = (id, px, pz) => {
+    let best = null;
+    for (const b of buckets) {
+      if (b.sp.id !== id) continue;
+      for (let i = 0; i < b.count; i++) {
+        const o = i * 9, d = Math.hypot(b.data[o] - px, b.data[o + 2] - pz);
+        if (!best || d < best.d) best = { d, x: b.data[o], y: b.data[o + 1], z: b.data[o + 2], height: b.sp.height * b.data[o + 3] * b.data[o + 8] };
+      }
+    }
+    return best;
+  };
   veg.whenSettled = async () => { if (veg.loading) await veg.loading; rebucket(world.camera, true); };
 
   const lastCam = new THREE.Vector3(1e9, 0, 0), lastDir = new THREE.Vector3(), _dir = new THREE.Vector3(), _cp = new THREE.Vector3();
   const cand = [];
-  function setInst(meshes, i, x, y, z, sc, rot, r, g, b) {
-    _p.set(x, y, z); _q.setFromAxisAngle(_up, rot); _s.set(sc, sc, sc);
+  function setInst(meshes, i, x, y, z, sc, rot, r, g, b, vt = 1) {
+    _p.set(x, y, z); _q.setFromAxisAngle(_up, rot); _s.set(sc, sc * vt, sc);
     _m.compose(_p, _q, _s);
     _c.setRGB(r, g, b);
     for (const m of meshes) { m.setMatrixAt(i, _m); m.setColorAt(i, _c); }
@@ -447,7 +493,7 @@ export function createVegetation(world, engine) {
       if (!b.isTree) continue;
       const { data, count } = b;
       for (let i = 0; i < count; i++) {
-        const dx = data[i * 8] - _cp.x, dz = data[i * 8 + 2] - _cp.z;
+        const dx = data[i * 9] - _cp.x, dz = data[i * 9 + 2] - _cp.z;
         const d2 = dx * dx + dz * dz;
         if (d2 < mid * mid) cand.push(d2);
       }
@@ -462,24 +508,24 @@ export function createVegetation(world, engine) {
       const shadowR2 = (tier.shadows.far + 35) * (tier.shadows.far + 35);
       const smallRange = sp.kind === 'plant' ? (sp.height > 1.5 ? 110 : 55 + 30 * tier.propDensity) : sp.kind === 'rock' ? 220 : 0;
       for (let i = 0; i < count; i++) {
-        const o = i * 8;
-        const x = data[o], y = data[o + 1], z = data[o + 2], sc = data[o + 3];
+        const o = i * 9;
+        const x = data[o], y = data[o + 1], z = data[o + 2], sc = data[o + 3], vt = data[o + 8];
         const dx = x - _cp.x, dz = z - _cp.z;
         const d2 = dx * dx + dz * dz;
         if (b.isTree) {
           if (d2 > far * far) continue;
           const d = Math.sqrt(d2);
-          if (b.ms && d2 < shadowR2 && ns < b.capS) setInst(b.ms, ns++, x, y, z, sc, data[o + 4], 1, 1, 1);
+          if (b.ms && d2 < shadowR2 && ns < b.capS) setInst(b.ms, ns++, x, y, z, sc, data[o + 4], 1, 1, 1, vt);
           // Trees close enough to throw a shadow into view are kept even when off screen.
-          if (d > 70) { _sph.center.set(x, y + sp.height * sc * 0.5, z); _sph.radius = sp.height * sc * 0.75; if (!_frustum.intersectsSphere(_sph)) continue; }
-          if (d2 < cut0 && b.m0 && n0 < b.cap0) setInst(b.m0, n0++, x, y, z, sc, data[o + 4], data[o + 5], data[o + 6], data[o + 7]);
-          else if (d2 < cut1 && n1 < b.cap1) setInst(b.m1, n1++, x, y, z, sc, data[o + 4], data[o + 5], data[o + 6], data[o + 7]);
-          else if (b.mi) setInst(b.mi, ni++, x, y, z, sc, data[o + 4], data[o + 5], data[o + 6], data[o + 7]);
+          if (d > 70) { _sph.center.set(x, y + sp.height * sc * vt * 0.5, z); _sph.radius = sp.height * sc * vt * 0.75; if (!_frustum.intersectsSphere(_sph)) continue; }
+          if (d2 < cut0 && b.m0 && n0 < b.cap0) setInst(b.m0, n0++, x, y, z, sc, data[o + 4], data[o + 5], data[o + 6], data[o + 7], vt);
+          else if (d2 < cut1 && n1 < b.cap1) setInst(b.m1, n1++, x, y, z, sc, data[o + 4], data[o + 5], data[o + 6], data[o + 7], vt);
+          else if (b.mi) setInst(b.mi, ni++, x, y, z, sc, data[o + 4], data[o + 5], data[o + 6], data[o + 7], vt);
         } else {
           if (d2 > smallRange * smallRange) continue;
           if (d2 > 400) { _sph.center.set(x, y, z); _sph.radius = sp.height * sc + 1; if (!_frustum.intersectsSphere(_sph)) continue; }
-          if (b.m0 && d2 < 144 && n0 < b.cap0) setInst(b.m0, n0++, x, y, z, sc, data[o + 4], data[o + 5], data[o + 6], data[o + 7]);
-          else if (n1 < b.cap1) setInst(b.m1, n1++, x, y, z, sc, data[o + 4], data[o + 5], data[o + 6], data[o + 7]);
+          if (b.m0 && d2 < 144 && n0 < b.cap0) setInst(b.m0, n0++, x, y, z, sc, data[o + 4], data[o + 5], data[o + 6], data[o + 7], vt);
+          else if (n1 < b.cap1) setInst(b.m1, n1++, x, y, z, sc, data[o + 4], data[o + 5], data[o + 6], data[o + 7], vt);
         }
       }
       const commit = (meshes, n) => { for (const m of meshes || []) { m.count = n; m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; } };

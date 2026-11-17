@@ -78,9 +78,9 @@ export const MODELS = [
 // Models the brief asks for that neither source offers (verified by listing the catalogs).
 // These are built procedurally in the game (src/render/props.js, vegetation.js).
 export const PROCEDURAL_MODELS = [
-  { id: 'palm', role: 'Palm tree', reason: 'Poly Haven has no palm model and ambientCG has no plant models' },
-  { id: 'saguaro', role: 'Desert cactus', reason: 'no CC0 cactus model at either source' },
-  { id: 'reeds', role: 'Reeds near water', reason: 'no reed model at either source' },
+  { id: 'palm', role: 'Palm trees (two variants, with dead-frond boot and coconuts)', reason: 'Poly Haven has no palm model and ambientCG has no plant models' },
+  { id: 'saguaro', role: 'Ribbed columnar cactus (three variants: two arms, many arms, young)', reason: 'no CC0 cactus model at either source' },
+  { id: 'reeds', role: 'Reed and sedge clumps with cattail heads', reason: 'no reed model at either source' },
   { id: 'sign', role: 'Hole sign and yardage markers', reason: 'no golf sign model at either source; needs live text anyway' },
   { id: 'fence', role: 'Fence posts and rope', reason: 'only a chainlink fence is available, wrong for a golf course' },
   { id: 'teemarker', role: 'Tee markers', reason: 'not available at either source' },

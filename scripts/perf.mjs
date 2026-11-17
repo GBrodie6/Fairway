@@ -12,7 +12,8 @@ import { serveStatic } from './lib/serve.mjs';
 import { TIERS, TIER_ORDER } from '../src/core/quality.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const dist = path.join(root, 'dist');
+// --dist=<folder> measures another build (for before and after comparisons).
+const dist = path.resolve(root, process.argv.slice(2).find((a) => a.startsWith('--dist='))?.slice(7) || 'dist');
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
 const courses = (args.course || 'parkland').split(',');
 const tiers = args.tier ? String(args.tier).split(',') : TIER_ORDER;
@@ -86,7 +87,7 @@ await browser.close();
 await server.close();
 mkdirSync(path.join(root, 'qa'), { recursive: true });
 const out = { when: new Date().toISOString(), software, throttleMbps: args.throttle ? Number(args.throttle) : null, note: 'SwiftShader software rendering. Counts, CPU subsystem time, and memory are valid; frame time on a real GPU is not measured here.', rows };
-writeFileSync(path.join(root, 'qa', args.throttle ? `perf-${args.throttle}mbps.json` : 'perf.json'), JSON.stringify(out, null, 1));
+writeFileSync(path.join(root, 'qa', args.out || (args.throttle ? `perf-${args.throttle}mbps.json` : 'perf.json')), JSON.stringify(out, null, 1));
 const pad = (s, n) => String(s).padEnd(n);
 console.log(pad('course', 9), pad('tier', 7), pad('draws', 14), pad('triangles', 22), pad('budget', 16), pad('tex MB', 7), pad('RT MB', 6), pad('cpu ms', 7), 'ok');
 for (const r of rows) {

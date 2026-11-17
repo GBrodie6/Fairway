@@ -191,6 +191,13 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
       look(px, H(px, pz) + 2.4, pz, t.pin.x, H(t.pin.x, t.pin.z) + 0.6, t.pin.z);
       return true;
     }
+    if (name === 'greenclose') {
+      // Standing on the green 4 m from the pin: grain, collar, and ball marks at putting range.
+      const g = h.green;
+      const px = t.pin.x - g.ax * 4 + g.az * 1.5, pz = t.pin.z - g.az * 4 - g.ax * 1.5;
+      look(px, H(px, pz) + 1.55, pz, t.pin.x + g.ax * 2, H(t.pin.x, t.pin.z), t.pin.z + g.az * 2);
+      return true;
+    }
     if (name === 'bunker') {
       const b = h.bunkers[0];
       if (!b) return false;
@@ -221,6 +228,15 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
         const px = c.x - (dx / l) * (c.r * 0.8 + 3), pz = c.z - (dz / l) * (c.r * 0.8 + 3);
         look(px, H(c.x, c.z) + c.r * 1.5 + 9, pz, c.x, H(c.x, c.z), c.z);
       }
+      return true;
+    }
+    if (name.startsWith('species:')) {
+      // The nearest plant of a species to the middle of the hole, framed from 2.5 heights away.
+      const v = world.vegetation && world.vegetation.nearest ? world.vegetation.nearest(name.slice(8), mid.x, mid.z) : null;
+      if (!v) return false;
+      const dist = Math.max(2.5, v.height * 1.6), ang = Math.atan2(mid.z - v.z, mid.x - v.x);
+      const px = v.x + Math.cos(ang) * dist, pz = v.z + Math.sin(ang) * dist;
+      look(px, H(px, pz) + Math.max(1.2, v.height * 0.45), pz, v.x, v.y + v.height * 0.45, v.z);
       return true;
     }
     if (name === 'tee') {
