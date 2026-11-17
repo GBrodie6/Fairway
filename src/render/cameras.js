@@ -22,6 +22,7 @@ export function createCameraRig(world, engine) {
   const H = (x, z) => world.terrain.heightAt(x, z);
 
   rig.set = (mode, ctx = {}) => {
+    rig.enabled = true;
     const changed = mode !== rig.mode;
     rig.mode = mode; rig.ctx = ctx;
     if (mode !== 'address' && mode !== 'free') { rig.yaw = 0; rig.pitch = 0; }

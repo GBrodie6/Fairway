@@ -15,6 +15,9 @@ import { createWater } from './water.js';
 import { createVegetation } from './vegetation.js';
 import { createGrass } from './grass.js';
 import { createProps } from './props.js';
+import { createBallView } from './ballView.js';
+import { createCameraRig } from './cameras.js';
+import { createOverlays } from './overlays.js';
 import { DEG, clamp } from '../core/math.js';
 import { fin } from '../core/guards.js';
 
@@ -47,7 +50,15 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
   scene.add(world.grass.group);
   world.props = createProps(world, engine);
   scene.add(world.props.group);
-  world.systems.push(world.sky, world.water, world.vegetation, world.grass, world.props);
+  world.ball = createBallView(world, engine);
+  scene.add(world.ball.group);
+  world.ball.hide();
+  world.overlays = createOverlays(world);
+  scene.add(world.overlays.group);
+  // The camera rig drives the camera while a round is in play. QA views switch it off.
+  world.rig = createCameraRig(world, engine);
+  world.rig.enabled = false;
+  world.systems.push(world.sky, world.water, world.vegetation, world.grass, world.props, world.ball, world.overlays);
   world.greenProps = createGreenProps(world);
   scene.add(world.greenProps.group);
   world.decals = createDecals(world);
@@ -155,6 +166,7 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
   // Named camera views for QA shots and contact sheets. Returns false if the hole has no such
   // feature (for example no water), so the caller can label the frame honestly.
   world.qaView = (name) => {
+    world.rig.enabled = false;
     const t = world.terrain, h = world.holeData;
     const H = (x, z) => t.heightAt(x, z);
     const look = (px, py, pz, lx, ly, lz) => { camera.position.set(px, py, pz); camera.lookAt(lx, ly, lz); camera.updateMatrixWorld(true); world.terrainView.updateLod(camera, true); if (world.vegetation) world.vegetation.forceUpdate(); };
