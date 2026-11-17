@@ -36,7 +36,9 @@ export async function runSmoke() {
   const agreement = [];
   const outDir = path.join(root, 'qa');
   mkdirSync(path.join(outDir, 'tmp'), { recursive: true });
-  const courses = COURSES.filter((c) => (gate.courses ? gate.courses.includes(c.id) : true)).filter((c) => !courseFilter || courseFilter.includes(c.id));
+  // An explicit --course list overrides the gate's list (to measure courses not yet gated).
+  const courses = courseFilter ? COURSES.filter((c) => courseFilter.includes(c.id)) : COURSES.filter((c) => (gate.courses ? gate.courses.includes(c.id) : true));
+  if (!courses.length) throw new Error(`no courses selected (${courseFilter ? courseFilter.join(',') : 'gate list'})`);
   const started = Date.now();
   try {
     for (const view of [{ name: 'landscape', width: 640, height: 360 }, { name: 'portrait', width: 360, height: 640 }]) {
