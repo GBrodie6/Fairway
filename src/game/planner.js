@@ -49,34 +49,34 @@ export function solvePutt(terrain, from, pin = terrain.pin) {
   const direct = headingTo(from.x, from.z, pin.x, pin.z);
   const elevation = terrain.heightAt(pin.x, pin.z) - terrain.heightAt(from.x, from.z);
   if (dist < 0.02) return { heading: direct, speed: 0.3, holed: true, breakM: 0, elevation, miss: 0, distance: dist };
+  // Iterate like a golfer reading a putt: roll one, see where it passed the hole and how far
+  // it ran, then correct the line by the angular miss and the pace by the over or under run.
   let best = null;
-  const span = clamp(0.9 / Math.max(dist, 0.6), 0.06, 0.5); // radians either side of the direct line
-  const evalAt = (h) => {
-    // Bisect speed so the ball would stop about 35 cm past the hole if it missed.
-    let lo = 0.2, hi = MAX_PUTT_SPEED, pick = null;
-    for (let i = 0; i < 16; i++) {
-      const v = (lo + hi) / 2;
-      const r = simulatePutt(terrain, from, h, v);
-      const fx = Math.sin(direct), fz = -Math.cos(direct);
-      const along = (r.end.x - from.x) * fx + (r.end.z - from.z) * fz;
-      const miss = Math.hypot(r.end.x - pin.x, r.end.z - pin.z);
-      const cand = { heading: h, speed: v, holed: r.holed, miss: r.holed ? 0 : miss };
-      if (!pick || cand.miss < pick.miss || (cand.holed && !pick.holed)) pick = cand;
-      if (r.holed) { hi = v; if (hi - lo < 0.02) break; continue; }
-      if (along < dist + 0.35) lo = v; else hi = v;
+  let h = direct;
+  let v = Math.sqrt(Math.max(0.3, 2 * 0.549 * (dist + 0.3) + 2 * 9.81 * Math.max(-dist * 0.03, elevation)));
+  for (let it = 0; it < 18; it++) {
+    v = clamp(v, 0.25, MAX_PUTT_SPEED);
+    const r = simulatePutt(terrain, from, h, v);
+    const p = r.points;
+    let dmin = 1e9, cx = from.x, cz = from.z, ck = 0;
+    for (let k = 0; k < p.length; k += 4) {
+      const d = Math.hypot(p[k + 1] - pin.x, p[k + 3] - pin.z);
+      if (d < dmin) { dmin = d; cx = p[k + 1]; cz = p[k + 3]; ck = k; }
     }
-    return pick;
-  };
-  const N = 9;
-  for (let pass = 0; pass < 2; pass++) {
-    const center = best ? best.heading : direct, width = pass === 0 ? span : span / N * 1.5;
-    for (let i = 0; i < N; i++) {
-      const h = center + (i / (N - 1) - 0.5) * 2 * width;
-      const c = evalAt(h);
-      // Prefer holed putts, then the smallest miss, then the gentlest pace.
-      if (!best || (c.holed && !best.holed) || (c.holed === best.holed && c.miss < best.miss - 1e-4)) best = c;
+    const endMiss = r.holed ? 0 : Math.hypot(r.end.x - pin.x, r.end.z - pin.z);
+    const cand = { heading: h, speed: v, holed: r.holed, miss: endMiss };
+    if (!best || (cand.holed && !best.holed) || (cand.holed === best.holed && cand.miss < best.miss)) best = cand;
+    if (r.holed) break;
+    // Line: turn by the angle between where the ball passed and where the hole is.
+    const turn = wrapAngle(headingTo(from.x, from.z, pin.x, pin.z) - headingTo(from.x, from.z, cx, cz));
+    h += clamp(turn, -0.25, 0.25) * 0.85;
+    // Pace: short if the closest point is where it stopped, otherwise judge the run past.
+    const stoppedShort = ck >= p.length - 8;
+    if (stoppedShort) v *= 1 + clamp((dmin + 0.3) / Math.max(dist, 0.5), 0.02, 0.6) * 0.55;
+    else {
+      const past = Math.hypot(r.end.x - cx, r.end.z - cz);
+      v *= clamp(1 - ((past - 0.35) / (dist + past + 0.5)) * 0.5, 0.75, 1.06);
     }
-    if (best.holed && pass === 0) continue;
   }
   const off = wrapAngle(best.heading - direct);
   return { ...best, breakM: Math.tan(off) * dist, elevation, distance: dist };
