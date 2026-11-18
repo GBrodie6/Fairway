@@ -91,6 +91,7 @@ export function installGear(app, ui) {
               const r = upgradeClub(app.save().gear, c.uid, app.save().wallet.shards || 0);
               if (r.error) { ui.hud.toast('Upgrade', r.error, 2000); return; }
               app.updateSave((s) => ({ ...s, gear: r.gear, wallet: { ...s.wallet, shards: (s.wallet.shards || 0) - r.cost } }), 'purchase');
+              if (app.recordPlay) app.recordPlay({ upgrades: 1 });
               ui.hud.toast('Upgraded', `${clubName(clubId)} is now ${TIER_INFO[TIERS[TIERS.indexOf(c.rarity) + 1]].name}`, 2000);
               clubScreen(clubId);
             }, 'btn small', { disabled: shards < cost, 'aria-label': `Upgrade to ${TIER_INFO[TIERS[TIERS.indexOf(c.rarity) + 1]].name} for ${cost} shards` }) : null));

@@ -69,7 +69,8 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   const tabWind = h('div', { class: 'tab', role: 'img' }, windArrow, windV, todIco);
   const hazard = h('div', { class: 'chip glass warn hidden', role: 'status' });
   const puttinfo = h('div', { class: 'chip glass hidden', 'aria-live': 'polite' });
-  const tabs = h('div', { class: 'tabs' }, tabLie, tabDist, tabWind, hazard, puttinfo);
+  const streakChip = h('div', { class: 'chip glass streak hidden', role: 'status', 'aria-live': 'polite' });
+  const tabs = h('div', { class: 'tabs' }, tabLie, tabDist, tabWind, hazard, puttinfo, streakChip);
   el.appendChild(tabs);
 
   // --- top right: hole and score, position, map ---
@@ -212,9 +213,22 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   // Under the tabs and under any chip showing beneath them.
   function placeCard() {
     let bottom = tabWind.getBoundingClientRect().bottom;
-    for (const c of [hazard, puttinfo]) if (!c.classList.contains('hidden')) bottom = Math.max(bottom, c.getBoundingClientRect().bottom);
+    for (const c of [hazard, puttinfo, streakChip]) if (!c.classList.contains('hidden')) bottom = Math.max(bottom, c.getBoundingClientRect().bottom);
     shotcard.style.top = `${Math.round(bottom + 6)}px`;
   }
+  hud.setStreak = (text) => { streakChip.textContent = text || ''; streakChip.classList.toggle('hidden', !text); };
+  // A short burst of color for a birdie or better (skipped with reduced motion by the caller).
+  hud.confetti = (size = 'small') => {
+    const n = size === 'big' ? 46 : 26;
+    const box = h('div', { class: 'confetti', 'aria-hidden': 'true' });
+    const cols = ['#c2e58a', '#ffd166', '#6fb6ff', '#ff8a6a', '#c08bff', '#ffffff'];
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + Math.random() * 0.3, d = 90 + Math.random() * (size === 'big' ? 190 : 120);
+      box.appendChild(h('i', { style: { background: cols[i % cols.length], '--dx': `${Math.cos(a) * d}px`, '--dy': `${Math.sin(a) * d - 60}px`, '--r': `${Math.random() * 720 - 360}deg`, animationDelay: `${Math.random() * 120}ms` } }));
+    }
+    el.appendChild(box);
+    setTimeout(() => box.remove(), 1700);
+  };
   hud.note = (title, text, ms = 2200) => {
     shotcard.textContent = '';
     shotcard.append(h('div', { class: 'row1' }, h('b', { text: title })));

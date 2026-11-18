@@ -7,6 +7,8 @@ import { courseById } from '../course/courses.js';
 import { YARD } from '../core/math.js';
 import { starterGear, sanitizeGear } from './gear.js';
 import { newGolfer, sanitizeGolfer, sanitizeCampaign, golferFromCareer } from './campaign.js';
+import { FEATS } from './feats.js';
+import { DEFAULT_COSMETICS, sanitizeCosmetics } from './cosmetics.js';
 
 export const SAVE_VERSION = 6;
 export const SAVE_KEY = 'fairway-next.save';
@@ -34,6 +36,10 @@ export function defaultSave() {
     profile: newGolfer(),
     // v6: campaign progress (chapters, events, stars); created when the campaign is opened.
     campaign: null,
+    // Counters behind achievements and quests (pured strikes, streak bests, match wins, ...).
+    counters: {},
+    // Daily and weekly quests, the season track, cosmetics, and the weekly record.
+    quests: null, season: null, cosmetics: { ...DEFAULT_COSMETICS }, weekly: null,
     // The practice ground record: sessions, bests, medals, and per-club running sums.
     range: {},
   };
@@ -94,6 +100,12 @@ export function sanitizeSave(s) {
   out.gear = sanitizeGear(s.gear);
   out.profile = sanitizeGolfer(s.profile);
   out.campaign = sanitizeCampaign(s.campaign);
+  const ct = s.counters && typeof s.counters === 'object' ? s.counters : {};
+  out.counters = {};
+  for (const [k, v] of Object.entries(ct)) if (/^[a-zA-Z0-9]{1,32}$/.test(k) && Number.isFinite(v) && v >= 0) out.counters[k] = Math.min(Math.floor(v), 1e7);
+  const obj = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : null);
+  out.quests = obj(s.quests); out.season = obj(s.season); out.weekly = obj(s.weekly);
+  out.cosmetics = sanitizeCosmetics(s.cosmetics, out.player.ball);
   out.range = s.range && typeof s.range === 'object' && !Array.isArray(s.range) ? s.range : {};
   const a = s.account;
   out.account = a && typeof a === 'object' && typeof a.userId === 'string' ? { userId: a.userId, email: String(a.email || ''), displayName: String(a.displayName || '').slice(0, 18) } : null;
@@ -121,7 +133,7 @@ export function writeSave(save, store = storage()) {
 }
 
 // --- achievements ---
-export const ACHIEVEMENTS = [
+const BASE_ACHIEVEMENTS = [
   { id: 'first-round', name: 'First round', text: 'Finish a round.' },
   { id: 'birdie', name: 'Birdie', text: 'Make a birdie.' },
   { id: 'eagle', name: 'Eagle', text: 'Make an eagle.' },
@@ -135,6 +147,8 @@ export const ACHIEVEMENTS = [
   { id: 'career-win', name: 'Winner', text: 'Win a career event.' },
   { id: 'tour-card', name: 'Tour card', text: 'Reach the championship tour in your career.' },
 ];
+// The original twelve and the checks in game/feats.js.
+export const ACHIEVEMENTS = [...BASE_ACHIEVEMENTS, ...FEATS.map(({ id, name, text }) => ({ id, name, text }))];
 
 // Fold a finished round into the save. Returns { save, unlocked: [ids], entry }.
 // playerIdx is the human whose stats are kept (pass and play keeps player 1).

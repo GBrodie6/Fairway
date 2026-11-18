@@ -8,6 +8,7 @@ import { scoreName } from '../game/scoring.js';
 import { standings, parOf } from '../game/round.js';
 import { fmtToPar, fmtShort } from './format.js';
 import { hashString } from '../core/rng.js';
+import { adaptiveRivalSkill, rivalLabel } from '../game/weekly.js';
 
 const MODE_INFO = [
   { id: 'stroke', name: 'Stroke play', text: 'Every shot counts. Lowest total wins.' },
@@ -67,7 +68,12 @@ export function createScreens(root, { app, game, settings, ui, save }) {
         screens.registry.passplay ? btn('Pass and play', () => screens.registry.passplay()) : btn('Two players', () => screens.setup({ players: 2 }))),
       screens.registry.online ? btn('Online play (experimental)', () => screens.registry.online()) : null,
       h('div', { class: 'grid2' },
-        screens.registry.gear ? btn('Gear', () => screens.registry.gear()) : null,
+        screens.registry.quests ? btn('Quests and season', () => screens.registry.quests()) : null,
+        screens.registry.feats ? btn('Achievements', () => screens.registry.feats()) : null),
+      h('div', { class: 'grid2' },
+        screens.registry.locker ? btn('Locker', () => screens.registry.locker()) : null,
+        screens.registry.gear ? btn('Gear', () => screens.registry.gear()) : null),
+      h('div', { class: 'grid2' },
         screens.registry.stats ? btn('Stats and history', () => screens.registry.stats()) : null),
       h('div', { class: 'grid2' },
         screens.registry.settings ? btn('Settings', () => screens.registry.settings()) : null,
@@ -91,7 +97,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
       const modeSeg = h('div', { class: 'seg glass', role: 'group', 'aria-label': 'Game mode' });
       for (const m of MODE_INFO) modeSeg.appendChild(h('button', { type: 'button', 'aria-pressed': setupState.mode === m.id ? 'true' : 'false', onclick: () => { setupState.mode = m.id; screens.setup(); } }, m.name));
       const holeSeg = h('div', { class: 'seg glass', role: 'group', 'aria-label': 'Holes' });
-      for (const n of [9, 18]) holeSeg.appendChild(h('button', { type: 'button', 'aria-pressed': setupState.holes === n ? 'true' : 'false', onclick: () => { setupState.holes = n; screens.setup(); } }, `${n} holes`));
+      for (const n of [3, 6, 9, 18]) holeSeg.appendChild(h('button', { type: 'button', 'aria-pressed': setupState.holes === n ? 'true' : 'false', onclick: () => { setupState.holes = n; screens.setup(); } }, `${n} holes`));
       const tod = h('select', { 'aria-label': 'Time of day', onchange: (e) => { setupState.tod = e.target.value; } });
       for (const id of TOD_ORDER) tod.appendChild(h('option', { value: id, selected: setupState.tod === id }, TOD_NAMES[id] || id));
       const info = MODE_INFO.find((m) => m.id === setupState.mode);
@@ -103,7 +109,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
         h('h3', { class: 'h', text: 'Format' }), h('div', { class: 'row' }, modeSeg, holeSeg),
         h('p', { class: 'muted', text: info.text }),
         h('div', { class: 'field' }, h('label', { text: 'Time of day' }), tod),
-        setupState.players < 2 ? h('div', { class: 'field' }, h('label', { for: 'rival', text: 'Play against a computer rival' }), rival) : h('p', { class: 'muted', text: `${setupState.players} players share this device and pass it between shots.` }),
+        setupState.players < 2 ? h('div', { class: 'field' }, h('label', { for: 'rival', text: `Play against a computer rival (adapts to your form: ${rivalLabel(adaptiveRivalSkill(app.save ? app.save().history : []))} right now)` }), rival) : h('p', { class: 'muted', text: `${setupState.players} players share this device and pass it between shots.` }),
         h('div', { class: 'grid2', style: { marginTop: '14px' } }, btn('Back', () => screens.back()), btn('Tee off', () => startQuick(), 'btn primary')),
       );
     });
@@ -117,7 +123,8 @@ export function createScreens(root, { app, game, settings, ui, save }) {
       const cols = ['#ffffff', '#ffd23f', '#7fd1ff', '#ff9e7a'];
       return Array.from({ length: setupState.players }, (_, i) => ({ id: 'p' + (i + 1), name: i === 0 ? me.name : `Player ${i + 1}`, kind: 'human', ball: cols[i] }));
     }
-    if (setupState.rival || needsRival) return [me, { id: 'ai1', name: 'Rowan Vale', kind: 'ai', skill: 0.62, ball: '#ffd23f' }];
+    // The rival adapts to your recent rounds and leans a little toward winning.
+    if (setupState.rival || needsRival) return [me, { id: 'ai1', name: 'Rowan Vale', kind: 'ai', skill: adaptiveRivalSkill(app.save ? app.save().history : []), ball: '#ffd23f' }];
     return [me];
   }
   async function startQuick() {
@@ -207,7 +214,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
     if (r.mode === 'stroke' || r.mode === 'daily') {
       const order = t.map((x, i) => ({ ...x, i })).sort((a, b) => a.strokes - b.strokes);
       const margin = order[1].strokes - order[0].strokes;
-      return margin === 0 ? `Tied on ${order[0].strokes}` : `${order[0].name} wins by ${margin}`;
+      return margin === 0 ? `Tied on ${order[0].strokes}` : `${order[0].name} ${order[0].name === 'You' ? 'win' : 'wins'} by ${margin}`;
     }
     return stand.text;
   }

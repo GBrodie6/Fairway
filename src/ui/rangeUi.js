@@ -208,6 +208,12 @@ export function installRange(app, ui) {
       }, 'range');
       if (app.addXp) app.addXp(res.xp, `${MODES[s.mode].name}`);
       if (s.mode === 'target' && app.postScore) app.postScore('target', s.score);
+      if (app.flushPlayCounters) app.flushPlayCounters();
+      if (app.recordPlay) app.recordPlay({ rangeSessions: 1, medals: res.medal !== 'none' ? 1 : 0 });
+      if (app.recordWeekly) {
+        if (s.mode === 'longdrive') app.recordWeekly({ longdrive: s.score });
+        if (app.weeklyMiniGame && app.weeklyMiniGame().drill === s.mode) app.recordWeekly({ mini: s.score });
+      }
       if (s.mode === 'longdrive' && s.score && app.postScore) app.postScore('longdrive', s.score);
     }
     const res = lastResult;
@@ -230,6 +236,7 @@ export function installRange(app, ui) {
 
   screens.register('range', lobby);
   app.openRange = lobby;
+  app.openRangeMode = (mode) => { if (MODES[mode]) opts.mode = mode; lobby(); };
   // Leaving the round from the pause menu ends the session without a summary.
   game.on((type) => { if (type === 'quit') { session = null; } });
 }

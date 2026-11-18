@@ -96,6 +96,18 @@ try {
       await snap('campaign-briefing');
       report.before = await page.evaluate(() => { const s = window.__fw.app.save(); return { profile: s.profile, campaign: s.campaign && { progress: s.campaign.progress } }; });
       await tapStarts('Tee off');
+    } else if (flow === 'quick3') {
+      // A 3-hole quick round against the adaptive rival, from the setup screen.
+      await snap('menu');
+      await tapText('Daily challenge');
+      await snap('daily-thisweek');
+      await tapText('Back');
+      await tapText('Quick round');
+      await tapText('3 holes');
+      await page.evaluate(() => { const c = document.getElementById('rival'); if (c && !c.checked) c.click(); });
+      report.rivalLabel = await page.evaluate(() => document.querySelector('label[for="rival"]').textContent);
+      await snap('setup-3holes');
+      await tapText('Tee off');
     } else if (flow === 'campaign-match') {
       // Match play against a boss, which plays its shots on screen. The first four chapters are
       // marked cleared here (as if played) so the Rivalry chapter is open.
@@ -156,6 +168,22 @@ try {
         await snap('round-end-xp');
       }
       report.result = await page.evaluate(() => { const r = window.__fw.game.state.round; return { scores: r.scores, players: r.players.map((p) => p.name), complete: r.complete, holes: r.holes, mode: r.mode, standings: document.querySelector('.screen .big') && document.querySelector('.screen .big').textContent }; });
+      if (flow === 'quick3') {
+        report.fun = await page.evaluate(() => { const s = window.__fw.app.save(); return { counters: s.counters, quests: s.quests, season: s.season, achievements: Object.keys(s.achievements), xp: s.profile.xp }; });
+        await page.waitForTimeout(400);
+        await tapText('Main menu');
+        await tapText('Quests and season');
+        await snap('quests');
+        const claim = await page.evaluate(() => [...document.querySelectorAll('.quest button')].filter((b) => !b.disabled).length);
+        if (claim) { await tapText('Claim'); await snap('quests-claimed'); }
+        await tapText('Back');
+        await tapText('Achievements');
+        await snap('achievements');
+        await tapText('Back');
+        await tapText('Locker');
+        await snap('locker');
+        report.funAfter = await page.evaluate(() => { const s = window.__fw.app.save(); return { quests: s.quests, tokens: s.wallet.tokens, xp: s.profile.xp }; });
+      }
       report.after = await saveSummary();
       break;
     }

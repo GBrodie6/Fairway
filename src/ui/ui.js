@@ -12,6 +12,11 @@ import { saveSettings } from '../core/settings.js';
 import { headingTo } from '../core/math.js';
 import { STRIKE_NAMES, STRIKE_HAPTIC } from '../game/strike.js';
 import { clubAverageCarry } from '../game/range.js';
+import { SURFACES } from '../physics/surfaces.js';
+import { emptyStreaks, updateStreaks, hotStreak } from '../game/streaks.js';
+import { cosmeticById } from '../game/cosmetics.js';
+
+const COSMETIC_COLOR = (id) => (cosmeticById(id) || {}).color || null;
 
 export function createUI(app) {
   const root = document.getElementById('ui');
@@ -80,8 +85,29 @@ export function createUI(app) {
 
   // --- game events to feedback ---
   let lipped = false;
+  // Streaks this round, and pured strikes to add to the counters when the round ends.
+  let streaks = emptyStreaks(), roundPured = 0;
+  function feedStreak(ev) {
+    const r = updateStreaks(streaks, ev);
+    streaks = r.streaks;
+    const hot = hotStreak(streaks);
+    ui.hud.setStreak(hot ? hot.text : null);
+    if (r.announce) ui.hud.toast('Streak', r.announce, 2200);
+  }
+  app.flushPlayCounters = () => {
+    if (!app.recordPlay) return;
+    app.recordPlay({ pured: roundPured }, { parStreakBest: streaks.best.par, birdieStreakBest: streaks.best.birdie, pureStreakBest: streaks.best.pure, fairwayStreakBest: streaks.best.fairway });
+    roundPured = 0;
+  };
+  app.applyCosmetics = () => {
+    const s = app.save ? app.save() : null;
+    if (!s || !app.world || !app.world.ball) return;
+    const tr = s.cosmetics && COSMETIC_COLOR(s.cosmetics.trail);
+    if (tr && app.world.ball.setTrailColor) app.world.ball.setTrailColor(tr);
+  };
   game.on((type, d) => {
     const u = settings.units;
+    if (type === 'roundEnd' || type === 'quit') app.flushPlayCounters();
     switch (type) {
       case 'phase':
         if (d === 'summary') ui.screens.holeSummary(game.state.holeSummary);
@@ -100,7 +126,21 @@ export function createUI(app) {
         if (r.players.length > 1) ui.hud.toast(`${r.players[d.player].name} to play`, d.human ? '' : 'Watching', 1500);
         break;
       }
+      case 'roundStart':
+        streaks = emptyStreaks(); roundPured = 0;
+        ui.hud.setStreak(null);
+        if (app.applyCosmetics) app.applyCosmetics();
+        break;
+      case 'holeEnd': {
+        const r = game.state.round;
+        if (!r || r.players[0].kind !== 'human' || !Number.isFinite(d.strokes[0])) break;
+        const toPar = d.strokes[0] - d.par;
+        feedStreak({ type: 'hole', toPar });
+        if (toPar <= -1 && !app.motionReduced()) ui.hud.confetti(toPar <= -2 ? 'big' : 'small');
+        break;
+      }
       case 'swing':
+        if (d.human && d.strike) { if (d.strike.kind === 'pured') roundPured++; feedStreak({ type: 'strike', kind: d.strike.kind }); }
         if (d.human) {
           ui.hud.hideShotCard();
           ui.hud.strikeLabel(d.swing.tempoLabel, d.strike);
@@ -108,6 +148,7 @@ export function createUI(app) {
         }
         break;
       case 'mulligan':
+        if (app.recordPlay) app.recordPlay({ mulligans: 1 });
         if (app.spendMulligan) app.spendMulligan();
         ui.hud.note('Mulligan', 'Take that one again.', 1800);
         break;
@@ -120,6 +161,8 @@ export function createUI(app) {
         if (s.outcome.holed) { ui.hud.toast(s.message, `${s.strokes} ${s.strokes === 1 ? 'stroke' : 'strokes'}`, 2600); break; }
         if (lip && s.outcome.putt) { ui.hud.toast('Lipped out', `${fmtShort(s.distToPin, u)} left`, 2400); break; }
         if (s.outcome.putt) { ui.hud.toast(s.message || SURFACE_NAMES[s.outcome.lie], `${fmtShort(s.distToPin, u)} left`, 2600); break; }
+        // A tee shot on a par 4 or 5 that finds the fairway feeds the fairway streak.
+        if (s.from && s.from.lie === SURFACES.TEE && s.par > 3 && game.state.round.players[s.player].kind === 'human') feedStreak({ type: 'tee', fairway: s.outcome.lie === SURFACES.FAIRWAY });
         // A full shot: the shot card (strike, carry, offline, what caused a miss, Mulligan).
         if (game.state.round && game.state.round.players[s.player] && game.state.round.players[s.player].kind === 'human') ui.hud.shotCard(s);
         else ui.hud.toast(s.message || SURFACE_NAMES[s.outcome.lie], `Carry ${fmtDist(s.outcome.carry, u)}  Total ${fmtDist(s.outcome.total, u)}`, 2600);

@@ -343,3 +343,34 @@ table.avg th { color: var(--ink-dim); font-weight: 600; }
 .tree .node.k-shot b { color: #9fd0ff; }
 .tree .node.sel { outline: 2px solid #fff; }
 .campaign .nodeinfo { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.06); }
+
+/* --- fun layer: streaks, confetti, quests, season, achievements, locker, this week --- */
+.chip.streak { background: rgba(70, 40, 0, 0.72); border-color: rgba(255, 179, 71, 0.75); color: #ffe2b4; font-weight: 600; }
+.chip.streak::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #ffb347; box-shadow: 0 0 8px #ffb347; }
+.confetti { position: absolute; left: 50%; top: 42%; width: 0; height: 0; pointer-events: none; z-index: 6; }
+.confetti i { position: absolute; width: 8px; height: 12px; border-radius: 2px; opacity: 0; animation: confetti 1.5s cubic-bezier(0.2, 0.7, 0.3, 1) forwards; }
+@keyframes confetti { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 70% { opacity: 1; } 100% { transform: translate(var(--dx), calc(var(--dy) + 160px)) rotate(var(--r)); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .confetti { display: none; } }
+.fun .small { font-size: 12.5px; }
+.fun .tiny { font-size: 10.5px; }
+.fun .stack.tight { gap: 4px; flex: 1; min-width: 0; }
+.fun .row { display: inline-flex; align-items: center; gap: 10px; }
+.fun .list .item.quest, .fun .list .item.tier-row { align-items: center; }
+.fun .list .item.ready { outline: 1px solid var(--accent); }
+.fun .list .item.claimed { opacity: 0.6; }
+.fun .tiers { max-height: 52vh; overflow-y: auto; }
+.fun .tier-row .tn { display: inline-block; min-width: 26px; text-align: center; color: var(--accent); }
+.fun .feats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin: 10px 0; }
+.fun .feat { display: flex; flex-direction: column; gap: 3px; padding: 9px 10px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); opacity: 0.55; }
+.fun .feat.got { background: rgba(194, 229, 138, 0.14); outline: 1px solid rgba(194, 229, 138, 0.5); opacity: 1; }
+.fun .feat .reward { color: #ffd166; }
+.fun .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; margin: 6px 0 12px; }
+.fun .swatch { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 10px 6px; min-height: 48px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--line); color: var(--ink); text-align: center; }
+.fun .swatch.on { outline: 2px solid var(--accent); }
+.fun .swatch.locked { opacity: 0.45; }
+.fun .swatch i.ball { width: 26px; height: 26px; border-radius: 50%; box-shadow: inset -4px -5px 8px rgba(0, 0, 0, 0.25); }
+.fun .swatch i.trail { width: 44px; height: 6px; border-radius: 3px; box-shadow: 0 0 8px currentColor; }
+.thisweek { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.thisweek .item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.06); }
+.thisweek .stack.tight { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.thisweek .small { font-size: 12.5px; }

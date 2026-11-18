@@ -114,6 +114,7 @@ export function createBallView(world, engine) {
   const view = {
     group, ball, position: ball.position, tracePoints: [], traceCount: 0, visualScale: 1, spin: { axis: new THREE.Vector3(1, 0, 0), rate: 0 }, shake: 0,
     setColor(hex) { mat.color.set(hex); },
+    setTrailColor(hex) { traceMat.uniforms.uColor.value.set(hex); },
     setSpinViz(v) { stripe.visible = !!v; },
     place(x, y, z) { ball.position.set(fin(x), fin(y), fin(z)); ball.visible = true; },
     hide() { ball.visible = false; blob.visible = false; },

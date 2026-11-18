@@ -46,6 +46,8 @@ export function mergeSaves(a, b) {
   for (const k of ['career', 'profile', 'campaign']) out[k] = xp(a, k) >= xp(b, k) ? a[k] ?? b[k] : b[k];
   // Wallet: the larger balance per currency (adding would duplicate earnings).
   if (a.wallet || b.wallet) { out.wallet = { ...(b.wallet || {}) }; for (const [k, v] of Object.entries(a.wallet || {})) out.wallet[k] = Math.max(v || 0, out.wallet[k] || 0); }
+  if (a.counters || b.counters) { out.counters = { ...(b.counters || {}) }; for (const [k, v] of Object.entries(a.counters || {})) out.counters[k] = Math.max(v || 0, out.counters[k] || 0); }
+  if (a.season && b.season && a.season.id === b.season.id) out.season = (a.season.xp || 0) >= (b.season.xp || 0) ? a.season : b.season;
   // Gear and cosmetics: union by id.
   if (a.gear || b.gear) {
     const ga = a.gear || {}, gb = b.gear || {};

@@ -1,0 +1,398 @@
+{
+ "course": "parkland",
+ "view": "portrait",
+ "holes": 18,
+ "tier": "low",
+ "scale": 0.5,
+ "timescale": 6,
+ "mode": "stroke",
+ "software": true,
+ "input": "touch",
+ "started": "2026-11-18T19:30:00.822Z",
+ "shots": [
+  {
+   "hole": 1,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 341.92,
+   "after": 341.92,
+   "ideal": 0.892,
+   "power": 0.895,
+   "tempo": "Perfect",
+   "ratio": 3.2,
+   "read": null,
+   "result": "Rowan Vale to playWatching",
+   "sec": 21.7
+  },
+  {
+   "hole": 1,
+   "club": "I9",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 117.55,
+   "after": 103.67,
+   "ideal": 0.863,
+   "power": 0.909,
+   "tempo": "Perfect",
+   "ratio": 3.33,
+   "read": null,
+   "result": "Rowan Vale to playWatching",
+   "sec": 22.2
+  },
+  {
+   "hole": 1,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 6.47,
+   "after": 0.89,
+   "ideal": 0.69,
+   "power": 0.671,
+   "tempo": "Good, a little quick",
+   "ratio": 3.56,
+   "read": {
+    "drags": 4,
+    "taps": 14,
+    "leftDeg": 5.11,
+    "breakM": 1.75
+   },
+   "result": "Rowan Vale to playWatching",
+   "sec": 19.4
+  },
+  {
+   "hole": 1,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.66,
+   "after": 0.66,
+   "ideal": 0.69,
+   "power": 0.677,
+   "tempo": "Good, a little quick",
+   "ratio": 3.63,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par4 strokes",
+   "sec": 16.6
+  },
+  {
+   "hole": 2,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 482.23,
+   "after": 482.23,
+   "ideal": 0.954,
+   "power": 0.898,
+   "tempo": "Perfect",
+   "ratio": 3.31,
+   "read": null,
+   "result": "Rowan Vale to playWatching",
+   "sec": 21.6
+  },
+  {
+   "hole": 2,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 273.56,
+   "after": 270.69,
+   "ideal": 0.952,
+   "power": 1,
+   "tempo": "Good, a little quick",
+   "ratio": 3.65,
+   "read": null,
+   "result": "Rowan Vale to playWatching",
+   "sec": 19.7
+  },
+  {
+   "hole": 2,
+   "club": "LW",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 64.93,
+   "after": 8.6,
+   "ideal": 0.919,
+   "power": 0.943,
+   "tempo": "Perfect",
+   "ratio": 2.99,
+   "read": null,
+   "result": "Rowan Vale to playWatching",
+   "sec": 16.7
+  },
+  {
+   "hole": 2,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 2.26,
+   "after": 1.05,
+   "ideal": 0.69,
+   "power": 0.669,
+   "tempo": "Good, a little quick",
+   "ratio": 4.08,
+   "read": {
+    "drags": 2,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -0.11
+   },
+   "result": "Rowan Vale to playWatching",
+   "sec": 17.6
+  },
+  {
+   "hole": 3,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 398.91,
+   "after": 398.91,
+   "ideal": 0.963,
+   "power": 0.928,
+   "tempo": "Good, a little quick",
+   "ratio": 3.47,
+   "read": null,
+   "result": "Rowan Vale to playWatching",
+   "sec": 22.2
+  },
+  {
+   "hole": 3,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 188.25,
+   "after": 185.2,
+   "ideal": 0.926,
+   "power": 0.918,
+   "tempo": "Perfect",
+   "ratio": 3.23,
+   "read": null,
+   "result": "Rowan Vale to playWatching",
+   "sec": 22.3
+  },
+  {
+   "hole": 3,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 9.38,
+   "after": 2.76,
+   "ideal": 0.69,
+   "power": 0.68,
+   "tempo": "Perfect",
+   "ratio": 3.39,
+   "read": {
+    "drags": 4,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -1.42
+   },
+   "result": "Rowan Vale to playWatching",
+   "sec": 18.6
+  },
+  {
+   "hole": 3,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.25,
+   "after": 0.25,
+   "ideal": 0.595,
+   "power": 0.609,
+   "tempo": "Good, a little quick",
+   "ratio": 3.74,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Streak3 holes at par or better",
+   "sec": 16
+  }
+ ],
+ "holesPlayed": [
+  {
+   "hole": 1,
+   "par": 4,
+   "strokes": [
+    4,
+    4
+   ]
+  },
+  {
+   "hole": 2,
+   "par": 5,
+   "strokes": [
+    4,
+    5
+   ]
+  },
+  {
+   "hole": 3,
+   "par": 4,
+   "strokes": [
+    4,
+    4
+   ]
+  }
+ ],
+ "result": null,
+ "errors": [
+  "page.evaluate: TypeError: Cannot read properties of null (reading 'scores')"
+ ],
+ "stuck": [],
+ "timing": {
+  "bootSec": 25.975,
+  "totalMin": 7.2,
+  "shots": 12,
+  "secPerShot": 19.6
+ },
+ "rivalLabel": "Play against a computer rival (adapts to your form: even right now)",
+ "fun": {
+  "counters": {
+   "pured": 11,
+   "parStreakBest": 3,
+   "birdieStreakBest": 1,
+   "pureStreakBest": 6,
+   "fairwayStreakBest": 3,
+   "rounds": 1,
+   "holes": 3,
+   "birdies": 1,
+   "fairways": 3,
+   "gir": 3,
+   "onePutts": 1,
+   "parsOrBetter": 3,
+   "matchWins": 1
+  },
+  "quests": {
+   "daily": {
+    "key": "2026-11-18",
+    "list": [
+     {
+      "id": "d-pars",
+      "progress": 3,
+      "claimed": false
+     },
+     {
+      "id": "d-range",
+      "progress": 0,
+      "claimed": false
+     },
+     {
+      "id": "d-fairways",
+      "progress": 3,
+      "claimed": false
+     }
+    ]
+   },
+   "weekly": {
+    "key": "2026-W47",
+    "list": [
+     {
+      "id": "w-pured",
+      "progress": 11,
+      "claimed": false
+     },
+     {
+      "id": "w-drive",
+      "progress": 0,
+      "claimed": false
+     },
+     {
+      "id": "w-medals",
+      "progress": 0,
+      "claimed": false
+     }
+    ]
+   },
+   "done": 0
+  },
+  "season": {
+   "id": 11,
+   "xp": 27,
+   "claimed": []
+  },
+  "achievements": [
+   "pure-run-5",
+   "first-round",
+   "birdie",
+   "under-par",
+   "course-parkland",
+   "match-win"
+  ],
+  "xp": 27
+ },
+ "funAfter": {
+  "quests": {
+   "daily": {
+    "key": "2026-11-18",
+    "list": [
+     {
+      "id": "d-pars",
+      "progress": 3,
+      "claimed": false
+     },
+     {
+      "id": "d-range",
+      "progress": 0,
+      "claimed": false
+     },
+     {
+      "id": "d-fairways",
+      "progress": 3,
+      "claimed": false
+     }
+    ]
+   },
+   "weekly": {
+    "key": "2026-W47",
+    "list": [
+     {
+      "id": "w-pured",
+      "progress": 11,
+      "claimed": false
+     },
+     {
+      "id": "w-drive",
+      "progress": 0,
+      "claimed": false
+     },
+     {
+      "id": "w-medals",
+      "progress": 0,
+      "claimed": false
+     }
+    ]
+   },
+   "done": 0
+  },
+  "tokens": 1,
+  "xp": 27
+ },
+ "guard": {
+  "count": 0,
+  "last": null,
+  "bySystem": {}
+ },
+ "consoleErrors": [],
+ "summary": {
+  "holes": 3,
+  "strokes": 12,
+  "par": 13,
+  "putts": 5,
+  "tempo": {
+   "Perfect": 6,
+   "Good, a little quick": 6
+  },
+  "stuck": 0,
+  "consoleErrors": 0,
+  "guardErrors": 0,
+  "toPar": -1
+ }
+}

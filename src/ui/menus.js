@@ -16,7 +16,12 @@ import { makeChallenge, challengeUrl, readChallengeFromHash, mergeIntoChallenge,
 import { holesFor } from '../game/round.js';
 import { gearFor } from '../game/gear.js';
 import { roundRewards } from '../game/rewards.js';
-import { levelForXp, golferProfile, golferStrike, shotUnlocked, eventById } from '../game/campaign.js';
+import { levelForXp, golferProfile, golferStrike, shotUnlocked, eventById, roundFacts } from '../game/campaign.js';
+import { rollQuests, progressQuests } from '../game/quests.js';
+import { rollSeason, addSeasonXp } from '../game/season.js';
+import { newFeats, featById } from '../game/feats.js';
+import { grantCosmetic, cosmeticById } from '../game/cosmetics.js';
+import { rollWeekly, weekKey } from '../game/weekly.js';
 
 const TOD_NAMES = { dawn: 'Dawn', morning: 'Morning', midday: 'Midday', golden: 'Golden hour', dusk: 'Dusk', night: 'Night' };
 const BALLS = ['#ffffff', '#ffd23f', '#ff9e7a', '#7fd1ff'];
@@ -26,8 +31,38 @@ export function installMenus(app, ui) {
   const screens = ui.screens;
   let save = loadSave();
   app.save = () => save;
+  setTimeout(() => { if (app.refreshPeriods) { app.refreshPeriods(); writeSave(save); } }, 0);
   // Every change is stamped (the cloud conflict rule compares times) and queued for sync.
-  const persist = () => { save = touchSave(save); writeSave(save); if (app.cloud) app.cloud.sync.schedule('change'); };
+  // Achievements are checks over the save, so they are found after any change.
+  const checkFeats = () => {
+    const ids = newFeats(save);
+    if (!ids.length) return;
+    const now = Date.now();
+    const ach = { ...save.achievements };
+    let cos = save.cosmetics;
+    for (const id of ids) { ach[id] = now; const f = featById(id); if (f && f.cosmetic) cos = grantCosmetic(cos, f.cosmetic); }
+    save = { ...save, achievements: ach, cosmetics: cos };
+    for (const id of ids.slice(0, 2)) { const f = featById(id); if (f) setTimeout(() => ui.hud.toast(`Achievement: ${f.name}`, f.cosmetic ? `${f.text} Unlocked: ${cosmeticById(f.cosmetic).name}` : f.text, 2600), 400); }
+  };
+  const persist = () => { checkFeats(); save = touchSave(save); writeSave(save); if (app.cloud) app.cloud.sync.schedule('change'); };
+  // Quests and the season move with the calendar.
+  app.refreshPeriods = () => {
+    const now = Date.now();
+    const q = rollQuests(save.quests, dayKey(now), weekKey(now)), se = rollSeason(save.season, now), wk = rollWeekly(save.weekly, now);
+    if (q !== save.quests || se !== save.season || wk !== save.weekly) save = { ...save, quests: q, season: se, weekly: wk };
+  };
+  // Add to counters and quest progress together. delta: { stat: n }; bests: { key: value } keep the max.
+  app.recordPlay = (delta = {}, bests = {}) => {
+    app.refreshPeriods();
+    const counters = { ...save.counters };
+    for (const [k, v] of Object.entries(delta)) if (v > 0) counters[k] = (counters[k] || 0) + v;
+    for (const [k, v] of Object.entries(bests)) counters[k] = Math.max(counters[k] || 0, v || 0);
+    const pq = progressQuests(save.quests, delta);
+    save = { ...save, counters, quests: pq.state };
+    persist();
+    for (const d of pq.completed) ui.hud.toast('Quest done', `${d.text}. Claim it in Quests`, 2400);
+  };
+  app.recordWeekly = (entry) => { app.refreshPeriods(); const w = { ...save.weekly }; for (const [k, v] of Object.entries(entry)) w[k] = Math.max(w[k] || 0, Math.round(v) || 0); save = { ...save, weekly: w }; persist(); };
   // Replace the whole save (cloud sync, restore, delete). Kept as given, not restamped.
   app.setSave = (s) => { save = s; writeSave(save); };
   // Change the save through a function; the reason ('gear', 'purchase', ...) goes to sync.
@@ -39,7 +74,7 @@ export function installMenus(app, ui) {
   app.addXp = (n, reason) => {
     if (!(n > 0)) return null;
     const from = levelForXp(save.profile.xp);
-    save = { ...save, profile: { ...save.profile, xp: save.profile.xp + Math.round(n) } };
+    save = { ...save, profile: { ...save.profile, xp: save.profile.xp + Math.round(n) }, season: addSeasonXp(save.season, n, Date.now()) };
     const to = levelForXp(save.profile.xp);
     persist();
     if (app.cloud) app.cloud.sync.schedule(to > from ? 'level-up' : 'xp');
@@ -140,6 +175,8 @@ export function installMenus(app, ui) {
       h('div', { class: 'big', text: best ? `${best.strokes}  (${fmtToPar(best.toPar)})` : 'Not played yet' }),
       h('p', { class: 'muted center', text: best ? `Your best today, ${best.attempts} ${best.attempts === 1 ? 'attempt' : 'attempts'}` : 'Your best score today is kept.' }),
       h('div', { class: 'grid2' }, back(), btn(best ? 'Try again' : 'Play', () => { context = { kind: 'daily', key: d.key }; screens.hide(); game.startRound({ courseId: d.courseId, mode: 'daily', holes: d.holes, tod: d.tod, seed: d.seed, players: [me()] }); }, 'btn primary')),
+      app.thisWeekCard ? app.thisWeekCard() : null,
+      screens.registry.quests ? h('div', { class: 'grid2', style: { marginTop: '10px' } }, btn(app.questBadge && app.questBadge() ? `Quests (${app.questBadge()} to claim)` : 'Quests', () => screens.registry.quests()), btn('Season track', () => screens.registry.season())) : null,
     );
   }));
 
@@ -366,6 +403,19 @@ export function installMenus(app, ui) {
     if (campaignEv && app.campaignRoundEnd) { persist(); app.campaignRoundEnd(r); save = app.save(); }
     // Other rounds give a little XP: holes played and birdies.
     else if (app.addXp && scores.length) app.addXp(scores.length * 5 + Math.max(0, Math.round(scores.length * 0.5) - toPar) * 4, 'Round');
+    // Counters and quests from the round (player 1).
+    {
+      const f = roundFacts(r, 0);
+      const logs = r.logs[0] || [];
+      const onePutts = logs.filter((l) => l && l.putts === 1).length;
+      let matchWin = 0;
+      if (r.players.length === 2 && r.players[1].kind === 'ai' && (r.mode === 'match' || r.mode === 'stroke')) {
+        let a = 0, b = 0;
+        r.scores[0].forEach((sc, i) => { const o = r.scores[1][i]; if (Number.isFinite(sc) && Number.isFinite(o)) { if (sc < o) a++; else if (o < sc) b++; } });
+        matchWin = r.mode === 'match' ? (a > b ? 1 : 0) : (f.strokes < r.scores[1].reduce((x, y) => x + (y || 0), 0) ? 1 : 0);
+      }
+      app.recordPlay({ rounds: 1, holes: f.holes, birdies: f.birdies + f.eagles, fairways: f.fairways, gir: f.gir, onePutts, parsOrBetter: r.scores[0].filter((sc, i) => Number.isFinite(sc) && sc <= courseById(r.courseId).pars[r.holes[i]]).length, events: campaignEv ? 1 : 0, matchWins: matchWin, dailies: context && context.kind === 'daily' ? 1 : 0, drive260: f.longestDrive >= 260 * 0.9144 ? 1 : 0 });
+    }
     // Gear tokens for finishing (daily: the first finish today also counts).
     const dailyKey = context && context.kind === 'daily' ? context.key : null;
     const rw = roundRewards(save, { holes: scores.length, kind: context && context.kind, position: screens.lastEvent && context && context.kind === 'career' ? screens.lastEvent.position : null, firstDailyToday: dailyKey ? (save.daily[dailyKey] || {}).attempts === 1 : false, now });
