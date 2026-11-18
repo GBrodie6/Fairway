@@ -32,6 +32,10 @@ class Builder {
     this._m.makeRotationFromEuler(new THREE.Euler(rotX, rotY, 0, 'YXZ')).setPosition(x, y, z);
     this.add(new THREE.BoxGeometry(w, h, d), this._m, color);
   }
+  sphere(r, x, y, z, color, sy = 1, seg = 12) {
+    this._m.makeScale(1, sy, 1).setPosition(x, y, z);
+    this.add(new THREE.SphereGeometry(r, seg, Math.max(6, seg >> 1)), this._m, color);
+  }
   cyl(r0, r1, h, x, y, z, color, seg = 10) {
     this._m.makeTranslation(x, y, z);
     this.add(new THREE.CylinderGeometry(r0, r1, h, seg), this._m, color);
@@ -150,11 +154,15 @@ export function createProps(world, engine) {
       const yawOf = (dx, dz) => Math.atan2(dx, dz);
       const teeYaw = yawOf(tee0.tx, tee0.tz);
 
-      // Tee markers: a pair at the front of each box.
+      // Tee markers: a pair of ball-shaped markers on short spikes at the front of each box,
+      // with a dark band around the middle.
       h.tees.forEach((tee, i) => {
         for (const s of [-1, 1]) {
           const x = tee.x + right.x * s * (tee.w / 2 - 0.7) + tee.tx * 0.6, z = tee.z + right.z * s * (tee.w / 2 - 0.7) + tee.tz * 0.6;
-          b.box(0.16, 0.12, 0.3, x, H(x, z) + 0.06, z, teeYaw, TEE_COLORS[i]);
+          const y = H(x, z);
+          b.cyl(0.012, 0.012, 0.06, x, y + 0.03, z, 0x2a2c30, 6);
+          b.sphere(0.1, x, y + 0.13, z, TEE_COLORS[i], 0.82, 14);
+          b.cyl(0.101, 0.101, 0.018, x, y + 0.13, z, 0x22262a, 14);
         }
       });
       // Hole sign, bench, ball washer, and bin beside the back tee on the path side.
@@ -189,12 +197,46 @@ export function createProps(world, engine) {
       b.cyl(0.09, 0.09, 0.26, wx, H(wx, wz) + 0.98, wz, 0xb8262a, 12);
       const nx2 = bx - rtB.x * 1.5, nz2 = bz - rtB.z * 1.5;
       b.cyl(0.24, 0.2, 0.7, nx2, H(nx2, nz2) + 0.35, nz2, 0x2f4a38, 12);
-      // Yardage posts at the fairway edge and sprinkler heads on the centerline.
+      // Yardage stakes at the fairway edge (square, white with a colored top) and sprinkler
+      // heads on the centerline.
       for (const m of h.markers) {
-        b.cyl(0.05, 0.05, 0.9, m.x, H(m.x, m.z) + 0.45, m.z, YARD_COLORS[m.yards] || 0xffffff, 8);
+        const my = H(m.x, m.z);
+        b.box(0.07, 0.7, 0.07, m.x, my + 0.35, m.z, teeYaw, 0xeeeeea);
+        b.box(0.075, 0.18, 0.075, m.x, my + 0.79, m.z, teeYaw, YARD_COLORS[m.yards] || 0xffffff);
         const p = h.line[Math.min(h.line.length - 1, Math.round(m.s / h.lineStep))];
         b.cyl(0.11, 0.11, 0.012, p.x, H(p.x, p.z) + 0.004, p.z, 0x1b1d1f, 14);
         b.cyl(0.05, 0.05, 0.016, p.x, H(p.x, p.z) + 0.006, p.z, YARD_COLORS[m.yards] || 0xffffff, 10);
+      }
+      // Concrete edging along both sides of the cart path.
+      {
+        const pp = h.path.pts, hw = h.path.half + 0.05;
+        for (let i = 0; i < pp.length - 1; i++) {
+          const a = pp[i], c = pp[i + 1];
+          const dx = c.x - a.x, dz = c.z - a.z, len = Math.hypot(dx, dz);
+          if (len < 0.2) continue;
+          const nx = -dz / len, nz = dx / len, yaw = Math.atan2(dx, dz);
+          const mx = (a.x + c.x) / 2, mz = (a.z + c.z) / 2;
+          for (const sd of [-1, 1]) {
+            const ex = mx + nx * hw * sd, ez = mz + nz * hw * sd;
+            if (!t.inBounds(ex, ez, 2) || t.isWater(ex, ez)) continue;
+            b.box(0.11, 0.09, len + 0.05, ex, H(ex, ez) + 0.02, ez, yaw, 0xb9b4a8);
+          }
+        }
+      }
+      // By the green, on the path side: a bench and a sign pointing to the next tee.
+      {
+        const g = h.green, gs = h.path.side;
+        const ox = g.x + g.az * gs * (g.radius + 9) + g.ax * 4, oz = g.z - g.ax * gs * (g.radius + 9) + g.az * 4;
+        if (t.inBounds(ox, oz, 4) && !t.isWater(ox, oz)) {
+          const oy = H(ox, oz), yaw2 = Math.atan2(g.x - ox, g.z - oz);
+          const f2 = { x: Math.sin(yaw2), z: Math.cos(yaw2) }, r2 = { x: Math.cos(yaw2), z: -Math.sin(yaw2) };
+          for (let i = 0; i < 4; i++) b.box(1.5, 0.03, 0.09, ox + f2.x * (i * 0.11 - 0.16), oy + 0.44, oz + f2.z * (i * 0.11 - 0.16), yaw2, 0x7a5a3a);
+          for (let i = 0; i < 3; i++) b.box(1.5, 0.09, 0.03, ox - f2.x * 0.24, oy + 0.58 + i * 0.13, oz - f2.z * 0.24, yaw2, 0x7a5a3a);
+          for (const sd of [-0.62, 0.62]) b.box(0.06, 0.44, 0.44, ox + r2.x * sd, oy + 0.22, oz + r2.z * sd, yaw2, 0x2a2c30);
+          const px = ox + r2.x * 2.2, pz = oz + r2.z * 2.2, py = H(px, pz);
+          b.box(0.07, 1.2, 0.07, px, py + 0.6, pz, yaw2, 0x4a3a2a);
+          b.box(0.62, 0.2, 0.03, px + r2.x * 0.25, py + 1.1, pz + r2.z * 0.25, yaw2, 0x20382a);
+        }
       }
       // Footbridge where the cart path crosses a stream.
       for (const wtr of h.water) {

@@ -538,9 +538,20 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
   }
   const pi = Number.isInteger(pinIndex) ? pinIndex : hole.pinIndex;
   const pin = pins[((pi % pins.length) + pins.length) % pins.length];
+  // Wet ground for the renderer: the bank just above a pond or the sea and the bed under
+  // shallow water, from 0.35 m above the water line (dry) to 0.2 m below it (fully wet). It
+  // shares a texture channel with the bunker interior field; bunkers are kept at least 7 m
+  // from water, so the two never overlap.
+  const wetIn = new Uint8Array(n);
+  for (let k = 0; k < n; k++) {
+    if (bunkerIn[k] || nearLevel[k] <= NO_WATER + 1) continue;
+    const wet = clamp((nearLevel[k] - height[k] + 0.35) / 0.55, 0, 1);
+    if (wet > 0) wetIn[k] = Math.round(wet * 255);
+  }
+
   const terrain = {
     course, hole, cell: CELL, x0, z0, nx, nz, maxX, maxZ,
-    height, normalX, normalZ, slope, masks, trees, bunkerIn, waterLevel, nearLevel, bodyId, sField, tField, outside,
+    height, normalX, normalZ, slope, masks, trees, bunkerIn, wetIn, waterLevel, nearLevel, bodyId, sField, tField, outside,
     bodies, macro, pin: { x: pin.x, z: pin.z }, pins: pins.map((p) => ({ x: p.x, z: p.z })), lateralAt, seaDistAt,
     heightAt, normalAt, surfaceAt, groundSurfaceAt, maskAt, isWater, waterLevelAt, inBounds, isOutOfBounds,
     bounds: { minX: x0 + 6, maxX: maxX - 6, minZ: z0 + 6, maxZ: maxZ - 6 },

@@ -26,7 +26,7 @@ function dataTex(data, w, h) {
 }
 
 export function buildTerrainTextures(terrain) {
-  const { nx, nz, masks, sField, tField, normalX, normalZ, trees, bunkerIn } = terrain;
+  const { nx, nz, masks, sField, tField, normalX, normalZ, trees, bunkerIn, wetIn } = terrain;
   const n = nx * nz;
   const pack = (a, b, c, d) => {
     const out = new Uint8Array(n * 4);
@@ -46,7 +46,9 @@ export function buildTerrainTextures(terrain) {
     aux[i * 4] = Math.round((normalX[i] * 0.5 + 0.5) * 255);
     aux[i * 4 + 1] = Math.round((normalZ[i] * 0.5 + 0.5) * 255);
     aux[i * 4 + 2] = trees[i];
-    aux[i * 4 + 3] = bunkerIn ? bunkerIn[i] : 0; // bunker interior: distance from the edge in wall widths
+    // Bunker interior (distance from the edge in wall widths) inside bunkers; elsewhere how wet
+    // the ground is at the water's edge.
+    aux[i * 4 + 3] = bunkerIn && bunkerIn[i] ? bunkerIn[i] : wetIn ? wetIn[i] : 0;
   }
   const tex = {
     m1: dataTex(pack(m.deep, m.waste, m.dirt, m.shore), nx, nz),
@@ -327,8 +329,10 @@ const FRAG_MAIN = /* glsl */ `
         float cut = smoothstep(0.5, 0.51, bunkerM) * (1.0 - smoothstep(0.52, 0.56, bunkerM)) * steep;
         c = mix(c, c * vec3(0.42, 0.36, 0.3), cut);
       } else if (i == 4) {
-        c *= 0.62;
-        r = 0.42;
+        // Wet shore: dark and damp. (It was 85 percent specular at roughness 0.42, a mirror
+        // for the bright sky that read as a white rim around every pond.)
+        c *= 0.55;
+        r = 0.6;
       } else if (i == 2) {
         c *= 0.86 + 0.14 * nB;
       }
@@ -336,7 +340,7 @@ const FRAG_MAIN = /* glsl */ `
       // at grazing angles. Sand, paths, and rock keep a little, wet ground keeps most.
       // (Measured: at grazing angles toward a low sun, 10 percent of the highlight still
       // equalled the whole diffuse term and read as a white sheen, so grass keeps 3 percent.)
-      float sp = (i == 4) ? 0.85 : (i == 12 || i == 8 || i == 5 || i == 3) ? 0.22 : (i == 2 ? 0.1 : 0.03);
+      float sp = (i == 4) ? 0.2 : (i == 12 || i == 8 || i == 5 || i == 3) ? 0.22 : (i == 2 ? 0.1 : 0.03);
       if (i == 12) sp *= sandMatte;
       tAlbedo += c * w;
       nAcc.xy += tn * w;
@@ -370,6 +374,11 @@ const FRAG_MAIN = /* glsl */ `
     tOcc = 1.0 - canopy * 0.38;
     // The foot of a bunker face sees less sky. Only sky light is reduced: sunlight is the
     // shadow map's job, and dimming it too left the blue sky light dominant (bluish sand).
+    // Wet bank and the bed under shallow water: darker, browner, and a little glossy above
+    // the water line, so the edge of a pond reads as a soft wet margin rather than a pale rim.
+    float wetBed = bunkerM < 0.4 ? aux.a : 0.0;
+    tAlbedo = mix(tAlbedo, tAlbedo * vec3(0.42, 0.4, 0.33), wetBed);
+    tRough = mix(tRough, 0.55, wetBed * (1.0 - smoothstep(0.6, 0.9, wetBed)));
     float cavity = smoothstep(0.08, 0.42, aux.a) * (1.0 - smoothstep(0.5, 0.95, aux.a));
     // Sand in shade is lit by the sky and by warm light bounced off the sand around it, so
     // its shadows read grey rather than sky blue.

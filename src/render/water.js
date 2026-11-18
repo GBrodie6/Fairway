@@ -71,16 +71,20 @@ const MAIN = /* glsl */ `
 #if WATER_QUALITY > 0
     // Foam where water meets land, broken up by noise and breathing slowly.
     float fn = wNoise(p * 2.6 + t * 0.25) * 0.6 + wNoise(p * 7.0 - t * 0.4) * 0.4;
-    float edge = 1.0 - smoothstep(0.0, 0.22 + 0.1 * sin(t * 0.9 + p.x * 0.4), depth);
-    wFoam = edge * smoothstep(0.32, 0.7, fn);
+    // A thin, broken line of foam right at the bank (ponds are calm; the sea makes more).
+    float edge = 1.0 - smoothstep(0.02, 0.09 + 0.04 * sin(t * 0.9 + p.x * 0.4), depth);
+    wFoam = edge * smoothstep(0.45, 0.8, fn) * (uSea > 0.5 ? 1.0 : 0.6);
     if (uSea > 0.5) {
       // Surf: bands that roll shoreward over the shallows.
       float band = sin(depth * 5.5 + t * 1.25 + fn * 1.6);
       wFoam = max(wFoam, smoothstep(0.82, 0.98, band) * (1.0 - smoothstep(0.25, 1.6, depth)) * smoothstep(0.3, 0.6, fn + 0.25));
     }
-    col = mix(col, vec3(0.9, 0.93, 0.95), clamp(wFoam, 0.0, 1.0) * 0.85);
+    col = mix(col, vec3(0.78, 0.8, 0.8), clamp(wFoam, 0.0, 1.0) * 0.7);
 #endif
     diffuseColor.rgb = col;
+    // Soft shoreline: the surface fades out over the last few centimeters of depth, so the
+    // wet bank shows through instead of a hard edge.
+    diffuseColor.a = smoothstep(0.0, 0.07, depth) * (1.0 - wFoam * 0.2) + wFoam * 0.2;
   }
 `;
 
@@ -119,12 +123,15 @@ export function waterGeometry(terrain, body, step = 1) {
   return g;
 }
 
+// deep: color of the water column; shallow: the bed seen through a little water; clarity:
+// how fast light is absorbed with depth (per meter). The shallow tones are the bed's color
+// darkened by water, never paler than the bank, so a pond reads as water, not milk.
 const LOOKS = {
-  parkland: { deep: [0.012, 0.045, 0.045], shallow: [0.1, 0.13, 0.075], clarity: 1.5, chop: 0.5 },
-  links: { deep: [0.01, 0.045, 0.07], shallow: [0.16, 0.2, 0.16], clarity: 0.9, chop: 1.0 },
-  desert: { deep: [0.01, 0.06, 0.07], shallow: [0.17, 0.2, 0.14], clarity: 1.2, chop: 0.45 },
-  alpine: { deep: [0.008, 0.05, 0.07], shallow: [0.1, 0.17, 0.16], clarity: 0.8, chop: 0.5 },
-  tropical: { deep: [0.004, 0.07, 0.1], shallow: [0.2, 0.42, 0.36], clarity: 0.5, chop: 0.8 },
+  parkland: { deep: [0.012, 0.04, 0.038], shallow: [0.075, 0.095, 0.055], clarity: 1.6, chop: 0.5 },
+  links: { deep: [0.01, 0.04, 0.062], shallow: [0.1, 0.13, 0.11], clarity: 1.1, chop: 1.0 },
+  desert: { deep: [0.01, 0.05, 0.06], shallow: [0.12, 0.13, 0.09], clarity: 1.3, chop: 0.45 },
+  alpine: { deep: [0.008, 0.045, 0.062], shallow: [0.07, 0.11, 0.1], clarity: 1.0, chop: 0.5 },
+  tropical: { deep: [0.006, 0.05, 0.07], shallow: [0.09, 0.18, 0.15], clarity: 1.25, chop: 0.8 },
 };
 
 export function createWater(world, engine) {
@@ -138,7 +145,9 @@ export function createWater(world, engine) {
   };
   const mats = [];
   function makeMaterial({ sea, outer }) {
-    const m = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: sea ? 0.1 : 0.05, metalness: 0, envMapIntensity: 1.25 });
+    // Ponds reflect less of the sky: the environment map holds only sky, while a real pond
+    // mirrors its dark banks and trees too, so full-strength sky made ponds look milky.
+    const m = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: sea ? 0.1 : 0.07, metalness: 0, envMapIntensity: sea ? 1.25 : 0.62, transparent: !outer, depthWrite: true });
     m.defines = { ...(m.defines || {}), WATER_QUALITY: tier.waterQuality };
     if (outer) m.defines.SEA_OUTER = 1;
     const uSea = { value: sea ? 1 : 0 };
@@ -151,7 +160,17 @@ export function createWater(world, engine) {
         .replace('#include <common>', '#include <common>\n' + PARS)
         .replace('#include <map_fragment>', MAIN)
         .replace('#include <roughnessmap_fragment>', 'float roughnessFactor = mix(roughness, 0.85, clamp(wFoam, 0.0, 1.0));')
-        .replace('#include <normal_fragment_maps>', 'normal = normalize((viewMatrix * vec4(wNormal, 0.0)).xyz);');
+        .replace('#include <normal_fragment_maps>', 'normal = normalize((viewMatrix * vec4(wNormal, 0.0)).xyz);')
+        // The sky map holds only sky. A pond's low reflections would show its banks and the
+        // trees around it, which are dark, so reflections that point near the horizon are
+        // darkened and tinted toward foliage. The open sea keeps its horizon.
+        .replace('#include <aomap_fragment>', `#include <aomap_fragment>
+  {
+    vec3 vw = normalize(vWaterPos - cameraPosition);
+    vec3 rw = reflect(vw, wNormal);
+    float bank = (1.0 - uSea) * (1.0 - smoothstep(0.03, 0.42, rw.y));
+    reflectedLight.indirectSpecular = mix(reflectedLight.indirectSpecular, reflectedLight.indirectSpecular * vec3(0.09, 0.12, 0.08), bank);
+  }`);
     }], `water:${tier.waterQuality}:${sea ? 1 : 0}:${outer ? 1 : 0}`);
     mats.push(m);
     return m;
