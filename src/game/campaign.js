@@ -46,12 +46,12 @@ export const ARCHETYPES = {
   power: {
     id: 'power', name: 'Power Hitter', titles: ['Power Hitter', 'Long Baller', 'Thunder Driver'], color: '#ff8a5a', signature: 'driving',
     text: 'Big drives and a bigger reward when you middle it.', innateText: 'A bigger sweet spot with the driver and woods.',
-    weakness: 'Short game capped at 75, putting at 80.', caps: { shortGame: 75, putting: 80 }, innate: { woodSweet: 0.05 },
+    weakness: 'Short game capped at 78, putting at 82.', caps: { shortGame: 78, putting: 82 }, innate: { woodSweet: 0.07 },
   },
   sharp: {
     id: 'sharp', name: 'Sharpshooter', titles: ['Sharpshooter', 'Pin Seeker', 'Flag Hunter'], color: '#6fb6ff', signature: 'approach',
-    text: 'Irons that hold their line. Lives on the green in regulation.', innateText: 'Face and path errors stray 5 percent less.',
-    weakness: 'Driving capped at 74.', caps: { driving: 74 }, innate: { accuracy: 0.05 },
+    text: 'Irons that hold their line. Lives on the green in regulation.', innateText: 'Face and path errors stray a little less (1.5 percent, growing as you evolve).',
+    weakness: 'Driving capped at 74.', caps: { driving: 74 }, innate: { accuracy: 0.015 },
   },
   short: {
     id: 'short', name: 'Short Game Artist', titles: ['Short Game Artist', 'Wedge Wizard', 'Greenside Maestro'], color: '#7fd69a', signature: 'shortGame',
@@ -116,7 +116,7 @@ const TREES = {
   ],
   sharp: [
     [S('driving', 3), P('sweet', 0.03), S('driving', 3), U('punch'), P('pureCarry', 0.01)],
-    [S('approach'), P('accuracy', 0.06), S('approach'), U('high'), P('accuracy', 0.06, 3)],
+    [S('approach', 3), P('accuracy', 0.012), S('approach', 3), U('high'), P('accuracy', 0.02, 3)],
     [S('shortGame'), U('bump'), P('spin', 0.03), U('flop'), S('shortGame')],
     [S('putting'), S('management'), P('tempo', 0.05), P('putting', 0.06), S('management')],
   ],
@@ -269,8 +269,8 @@ export function golferProfile(g) {
   const st = golferStats(g), pk = golferPerks(g);
   const v = (k) => (clamp(st[k], 30, STAT_MAX) - 50) / 50;
   const p = { ...BASE_PROFILE };
-  p.power = 1 + v('driving') * 0.05;
-  p.accuracy = (1 - v('approach') * 0.35) * (1 - pk.accuracy);
+  p.power = 1 + v('driving') * 0.07;
+  p.accuracy = (1 - v('approach') * 0.2) * (1 - pk.accuracy);
   p.spin = (1 + v('shortGame') * 0.08) * (1 + pk.spin);
   p.touch = (1 - v('shortGame') * 0.3) * (1 - pk.touch);
   p.putting = (1 - v('putting') * 0.4) * (1 - pk.putting);

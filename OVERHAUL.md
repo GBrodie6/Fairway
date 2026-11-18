@@ -249,13 +249,35 @@ As built:
 ## Stage 9: balance method
 
 The browser bot plays a hole in about three minutes under software rendering, far too slow for
-thousands of rounds. The balance runs use a headless round player (`scripts/sim/`) built from
-the game's own modules: the same terrain, planner, `computeLaunch`, strike model, rarity and
-archetype modifiers, and `simulateShot`. Its swing comes from a fixed human-like error model
-(power, tempo, face, and path spreads), so every configuration sees the same swing quality.
-Runs are spread over worker threads. Targets: no archetype more than 1.5 strokes from the mean
-at matched levels; no rarity tier better than Common for an average swing. A browser bot run
-spot-checks the result.
+thousands of rounds. The balance runs use a headless round player built from the game's own
+modules (`src/game/simGolfer.js`, `scripts/sim/`): the same terrain, planner, `computeLaunch`,
+strike model, tier and archetype modifiers, and `simulateShot`. It plans like the AI and
+swings with a fixed human-like error model (power, tempo, face, and path spreads; skill 0.6 is
+the average swing). 9-hole rounds rotate through all five courses and both nines, and round i
+uses the same course, wind and dice in every cell (strike dice on their own stream), so
+differences come from the cells. Four worker threads; the full run takes about a minute.
+
+Cells: each archetype at levels 5, 15 and 30 (skills bought by the recommended path, Common
+clubs), each tier for an average swing, each tier for a skilled swing (0.9) with and without
+planning for the tier's extra carry, and each difficulty setting; 200 rounds per cell.
+
+Outcome (tables in qa/balance.md):
+
+- First run: the Sharpshooter was 1.9 to 3.0 strokes per 18 better than its level's average.
+  Face and path accuracy is the strongest lever in play (about 0.17 strokes per 18 for each
+  percent), so its accuracy gains were cut (innate 0.05 to 0.015, tree perks 0.06 to 0.012 and
+  0.02, approach nodes +4 to +3, approach-to-accuracy coefficient 0.35 to 0.2), and the Power
+  Hitter got a little more from driving (ball speed coefficient 0.05 to 0.07, innate wood sweet
+  spot 0.05 to 0.07) and softer weakness caps (short game 78, putting 82). Final: every
+  archetype within 1.33 strokes of its level's average.
+- Tiers: none is better than Common for an average swing (the Legendary costs about 1.2 strokes
+  per 18). A pured higher-tier strike now also flies straighter (up to a third less sideways
+  error), a bounded change that leaves Common untouched. Even so, in simulation higher tiers
+  also cost a skilled golfer strokes on target golf, because pured-only bonus carry adds
+  distance scatter; their reward is maximum distance. That is reported as a design point for
+  human review rather than changing the specified numbers.
+- Settings: mishits for an average swing are 0.4 percent on relaxed, 3.7 on standard, 10.3 on
+  pro, in line with the request for only a little more challenge on standard.
 
 ## Stage 10: proof and deploy
 

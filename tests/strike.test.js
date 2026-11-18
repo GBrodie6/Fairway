@@ -137,3 +137,22 @@ describe('strike quality', () => {
     expect(L).toEqual(copy);
   });
 });
+
+describe('pured strikes with higher tiers fly straighter', () => {
+  const launch = { speed: 60, vAngle: 0.25, spin: 600, heading: 0.06, axisTilt: 0.1 };
+  it('removes part of the sideways error, more for higher tiers, never for Common', async () => {
+    const { applyStrike, STRAIGHT_CAP } = await import('../src/game/strike.js');
+    const pured = { kind: 'pured', severity: 0 };
+    const c = applyStrike(launch, pured, { rarity: 'common', aim: 0 });
+    expect(c.heading).toBeCloseTo(0.06, 12); expect(c.axisTilt).toBeCloseTo(0.1, 12);
+    let prev = 0.06;
+    for (const r of ['uncommon', 'rare', 'epic', 'legendary']) {
+      const o = applyStrike(launch, pured, { rarity: r, aim: 0 });
+      expect(Math.abs(o.heading)).toBeLessThan(Math.abs(prev));
+      expect(Math.abs(o.heading)).toBeGreaterThanOrEqual(0.06 * (1 - STRAIGHT_CAP) - 1e-12);
+      prev = o.heading;
+    }
+    expect(applyStrike(launch, { kind: 'good', severity: 0 }, { rarity: 'legendary', aim: 0 }).heading).toBeCloseTo(0.06, 12);
+    expect(applyStrike(launch, pured, { rarity: 'legendary' }).heading).toBeCloseTo(0.06, 12);
+  });
+});

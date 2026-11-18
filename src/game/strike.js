@@ -29,6 +29,8 @@ export const RARITY = {
 };
 // Every source of extra carry together (rarity, perks, stats) stops here.
 export const CARRY_CAP = 0.1;
+// How much of the sideways error a pured higher-tier strike removes, at most.
+export const STRAIGHT_CAP = 0.35;
 // No strike leaves less than this share of the clean carry.
 export const CARRY_FLOOR = 0.4;
 
@@ -153,6 +155,18 @@ export function applyStrike(launch, strike, ctx = {}) {
     out.axisTilt = clamp(num(launch.axisTilt) + m.tilt, -40 * DEG, 40 * DEG);
   }
   out.heading = num(launch.heading) + m.heading;
+  // A pured strike with a higher tier also flies straighter: part of the sideways error (start
+  // direction off the aim, and curve) is taken out, up to 32 percent for Legendary. Common
+  // clubs are unchanged. Needs the aim (ctx.aim); without it nothing changes.
+  if (strike && strike.kind === 'pured' && !launch.putt && Number.isFinite(ctx.aim)) {
+    const rar = RARITY[ctx.rarity] || RARITY.common;
+    const straight = clamp(rar.bonus * 4, 0, STRAIGHT_CAP);
+    if (straight > 0) {
+      const off = Math.atan2(Math.sin(out.heading - ctx.aim), Math.cos(out.heading - ctx.aim));
+      out.heading = ctx.aim + off * (1 - straight);
+      out.axisTilt = num(out.axisTilt) * (1 - straight);
+    }
+  }
   // The ball (game/gear.js BALLS): a little more spin for a little less speed. Bounded.
   const ball = ctx.ball;
   if (ball && !launch.putt) {

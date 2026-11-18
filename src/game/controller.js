@@ -341,7 +341,7 @@ export function createGame(app) {
     const k = testLane ? rng.int(1, 2 ** 30) : 0;
     // Strike quality: a bounded change to the launch from how cleanly the club met the ball.
     // The simulation that follows is unchanged.
-    const sctx = strikeContext(club, from);
+    const sctx = { ...strikeContext(club, from), aim };
     const strike = strikeResult(swing, sctx, testLane ? createRng(k) : rng);
     launch = applyStrike(launch, strike, sctx);
     result = simulateShot(launch, t.env({ windAt, t0: state.clock }));
@@ -384,7 +384,7 @@ export function createGame(app) {
   function compareSwing(swing, aim, shotType, from, lieRoll, k) {
     const t = W().terrain, cmp = state.range.compare;
     const cclub = CLUBS.find((c) => c.id === cmp.clubId && !c.putter) || state.club;
-    const ctx2 = { ...strikeContext(cclub, from), rarity: cmp.rarity || 'common' };
+    const ctx2 = { ...strikeContext(cclub, from), rarity: cmp.rarity || 'common', aim };
     let l2 = computeLaunch(swing, { club: cclub, shotType, lie: from.lie, aim, x: from.x, z: from.z, profile: state.profile, lieRoll });
     const s2 = strikeResult(swing, ctx2, createRng(k));
     l2 = applyStrike(l2, s2, ctx2);

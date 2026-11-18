@@ -107,7 +107,7 @@ export function installGear(app, ui) {
             h('div', {}, h('h3', { class: 'h small' }, tierChip(inBag.rarity), ' In the bag'), statBlock(clubId, inBag.rarity)),
             h('div', {}, h('h3', { class: 'h small' }, tierChip(cmp.rarity), ' Compared'), statBlock(clubId, cmp.rarity, inBag.rarity)))
           : h('div', {}, h('h3', { class: 'h small' }, tierChip(inBag.rarity), ` ${TIER_INFO[inBag.rarity].model}, in the bag`), statBlock(clubId, inBag.rarity)),
-        h('p', { class: 'muted small', text: 'Higher tiers hit a little further from the middle of the face, but the sweet spot is smaller and mishits cost more. Common is the most forgiving.' }),
+        h('p', { class: 'muted small', text: 'From the middle of the face, higher tiers fly a little further and straighter (up to 8 percent carry and a third less sideways error for Legendary). The sweet spot is smaller and mishits cost more. Common is the most forgiving.' }),
         h('div', { class: 'list' }, ...rows),
         h('p', { class: 'muted small', text: `Upgrades use shards. Duplicates from drops become shards (${TIERS.map((t) => `${TIER_INFO[t].name} ${SHARDS_FOR_DUPLICATE[t]}`).join(', ')}).` }),
         h('div', { class: 'grid2' }, back(), btn('Bag', () => { tab = 'bag'; screens.registry.gear(); })));

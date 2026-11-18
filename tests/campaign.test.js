@@ -91,7 +91,7 @@ describe('bounded effects', () => {
     }
   });
   it('weaknesses cap the stat even with every node and both evolutions', () => {
-    expect(golferStats(autoBuild('power', 40)).shortGame).toBeLessThanOrEqual(75);
+    expect(golferStats(autoBuild('power', 40)).shortGame).toBeLessThanOrEqual(78);
     expect(golferStats(autoBuild('short', 40)).driving).toBeLessThanOrEqual(72);
     expect(golferStats(autoBuild('power', 40)).driving).toBeGreaterThan(golferStats(autoBuild('short', 40)).driving);
   });
