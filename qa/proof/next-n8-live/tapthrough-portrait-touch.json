@@ -1,0 +1,128 @@
+{
+ "course": "parkland",
+ "view": "portrait",
+ "holes": 1,
+ "tier": "low",
+ "scale": 0.6,
+ "timescale": 4,
+ "mode": "stroke",
+ "software": true,
+ "input": "touch",
+ "started": "2026-11-18T14:10:55.415Z",
+ "shots": [
+  {
+   "hole": 4,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 183.73,
+   "after": 1.88,
+   "ideal": 0.877,
+   "power": 0.881,
+   "tempo": "Perfect",
+   "ratio": 3.21,
+   "read": null,
+   "result": "GreenCarry 194 yd  Total 200 yd  2 yd to pin",
+   "sec": 53.4
+  },
+  {
+   "hole": 4,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 1.88,
+   "after": 1.88,
+   "ideal": 0.69,
+   "power": 0.727,
+   "tempo": "Perfect",
+   "ratio": 3.4,
+   "read": {
+    "drags": 2,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0.12
+   },
+   "result": "Birdie2 strokes",
+   "sec": 56.3
+  }
+ ],
+ "holesPlayed": [
+  {
+   "hole": 4,
+   "par": 3,
+   "strokes": [
+    2
+   ]
+  }
+ ],
+ "result": {
+  "scores": [
+   [
+    2
+   ]
+  ],
+  "players": [
+   "You"
+  ],
+  "complete": true,
+  "holes": [
+   3
+  ],
+  "mode": "stroke",
+  "standings": "2  (-1)"
+ },
+ "errors": [],
+ "stuck": [],
+ "timing": {
+  "bootSec": 8.225,
+  "totalMin": 3.3,
+  "shots": 2,
+  "secPerShot": 54.8
+ },
+ "after": {
+  "player": "You",
+  "rounds": 1,
+  "history": [
+   {
+    "id": "1795011253258-3217590833",
+    "date": 1795011253258,
+    "courseId": "parkland",
+    "mode": "stroke",
+    "holes": 1,
+    "strokes": 2,
+    "par": 3,
+    "toPar": -1,
+    "birdies": 1,
+    "putts": 1,
+    "eventId": null
+   }
+  ],
+  "daily": {},
+  "achievements": [
+   "first-round",
+   "birdie",
+   "under-par"
+  ],
+  "inProgress": false,
+  "career": null
+ },
+ "guard": {
+  "count": 0,
+  "last": null,
+  "bySystem": {}
+ },
+ "consoleErrors": [],
+ "summary": {
+  "holes": 1,
+  "strokes": 2,
+  "par": 3,
+  "putts": 1,
+  "tempo": {
+   "Perfect": 2
+  },
+  "stuck": 0,
+  "consoleErrors": 0,
+  "guardErrors": 0,
+  "toPar": -1
+ }
+}

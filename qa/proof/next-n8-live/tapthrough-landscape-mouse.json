@@ -1,0 +1,142 @@
+{
+ "course": "parkland",
+ "view": "landscape",
+ "holes": 1,
+ "tier": "low",
+ "scale": 0.6,
+ "timescale": 4,
+ "mode": "stroke",
+ "software": true,
+ "input": "mouse",
+ "started": "2026-11-18T14:17:37.247Z",
+ "shots": [
+  {
+   "hole": 4,
+   "club": "W5",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 183.73,
+   "after": 18.1,
+   "ideal": 0.892,
+   "power": 0.975,
+   "tempo": "Perfect",
+   "ratio": 2.96,
+   "read": null,
+   "result": "BunkerCarry 212 yd  Total 220 yd  20 yd to pin",
+   "sec": 47.7
+  },
+  {
+   "hole": 4,
+   "club": "LW",
+   "shot": "full",
+   "lie": "Bunker",
+   "before": 18.1,
+   "after": 8.51,
+   "ideal": 0.32,
+   "power": 0.336,
+   "tempo": "Good, a little quick",
+   "ratio": 3.91,
+   "read": null,
+   "result": "GreenCarry 6 yd  Total 29 yd  9 yd to pin",
+   "sec": 53.6
+  },
+  {
+   "hole": 4,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 8.51,
+   "after": 8.51,
+   "ideal": 0.69,
+   "power": 0.689,
+   "tempo": "Good, a little quick",
+   "ratio": 3.92,
+   "read": {
+    "drags": 1,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -0.14
+   },
+   "result": "Par3 strokes",
+   "sec": 37.2
+  }
+ ],
+ "holesPlayed": [
+  {
+   "hole": 4,
+   "par": 3,
+   "strokes": [
+    3
+   ]
+  }
+ ],
+ "result": {
+  "scores": [
+   [
+    3
+   ]
+  ],
+  "players": [
+   "You"
+  ],
+  "complete": true,
+  "holes": [
+   3
+  ],
+  "mode": "stroke",
+  "standings": "3  (E)"
+ },
+ "errors": [],
+ "stuck": [],
+ "timing": {
+  "bootSec": 12.255,
+  "totalMin": 3.1,
+  "shots": 3,
+  "secPerShot": 46.2
+ },
+ "after": {
+  "player": "You",
+  "rounds": 1,
+  "history": [
+   {
+    "id": "1795011641862-371530740",
+    "date": 1795011641862,
+    "courseId": "parkland",
+    "mode": "stroke",
+    "holes": 1,
+    "strokes": 3,
+    "par": 3,
+    "toPar": 0,
+    "birdies": 0,
+    "putts": 1,
+    "eventId": null
+   }
+  ],
+  "daily": {},
+  "achievements": [
+   "first-round"
+  ],
+  "inProgress": false,
+  "career": null
+ },
+ "guard": {
+  "count": 0,
+  "last": null,
+  "bySystem": {}
+ },
+ "consoleErrors": [],
+ "summary": {
+  "holes": 1,
+  "strokes": 3,
+  "par": 3,
+  "putts": 1,
+  "tempo": {
+   "Perfect": 1,
+   "Good, a little quick": 2
+  },
+  "stuck": 0,
+  "consoleErrors": 0,
+  "guardErrors": 0,
+  "toPar": 0
+ }
+}

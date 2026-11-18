@@ -46,7 +46,8 @@ Error: No existing credentials found. Run `vercel deploy --temporary` to create 
 Route B, GitHub Pages: worked. The `gh` CLI is limited to search in this environment, so it was
 not used; the git remote is pushable. The production build (byte-identical to the build that
 passed `npm run verify` at 9543fab, rebuilt from a clean clone at 64abdff) was committed with a
-`.nojekyll` file to a new `gh-pages` branch and pushed. GitHub enabled Pages from that branch
+`.nojekyll` file to a new `gh-pages` branch and pushed. It was updated later to the verified
+build of 756496a after the tap-through found a bug. GitHub enabled Pages from that branch
 on its own; the repository is public, so no paid plan was needed. The site answered 200 about
 30 seconds later. Vite's base path is `./` (relative), so the same build works at
 `/Fairway/` with no change.
@@ -78,7 +79,21 @@ touch, device scale 2) and a desktop size (1366x768):
   incognito-like and report only `in-incognito`, which is why a persistent profile was used.)
 - A real tap-through of a hole on the live site: see "Tap-through" below.
 
-TAPTHROUGH
+### Tap-through on the live site
+
+`node scripts/bot.mjs --url https://gbrodie6.github.io/Fairway --holes 1 --start 4 --view portrait`
+plays a hole on the deployed site with real touch events at 390x844 (the bot reads the game's
+state but acts only through the screen: the swing zone, course drags, and buttons).
+
+- First attempt: it never got off the tee. During the hole flyover the HUD is invisible but
+  its buttons still took taps, and the "Skip flyover" button sat exactly over the round club
+  button, so the tap on Skip opened the club list, which then covered the swing zone (30 swing
+  attempts, none started). Fixed in 756496a (a hidden HUD takes no taps; Skip moved to the top
+  center), verified, and the site updated.
+- After the fix, on the live site: parkland hole 4 (par 3), a 3-wood to 1.9 m and one putt,
+  birdie 2, zero console errors, zero stuck states, 3.3 minutes in software rendering.
+- The same hole with a mouse in landscape (844x390): a 5-wood into the greenside bunker, a lob
+  wedge out to 8.5 m, one putt, par 3, zero console errors, zero stuck states.
 
 ### Updating the live site
 
