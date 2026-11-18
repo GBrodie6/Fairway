@@ -24,6 +24,8 @@ export function defaultSave() {
     // on this device (null for a guest).
     updatedAt: 0,
     account: null,
+    // Earned currencies and items. Nothing here can be bought.
+    wallet: { coins: 0, shards: 0, mulligans: 1 },
   };
 }
 export function emptyStats() {
@@ -71,6 +73,9 @@ export function sanitizeSave(s) {
   out.career = validateCareer(s.career) ? s.career : null;
   out.inProgress = s.inProgress && validateRound(s.inProgress).ok ? s.inProgress : null;
   out.updatedAt = Number.isFinite(s.updatedAt) ? s.updatedAt : 0;
+  const w = s.wallet && typeof s.wallet === 'object' ? s.wallet : {};
+  const cnt = (v, d) => (Number.isFinite(v) && v >= 0 ? Math.min(Math.floor(v), 1e7) : d);
+  out.wallet = { coins: cnt(w.coins, 0), shards: cnt(w.shards, 0), mulligans: cnt(w.mulligans, 1) };
   const a = s.account;
   out.account = a && typeof a === 'object' && typeof a.userId === 'string' ? { userId: a.userId, email: String(a.email || ''), displayName: String(a.displayName || '').slice(0, 18) } : null;
   return out;

@@ -10,6 +10,7 @@ import { fmtDist, fmtShort } from './format.js';
 import { SURFACE_NAMES } from '../physics/surfaces.js';
 import { saveSettings } from '../core/settings.js';
 import { headingTo } from '../core/math.js';
+import { STRIKE_NAMES, STRIKE_HAPTIC } from '../game/strike.js';
 
 export function createUI(app) {
   const root = document.getElementById('ui');
@@ -54,7 +55,9 @@ export function createUI(app) {
     // The HUD's layout says where the ball goes on screen; the address camera frames it there.
     onLayout: ({ ballY, keep }) => { if (app.world && app.world.rig) { app.world.rig.ballScreenY = ballY; app.world.rig.hudKeep = keep; app.world.rig.lefty = settings.handedness === 'left'; } },
     // The drag crossed the start line and the shot is away: the club shows impact this frame.
-    onSwing: (res) => { if (app.world && app.world.club) app.world.club.impact({ face: res.face, path: res.path }); },
+    onSwing: (res) => { if (app.world && app.world.club) app.world.club.impact({ face: res.face, path: res.path, strike: game.state.shot && game.state.shot.strike }); },
+    mulligans: () => (app.save ? (app.save().wallet || {}).mulligans || 0 : 0),
+    holdFan: (on) => { if (app.world && app.world.overlays && app.world.overlays.holdFan) app.world.overlays.holdFan(on); },
     continue: () => game.continue(),
     escape: () => {
       if (ui.map.open) { ui.map.close(); return; }
@@ -92,7 +95,15 @@ export function createUI(app) {
         break;
       }
       case 'swing':
-        if (d.human) ui.hud.stick.feedback(d.swing.tempoLabel);
+        if (d.human) {
+          ui.hud.hideShotCard();
+          ui.hud.strikeLabel(d.swing.tempoLabel, d.strike);
+          if (d.strike) haptic(STRIKE_HAPTIC[d.strike.kind] || 14);
+        }
+        break;
+      case 'mulligan':
+        if (app.spendMulligan) app.spendMulligan();
+        ui.hud.note('Mulligan', 'Take that one again.', 1800);
         break;
       case 'holed': haptic([20, 40, 30]); break;
       case 'lip': lipped = true; break;
@@ -102,8 +113,10 @@ export function createUI(app) {
         const lip = lipped; lipped = false;
         if (s.outcome.holed) { ui.hud.toast(s.message, `${s.strokes} ${s.strokes === 1 ? 'stroke' : 'strokes'}`, 2600); break; }
         if (lip && s.outcome.putt) { ui.hud.toast('Lipped out', `${fmtShort(s.distToPin, u)} left`, 2400); break; }
-        const sub = s.outcome.putt ? `${fmtShort(s.distToPin, u)} left` : `Carry ${fmtDist(s.outcome.carry, u)}  Total ${fmtDist(s.outcome.total, u)}  ${fmtDist(s.distToPin, u)} to pin`;
-        ui.hud.toast(s.message || SURFACE_NAMES[s.outcome.lie], sub, 2600);
+        if (s.outcome.putt) { ui.hud.toast(s.message || SURFACE_NAMES[s.outcome.lie], `${fmtShort(s.distToPin, u)} left`, 2600); break; }
+        // A full shot: the shot card (strike, carry, offline, what caused a miss, Mulligan).
+        if (game.state.round && game.state.round.players[s.player] && game.state.round.players[s.player].kind === 'human') ui.hud.shotCard(s);
+        else ui.hud.toast(s.message || SURFACE_NAMES[s.outcome.lie], `Carry ${fmtDist(s.outcome.carry, u)}  Total ${fmtDist(s.outcome.total, u)}`, 2600);
         break;
       }
       default: break;

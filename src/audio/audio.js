@@ -106,9 +106,18 @@ export function createAudio(settings) {
   }
 
   // --- effects ---
-  audio.strike = (club, power = 1, quality = 1) => {
+  audio.strike = (club, power = 1, quality = 1, kind = 'good') => {
     if (!audio.ready) return;
     const p = clamp(power, 0.1, 1);
+    // A short cue per strike, on top of the usual sound: pured rings bright and clean, thin
+    // clicks, fat thuds into the turf, heel and toe buzz, a shank clanks.
+    if (!club.putter) {
+      if (kind === 'pured') tone({ freq: 1480, peak: 0.12 * p, decay: 0.16, delay: 0.01 });
+      else if (kind === 'thin') { tone({ freq: 2300, peak: 0.16 * p, decay: 0.03 }); noiseHit({ type: 'highpass', freq: 4200, peak: 0.12 * p, decay: 0.03 }); }
+      else if (kind === 'fat') { noiseHit({ type: 'lowpass', freq: 420, peak: 0.45 * p, attack: 0.004, decay: 0.16 }); tone({ freq: 110, peak: 0.22 * p, decay: 0.12 }); }
+      else if (kind === 'heel' || kind === 'toe') tone({ freq: kind === 'heel' ? 330 : 410, peak: 0.14 * p, decay: 0.18, bend: 60 });
+      else if (kind === 'shank') { tone({ freq: 640, peak: 0.2 * p, decay: 0.22, bend: 120 }); tone({ freq: 910, peak: 0.1 * p, decay: 0.18 }); }
+    }
     if (club.putter) { tone({ freq: 1150, peak: 0.25 * (0.5 + p), decay: 0.06 }); noiseHit({ type: 'highpass', freq: 3000, peak: 0.08, decay: 0.03 }); return; }
     const wood = club.kind === 'wood';
     // The crack: a bright, very short noise burst; woods ring lower and longer.
@@ -204,7 +213,7 @@ export function createAudio(settings) {
   audio.attach = (game, getWorld) => game.on((type, d) => {
     if (!audio.ready) return;
     switch (type) {
-      case 'swing': audio.strike(d.club, d.swing.power, d.swing.tempoQuality ?? 1); break;
+      case 'swing': audio.strike(d.club, d.swing.power, d.swing.tempoQuality ?? 1, d.strike && d.strike.kind); break;
       case 'land': audio.land(d.surface, d.speed, d.first); break;
       case 'splash': audio.splash(); break;
       case 'holed': audio.cup(); { const w = getWorld(); if (w.terrain.hole.tournament) setTimeout(() => audio.cheer(0.8), 450); } break;

@@ -27,6 +27,7 @@ export function installMenus(app, ui) {
   const persist = () => { save = touchSave(save); writeSave(save); if (app.cloud) app.cloud.sync.schedule('change'); };
   // Replace the whole save (cloud sync, restore, delete). Kept as given, not restamped.
   app.setSave = (s) => { save = s; writeSave(save); };
+  app.spendMulligan = () => { save = { ...save, wallet: { ...save.wallet, mulligans: Math.max(0, (save.wallet.mulligans || 0) - 1) } }; persist(); };
   const sheet = (cls, ...kids) => h('div', { class: `sheet glass ${cls || ''}` }, ...kids);
   const btn = (label, onclick, cls = 'btn') => h('button', { class: cls, type: 'button', onclick }, label);
   const back = () => btn('Back', () => screens.back());
@@ -50,6 +51,7 @@ export function installMenus(app, ui) {
       h('h3', { class: 'h', text: 'Player' }),
       field('Name', name, 's-name'),
       field('Golfer', select('s-hand', settings.handedness, [['right', 'Right-handed'], ['left', 'Left-handed']], (v) => { settings.handedness = v; settings.leftHandLayout = v === 'left'; const c = document.getElementById('s-lh'); if (c) c.checked = settings.leftHandLayout; save2(); }), 's-hand'),
+      field('Difficulty', select('s-diff', settings.difficulty, [['relaxed', 'Relaxed: mishits are rare and gentle'], ['standard', 'Standard'], ['pro', 'Pro: mishits bite']], (v) => { settings.difficulty = v; save2(); }), 's-diff'),
       field('Left-handed layout', check('s-lh', settings.leftHandLayout, (v) => { settings.leftHandLayout = v; save2(); }), 's-lh'),
       field('Swing drag length', range('s-stick', settings.stickScale, 0.7, 1.5, 0.05, (v) => { settings.stickScale = v; save2(); }), 's-stick'),
       field('Power guide while swinging', check('s-guide', settings.powerGuide, (v) => { settings.powerGuide = v; save2(); }), 's-guide'),

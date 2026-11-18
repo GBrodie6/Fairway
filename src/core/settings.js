@@ -25,6 +25,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   powerGuide: true, // the gold power mark on the swing rail
   tutorialDone: false,
   accountPromptSeen: false, // the optional account card after the first round
+  difficulty: 'standard', // strike quality: relaxed, standard, pro
   stickScale: 1,
   showFps: false,
 });
@@ -34,6 +35,7 @@ const ENUMS = {
   units: ['yards', 'meters'],
   handedness: ['right', 'left'],
   colorblind: ['off', 'deuteranopia', 'protanopia', 'tritanopia'],
+  difficulty: ['relaxed', 'standard', 'pro'],
 };
 
 // Validate and normalize any object into a well-formed settings object.

@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { buildClub, disposeClub } from './clubModel.js';
 import { swingFrame, clubPose, progressFromDrag, followProgress, downswingStart } from '../game/clubPath.js';
 import { clamp } from '../core/math.js';
+import { clubGeometry, hoselOffset } from '../game/clubPath.js';
 
 const TRAIL = 16;
 
@@ -65,12 +66,27 @@ export function createClubView(world) {
   };
   const m4 = new THREE.Matrix4(), mB = new THREE.Matrix4(), q = new THREE.Quaternion(), vA = new THREE.Vector3(), vB = new THREE.Vector3(), vC = new THREE.Vector3();
 
+  // The contact marker: a small bright dot on the face where the ball was struck.
+  const markMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, depthTest: false });
+  const mark = new THREE.Mesh(new THREE.SphereGeometry(0.009, 12, 8), markMat);
+  mark.renderOrder = 8; mark.visible = false;
   function ensureClub(id, lefty) {
     if (cv.club && cv.clubId === id && cv.lefty === lefty) return;
-    if (cv.club) { holder.remove(cv.club); disposeClub(cv.club); }
+    if (cv.club) { cv.club.remove(mark); holder.remove(cv.club); disposeClub(cv.club); }
     cv.club = buildClub(id);
     cv.clubId = id; cv.lefty = lefty;
+    cv.club.add(mark);
     holder.add(cv.club);
+  }
+  // Where on the face (club space: X toward the toe, Y up, the face lofted back).
+  function placeMark(strike) {
+    if (!cv.club || !strike) { mark.visible = false; return; }
+    const g = clubGeometry(cv.clubId), t = Math.tan((g.loft * Math.PI) / 180);
+    const [heel, rise] = hoselOffset(g.kind);
+    const spot = { pured: [0, 0.002], good: [0.006, -0.003], heel: [-heel * 0.75, 0], toe: [0.032, 0.002], thin: [0.002, -0.016], fat: [0, -0.02], shank: [-heel, rise * 0.6] }[strike.kind] || [0, 0];
+    mark.position.set(spot[0], spot[1], spot[1] * t - 0.004);
+    markMat.color.setHex(strike.kind === 'pured' ? 0xd8f5a8 : strike.kind === 'good' ? 0xffffff : strike.kind === 'shank' ? 0xff8a6a : 0xffc060);
+    mark.visible = true;
   }
 
   // Place the club for pose `pose` in frame `fr`: the address placement (club space onto the
@@ -138,9 +154,11 @@ export function createClubView(world) {
       p = cv.follow.qa != null ? cv.follow.qa : cv.follow.t <= 0 ? 1 : followProgress(cv.follow.t, 0.5);
       const fade = clamp((cv.follow.t - 0.5) / 0.22, 0, 1);
       setOpacity(1 - fade);
-      if (fade >= 1) { cv.follow = null; group.visible = false; cv.visible = false; hist.length = 0; return; }
+      markMat.opacity = 1 - fade;
+      if (fade >= 1) { cv.follow = null; group.visible = false; cv.visible = false; hist.length = 0; mark.visible = false; return; }
     } else {
       ensureClub(ctx.clubId, ctx.lefty);
+      mark.visible = false;
       cv.lastBall = { x: ctx.ball.x, y: ctx.ball.y, z: ctx.ball.z };
       const st = ctx.state || cv.state;
       cv.state = st;
@@ -214,8 +232,9 @@ export function createClubView(world) {
   };
 
   /** The drag crossed the start line: hold the impact pose this frame, then follow through. */
-  cv.impact = ({ face = 0, path = 0 } = {}) => {
+  cv.impact = ({ face = 0, path = 0, strike = null } = {}) => {
     if (!cv.frame) return;
+    placeMark(strike);
     cv.follow = { t: 0, fresh: true, frame: cv.frame, top: Math.max(cv.top, 0.05), face: face * 2, path, ball: cv.lastBall ? { ...cv.lastBall } : null };
     cv.p = 1;
   };

@@ -16,6 +16,7 @@ import { scoreName } from './scoring.js';
 import { DECAL } from '../render/decals.js';
 import { courseById } from '../course/courses.js';
 import { fin } from '../core/guards.js';
+import { strikeResult, applyStrike } from './strike.js';
 
 export function createGame(app) {
   const listeners = new Set();
@@ -245,19 +246,25 @@ export function createGame(app) {
 
   function launchShot(swing, aim, club, shotType, speedUp) {
     const w = W(), t = w.terrain;
+    // A human shot keeps a snapshot so one Mulligan per round can take it back.
+    state.undo = isHuman() ? { round: JSON.parse(JSON.stringify(state.round)), hole: state.round.hole } : null;
     const from = { x: state.ball.x, z: state.ball.z, lie: state.lie };
     let launch, result;
     if (club.putter) {
       const ceil = (state.putt && state.putt.ceiling) || puttCeiling(state.distToPin);
       const tq = clamp(swing.tempoQuality ?? 1, 0, 1);
       launch = { x: from.x, z: from.z, putt: true, speed: clamp(swing.power, 0, 1) * ceil * (0.97 + 0.03 * tq), heading: aim + (swing.face || 0) * 0.45 * DEG * state.profile.putting, vAngle: 0, spin: 0, axisTilt: 0 };
-      result = simulateShot(launch, t.env({ windAt, t0: state.clock }));
     } else {
       launch = computeLaunch(swing, { club, shotType, lie: from.lie, aim, x: from.x, z: from.z, profile: state.profile, lieRoll: rng.range(-1, 1) });
-      result = simulateShot(launch, t.env({ windAt, t0: state.clock }));
     }
+    // Strike quality: a bounded change to the launch from how cleanly the club met the ball.
+    // The simulation that follows is unchanged.
+    const sctx = strikeContext(club, from);
+    const strike = strikeResult(swing, sctx, rng);
+    launch = applyStrike(launch, strike, sctx);
+    result = simulateShot(launch, t.env({ windAt, t0: state.clock }));
     // hold: the first frame after launch shows the ball still at rest with the club at impact.
-    state.shot = { from, swing, club, shotType, launch, result, t: 0, speedUp, player: state.turn, landingCam: false, hold: 1 };
+    state.shot = { from, swing, club, shotType, launch, result, t: 0, speedUp, player: state.turn, landingCam: false, hold: 1, strike, aim };
     apexShown = false; landShown = false; eventIdx = 0;
     w.overlays.hide();
     w.ball.clearTrace();
@@ -284,12 +291,34 @@ export function createGame(app) {
     // The launch line: from the ball, rising along the launch direction.
     w.overlays.showLaunch({ x: from.x, y: gy + 0.021, z: from.z, putt: !!club.putter }, launch.heading, launch.vAngle || 0, club.putter ? 6 : 34);
     if (!club.putter && result.carry > 25) w.ball.showLanding(landing.x, t.inBounds(landing.x, landing.z, 1) ? t.heightAt(landing.x, landing.z) : landing.y, landing.z, 1.2 + result.carry * 0.008);
-    emit('swing', { swing, club, putt: !!club.putter, lie: from.lie, player: state.turn, human: isHuman() });
+    emit('swing', { swing, club, putt: !!club.putter, lie: from.lie, player: state.turn, human: isHuman(), strike });
     setPhase('flight');
+  }
+
+  // What the strike model needs about this shot: the club, its rarity, the lie and the slope
+  // under the ball, the difficulty setting, and the player's gear and stats.
+  function strikeContext(club, from) {
+    const t = W().terrain, n = {};
+    t.normalAt(from.x, from.z, n);
+    const gear = (app.gearFor && app.gearFor(club.id)) || {};
+    return { clubId: club.id, lie: from.lie, slope: Math.hypot(n.x, n.z) / Math.max(0.2, n.y), setting: app.settings.difficulty || 'standard', rarity: gear.rarity || 'common', glove: gear.glove || 0, forgiveness: gear.forgiveness || 1, perkBonus: gear.perkBonus || 0, lefty: app.settings.handedness === 'left' };
   }
 
   function addDecal(type, x, z, rot, scale) { W().decals.add(type, x, z, rot, scale); saveDecals(); }
   function saveDecals() { state.decals[currentHoleIndex(state.round)] = W().decals.snapshot(); }
+
+  // --- Mulligan: take back the last shot (one per round, while the same hole is in play) ---
+  game.canMulligan = () => !!(state.undo && state.round && state.phase === 'aim' && isHuman() && state.round.hole === state.undo.hole && !state.round.mulliganUsed);
+  game.mulligan = () => {
+    if (!game.canMulligan()) return false;
+    const u = state.undo;
+    state.undo = null;
+    state.round = { ...u.round, mulliganUsed: true };
+    state.lastShot = null;
+    emit('mulligan', null);
+    beginTurn();
+    return true;
+  };
 
   // --- per-frame ---
   game.update = (dt) => {
@@ -352,6 +381,9 @@ export function createGame(app) {
     const outcome = {
       from: sh.from, end: { x: end.x, z: end.z }, lie: res.lie, holed: res.holed, water: res.water, oob: res.oob,
       carry: res.carry, total: res.total, putt: !!sh.club.putter, distToPin: dist,
+      // How far the ball finished off the aim line (meters, positive right).
+      offline: (() => { const p = res.carryPoint || res.end, fx = Math.sin(sh.aim), fz = -Math.cos(sh.aim); return (p.x - sh.from.x) * -fz + (p.z - sh.from.z) * fx; })(),
+      strike: sh.strike,
       drop: res.water ? dropPoint(t, res, sh.from) : null,
     };
     const applied = applyShot(r, sh.player, outcome);

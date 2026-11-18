@@ -130,6 +130,7 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     try { el.setPointerCapture(e.pointerId); } catch { /* capture is a nicety */ }
     zone.mode = 'pointer';
     el.classList.add('active');
+    if (zone.onStart) zone.onStart();
     const p = local(e);
     // The rail is drawn from where the finger landed.
     rail.style.left = `${p.x}px`; rail.style.top = `${p.y}px`;
@@ -192,6 +193,8 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
   };
   zone.relayout = () => { if (zone.box.h) zone.layout(zone.box); };
   zone.flushLayout = flushLayout;
+  zone.fbEl = fb;
+  zone.onStart = null;
   draw(0);
   return zone;
 }

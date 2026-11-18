@@ -14,6 +14,8 @@ export function createInput({ view, game, getWorld, settings, hud, actions, hapt
     const ph = game.state.phase;
     if (ph !== 'aim' && !(input.look && ph !== 'menu')) { if (ph === 'intro') game.skipIntro(); return; }
     drag = { id: e.pointerId, x: e.clientX, y: e.clientY, t: e.timeStamp };
+    // Touching the course to aim puts the shot card away and brings the fan back.
+    if (hud.hideShotCard) hud.hideShotCard();
     try { view.setPointerCapture(e.pointerId); } catch { /* fine */ }
     input.dragging = true;
   });

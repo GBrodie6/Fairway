@@ -1,0 +1,63 @@
+{
+ "size": "844x390",
+ "difficulty": "pro",
+ "before": {
+  "phase": "aim",
+  "strokes": 0,
+  "ball": {
+   "x": 0,
+   "z": 0
+  },
+  "lie": "Tee",
+  "mull": 1
+ },
+ "shot0": {
+  "strike": {
+   "kind": "fat",
+   "severity": 1,
+   "cause": "A full backswing and then too fast on the way down.",
+   "chance": 0.85,
+   "x": 2.0356985347748364
+  },
+  "card": "Fat\nRough\nMulligan 1\nCARRY\n142 yd\nTOTAL\n156 yd\nOFFLINE\n23 yd right\nA full backswing and then too fast on the way down."
+ },
+ "afterMishit": {
+  "phase": "aim",
+  "strokes": 1,
+  "ball": {
+   "x": 24.1,
+   "z": -141
+  },
+  "lie": "Rough",
+  "mull": 1
+ },
+ "cardBox": [
+  0,
+  150,
+  272,
+  292
+ ],
+ "layout": {
+  "hud": [],
+  "zone": false,
+  "fanTop": 69.13170013309143
+ },
+ "afterMulligan": {
+  "phase": "aim",
+  "strokes": 1,
+  "ball": {
+   "x": 24.1,
+   "z": -141
+  },
+  "lie": "Rough",
+  "mull": 1
+ },
+ "smooth": {
+  "kind": "good",
+  "severity": 0,
+  "cause": "",
+  "chance": 0,
+  "x": 0.1339317314656434
+ },
+ "consoleErrors": []
+}

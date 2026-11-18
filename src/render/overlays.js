@@ -178,7 +178,7 @@ export function createOverlays(world) {
     // Rebuilding the grid for a new palette keeps it shown if it was shown.
     setPalette(id) { palette = PALETTES[id] || PALETTES.off; if (grid) { const vis = grid.visible; buildGrid(); grid.visible = vis; } },
     loadHole() { buildGrid(); ov.hide(); },
-    hide() { aimLine.visible = false; puttLine.visible = false; ring.visible = false; fan.visible = false; if (grid) grid.visible = false; },
+    hide() { aimLine.visible = false; puttLine.visible = false; ring.visible = false; fan.visible = false; ov.fanWanted = false; if (grid) grid.visible = false; },
     /**
      * Full-shot aim: a line from the ball to the predicted landing point and a ring whose
      * size is the one-sigma dispersion (lateral degrees and distance fraction).
@@ -218,7 +218,8 @@ export function createOverlays(world) {
           }
         }
         fanGeo.attributes.position.needsUpdate = true; fanGeo.attributes.color.needsUpdate = true; fanGeo.attributes.aD.needsUpdate = true;
-        fan.visible = true;
+        ov.fanWanted = true;
+        fan.visible = !ov.fanHeld;
         const h0 = Math.max(0.06 + d0 * 0.02, tanL * d0);
         ov.fanQuad = [[from.x + ux * d0 + px * h0, from.z + uz * d0 + pz * h0], [from.x + ux * d0 - px * h0, from.z + uz * d0 - pz * h0]];
         const hl = Math.max(0.06 + dist * 0.02, tanL * dist);
@@ -253,6 +254,8 @@ export function createOverlays(world) {
       } else puttLine.visible = false;
     },
     setGridVisible(v) { if (grid) grid.visible = !!v; },
+    // The fan steps aside while the shot card is up (small screens have no room for both).
+    holdFan(on) { ov.fanHeld = !!on; fan.visible = !!ov.fanWanted && !ov.fanHeld; },
     update(dt, t) {
       gridMat.uniforms.uT.value = fin(t, 0) % 1000;
       if (launchT >= 0) {

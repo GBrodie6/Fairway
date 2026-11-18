@@ -11,6 +11,7 @@ import { h, iconButton, icon } from './dom.js';
 import { fmtDist, fmtShort, fmtBreak, fmtToPar, fmtMph, ordinal } from './format.js';
 import { createSwingZone } from './swingZone.js';
 import { DEG, clamp, YARD } from '../core/math.js';
+import { STRIKE_NAMES } from '../game/strike.js';
 
 const TOD_ICON = { dawn: 'sunlow', morning: 'sun', midday: 'sun', golden: 'sunlow', dusk: 'sunlow', night: 'moon' };
 
@@ -160,8 +161,63 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   const skip = h('button', { class: 'btn small glass intro-skip hidden', type: 'button', onclick: () => game.skipIntro() }, 'Skip flyover');
   root.appendChild(skip);
 
+  // The shot card: after a full shot, how it was struck, how far, how far offline, and in plain
+  // words what caused a miss. A Mulligan button when one is available.
+  const shotcard = h('div', { class: 'shotcard glass hidden', role: 'status', 'aria-live': 'polite' });
+  el.appendChild(shotcard);
+  let cardTimer = 0;
+
   let toastTimer = 0;
   const hud = { el, stick: zone, zone, toastEl: toast, layoutBox: null };
+  hud.strikeLabel = (tempoLabel, strike) => {
+    zone.feedback(tempoLabel);
+    if (strike && zone.fbEl) {
+      const chip = h('span', { class: `sk sk-${strike.kind}`, text: STRIKE_NAMES[strike.kind] });
+      zone.fbEl.append(' ', chip);
+    }
+  };
+  zone.onStart = () => hud.hideShotCard();
+  hud.hideShotCard = () => { shotcard.classList.add('hidden'); clearTimeout(cardTimer); if (actions.holdFan) actions.holdFan(false); };
+  hud.shotCard = (s) => {
+    const u = settings.units, o = s.outcome, st = o.strike || { kind: 'good' };
+    const off = Math.abs(o.offline || 0);
+    const offTxt = off < 0.9 ? 'on line' : `${fmtDist(off, u)} ${o.offline > 0 ? 'right' : 'left'}`;
+    shotcard.textContent = '';
+    const row1 = h('div', { class: 'row1' }, h('span', { class: `sk sk-${st.kind}`, text: STRIKE_NAMES[st.kind] || 'Good' }), h('b', { text: s.message || '' }));
+    shotcard.append(row1, h('div', { class: 'nums' }, h('span', {}, h('small', { text: 'Carry' }), h('b', { text: fmtDist(o.carry, u) })), h('span', {}, h('small', { text: 'Total' }), h('b', { text: fmtDist(o.total, u) })), h('span', {}, h('small', { text: 'Offline' }), h('b', { text: offTxt }))));
+    if (st.cause && st.kind !== 'pured' && st.kind !== 'good') shotcard.append(h('div', { class: 'why', text: st.cause }));
+    const mull = app_mulligans();
+    if (mull > 0 && st.kind !== 'pured' && !(game.state.round && game.state.round.mulliganUsed)) {
+      // In the header line, so the card stays short (clear of the fan and the bottom row).
+      const b = h('button', { class: 'btn small mull', type: 'button', 'aria-label': `Mulligan, ${mull} left`, onclick: () => { if (game.canMulligan()) game.mulligan(); } }, `Mulligan ${mull}`);
+      row1.append(b);
+      // Only once the ball has stopped and the next shot is being set up.
+      const tick = () => { b.disabled = !game.canMulligan(); };
+      tick(); b._t = setInterval(tick, 250); setTimeout(() => clearInterval(b._t), 9000);
+    }
+    placeCard();
+    shotcard.classList.remove('hidden');
+    if (actions.holdFan) actions.holdFan(true);
+    clearTimeout(cardTimer);
+    cardTimer = setTimeout(() => hud.hideShotCard(), st.kind === 'pured' || st.kind === 'good' ? 3200 : 7000);
+  };
+  const app_mulligans = () => (actions.mulligans ? actions.mulligans() : 0);
+  // Under the tabs and under any chip showing beneath them.
+  function placeCard() {
+    let bottom = tabWind.getBoundingClientRect().bottom;
+    for (const c of [hazard, puttinfo]) if (!c.classList.contains('hidden')) bottom = Math.max(bottom, c.getBoundingClientRect().bottom);
+    shotcard.style.top = `${Math.round(bottom + 6)}px`;
+  }
+  hud.note = (title, text, ms = 2200) => {
+    shotcard.textContent = '';
+    shotcard.append(h('div', { class: 'row1' }, h('b', { text: title })));
+    if (text) shotcard.append(h('div', { class: 'why', text }));
+    placeCard();
+    shotcard.classList.remove('hidden');
+    clearTimeout(cardTimer);
+    cardTimer = setTimeout(() => hud.hideShotCard(), ms);
+  };
+  shotcard.addEventListener('pointerdown', (e) => { if (e.target.tagName !== 'BUTTON') hud.hideShotCard(); });
   hud.toast = (text, sub = '', ms = 2200) => {
     toast.textContent = text;
     if (sub) toast.appendChild(h('small', { text: sub }));
