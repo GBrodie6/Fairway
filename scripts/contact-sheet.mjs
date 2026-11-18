@@ -1,6 +1,6 @@
 // Contact sheets: every course at every time-of-day preset from the address view, plus
 // close-ups (green, bunker, water, tree line, rough, flyover) at every quality tier.
-//   node scripts/contact-sheet.mjs [--course parkland,links] [--tiers low,medium,high,ultra] [--out qa/contact]
+//   node scripts/contact-sheet.mjs [--course parkland,links] [--tiers low,medium,high,ultra] [--out qa/contact] [--dist dist]
 // Writes one JPEG sheet per course and section, and qa/contact/luma.json with the measured
 // luma and clipping of the 3D view for each course and preset (headless SwiftShader).
 import { mkdirSync, writeFileSync, existsSync, readFileSync } from 'node:fs';
@@ -16,9 +16,9 @@ const courses = args.course ? String(args.course).split(',') : COURSES.map((c) =
 const tiers = args.tiers ? String(args.tiers).split(',') : ['low', 'medium', 'high', 'ultra'];
 const outDir = args.out || 'qa/contact';
 const W = 640, H = 360;
-const CLOSE = ['green', 'bunker', 'water', 'treeline', 'rough', 'flyover'];
+const CLOSE = ['tee', 'green', 'bunker', 'water', 'treeline', 'rough', 'flyover'];
 mkdirSync(path.join(outDir, 'raw'), { recursive: true });
-const server = await serveStatic(path.resolve('dist'));
+const server = await serveStatic(path.resolve(args.dist ? String(args.dist) : 'dist'));
 const { browser, software } = await launchBrowser();
 const lumaPath = path.join(outDir, 'luma.json');
 const luma = existsSync(lumaPath) ? JSON.parse(readFileSync(lumaPath, 'utf8')) : { note: '', rows: [] };
