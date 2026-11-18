@@ -57,6 +57,7 @@ export function createUI(app) {
     // The drag crossed the start line and the shot is away: the club shows impact this frame.
     onSwing: (res) => { if (app.world && app.world.club) app.world.club.impact({ face: res.face, path: res.path, strike: game.state.shot && game.state.shot.strike }); },
     mulligans: () => (app.save ? (app.save().wallet || {}).mulligans || 0 : 0),
+    tierFor: (clubId) => (app.gearFor ? app.gearFor(clubId).rarity : 'common'),
     holdFan: (on) => { if (app.world && app.world.overlays && app.world.overlays.holdFan) app.world.overlays.holdFan(on); },
     continue: () => game.continue(),
     escape: () => {
@@ -133,7 +134,7 @@ export function createUI(app) {
     const v = st.round ? game.view() : null;
     clubCtx.show = !!(v && v.phase === 'aim' && v.human && w.rig.mode === 'address' && !ui.map.open && !ui.modal && w.ball && w.ball.group.visible !== false);
     if (w.ball) { const p = w.ball.position; clubCtx.ball.x = p.x; clubCtx.ball.y = p.y; clubCtx.ball.z = p.z; }
-    clubCtx.heading = st.aim; clubCtx.clubId = st.club ? st.club.id : 'I7';
+    clubCtx.heading = st.aim; clubCtx.clubId = st.club ? st.club.id : 'I7'; clubCtx.rarity = app.gearFor ? app.gearFor(clubCtx.clubId).rarity : 'common';
     clubCtx.lefty = settings.handedness === 'left';
     clubCtx.state = ui.hud.zone.live;
     return clubCtx;

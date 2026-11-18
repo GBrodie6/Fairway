@@ -101,10 +101,20 @@ function putterHead(loft) {
 const HEAD_SCALE = 1.25, SHAFT_SCALE = 1.9, GRIP_SCALE = 1.35;
 
 /** A club group in club space. kind from clubGeometry(id). */
-export function buildClub(clubId) {
+// Tier finishes (game/gear.js): a tint over the head's colors, a tinted shaft, and a soft glow
+// for the top tiers. Common is the original satin steel.
+export const TIER_FINISH = {
+  common: { tint: 0xffffff, shaft: COLORS.shaft, glow: 0x000000, glowI: 0 },
+  uncommon: { tint: 0xbfeccb, shaft: 0xb0dab8, glow: 0x2f9a4c, glowI: 0.12 },
+  rare: { tint: 0xc4dcff, shaft: 0xa9c6e8, glow: 0x2a6fc0, glowI: 0.18 },
+  epic: { tint: 0xe0caff, shaft: 0xc6b0e6, glow: 0x7a40d0, glowI: 0.3 },
+  legendary: { tint: 0xffe08a, shaft: 0xe9cf86, glow: 0xffa820, glowI: 0.42 },
+};
+export function buildClub(clubId, rarity = 'common') {
   const g = clubGeometry(clubId), kind = g.kind, loft = g.loft * DEG, lie = g.lie * DEG;
+  const fin = TIER_FINISH[rarity] || TIER_FINISH.common;
   const group = new THREE.Group();
-  const metal = new THREE.MeshStandardMaterial({ vertexColors: true, metalness: 0.75, roughness: 0.32, envMapIntensity: 1.0, transparent: true });
+  const metal = new THREE.MeshStandardMaterial({ vertexColors: true, color: fin.tint, emissive: fin.glow, emissiveIntensity: fin.glowI, metalness: 0.75, roughness: 0.32, envMapIntensity: 1.0, transparent: true });
   const head = new THREE.Mesh(kind === 'driver' || kind === 'wood' ? woodHead(kind, loft) : kind === 'putter' ? putterHead(loft * 0.6) : bladeHead(kind, loft), metal);
   head.scale.setScalar(HEAD_SCALE);
   group.add(head);
@@ -122,7 +132,7 @@ export function buildClub(clubId) {
     group.add(m);
     return m;
   };
-  const steel = new THREE.MeshStandardMaterial({ color: COLORS.shaft, metalness: 0.85, roughness: 0.28, transparent: true });
+  const steel = new THREE.MeshStandardMaterial({ color: fin.shaft, metalness: 0.85, roughness: 0.28, transparent: true });
   const gripMat = new THREE.MeshStandardMaterial({ color: COLORS.grip, metalness: 0.0, roughness: 0.82, transparent: true });
   const dark = new THREE.MeshStandardMaterial({ color: COLORS.ferrule, metalness: 0.2, roughness: 0.5, transparent: true });
   const hoselLen = kind === 'driver' || kind === 'wood' ? 0.035 : kind === 'putter' ? 0.06 : 0.055;
@@ -138,7 +148,7 @@ export function buildClub(clubId) {
   cap.quaternion.copy(q);
   cap.position.copy(hosel).addScaledVector(d, g.length);
   group.add(cap);
-  group.userData = { kind, materials: [metal, steel, gripMat, dark, hoselMat], length: g.length };
+  group.userData = { kind, rarity, materials: [metal, steel, gripMat, dark, hoselMat], length: g.length };
   group.traverse((o) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; o.renderOrder = 5; } });
   return group;
 }

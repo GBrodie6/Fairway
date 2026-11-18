@@ -5,8 +5,9 @@ import { validateCareer } from './career.js';
 import { validateRound } from './round.js';
 import { courseById } from '../course/courses.js';
 import { YARD } from '../core/math.js';
+import { starterGear, sanitizeGear } from './gear.js';
 
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 export const SAVE_KEY = 'fairway-next.save';
 const HISTORY_CAP = 100;
 
@@ -25,7 +26,9 @@ export function defaultSave() {
     updatedAt: 0,
     account: null,
     // Earned currencies and items. Nothing here can be bought.
-    wallet: { coins: 0, shards: 0, mulligans: 1 },
+    wallet: { coins: 0, shards: 0, mulligans: 1, tokens: 0, tokenDay: 0, dayTokens: 0 },
+    // v5: clubs in rarity tiers, the 14-club bag, balls, gloves, and the drop pity counter.
+    gear: starterGear(),
   };
 }
 export function emptyStats() {
@@ -48,6 +51,8 @@ export const MIGRATIONS = {
   2: (s) => ({ ...s, version: 3, career: null, inProgress: null }),
   // v4 added cloud sync metadata: updatedAt and the account link (none for an old save).
   3: (s) => ({ ...s, version: 4, updatedAt: 0, account: null }),
+  // v5 added gear (the fixed starter bag of 14 Common clubs) and gear tokens.
+  4: (s) => ({ ...s, version: 5, gear: starterGear(), wallet: { ...(s.wallet || {}), tokens: 0 } }),
 };
 
 export function migrateSave(raw) {
@@ -75,7 +80,8 @@ export function sanitizeSave(s) {
   out.updatedAt = Number.isFinite(s.updatedAt) ? s.updatedAt : 0;
   const w = s.wallet && typeof s.wallet === 'object' ? s.wallet : {};
   const cnt = (v, d) => (Number.isFinite(v) && v >= 0 ? Math.min(Math.floor(v), 1e7) : d);
-  out.wallet = { coins: cnt(w.coins, 0), shards: cnt(w.shards, 0), mulligans: cnt(w.mulligans, 1) };
+  out.wallet = { coins: cnt(w.coins, 0), shards: cnt(w.shards, 0), mulligans: cnt(w.mulligans, 1), tokens: cnt(w.tokens, 0), tokenDay: cnt(w.tokenDay, 0), dayTokens: cnt(w.dayTokens, 0) };
+  out.gear = sanitizeGear(s.gear);
   const a = s.account;
   out.account = a && typeof a === 'object' && typeof a.userId === 'string' ? { userId: a.userId, email: String(a.email || ''), displayName: String(a.displayName || '').slice(0, 18) } : null;
   return out;

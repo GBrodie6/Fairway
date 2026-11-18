@@ -220,3 +220,54 @@ table.card-t .over { color: var(--warm); }
 .shotcard .btn.small.mull { min-height: 48px; width: auto; margin-left: auto; padding: 0 12px; font-size: 13.5px; }
 .shotcard .row1 { min-height: 26px; }
 
+
+/* --- gear (tiers, stat bars, compare, drops) --- */
+:root { --t-common: #b9c0c6; --t-uncommon: #7fd69a; --t-rare: #6fb6ff; --t-epic: #c08bff; --t-legendary: #ffd166; }
+.tier { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.02em; border: 1px solid currentColor; background: rgba(0, 0, 0, 0.25); white-space: nowrap; }
+.tier.big { font-size: 15px; padding: 4px 14px; }
+.tier.t-common, .t-common > .tier { color: var(--t-common); }
+.tier.t-uncommon { color: var(--t-uncommon); }
+.tier.t-rare { color: var(--t-rare); }
+.tier.t-epic { color: var(--t-epic); }
+.tier.t-legendary { color: var(--t-legendary); }
+.gear .wallet { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 10px; }
+.gear .list { margin: 10px 0; }
+.gear .item.clubrow { width: 100%; text-align: left; align-items: center; min-height: 48px; color: var(--ink); border: 0; border-left: 4px solid var(--t-common); }
+.gear .item.version { align-items: center; border-left: 4px solid var(--t-common); flex-wrap: wrap; }
+.gear .item.t-uncommon { border-left-color: var(--t-uncommon); }
+.gear .item.t-rare { border-left-color: var(--t-rare); }
+.gear .item.t-epic { border-left-color: var(--t-epic); }
+.gear .item.t-legendary { border-left-color: var(--t-legendary); }
+.gear .item .short { display: inline-block; min-width: 30px; }
+.gear .row { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.gear .actions { gap: 6px; }
+.gear .actions .btn.small { min-height: 44px; }
+.gear .stack.tight { gap: 3px; min-width: 0; flex: 1 1 180px; }
+.gear .small { font-size: 12.5px; }
+.gear h3.h.small { font-size: 14px; display: flex; align-items: center; gap: 6px; margin: 8px 0 6px; }
+.stats { display: flex; flex-direction: column; gap: 6px; }
+.statrow { display: grid; grid-template-columns: 92px 1fr 64px; align-items: center; gap: 8px; font-size: 13px; }
+.statrow b { text-align: right; font-variant-numeric: tabular-nums; }
+.statrow b.up { color: var(--accent); }
+.statrow b.down { color: #ffb37a; }
+.statbar { position: relative; height: 9px; border-radius: 5px; background: rgba(255, 255, 255, 0.1); overflow: visible; }
+.statbar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: linear-gradient(90deg, rgba(194, 229, 138, 0.6), var(--accent)); }
+.statbar em { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: #fff; border-radius: 1px; }
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .compare { grid-template-columns: 1fr; gap: 4px; } }
+.dropresult { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px; border-radius: 14px; background: rgba(255, 255, 255, 0.06); text-align: center; animation: droppop 420ms ease-out; }
+.dropresult.t-epic { box-shadow: 0 0 24px rgba(192, 139, 255, 0.45); }
+.dropresult.t-legendary { box-shadow: 0 0 30px rgba(255, 209, 102, 0.55); }
+@keyframes droppop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .dropresult { animation: none; } }
+.list.odds .item { align-items: center; }
+.clubbtn[data-tier="uncommon"] { border-color: var(--t-uncommon) !important; }
+.clubbtn[data-tier="rare"] { border-color: var(--t-rare) !important; }
+.clubbtn[data-tier="epic"] { border-color: var(--t-epic) !important; box-shadow: 0 0 14px rgba(192, 139, 255, 0.45), 0 8px 24px rgba(0, 0, 0, 0.3); }
+.clubbtn[data-tier="legendary"] { border-color: var(--t-legendary) !important; box-shadow: 0 0 16px rgba(255, 209, 102, 0.5), 0 8px 24px rgba(0, 0, 0, 0.3); }
+.citem.t-uncommon { box-shadow: inset 0 -3px 0 var(--t-uncommon); }
+.citem.t-rare { box-shadow: inset 0 -3px 0 var(--t-rare); }
+.citem.t-epic { box-shadow: inset 0 -3px 0 var(--t-epic); }
+.citem.t-legendary { box-shadow: inset 0 -3px 0 var(--t-legendary); }
+.rewards { margin-top: 6px; }
+.rewards .center { display: flex; justify-content: center; }

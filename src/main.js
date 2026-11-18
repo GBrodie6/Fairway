@@ -13,6 +13,7 @@ import { createGame } from './game/controller.js';
 import { createUI } from './ui/ui.js';
 import { installMenus } from './ui/menus.js';
 import { installAccount } from './ui/account.js';
+import { installGear } from './ui/gearScreen.js';
 import { createAudio } from './audio/audio.js';
 import { saveSettings } from './core/settings.js';
 
@@ -63,6 +64,7 @@ async function boot() {
   app.ui = createUI(app);
   installMenus(app, app.ui);
   installAccount(app, app.ui);
+  installGear(app, app.ui);
   app.audio.attach(app.game, () => app.world);
   // Browsers only allow audio after a user gesture.
   for (const ev of ['pointerdown', 'keydown']) window.addEventListener(ev, () => app.audio.unlock(), { passive: true });

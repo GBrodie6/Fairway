@@ -127,7 +127,7 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     const u = settings.units;
     const grid = h('div', { class: 'cgrid' });
     for (const c of game.clubChoices()) {
-      grid.appendChild(h('button', { type: 'button', class: 'citem', 'aria-pressed': c.id === game.state.club.id ? 'true' : 'false', onclick: () => { game.setClub(c.id); toggleClubList(false); } },
+      grid.appendChild(h('button', { type: 'button', class: `citem t-${(actions.tierFor && actions.tierFor(c.id)) || 'common'}`, 'aria-pressed': c.id === game.state.club.id ? 'true' : 'false', onclick: () => { game.setClub(c.id); toggleClubList(false); } },
         h('b', { text: c.short }), h('span', { text: c.putter ? 'Putt' : fmtDist(game.clubCarry(c), u) })));
     }
     clubList.appendChild(grid);
@@ -324,6 +324,8 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     if (putt && v.putt && aiming) { set(puttinfo, 'pi', `Break ${fmtBreak(v.putt.breakM, u)}`); puttinfo.classList.remove('hidden'); } else puttinfo.classList.add('hidden');
     // Club button.
     set(clubL, 'cl', v.club.short);
+    const tier = (actions.tierFor && actions.tierFor(v.club.id)) || 'common';
+    if (clubBtn.dataset.tier !== tier) clubBtn.dataset.tier = tier;
     set(clubC, 'cc', putt ? fmtShort(v.distToPin, u) : fmtDist(v.carry, u));
     clubBtn.setAttribute('aria-label', `${v.club.name}${putt ? '' : `, carry ${fmtDist(v.carry, u)}`}. Tap for the club list, swipe to change`);
     for (const b of [arrowL, arrowR, clubBtn, resetBtn]) b.disabled = !aiming;

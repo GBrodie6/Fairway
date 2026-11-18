@@ -70,11 +70,11 @@ export function createClubView(world) {
   const markMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, depthTest: false });
   const mark = new THREE.Mesh(new THREE.SphereGeometry(0.009, 12, 8), markMat);
   mark.renderOrder = 8; mark.visible = false;
-  function ensureClub(id, lefty) {
-    if (cv.club && cv.clubId === id && cv.lefty === lefty) return;
+  function ensureClub(id, lefty, rarity = 'common') {
+    if (cv.club && cv.clubId === id && cv.lefty === lefty && cv.rarity === rarity) return;
     if (cv.club) { cv.club.remove(mark); holder.remove(cv.club); disposeClub(cv.club); }
-    cv.club = buildClub(id);
-    cv.clubId = id; cv.lefty = lefty;
+    cv.club = buildClub(id, rarity);
+    cv.clubId = id; cv.lefty = lefty; cv.rarity = rarity;
     cv.club.add(mark);
     holder.add(cv.club);
   }
@@ -157,7 +157,7 @@ export function createClubView(world) {
       markMat.opacity = 1 - fade;
       if (fade >= 1) { cv.follow = null; group.visible = false; cv.visible = false; hist.length = 0; mark.visible = false; return; }
     } else {
-      ensureClub(ctx.clubId, ctx.lefty);
+      ensureClub(ctx.clubId, ctx.lefty, ctx.rarity);
       mark.visible = false;
       cv.lastBall = { x: ctx.ball.x, y: ctx.ball.y, z: ctx.ball.z };
       const st = ctx.state || cv.state;

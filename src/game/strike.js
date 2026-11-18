@@ -153,6 +153,12 @@ export function applyStrike(launch, strike, ctx = {}) {
     out.axisTilt = clamp(num(launch.axisTilt) + m.tilt, -40 * DEG, 40 * DEG);
   }
   out.heading = num(launch.heading) + m.heading;
+  // The ball (game/gear.js BALLS): a little more spin for a little less speed. Bounded.
+  const ball = ctx.ball;
+  if (ball && !launch.putt) {
+    out.speed *= clamp(num(ball.speed, 1), 0.98, 1);
+    out.spin *= clamp(num(ball.spin, 1), 1, 1.15);
+  }
   return out;
 }
 

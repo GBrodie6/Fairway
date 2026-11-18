@@ -14,6 +14,8 @@ import {
 } from '../game/career.js';
 import { makeChallenge, challengeUrl, readChallengeFromHash, mergeIntoChallenge, toCompact, challengeStandings } from '../game/share.js';
 import { holesFor } from '../game/round.js';
+import { gearFor } from '../game/gear.js';
+import { roundRewards } from '../game/rewards.js';
 
 const TOD_NAMES = { dawn: 'Dawn', morning: 'Morning', midday: 'Midday', golden: 'Golden hour', dusk: 'Dusk', night: 'Night' };
 const BALLS = ['#ffffff', '#ffd23f', '#ff9e7a', '#7fd1ff'];
@@ -27,6 +29,10 @@ export function installMenus(app, ui) {
   const persist = () => { save = touchSave(save); writeSave(save); if (app.cloud) app.cloud.sync.schedule('change'); };
   // Replace the whole save (cloud sync, restore, delete). Kept as given, not restamped.
   app.setSave = (s) => { save = s; writeSave(save); };
+  // Change the save through a function; the reason ('gear', 'purchase', ...) goes to sync.
+  app.updateSave = (fn, reason) => { save = fn(save); persist(); if (reason && app.cloud) app.cloud.sync.schedule(reason); return save; };
+  // What the strike model reads for a club: its rarity, the ball, and the glove.
+  app.gearFor = (clubId) => gearFor(save.gear, clubId);
   app.spendMulligan = () => { save = { ...save, wallet: { ...save.wallet, mulligans: Math.max(0, (save.wallet.mulligans || 0) - 1) } }; persist(); };
   const sheet = (cls, ...kids) => h('div', { class: `sheet glass ${cls || ''}` }, ...kids);
   const btn = (label, onclick, cls = 'btn') => h('button', { class: cls, type: 'button', onclick }, label);
@@ -338,6 +344,10 @@ export function installMenus(app, ui) {
       }
     }
     if (context && context.kind === 'challenge') screens.lastChallenge = mergeIntoChallenge(context.challenge, save.player.name, r.scores[0]);
+    // Gear tokens for finishing (daily: the first finish today also counts).
+    const dailyKey = context && context.kind === 'daily' ? context.key : null;
+    const rw = roundRewards(save, { holes: scores.length, kind: context && context.kind, position: screens.lastEvent && context && context.kind === 'career' ? screens.lastEvent.position : null, firstDailyToday: dailyKey ? (save.daily[dailyKey] || {}).attempts === 1 : false, now });
+    save = rw.save; screens.lastRewards = rw.lines;
     persist();
     toastUnlocks(unlockedIds);
   };
@@ -345,7 +355,9 @@ export function installMenus(app, ui) {
   screens.roundEndExtra = () => {
     const prompt = app.accountPrompt ? app.accountPrompt() : null;
     const extra = roundEndContext();
-    return prompt || extra ? h('div', {}, extra, prompt) : null;
+    const lines = screens.lastRewards || [];
+    const rewards = lines.length ? h('div', { class: 'rewards' }, ...lines.map((t) => h('p', { class: 'muted center', text: t })), save.wallet.tokens > 0 ? h('div', { class: 'center' }, btn('Open gear drops', () => { screens.hide(); game.quit(); app.openGear('drops'); }, 'btn small')) : null) : null;
+    return prompt || extra || rewards ? h('div', {}, extra, rewards, prompt) : null;
   };
   function roundEndContext() {
     if (context && context.kind === 'career' && screens.lastEvent) {

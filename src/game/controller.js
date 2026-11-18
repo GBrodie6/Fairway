@@ -301,7 +301,7 @@ export function createGame(app) {
     const t = W().terrain, n = {};
     t.normalAt(from.x, from.z, n);
     const gear = (app.gearFor && app.gearFor(club.id)) || {};
-    return { clubId: club.id, lie: from.lie, slope: Math.hypot(n.x, n.z) / Math.max(0.2, n.y), setting: app.settings.difficulty || 'standard', rarity: gear.rarity || 'common', glove: gear.glove || 0, forgiveness: gear.forgiveness || 1, perkBonus: gear.perkBonus || 0, lefty: app.settings.handedness === 'left' };
+    return { clubId: club.id, lie: from.lie, slope: Math.hypot(n.x, n.z) / Math.max(0.2, n.y), setting: app.settings.difficulty || 'standard', rarity: gear.rarity || 'common', glove: gear.glove || 0, ball: gear.ball || null, forgiveness: gear.forgiveness || 1, perkBonus: gear.perkBonus || 0, lefty: app.settings.handedness === 'left' };
   }
 
   function addDecal(type, x, z, rot, scale) { W().decals.add(type, x, z, rot, scale); saveDecals(); }

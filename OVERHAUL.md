@@ -138,8 +138,14 @@ mishit = clamp(error x setting x club difficulty / sweet spot - 0.05, 0, 0.9)
 - Sources: campaign chapters and level milestones (fixed rewards), challenges and range drills,
   and gear drops with odds printed on the screen (Common 50, Uncommon 28, Rare 14, Epic 6,
   Legendary 2 percent) and a pity counter (an Epic or better is guaranteed by the 20th drop
-  without one). A duplicate converts to shards (5, 10, 20, 40, 80 by tier), and shards buy a
-  chosen club. Starter bag: the 14 common clubs. The bag holds 14 clubs, a putter included.
+  without one; that drop is Epic 75 or Legendary 25 percent). Each drop is a club (70 percent),
+  a ball (15) or a glove (15). A duplicate converts to shards (5, 10, 20, 40, 80 by tier), and
+  shards raise a chosen club one tier (40, 100, 250, 600). Starter bag: the 14 common clubs,
+  one of each type, which is also the 14-club limit; the bag screen swaps versions in and out.
+- Gear tokens open drops and are only earned: 1 per finished round of 3 or more holes (up to 3
+  a day), 1 more for the first daily challenge each day, 1 or 2 per career or campaign event,
+  plus range drills and milestones. One copy of each club per tier is kept, so a save merged
+  from two devices cannot hold the same club twice.
 - Balls by rarity trade spin for roll; gloves add a small forgiveness boost (a larger sweet
   spot, at most +8 percent).
 
