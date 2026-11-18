@@ -1,0 +1,74 @@
+Layout checks (scripts/tools/hud.mjs): HUD controls, ball, swing zone, aim fan (as its real wedge) and club (head corners and points along the shaft) tested for overlap, plus off-screen and tap targets under 48 px.
+Real touch drag on the production build at 9543fab; headless software rendering.
+56 checks, 0 with issues.
+
+m-alpine  390x844  address  clear
+m-alpine  390x844  top  clear
+m-alpine  390x844  impact  clear
+m-alpine  390x844  follow  clear
+m-alpine  390x844  console errors: 0
+m-alpine  844x390  address  clear
+m-alpine  844x390  top  clear
+m-alpine  844x390  impact  clear
+m-alpine  844x390  follow  clear
+m-alpine  844x390  console errors: 0
+m-desert  390x844  address  clear
+m-desert  390x844  top  clear
+m-desert  390x844  impact  clear
+m-desert  390x844  follow  clear
+m-desert  390x844  console errors: 0
+m-desert  844x390  address  clear
+m-desert  844x390  top  clear
+m-desert  844x390  impact  clear
+m-desert  844x390  follow  clear
+m-desert  844x390  console errors: 0
+m-links  390x844  address  clear
+m-links  390x844  top  clear
+m-links  390x844  impact  clear
+m-links  390x844  follow  clear
+m-links  390x844  console errors: 0
+m-links  844x390  address  clear
+m-links  844x390  top  clear
+m-links  844x390  impact  clear
+m-links  844x390  follow  clear
+m-links  844x390  console errors: 0
+m-parkland  390x844  address  clear
+m-parkland  390x844  top  clear
+m-parkland  390x844  impact  clear
+m-parkland  390x844  follow  clear
+m-parkland  390x844  console errors: 0
+m-parkland  844x390  address  clear
+m-parkland  844x390  top  clear
+m-parkland  844x390  impact  clear
+m-parkland  844x390  follow  clear
+m-parkland  844x390  console errors: 0
+m-tropical  390x844  address  clear
+m-tropical  390x844  top  clear
+m-tropical  390x844  impact  clear
+m-tropical  390x844  follow  clear
+m-tropical  390x844  console errors: 0
+m-tropical  844x390  address  clear
+m-tropical  844x390  top  clear
+m-tropical  844x390  impact  clear
+m-tropical  844x390  follow  clear
+m-tropical  844x390  console errors: 0
+o-parkland-lefty  390x844  address  clear
+o-parkland-lefty  390x844  top  clear
+o-parkland-lefty  390x844  impact  clear
+o-parkland-lefty  390x844  follow  clear
+o-parkland-lefty  390x844  console errors: 0
+o-parkland-lefty  844x390  address  clear
+o-parkland-lefty  844x390  top  clear
+o-parkland-lefty  844x390  impact  clear
+o-parkland-lefty  844x390  follow  clear
+o-parkland-lefty  844x390  console errors: 0
+o-parkland  360x640  address  clear
+o-parkland  360x640  top  clear
+o-parkland  360x640  impact  clear
+o-parkland  360x640  follow  clear
+o-parkland  360x640  console errors: 0
+o-parkland  1024x768  address  clear
+o-parkland  1024x768  top  clear
+o-parkland  1024x768  impact  clear
+o-parkland  1024x768  follow  clear
+o-parkland  1024x768  console errors: 0
