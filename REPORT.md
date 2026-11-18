@@ -1,7 +1,9 @@
 # Fairway Next: stage report
 
 Running log, one section per stage: what changed, evidence, commit, test counts, asset size.
-The final report (stage table, numbers, what needs a real device, known gaps) is at the end.
+The first brief's stages come first, with their final report. The second brief (HUD, the
+first-person club, controls, surfaces, water, proof, and the deploy) follows under "Second
+brief", with its own final report at the very end. Live site: https://gbrodie6.github.io/Fairway/
 Evidence is always a test, a measurement, or a headless Chrome run. Headless Chrome uses
 SwiftShader (software rendering), so frame times from it are not representative of a real GPU.
 
@@ -679,3 +681,348 @@ Stage 6.
 - The bot's drag-based putt read sometimes overshoots by up to about 4 degrees.
 - Real GPU frame rates, touch feel, haptics, and audio are unverified (see the list above).
 - The realism gaps listed in Stage 15.
+
+## Second brief: HUD, first-person club, controls, surfaces, deploy
+
+All screenshots and measurements in this part were made with headless Chrome using SwiftShader
+(software rendering). They are valid for what is on screen, for layout boxes, for exposure and
+clipping, and for draw calls and triangles. Frame rate was not measured on a real GPU.
+
+"Before" shots come from a separate copy of the code at 231aa31 (the end of the first brief),
+built and shot with the same QA camera views as "after".
+
+Work order note: the bunker, tree, and surface and grass work (this brief's Stages 4 and 5) was
+already done and gated under the previous brief when this brief arrived, so it was committed
+first (dc9a373, 4c0b448, 4fe3ba4). Stages 1, 2, 3, then 6, 7, 8 followed in order.
+
+### Stage 0: find the code
+
+- The project is this repository (`/home/user/Fairway`, remote `https://github.com/GBrodie6/Fairway`),
+  branch `claude/fairway-next-golf-game-a7fzjc`, the only branch locally and on the remote. The
+  Windows paths in the brief (`C:\Users\gb1\...`) do not exist: this is a Linux container, and
+  no other `fairway-next` folder exists under the home directory or `/`.
+- REPORT.md, PLAN.md and the realism list (REPORT.md, Stage 15) were read first.
+- `npm install`: up to date, 66 packages audited; npm reports 5 high severity advisories in dev
+  dependencies (not fixed: `npm audit fix --force` would change major versions).
+- `npm run verify` before any change in this brief (at 4fe3ba4): 244 unit tests passed, build
+  43.07 MB (45.16 million bytes), headless smoke 40 of 40 course and preset combinations inside the luma and clipping
+  bands, renderer and physics agreement 99.97 to 99.98 percent.
+
+### Stage 1: HUD layout, portrait first (e1c8d5f)
+
+- Top left, three tabs flush to the left edge (rounded on the right only), each an icon and one
+  value: the lie (it shows the live power percentage while the drag is in progress), the
+  distance to the pin with the elevation adjustment in brackets (yards for full shots, inches
+  on the green; uphill plays longer so it reads "+"), and the wind speed with an arrow relative
+  to the shot plus a small time-of-day icon. The hazard warning and the putt break appear as
+  chips under the tabs.
+- Top right: hole number with par and yardage, beside a score box with the score to par and
+  "1st shot", "2nd shot", and so on. Under it a position badge ("T2  Thru 3" in multi-player
+  stroke play, the match or skins state in those modes, "Thru 3" solo), then a round map
+  button, and the replay button when a replay exists.
+- Right side, mid screen: a round look-around button. Holding it sends the camera up and
+  forward over the hole toward the landing area; releasing it returns to the ball.
+- Bottom row, left to right: settings (opens the pause and settings sheet), previous club, a
+  large round club button with the club letter and carry, next club, and a round button that
+  resets the aim to the target line. Tapping the club button opens a compact club list with
+  carries and the shot type; swiping across it changes club.
+- The old swing stick panel is gone. Its place is a swing zone between the ball and the
+  bottom row (nothing else is placed there), marked by a chevron at the start line. The same
+  gesture code and the three-press meter drive it.
+- The address camera now sits low behind the ball and solves its pitch so the ball lands just
+  above the swing zone, wherever the layout puts it.
+- Safe-area insets on every edge piece; every control at least 48 px (enforced in
+  tests/a11y.test.js); landscape moves the club controls to the bottom-left corner and keeps the
+  same hierarchy; the left-handed layout mirrors the bottom row and moves the look button left.
+- Original icons drawn for this game (src/ui/dom.js), the existing system font stack, and the
+  existing green-charcoal glass palette. Nothing from any other game.
+- Evidence: qa/proof/next-n1-hud/ (390x844, 360x640, 844x390, 1024x768, and left-handed in
+  both orientations). scripts/tools/hud.mjs measured every HUD box, the ball, and the swing
+  zone for overlap at all four sizes: none.
+- Bugs found on the way and fixed: in landscape the look button covered the replay button
+  (the layout now measures the panels and reserves room for buttons that come and go); and a
+  relayout during a swing replaced the gesture mid-drag (the zone now defers layout until the
+  swing ends).
+- Verify: 247 tests, build 43.08 MB, smoke 40/40 in band.
+
+### Stage 2: first-person club swing, no human figure (b5ebcc3)
+
+- Only a club is drawn: no hands, arms, or body. It is built in code (src/render/clubModel.js):
+  a tapered steel shaft, a ferrule, a grip with an end cap, and a head per kind. The driver and
+  fairway woods are pear-shaped bodies with a flat lofted face and sole; the irons and wedges
+  are blades with a rounded toe, a cavity-thick lower back, and grooves; the putter is a low
+  mallet with a sight line. Each club has its own loft, lie angle, and length. The colors are
+  original (satin steel, a deep green crown, a charcoal grip) and carry no marks. For
+  readability on a phone the head is drawn 25 percent larger than life and the shaft and grip
+  thicker.
+- Path math (src/game/clubPath.js): the club turns about a pivot above and to the player's side
+  of the ball, in a tilted plane that holds the shaft and the target line, plus a hinge at the
+  grip. Progress 0 is address, 0.5 the top of a full backswing, 1 impact, 1.5 the finish. The
+  backswing maps to the first half of the drag one to one (stopping holds the club); the
+  downswing maps to the second half on a quarter sine, so for a steady drag the head is fastest
+  at impact; a partial backswing enters the downswing at the point with the same angle.
+- Impact: the frame after the drag crosses the start line shows the club at the ball and the
+  ball still at rest (the shot is launched on that event, and the flight is held one frame);
+  the existing impact particles fire on that frame. Then the club follows through to the target
+  side over half a second while the address camera holds, and fades. The tempo grade shows
+  briefly under the start line.
+- Feel: a few degrees of extra shaft lag in the middle of the downswing (more when the head is
+  fast), a short additive speed streak behind the head near impact, and soft contact shadows.
+- Face and path: sideways drift during the upstroke turns the face and the swing plane live,
+  using the same rules the gesture applies at impact, drawn at twice the true angle so it reads.
+  The face angle on a small head was still too subtle at phone size, so a face line runs from
+  the ball along where the face points during the second half of the downswing: orange when
+  open, blue when closed (a colorblind-safe pair), white when square.
+- Framing: the camera distance is solved per screen so the driver's top and finish stay on
+  screen and clear of the HUD corner on the player's side (5.1 m at 390x844, 4.5 m at 844x390,
+  6.2 m at 360x640).
+- Aim fan: a wedge on the ground from the ball to the predicted landing, two standard
+  deviations of the club, lie, and wind dispersion wide, tinted per vertex by the surface under
+  it (short grass pale, rough straw, sand, water blue, out of bounds red), with brighter rims and
+  a tick every 50 yards. When the shot is committed a clean launch line rises from the ball
+  along the launch direction and fades.
+- Tests (tests/clubPath.test.js, 12): head within 2 cm of the ball at impact with a square face
+  for every club and both hands; open and closed faces turn the right way; an in-to-out path
+  arrives from inside; head speed peaks within 3 percent of the impact frame (with and without
+  lag); the top is above address; the finish is on the target side; the backswing is one to one;
+  partial swings are continuous; progress maps as specified; the downswing at a 3:1 drag tempo
+  runs about three times faster; the camera fit finds a distance at all four sizes and both
+  hands. The swing, physics, career, and share-link tests all still pass.
+- Evidence: qa/proof/next-n2-club/ (address, top, impact, follow-through in portrait and
+  landscape through a real touch drag; closed, square, and open downswings and impacts; the fan
+  on two courses; the putter). Overlap check at all four moments: none.
+- Verify: 259 tests, build 43.13 MB, smoke 40/40 in band.
+
+### Stage 3: controls (cd81d83)
+
+- Drag on the course view (anywhere outside the swing zone and the controls) turns the aim;
+  slow drags are fine adjustments, as before. Tap or swipe the club arrows or swipe across the
+  club button to change club; tap the club button for the compact club list with carries and the
+  shot type. Keyboard: arrows aim and change club, Shift for fine aim, Space for the three-press
+  meter, 1 to 4 shot type, M map, B club list, R replay, L look, C aim reset, Escape back.
+  Gamepad: A meter, B back, X map, Y replay, LB and RB club, LT and RT shot type, Select club
+  list, d-pad and left stick aim, right stick look, Start pause.
+- Left-handed layout: mirrors the bottom row (reset on the left, settings on the right, the
+  outer arrow on the settings side is always "longer club"), moves the look button left, and
+  mirrors the meaning of sideways drift in the swing drag. Choosing a left-handed golfer turns
+  it on.
+- Evidence (qa/proof/next-n3-controls/): real touch input on the production build at 390x844
+  through scripts/tools/touch.mjs: the course drag turned the aim from 0.004 to 0.365 rad; the
+  right arrow gave 3W and the left DR; a swipe gave 3W; the list opened with all 13 clubs and
+  picked 7i; holding the look button set the camera to the look-around view and releasing
+  returned it to address; the map opened and closed; aim reset returned to the target line; a
+  right-handed swing with drift gave face +5, path +7 and the same drift in the left-handed
+  layout gave -5, -7; the settings button sat to the right of reset and the look button on the
+  left. Keyboard and gamepad results in keyboard-gamepad.txt (the gamepad is scripted, so it
+  proves the mapping, not real hardware). Zero console errors.
+- Bug found and fixed: the club list showed carries formatted from the yardage table as if it
+  were meters (the driver read 273 yd against 250 on the button).
+- Verify: 259 tests, build 43.13 MB, smoke 40/40 in band.
+
+### Stage 4: bunkers and surfaces (dc9a373, 6d1ef42, 4fe3ba4)
+
+- Bunkers are geometry now, carved into the one heightfield that the renderer and the physics
+  share: a depressed bowl with a steep high face toward the green, a raised grassy lip with a
+  sharp clean edge, an edge broken by noise (no saw teeth), raked sand with ridges and grain in
+  the normal detail, a darker damp band at the base, a cut edge only where the face is steep,
+  and sky-only cavity light with a warm bounce so the shade in a bowl is sand-colored, not blue.
+  The interior distance is stored in the terrain's spare texture channel. Deeper bowls on links.
+- Renderer and physics still agree on elevation: agreement 99.97 to 99.98 percent in every
+  gate, and a new test checks bunker shape (floor below the surround, lip above it).
+- Mowing: the checkerboard is now a subtle stripe along the line of play (a few percent of
+  contrast). Greens get grain streaks and view-dependent grain shading; the fringe is a darker,
+  coarser collar. Each hole carries a seeded layer of old filled divots and healed ball marks
+  (plus the round's own divots and marks). The alpine backdrop no longer stretches its texture
+  on steep faces (slope-sheared lookup, capped cell size per tier), and snow only settles on
+  gentler slopes, which also brought the alpine dusk preset back under the 2 percent clipping
+  limit (1.58 percent worst case in the gate).
+- Evidence: qa/proof/next-s1-bunkers/ (all courses before and after; address, mid-distance and
+  from above), and the surfaces contact sheets in Stage 7.
+
+### Stage 5: trees and grass (4c0b448, 4fe3ba4)
+
+- Tree lines: per-tree height factor and trunk and canopy variation, mixed species per course,
+  clumps and clearings, specimen trees, a taller second forest layer behind, understory shrubs
+  and fallen logs, fuller canopies; procedural palms with fuller fronds, saguaros with ribs and
+  arms, reeds in clumps. Instancing and LOD kept.
+- Draw calls and triangles per tier, before and after, measured at the address view (headless
+  software rendering, qa/perf-trees-before.json and qa/perf-trees-after.json):
+
+  | Course | Tier | Draw calls before | after | Triangles before | after |
+  | --- | --- | --- | --- | --- | --- |
+  | parkland | low | 60 | 70 | 214,194 | 177,459 |
+  | parkland | medium | 79 | 95 | 421,481 | 420,173 |
+  | parkland | high | 107 | 128 | 928,249 | 953,415 |
+  | parkland | ultra | 112 | 142 | 1,591,540 | 1,580,442 |
+  | tropical | low | 65 | 75 | 124,048 | 128,504 |
+  | tropical | medium | 84 | 92 | 278,824 | 321,311 |
+  | tropical | high | 92 | 106 | 482,194 | 543,855 |
+  | tropical | ultra | 104 | 122 | 734,220 | 893,342 |
+
+  All within the per-tier budgets. Only parkland (the densest broadleaf course) and tropical
+  (the densest palm course) were measured.
+- Grass: instanced blades around the camera, fading with distance, colored from the terrain
+  under each blade, swaying with the wind vector; short grass (fairway, first cut, fringe, tee)
+  now carries short blades too. Blades are lit with the ground's normal, so they cannot turn
+  into dark spikes.
+- Evidence (qa/proof/next-n45-grass/, 2879388): the portrait address view on all five courses
+  through a real round, where the ground at the ball reads as fine turf with no spikes, and the
+  close view at ball height on each course, where the blades read as grass (luma 145.6 to 148,
+  no clipping). Tree-line before and after: qa/proof/next-s2-trees/.
+
+### Stage 6: water and props (9543fab)
+
+- The milky look and the white rim had two causes, both measured with a probe on the tropical
+  pond: the shore surface was 85 percent specular (a mirror for the bright sky all round the
+  pond), and pond water reflected the full sky at full strength, while a real pond mirrors its
+  dark banks and trees. Fixes: the shore is now damp and dark (20 percent specular, rougher, and
+  a wet-ground field from the terrain darkens the bank and the bed under shallow water); the
+  water's depth colors are darker, with the shallow tone never paler than the bank; the water
+  surface fades out over the last few centimeters of depth so the bank shows through (a soft
+  shoreline); foam is a thin broken line at the bank (more on the sea); pond reflections are
+  at 62 percent and darkened toward foliage where they point near the horizon, while the sea
+  keeps its horizon. Fresnel comes from the standard physically based material, and the ripples
+  are the existing three scrolling normal layers that travel with the game wind.
+- Props: the box tee markers are replaced by ball-shaped markers on short spikes; square white
+  yardage stakes with colored tops at the fairway edge; concrete edging along both sides of the
+  cart paths; a bench and a direction sign by each green on the path side (in addition to the
+  hole sign, bench, ball washer, and sprinkler heads already at the tees and in the fairways).
+- Evidence (qa/proof/next-n6-water-props/): water and tee views on all five courses, before and
+  after, from the same QA cameras. Close-up QA views are measured with a short exposure settle
+  and are not part of the luma gate; three of them clip 2.4 to 2.6 percent (bright sky in a
+  low view on alpine and tropical), while every gate view stays under 2 percent.
+
+### Stage 8: deploy and link (05524ad, 756496a, 60bf98d)
+
+- Hard requirement met: a static site with no server. Size against the limits: 45.2 MB in 167
+  files, largest 1.7 MB (GitHub Pages: 1 GB site, 100 MB per file; Vercel Hobby: 100 MB CLI
+  upload, 15,000 files). Heavy textures, models, and the full skies already stream in after
+  first paint, so no change was needed.
+- Route A, Vercel: failed. No `VERCEL_TOKEN` in the environment; `vercel --version` 65.17.0;
+  `vercel whoami` "Logged out."; `vercel --prod` "Error: No existing credentials found." The
+  anonymous `--temporary` mode was not used.
+- Route B, GitHub Pages: worked. The `gh` CLI is restricted to search in this environment, but
+  the git remote is pushable. The build (relative base path, so it works under `/Fairway/`) was
+  pushed with `.nojekyll` to a new `gh-pages` branch; GitHub enabled Pages from it on its own
+  (the repository is public, so no paid plan was involved), and the site answered about 30
+  seconds later at https://gbrodie6.github.io/Fairway/.
+- Route C: not needed, and there are no Netlify or Cloudflare tokens in the environment anyway.
+- The processed CC0 assets are now in the repository (05524ad), so the one-tap Vercel import
+  also builds the full game: a clean clone with `npm ci` and `npm run build` produced a `dist/`
+  byte-identical to the verified build.
+- Live checks in headless Chrome at 390x844 (touch) and 1366x768: zero console errors, every
+  request over HTTPS (201 and 202 requests, none failed), HTTP redirects to HTTPS with HSTS,
+  8.5 MB loaded to the settled main menu on a cold cache, the service worker active with scope
+  `/Fairway/` and controlling the page after a reload, and Chrome's own installability check
+  (in a normal profile) reporting no errors. GitHub Pages sends `cache-control: max-age=600` on
+  everything and allows no custom headers, so the immutable caching in `vercel.json` only
+  applies on Vercel; the service worker covers repeat visits.
+- The live tap-through found a real bug: during the hole flyover the HUD is invisible but its
+  buttons still took taps, and the "Skip flyover" button sat exactly over the round club
+  button. A tap on Skip could open the club list, which then covered the swing zone, so no
+  swing could start (the bot made 30 attempts on the first tee). Fixed: a hidden HUD takes no
+  taps, and Skip moved to the top center where no HUD control lives. The QA driver also closes
+  an open club list before a swing, as a player would.
+
+### Stage 7: proof
+
+- Swing moments: address, top of backswing, impact, and follow-through on every course in
+  portrait (390x844) and landscape (844x390), reached with a real touch drag on the production
+  build (qa/proof/next-n7-proof/swing-moments-every-course-*.jpg). For impact the game clock is
+  slowed so the frame right after the crossing can be captured; the club reads p = 1.004 to
+  1.006 there (1 is exactly at the ball).
+- Layout: 56 checks (every course in both orientations at four moments, parkland at 360x640 and
+  1024x768 at four moments, and the left-handed layout in both orientations at four moments).
+  HUD controls, the ball, the swing zone, the aim fan (as its real wedge, not its bounding box),
+  and the club (head corners and points along the shaft) were tested for overlap, off-screen
+  parts, and tap targets under 48 px: 0 issues (qa/proof/next-n7-proof/layout-checks.txt).
+- Contact sheets (qa/proof/next-n7-proof/contact/): every course at every time of day from the
+  address view, and close-ups of the tee view, green, bunker, water, tree line, rough, and the
+  flyover at the medium tier, before (231aa31) and after (9543fab), side by side. Luma and
+  clipping of the 3D view, measured after the preset's lighting has settled: day presets 148.7
+  to 151.0 with at most 1.51 percent clipped (band 140 to 160, at most 2 percent), night 61.5 to
+  62.3 (band 50 to 76); 30 of 30 inside the bands after, and 30 of 30 before. The gate's own
+  smoke run (which measures straight after switching presets, the harder case) was 40 of 40 at
+  every stage, worst clipping 1.58 percent. Holes without water show the nearest view in the
+  water panel, labeled as such.
+- Grass at address on every course and the close grass view: Stage 5 evidence above.
+
+### What is still not realistic (most noticeable first)
+
+From the new contact sheets, the close-ups, the swing moments, and the live tap-throughs:
+
+1. No golfer, by design: only a floating club is drawn, larger and thicker than life so it
+   reads on a phone, with its face and path angles drawn at twice their true size and a colored
+   face line. It reads clearly but is a game aid, not a picture of a real swing.
+2. Distant terrain: the alpine peaks no longer streak, but they are sharp low-poly spikes with
+   flat shading; dunes, mesas, and hills are smooth heightfield forms with no cliffs or erosion.
+3. Bunker edges at very close range: the 1 m heightfield grid shows as a zigzag along a steep
+   wall when the camera is within a few meters (seen on parkland at ball height). From the
+   address view and the mid-distance they read well.
+4. Trees: canopies are alpha-cut cards, so edges against the sky look speckled; the impostor
+   swap at distance is still a visible change; some boulders behind the parkland tree line seem
+   to float.
+5. Crowd stands and some props are simple shapes (the grandstand behind the parkland bunker
+   reads as white blocks); no carts, rakes, or people.
+6. Water: still a plane with scrolling normal maps; the reflection is the sky map darkened near
+   the horizon, so it never shows the actual trees or banks; no refraction of the bed beyond a
+   tint.
+7. The aim fan's far end steps along bumpy ground (links), because it is laid on the terrain in
+   48 rows that are packed near the ball.
+8. Night: exposure is lifted on purpose so the ball and flag stay readable (frame luma about
+   62), a moonlit long-exposure look rather than real darkness.
+9. Sky: one procedural cloud layer, a washed horizon at midday, heavy dawn fog.
+10. At the low address camera the ball is small on a phone (about 5 to 8 px at 390x844) and the
+    short grass blades on a tee are too short to see from there; the ground reads as fine turf
+    rather than individual blades.
+11. Physics simplifications are unchanged (rigid bounce with a turf term, no green grain,
+    one green speed per course); not touched by this brief.
+12. Sounds are synthesized and have not been heard by a person.
+
+
+## Final report (second brief)
+
+### Stages
+
+| Stage | What changed | Evidence | Commit | Tests | Build |
+| --- | --- | --- | --- | --- | --- |
+| 0 Find the code | Nothing changed. Repository, branch, and remote confirmed; reports read; baseline gate run | `npm run verify` at 4fe3ba4: 244 tests, smoke 40/40 | 4fe3ba4 (baseline) | 244 | 43.07 MB |
+| 1 HUD layout | Left tabs (lie or live power, distance with adjustment, wind with time of day), hole and score panel, position badge, map, hold-to-look, bottom row (settings, arrows, club button, aim reset), swing zone with chevron, address camera framing | qa/proof/next-n1-hud/; overlap check at four sizes | e1c8d5f | 247 | 43.08 MB |
+| 2 First-person club | Procedural clubs per type, arc about a pivot keyframed 0 to 1.5, impact on the crossing frame, follow-through, lag, streak, face and path, face line, aim fan, launch line, tempo label | qa/proof/next-n2-club/; 12 club path tests | b5ebcc3 | 259 | 43.13 MB |
+| 3 Controls | Course drag aims, arrows and swipe, club list (B, Select), keyboard and gamepad, left-handed mirror of the bottom row and the drag | qa/proof/next-n3-controls/ (real touch and key events) | cd81d83 | 259 | 43.13 MB |
+| 4 Bunkers and surfaces | Carved bunkers with lips, faces, raked and damp sand; subtle line-of-play mowing, green grain, fringe, divots and ball marks; alpine backdrop without streaks | qa/proof/next-s1-bunkers/, contact sheets | dc9a373, 6d1ef42, 4fe3ba4 | 244 | 43.06 to 43.07 MB |
+| 5 Trees and grass | Varied, mixed, layered tree lines with understory and logs; better palms, saguaros, reeds; blades on short grass | qa/proof/next-s2-trees/, qa/proof/next-n45-grass/, per-tier draws and triangles | 4c0b448, 4fe3ba4, 2879388 | 244 | 43.07 MB |
+| 6 Water and props | Depth color, soft shore, foam, damp banks, darker pond reflections; ball tee markers, stakes, path edging, bench and sign by the green | qa/proof/next-n6-water-props/ | 9543fab | 259 | 43.13 MB |
+| 7 Proof | Swing moments on every course in both orientations, 56 layout checks, before and after contact sheets and close-ups, realism list | qa/proof/next-n7-proof/ | 64abdff and the commit that adds this report | 259 | 43.13 MB |
+| 8 Deploy | Route A failed (no Vercel credentials), Route B GitHub Pages live, assets committed for a one-tap Vercel import, live checks and tap-throughs, one bug found live and fixed | DEPLOY.md, qa/proof/next-n8-live/ | 05524ad, 756496a, 60bf98d; site on `gh-pages` 5465571 | 259 | 43.13 MB |
+
+Asset size: the shipped build is 45.2 million bytes (43.13 MB) in 167 files; the processed CC0
+assets in `public/assets/` are 43.9 million bytes in 153 files (largest 1.7 MB), all listed with
+source and license in ASSETS.md. Nothing new was downloaded in this brief: the clubs, the fan, the
+props, and the icons are drawn in code. No human figure, likeness, or third-party art.
+
+Headless rendering here is software (SwiftShader). Every screenshot and measurement above is
+valid for layout, exposure, clipping, draw calls, and triangles; none of it is a frame rate on
+a real GPU, which was not measured.
+
+### Needs a human eye or a real device (most important first)
+
+1. Frame rate, heat, and battery on real phones and laptops, especially with the club, the fan,
+   and grass blades on the short grass added. Only software rendering was measured.
+2. The swing drag under a real thumb: whether starting at the chevron is natural, whether the
+   full drag length (up to 190 px on tall phones) is comfortable, whether the club feels one to
+   one with the thumb, and tempo grading at 60 and 120 Hz.
+3. How the floating club reads at real phone resolution and pixel density (QA shots ran at a
+   reduced render scale), and whether the doubled face and path angles and the face line feel
+   right or too strong.
+4. Notched and Dynamic Island phones with real safe-area insets, and landscape with a home
+   indicator: the layout uses the insets, but every check here ran with insets of zero.
+5. Installing from https://gbrodie6.github.io/Fairway/ on iOS Safari and Android Chrome and
+   playing offline (Chrome's installability check passed headless; a real install was not done).
+6. Real GPU differences: transparent water and its soft shore, the additive speed streak, the
+   fan's blending over grass, shadows, antialiasing.
+7. Left-handed players trying the mirrored layout and drag.
+8. Sound by ear, haptics on Android, real gamepads (only a scripted pad was used).
+9. Color-vision checks of the fan tints and the orange and blue face line.
+10. Whether the 10 minute cache on GitHub Pages matters in practice (repeat visits are served
+    by the service worker); on Vercel the long caching in `vercel.json` would apply instead.

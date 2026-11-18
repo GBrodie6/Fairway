@@ -1,0 +1,426 @@
+{
+ "note": "Measured on the 3D view only (WebGL canvas read back), headless Chrome with SwiftShader. Valid for exposure and clipping; not a GPU performance number.",
+ "rows": [
+  {
+   "course": "parkland",
+   "tod": "dawn",
+   "tier": "medium",
+   "luma": 149.2,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "parkland",
+   "tod": "morning",
+   "tier": "medium",
+   "luma": 150.4,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "parkland",
+   "tod": "midday",
+   "tier": "medium",
+   "luma": 150.3,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "parkland",
+   "tod": "golden",
+   "tier": "medium",
+   "luma": 148.9,
+   "clip": 0.02,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "parkland",
+   "tod": "dusk",
+   "tier": "medium",
+   "luma": 149.2,
+   "clip": 0.01,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "parkland",
+   "tod": "night",
+   "tier": "medium",
+   "luma": 61.8,
+   "clip": 0.01,
+   "crushed": 2.02,
+   "band": [
+    50,
+    76
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "links",
+   "tod": "dawn",
+   "tier": "medium",
+   "luma": 149.4,
+   "clip": 0.02,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "links",
+   "tod": "morning",
+   "tier": "medium",
+   "luma": 150.4,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "links",
+   "tod": "midday",
+   "tier": "medium",
+   "luma": 151,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "links",
+   "tod": "golden",
+   "tier": "medium",
+   "luma": 149.3,
+   "clip": 0.01,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "links",
+   "tod": "dusk",
+   "tier": "medium",
+   "luma": 149.4,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "links",
+   "tod": "night",
+   "tier": "medium",
+   "luma": 62.3,
+   "clip": 0.01,
+   "crushed": 0.1,
+   "band": [
+    50,
+    76
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "desert",
+   "tod": "dawn",
+   "tier": "medium",
+   "luma": 149.3,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "desert",
+   "tod": "morning",
+   "tier": "medium",
+   "luma": 150.4,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "desert",
+   "tod": "midday",
+   "tier": "medium",
+   "luma": 150.6,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "desert",
+   "tod": "golden",
+   "tier": "medium",
+   "luma": 149.1,
+   "clip": 0.08,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "desert",
+   "tod": "dusk",
+   "tier": "medium",
+   "luma": 149,
+   "clip": 0.02,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "desert",
+   "tod": "night",
+   "tier": "medium",
+   "luma": 62.1,
+   "clip": 0.01,
+   "crushed": 0.34,
+   "band": [
+    50,
+    76
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "alpine",
+   "tod": "dawn",
+   "tier": "medium",
+   "luma": 149.3,
+   "clip": 0.02,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "alpine",
+   "tod": "morning",
+   "tier": "medium",
+   "luma": 149.7,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "alpine",
+   "tod": "midday",
+   "tier": "medium",
+   "luma": 149.7,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "alpine",
+   "tod": "golden",
+   "tier": "medium",
+   "luma": 148.7,
+   "clip": 1.51,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "alpine",
+   "tod": "dusk",
+   "tier": "medium",
+   "luma": 148.9,
+   "clip": 0.63,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "alpine",
+   "tod": "night",
+   "tier": "medium",
+   "luma": 61.5,
+   "clip": 0.01,
+   "crushed": 6.86,
+   "band": [
+    50,
+    76
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "tropical",
+   "tod": "dawn",
+   "tier": "medium",
+   "luma": 149.5,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "tropical",
+   "tod": "morning",
+   "tier": "medium",
+   "luma": 150.4,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "tropical",
+   "tod": "midday",
+   "tier": "medium",
+   "luma": 150.1,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "tropical",
+   "tod": "golden",
+   "tier": "medium",
+   "luma": 149.4,
+   "clip": 0,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "tropical",
+   "tod": "dusk",
+   "tier": "medium",
+   "luma": 149.4,
+   "clip": 0.05,
+   "crushed": 0,
+   "band": [
+    140,
+    160
+   ],
+   "maxClip": 2,
+   "inBand": true
+  },
+  {
+   "course": "tropical",
+   "tod": "night",
+   "tier": "medium",
+   "luma": 61.9,
+   "clip": 0.01,
+   "crushed": 2.07,
+   "band": [
+    50,
+    76
+   ],
+   "maxClip": 2,
+   "inBand": true
+  }
+ ],
+ "software": true
+}
