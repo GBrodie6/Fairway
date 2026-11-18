@@ -20,13 +20,17 @@ try {
   await page.evaluate(() => { const s = document.querySelector('.screen'); if (s) s.style.display = 'none'; });
   await page.evaluate(() => window.__fw.settle());
   for (const v of viewList.split(',')) {
-    const m = await page.evaluate(async (name) => {
+    const m = await page.evaluate(async ([name, full]) => {
       let ok = true;
+      // tod:<preset> waits for the preset's lighting; todq:<preset> measures straight away,
+      // exactly as the smoke gate does.
+      if (name.startsWith('todq:')) { await window.__fw.setTimeOfDay(name.slice(5)); const r = window.__fw.measure(); return { ok, luma: +r.luma.toFixed(1), clip: +r.clippedPct.toFixed(2), calls: r.calls, tris: r.triangles }; }
       if (name.startsWith('tod:')) { await window.__fw.setTimeOfDay(name.slice(4)); await window.__fw.settle(); window.__fw.view('address'); } else ok = window.__fw.view(name);
       await new Promise((r) => setTimeout(r, 300));
-      const r = window.__fw.measure(8);
+      // FULL=1 settles exposure the way the gate does (28 renders) instead of 8.
+      const r = window.__fw.measure(full ? undefined : 8);
       return { ok, luma: +r.luma.toFixed(1), clip: +r.clippedPct.toFixed(2), calls: r.calls, tris: r.triangles };
-    }, v);
+    }, [v, !!process.env.FULL]);
     await page.screenshot({ path: `${prefix}-${v.replace(':', '_')}.png` });
     console.log(v, JSON.stringify(m));
   }

@@ -167,6 +167,7 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
   // feature (for example no water), so the caller can label the frame honestly.
   world.qaView = (name) => {
     world.rig.enabled = false;
+    if (camera.fov !== 55) { camera.fov = 55; camera.updateProjectionMatrix(); }
     const t = world.terrain, h = world.holeData;
     const H = (x, z) => t.heightAt(x, z);
     const look = (px, py, pz, lx, ly, lz) => { camera.position.set(px, py, pz); camera.lookAt(lx, ly, lz); camera.updateMatrixWorld(true); world.terrainView.updateLod(camera, true); if (world.vegetation) world.vegetation.forceUpdate(); };
@@ -189,6 +190,26 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
       const g = h.green;
       const px = g.x - g.ax * (g.radius + 16) + g.az * 5, pz = g.z - g.az * (g.radius + 16) - g.ax * 5;
       look(px, H(px, pz) + 2.4, pz, t.pin.x, H(t.pin.x, t.pin.z) + 0.6, t.pin.z);
+      return true;
+    }
+    if (name === 'mountains') {
+      // A telephoto look at the highest part of the backdrop, to inspect steep faces.
+      let best = null;
+      const oh = world.terrainView.outerHeightAt;
+      if (!oh) return false;
+      for (let a = 0; a < 6.283; a += 0.05) {
+        const x = t.tee.x + Math.cos(a) * 1700, z = t.tee.z + Math.sin(a) * 1700, y = oh(x, z);
+        if (!best || y > best.y) best = { x, y, z };
+      }
+      camera.fov = 22; camera.updateProjectionMatrix();
+      look(t.tee.x, H(t.tee.x, t.tee.z) + 30, t.tee.z, best.x, best.y * 0.75, best.z);
+      return true;
+    }
+    if (name === 'landing') {
+      // Eye height in the tee-shot landing zone, looking down the fairway: old divots.
+      const i = Math.min(h.line.length - 1, Math.round(230 / h.lineStep));
+      const p = h.line[i], q = h.line[Math.min(h.line.length - 1, i + 6)];
+      look(p.x, H(p.x, p.z) + 1.4, p.z, q.x, H(q.x, q.z), q.z);
       return true;
     }
     if (name === 'greenclose') {

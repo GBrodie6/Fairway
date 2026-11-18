@@ -143,12 +143,21 @@ const FRAG_MAIN = /* glsl */ `
     vec2 ddx = dFdx(pw), ddy = dFdy(pw);
     // Low-frequency variation breaks up the tiling and keeps big areas from reading flat.
     float nA = 0.5, nB = 0.5, nC = 0.5;
+    vec2 pwN = pw;
+#ifdef OUTER_LAND
+    // On steep mountain faces a plan-view lookup smears one texel down the whole slope into
+    // vertical streaks. Shift the lookup along the slope by the height so the noise follows
+    // the distance over the surface.
+    vec3 onrm = normalize(vONormal);
+    vec2 sdir = onrm.xz / max(length(onrm.xz), 1e-3);
+    pwN = pw - sdir * vWPos.y * smoothstep(0.08, 0.45, 1.0 - onrm.y);
+#endif
     if (uHasDetail > 0.5) {
-      vec4 d1 = texture2D(tDetail, pw / 143.0);
-      vec4 d2 = texture2D(tDetail, pw / 37.0 + 0.37);
+      vec4 d1 = texture2D(tDetail, pwN / 143.0);
+      vec4 d2 = texture2D(tDetail, pwN / 37.0 + 0.37);
       nA = d1.r; nB = d2.g; nC = d2.b;
     } else {
-      nA = tHash(floor(pw / 9.0)); nB = tHash(floor(pw / 2.3) + 7.0);
+      nA = tHash(floor(pwN / 9.0)); nB = tHash(floor(pwN / 2.3) + 7.0);
     }
     float a[NS];
 #ifdef OUTER_LAND
@@ -186,11 +195,13 @@ const FRAG_MAIN = /* glsl */ `
 
     // Mowing patterns. Fairway bands follow the centerline (triangle waves baked per texel),
     // green and tee bands are straight lines in their own frame.
-    float pFair = uMow < 0.5 ? tBand(mow.r) : (uMow < 1.5 ? tBand(mow.r) * tBand(mow.g) : tBand(mow.b) * tBand(mow.a));
+    // Mowing: only stripes along the line of play, softened. Checkerboards and diagonals read
+    // as a printed pattern from the tee, so they are no longer used.
+    float pFair = tBand(mow.r) * 0.75 + (mow.r - 0.5) * 0.5;
     vec2 gp = pw - uGreen.xy;
     float gu = dot(gp, uGreen.zw), gv = dot(gp, vec2(-uGreen.w, uGreen.z));
     float pGa = tBand(tTri(gu / 2.7)), pGb = tBand(tTri(gv / 2.7));
-    float pGreen = uGreenMow < 0.5 ? pGa : pGa * pGb;
+    float pGreen = pGa;
     vec2 tp = pw - uTee.xy;
     float pTee = tBand(tTri(dot(tp, vec2(-uTee.w, uTee.z)) / 2.2));
 
@@ -255,17 +266,29 @@ const FRAG_MAIN = /* glsl */ `
       c *= vary;
       c.r *= 1.0 + (nC - 0.5) * 0.1;
       if (i == 7) {
-        c *= 1.0 + pFair * 0.085;
-        tn += uPlayDir * pFair * 0.07;
+        c *= 1.0 + pFair * 0.032;
+        tn += uPlayDir * pFair * 0.028;
       } else if (i == 11) {
-        c *= 1.0 + pGreen * 0.07;
-        tn += uGreen.zw * pGreen * 0.05;
+        // Green: faint mowing lines, and grain: fine streaks along the grain direction that
+        // look lighter looking down-grain and darker looking into it.
+        c *= 1.0 + pGreen * 0.026;
+        tn += uGreen.zw * pGreen * 0.018;
+        vec2 gdir = uGreen.zw, gperp = vec2(-gdir.y, gdir.x);
+        vec2 gq = vec2(dot(pw, gdir) * 9.0, dot(pw, gperp) * 70.0);
+        float gfade = 1.0 - smoothstep(0.25, 0.7, max(fwidth(gq.x), fwidth(gq.y)) / 9.0);
+        float streak = (tHash(floor(gq)) - 0.5) * gfade;
+        c *= 1.0 + streak * 0.07;
+        vec3 vdirG = normalize(vWPos - cameraPosition);
+        c *= 1.0 + 0.045 * dot(normalize(vdirG.xz + 1e-4), gdir);
+        tn += gperp * streak * 0.08;
         tn *= 0.55;
         r = mix(r, 0.8, 0.5);
       } else if (i == 10) {
-        c *= 1.0 + pTee * 0.07;
+        c *= 1.0 + pTee * 0.03;
         tn *= 0.6;
       } else if (i == 9) {
+        // Fringe: a collar of slightly longer, darker grass with its own coarser grain.
+        c *= 0.93 + (tHash(floor(pw * 22.0)) - 0.5) * 0.04 * (1.0 - smoothstep(0.3, 0.9, fwidth(pw.x) * 22.0));
         tn *= 0.7;
       } else if (i == 12) {
         // Sand. aux.a is the distance in from the edge, in wall widths (0.5 = the foot of the
@@ -336,8 +359,9 @@ const FRAG_MAIN = /* glsl */ `
     tAlbedo = mix(tAlbedo, uCanopy * (0.7 + 0.6 * nB), can * 0.9);
     tRough = mix(tRough, 0.92, can);
     if (uSnowLine < 90000.0) {
-      float sn = smoothstep(uSnowLine - 60.0, uSnowLine + 120.0, vWPos.y + (nA - 0.5) * 160.0) * smoothstep(0.75, 0.35, slopeO);
-      tAlbedo = mix(tAlbedo, vec3(0.86, 0.9, 0.95), sn);
+      float sn = smoothstep(uSnowLine - 60.0, uSnowLine + 120.0, vWPos.y + (nA - 0.5) * 160.0) * smoothstep(0.42, 0.18, slopeO); // snow slides off steep faces, where rock shows through
+      // Old snow on distant peaks, not fresh paper white: low sun on it clipped the frame.
+      tAlbedo = mix(tAlbedo, vec3(0.5, 0.53, 0.58), sn);
       tRough = mix(tRough, 0.55, sn);
     }
 #else
@@ -548,7 +572,11 @@ export function createTerrainView({ terrain, course, lighting, tier, assets, man
   // --- outer landscape: the same macro function, sampled on a grid that coarsens outward ---
   function buildOuter() {
     const th = course.theme;
-    const growth = [10, 14, 18, 24, 32, 42, 56, 74, 98, 130, 170, 225, 300, 400, 530, 700, 920, 1200, 1500];
+    // Cells grow outward but are capped, so distant mountains are not single long triangles
+    // (300 to 500 m cells there drew each face as one streak). The cap depends on the tier.
+    const maxCell = tier.id === 'low' ? 220 : tier.id === 'medium' ? 160 : 110;
+    const growth = [];
+    for (let g = 10, sum = 0; sum < 6600; g = Math.min(maxCell, g * 1.32)) { growth.push(Math.round(g)); sum += g; }
     const axis = (lo, hi) => {
       const pts = [];
       let acc = 0;
@@ -598,7 +626,9 @@ export function createTerrainView({ terrain, course, lighting, tier, assets, man
       const inside = x >= ix0 - 0.01 && x <= ix1 + 0.01 && z >= iz0 - 0.01 && z <= iz1 + 0.01;
       const hh = hAt(x, z);
       pos[k * 3] = x; pos[k * 3 + 1] = hh - (inside ? 0.7 : 0); pos[k * 3 + 2] = z;
-      const e = 6;
+      // Normal over half a cell, so it describes the shape the cell can actually show.
+      const cell = Math.min(xs[Math.min(w - 1, i + 1)] - xs[Math.max(0, i - 1)], zs[Math.min(h - 1, j + 1)] - zs[Math.max(0, j - 1)]) / 2;
+      const e = Math.max(6, cell * 0.5);
       const gx = (hAt(x + e, z) - hAt(x - e, z)) / (2 * e), gz = (hAt(x, z + e) - hAt(x, z - e)) / (2 * e);
       const inv = 1 / Math.hypot(gx, gz, 1);
       nor[k * 3] = -gx * inv; nor[k * 3 + 1] = inv; nor[k * 3 + 2] = -gz * inv;

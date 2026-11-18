@@ -13,7 +13,9 @@ import { fin } from '../core/guards.js';
 
 // Blade height in meters per surface slot (painter's order, same as the terrain shader).
 const HEIGHTS = {
-  default: { rough: 0.075, deep: 0.2, waste: 0.05, dirt: 0, shore: 0.0, rock: 0, firstCut: 0.036, fairway: 0.015, path: 0, fringe: 0.02, tee: 0.012, green: 0, bunker: 0 },
+  // Short grass carries blades too (fairway 2 cm, fringe 2.6 cm), so the ground at the ball
+  // reads as turf at address rather than as a flat texture.
+  default: { rough: 0.075, deep: 0.2, waste: 0.05, dirt: 0, shore: 0.0, rock: 0, firstCut: 0.045, fairway: 0.02, path: 0, fringe: 0.026, tee: 0.016, green: 0, bunker: 0 },
   links: { rough: 0.07, deep: 0.3, waste: 0.0 },
   desert: { rough: 0.06, deep: 0.1, waste: 0.0 },
   alpine: { rough: 0.08, deep: 0.22, waste: 0.03 },
