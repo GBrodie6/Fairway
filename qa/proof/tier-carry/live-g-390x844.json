@@ -1,0 +1,33 @@
+{
+ "size": "390x844",
+ "rows": [
+  {
+   "label": "Common 7 iron",
+   "card": "163 yd",
+   "carryYd": 163,
+   "factor": 1,
+   "guidePower": 0.779,
+   "fanCarryYd": 119.5,
+   "fanTotalYd": 126.3
+  },
+  {
+   "label": "Legendary 7 iron, default Pured rate",
+   "card": "171 yd",
+   "carryYd": 171.1,
+   "factor": 1.0374,
+   "guidePower": 0.745,
+   "fanCarryYd": 119.6,
+   "fanTotalYd": 126.9
+  },
+  {
+   "label": "Legendary 7 iron, Pured rate 70 percent",
+   "card": "174 yd",
+   "carryYd": 174.4,
+   "factor": 1.053,
+   "guidePower": 0.73,
+   "fanCarryYd": 119.4,
+   "fanTotalYd": 126.7
+  }
+ ],
+ "consoleErrors": []
+}

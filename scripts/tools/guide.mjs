@@ -2,7 +2,7 @@
 // range at the 125-yard target: the same 7 iron as Common, as Legendary for a player with the
 // default Pured rate, and as Legendary for a player who pures 70 percent of clean strikes.
 // The bag and the Pured rate are set directly (the earning rules are unit tested).
-//   node scripts/tools/guide.mjs qa/tmp/guide/g [390x844]
+//   node scripts/tools/guide.mjs qa/tmp/guide/g [390x844]   (URL=https://... for a deployed copy)
 import path from 'node:path';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { launchBrowser, trackErrors } from '../lib/browser.mjs';
@@ -12,7 +12,8 @@ import { waitPhase } from '../lib/drive.mjs';
 const [prefix = 'qa/tmp/guide/g', size = '390x844'] = process.argv.slice(2);
 const [W, H] = size.split('x').map(Number);
 mkdirSync(path.dirname(prefix), { recursive: true });
-const server = await serveStatic(path.resolve(process.env.DIST || 'dist'));
+// URL=https://... checks a deployed copy instead of the local build.
+const server = process.env.URL ? { url: process.env.URL.replace(/\/$/, ''), close: async () => {} } : await serveStatic(path.resolve(process.env.DIST || 'dist'));
 const { browser } = await launchBrowser();
 const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, hasTouch: true, isMobile: W < H });
 ctx.setDefaultTimeout(240000);
