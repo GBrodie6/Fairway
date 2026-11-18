@@ -208,9 +208,9 @@ export function createScreens(root, { app, game, settings, ui, save }) {
   // Under the map and the menus, over the HUD.
   root.insertBefore(tip, ui.map.el);
   const STEPS = [
-    { title: 'Aim', text: 'Drag across the course to aim. The ring shows where the ball should land.', until: 'aim' },
-    { title: 'Backswing', text: 'Pull the ball on the swing stick down. The green mark is the power this shot needs.', until: null },
-    { title: 'Strike', text: 'Then push it up through the white line. Slower back than through flies straightest.', until: 'swing' },
+    { title: 'Aim', text: 'Drag across the course to aim. The fan shows where the ball should land.', until: 'aim' },
+    { title: 'Backswing', text: 'Put your thumb on the chevron under the ball and drag down. The gold mark is the power this shot needs.', until: null },
+    { title: 'Strike', text: 'Then push up through the white line. Slower back than through flies straightest.', until: 'swing' },
   ];
   let step = -1, unsub = null;
   function showStep() {

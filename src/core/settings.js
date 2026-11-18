@@ -16,13 +16,13 @@ export const DEFAULT_SETTINGS = Object.freeze({
   aimSensitivity: 1,
   units: 'yards', // yards | meters
   handedness: 'right', // golfer handedness
-  leftHandLayout: false, // swing stick on the left edge
+  leftHandLayout: false, // mirrored bottom row and look button
   colorblind: 'off', // off | deuteranopia | protanopia | tritanopia
   reducedMotion: false,
   haptics: true,
   showGolfer: false,
   spinViz: false,
-  powerGuide: true, // the green power mark on the swing stick
+  powerGuide: true, // the gold power mark on the swing rail
   tutorialDone: false,
   stickScale: 1,
   showFps: false,

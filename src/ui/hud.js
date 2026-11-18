@@ -1,11 +1,47 @@
-// The in-round HUD. Calm and sparse: hole card, distance to the pin, wind, the club, and the
-// swing stick. Everything is read from game.view() each frame and only touched when it changes.
+// The in-round HUD, phone portrait first.
+//   top left    three tabs flush to the edge: lie (live power during a swing), distance to the
+//               pin with the elevation adjustment, wind relative to the shot with the time of day
+//   top right   hole, par and yardage beside the score box, a position badge, the map button
+//   right side  hold to look around the course
+//   bottom      settings, previous club, the club button (letter and carry), next club, aim reset
+//   center      the swing zone between the ball and the bottom row (nothing else goes there)
+// Landscape moves the same pieces to the edges. Everything is read from game.view() each frame
+// and a node is only touched when its value changes.
 import { h, iconButton, icon } from './dom.js';
-import { fmtDist, fmtShort, fmtElev, fmtBreak, fmtToPar, fmtMph } from './format.js';
-import { createSwingStick } from './swingStick.js';
-import { DEG, clamp } from '../core/math.js';
+import { fmtDist, fmtShort, fmtBreak, fmtToPar, fmtMph, ordinal } from './format.js';
+import { createSwingZone } from './swingZone.js';
+import { DEG, clamp, YARD } from '../core/math.js';
 
-export function createHud(root, { game, settings, haptic, actions }) {
+const TOD_ICON = { dawn: 'sunlow', morning: 'sun', midday: 'sun', golden: 'sunlow', dusk: 'sunlow', night: 'moon' };
+
+// Elevation adjustment in brackets, in the unit of the main number: yards (or meters) for full
+// shots, inches (or centimeters) on the green. Uphill plays longer, so it reads "+".
+export function fmtAdjust(elevM, units, putt) {
+  if (!Number.isFinite(elevM)) return '';
+  if (putt) {
+    const v = units === 'meters' ? Math.round(elevM * 100) : Math.round(elevM / 0.0254);
+    return v === 0 ? '(level)' : `(${v > 0 ? '+' : '-'}${Math.abs(v)} ${units === 'meters' ? 'cm' : 'in'})`;
+  }
+  const v = units === 'meters' ? Math.round(elevM) : Math.round(elevM / YARD);
+  return v === 0 ? '(level)' : `(${v > 0 ? '+' : '-'}${Math.abs(v)})`;
+}
+
+// Position badge text: a rank among players in stroke play, the match state, or how many holes
+// are done ("Thru 3") for a solo round.
+export function positionText(v, round) {
+  if (!round) return '';
+  const totals = v.totals || [];
+  const thru = v.thru ?? 0;
+  if (v.mode === 'match' || v.mode === 'skins' || v.mode === 'ctp') return v.standingsText || '';
+  if (totals.length > 1) {
+    const me = totals[v.turn] ? totals[v.turn].toPar : 0;
+    const better = totals.filter((t) => t.toPar < me).length, same = totals.filter((t) => t.toPar === me).length;
+    return `${same > 1 ? 'T' : ''}${ordinal(better + 1)}  Thru ${thru}`;
+  }
+  return thru ? `Thru ${thru}` : 'Hole 1 of ' + (v.holes || 1);
+}
+
+export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   const el = h('div', { class: 'hud off', 'aria-hidden': 'true' });
   root.appendChild(el);
   const cache = new Map();
@@ -15,61 +51,106 @@ export function createHud(root, { game, settings, haptic, actions }) {
     cache.set(k, value);
     if (prop === 'textContent') node.textContent = value; else node.style[prop] = value;
   };
-
-  // --- top ---
-  const holeN = h('div', { class: 'n' }), holeS = h('div', { class: 's' }), holeK = h('div', { class: 'k', text: 'Hole' });
-  const score = h('div', { class: 'scorepill glass' });
-  const holecard = h('div', {}, h('div', { class: 'holecard glass', role: 'group', 'aria-label': 'Hole' }, holeK, holeN, holeS), score);
-  const windArrow = icon('arrow');
-  const windV = h('div', { class: 'v' }), windU = h('div', { class: 'u' });
-  const wind = h('div', { class: 'wind glass', role: 'img' }, windArrow, h('div', {}, windV, windU));
-  const mapBtn = iconButton('map', 'Hole map and rangefinder', () => actions.map());
-  const menuBtn = iconButton('menu', 'Pause menu', () => actions.pause());
-  el.appendChild(h('div', { class: 'hud-top' }, holecard, h('div', { class: 'topright' }, wind, mapBtn, menuBtn)));
-  const pinD = h('div', { class: 'd' }), pinE = h('div', { class: 'e' });
-  const pin = h('div', { class: 'pin glass', 'aria-live': 'off' }, pinD, pinE);
-  el.appendChild(pin);
-  const hazard = h('div', { class: 'hazard chip glass warn hidden', role: 'status' });
-  el.appendChild(hazard);
-  const toast = h('div', { class: 'toast glass', role: 'status', 'aria-live': 'polite' });
-  el.appendChild(toast);
-
-  // --- bottom: controls and stick ---
-  const clubName = h('div', { class: 'name' }), clubSub = h('div', { class: 'sub' });
-  const prev = h('button', { class: 'arrow', type: 'button', 'aria-label': 'Longer club', onclick: () => game.selectClub(-1) }, '‹');
-  const next = h('button', { class: 'arrow', type: 'button', 'aria-label': 'Shorter club', onclick: () => game.selectClub(1) }, '›');
-  const clubcard = h('div', { class: 'clubcard glass' }, prev, h('div', { class: 'mid' }, clubName, clubSub), next);
-  // Swipe on the club card changes club too.
-  let swipeX = null;
-  clubcard.addEventListener('pointerdown', (e) => { swipeX = e.clientX; });
-  clubcard.addEventListener('pointerup', (e) => { if (swipeX != null && Math.abs(e.clientX - swipeX) > 34) game.selectClub(e.clientX < swipeX ? 1 : -1); swipeX = null; });
-  const seg = h('div', { class: 'seg glass', role: 'group', 'aria-label': 'Shot type' });
-  const nudge = (deg) => () => { game.nudgeAim(deg * DEG); if (haptic) haptic(4); };
-  const holdRepeat = (btn, fn) => {
-    let timer = null, rep = null;
-    const stop = () => { clearTimeout(timer); clearInterval(rep); timer = rep = null; };
-    btn.addEventListener('pointerdown', (e) => { e.stopPropagation(); fn(); timer = setTimeout(() => { rep = setInterval(fn, 70); }, 320); });
-    for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) btn.addEventListener(ev, stop);
-    btn.addEventListener('click', (e) => { if (e.detail === 0) fn(); }); // keyboard activation
+  const swapIcon = (holder, key, name) => {
+    if (cache.get(key) === name) return;
+    cache.set(key, name);
+    holder.textContent = '';
+    holder.appendChild(icon(name));
   };
-  const aimL = h('button', { class: 'arrow', type: 'button', 'aria-label': 'Aim left a little' }, '◂');
-  const aimR = h('button', { class: 'arrow', type: 'button', 'aria-label': 'Aim right a little' }, '▸');
-  holdRepeat(aimL, nudge(-0.25)); holdRepeat(aimR, nudge(0.25));
-  const aimLabel = h('span', { text: 'Aim' });
-  const resetBtn = iconButton('reset', 'Aim back at the target', () => actions.resetAim(), 'arrow');
-  const lookBtn = iconButton('look', 'Free look. Drag to look around', () => actions.toggleLook(), 'arrow');
-  const aimrow = h('div', { class: 'aimrow glass' }, aimL, aimLabel, aimR, resetBtn, lookBtn);
-  const puttinfo = h('div', { class: 'puttinfo glass hidden', 'aria-live': 'polite' });
-  const controls = h('div', { class: 'controls' }, puttinfo, h('div', { class: 'row' }, seg), clubcard, aimrow);
-  const replayBtn = iconButton('replay', 'Replay the last shot', () => actions.replay());
-  const stickCol = h('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' } }, replayBtn);
-  const bottom = h('div', { class: 'bottom' }, controls, stickCol);
-  el.appendChild(bottom);
-  const stick = createSwingStick(stickCol, {
+
+  // --- top left: three tabs ---
+  const lieIco = h('span', { class: 'ico' }, icon('lie')), lieV = h('span', { class: 'v' });
+  const tabLie = h('div', { class: 'tab', role: 'status', 'aria-label': 'Lie' }, lieIco, lieV);
+  const distV = h('span', { class: 'v' }), distA = h('span', { class: 'adj' });
+  const tabDist = h('div', { class: 'tab', 'aria-label': 'Distance to the pin' }, h('span', { class: 'ico' }, icon('flag')), distV, distA);
+  const windArrow = h('span', { class: 'ico warrow' }, icon('wind'));
+  const windV = h('span', { class: 'v' }), todIco = h('span', { class: 'tod' });
+  const tabWind = h('div', { class: 'tab', role: 'img' }, windArrow, windV, todIco);
+  const hazard = h('div', { class: 'chip glass warn hidden', role: 'status' });
+  const puttinfo = h('div', { class: 'chip glass hidden', 'aria-live': 'polite' });
+  const tabs = h('div', { class: 'tabs' }, tabLie, tabDist, tabWind, hazard, puttinfo);
+  el.appendChild(tabs);
+
+  // --- top right: hole and score, position, map ---
+  const holeN = h('div', { class: 'n' }), holeK = h('div', { class: 'k', text: 'Hole' }), holeS = h('div', { class: 's' });
+  const scoreN = h('div', { class: 'n' }), scoreS = h('div', { class: 's' });
+  const holebox = h('div', { class: 'holebox glass', role: 'group', 'aria-label': 'Hole' }, holeK, holeN, holeS);
+  const scorebox = h('div', { class: 'scorebox glass', role: 'group', 'aria-label': 'Score' }, scoreN, scoreS);
+  const badge = h('div', { class: 'posbadge glass' });
+  const mapBtn = iconButton('map', 'Hole map and rangefinder', () => actions.map(), 'roundbtn glass');
+  const replayBtn = iconButton('replay', 'Replay the last shot', () => actions.replay(), 'roundbtn glass');
+  const tr = h('div', { class: 'topright' }, h('div', { class: 'trrow' }, holebox, scorebox), badge, mapBtn, replayBtn);
+  el.appendChild(tr);
+
+  // --- right side: hold to look around ---
+  const lookBtn = iconButton('look', 'Look around. Hold to pan over the course', () => {}, 'roundbtn glass lookbtn');
+  let lookHeld = false;
+  const lookEnd = () => { if (lookHeld) { lookHeld = false; actions.lookHold(false); } };
+  lookBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); try { lookBtn.setPointerCapture(e.pointerId); } catch { /* fine */ } lookHeld = true; actions.lookHold(true); });
+  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) lookBtn.addEventListener(ev, lookEnd);
+  lookBtn.addEventListener('keydown', (e) => { if ((e.code === 'Space' || e.code === 'Enter') && !e.repeat) { e.preventDefault(); e.stopPropagation(); actions.lookHold(!lookHeld); lookHeld = !lookHeld; } });
+  el.appendChild(lookBtn);
+
+  // --- bottom row ---
+  const settingsBtn = iconButton('gear', 'Settings and pause', () => actions.pause(), 'roundbtn glass');
+  const arrowL = h('button', { class: 'arrow glass', type: 'button' }, icon('left'));
+  const arrowR = h('button', { class: 'arrow glass', type: 'button' }, icon('right'));
+  const clubL = h('span', { class: 'cl' }), clubC = h('span', { class: 'cc' });
+  const clubBtn = h('button', { class: 'clubbtn', type: 'button', 'aria-haspopup': 'dialog' }, clubL, clubC);
+  const resetBtn = iconButton('aim', 'Aim back at the target', () => actions.resetAim(), 'roundbtn glass');
+  const clubgroup = h('div', { class: 'clubgroup' }, arrowL, clubBtn, arrowR);
+  const bottombar = h('div', { class: 'bottombar' }, settingsBtn, clubgroup, resetBtn);
+  el.appendChild(bottombar);
+  // The arrows are mirrored with the layout: the outer arrow on the settings side is always
+  // "longer club", so a left-handed layout reads as a true mirror image.
+  const longer = () => game.selectClub(-1), shorter = () => game.selectClub(1);
+  arrowL.addEventListener('click', () => (settings.leftHandLayout ? shorter() : longer()));
+  arrowR.addEventListener('click', () => (settings.leftHandLayout ? longer() : shorter()));
+  // Swipe across the club button changes club; a tap opens the club list.
+  let swipeX = null, swiped = false;
+  clubBtn.addEventListener('pointerdown', (e) => { swipeX = e.clientX; swiped = false; });
+  clubBtn.addEventListener('pointerup', (e) => { if (swipeX != null && Math.abs(e.clientX - swipeX) > 30) { swiped = true; game.selectClub(e.clientX < swipeX ? 1 : -1); } swipeX = null; });
+  clubBtn.addEventListener('click', () => { if (swiped) { swiped = false; return; } toggleClubList(); });
+
+  // --- club list: every club the lie allows with its carry, plus the shot type ---
+  const clubList = h('div', { class: 'clublist glass hidden', role: 'dialog', 'aria-label': 'Choose a club' });
+  el.appendChild(clubList);
+  function toggleClubList(force) {
+    const open = force ?? clubList.classList.contains('hidden');
+    if (open && game.state.phase !== 'aim') return;
+    clubList.classList.toggle('hidden', !open);
+    if (open) buildClubList();
+  }
+  function buildClubList() {
+    clubList.textContent = '';
+    const u = settings.units;
+    const grid = h('div', { class: 'cgrid' });
+    for (const c of game.clubChoices()) {
+      grid.appendChild(h('button', { type: 'button', class: 'citem', 'aria-pressed': c.id === game.state.club.id ? 'true' : 'false', onclick: () => { game.setClub(c.id); toggleClubList(false); } },
+        h('b', { text: c.short }), h('span', { text: c.putter ? 'Putt' : fmtDist(c.carry, u) })));
+    }
+    clubList.appendChild(grid);
+    const types = game.shotTypes();
+    if (types.length) {
+      const seg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Shot type' });
+      for (const t of types) seg.appendChild(h('button', { type: 'button', 'aria-pressed': t.id === game.state.shotType.id ? 'true' : 'false', onclick: () => { game.setShotType(t.id); buildClubList(); } }, t.name));
+      clubList.appendChild(seg);
+    }
+  }
+  hud_closeListOnOutside();
+  function hud_closeListOnOutside() {
+    root.addEventListener('pointerdown', (e) => { if (!clubList.classList.contains('hidden') && !clubList.contains(e.target) && !clubBtn.contains(e.target)) toggleClubList(false); }, true);
+  }
+
+  // --- swing zone ---
+  const zone = createSwingZone(el, {
     settings, haptic,
     getIdeal: () => (game.state.phase === 'aim' && settings.powerGuide !== false ? game.suggestedPower() : 0),
-    onSwing: (res) => { if (!game.swing(res)) stick.feedback(''); },
+    onSwing: (res) => { if (!game.swing(res)) zone.feedback(''); else if (actions.onSwing) actions.onSwing(res); },
   });
+
+  const toast = h('div', { class: 'toast glass', role: 'status', 'aria-live': 'polite' });
+  el.appendChild(toast);
   // Replay controls: camera angle and done. The replay runs at half speed.
   const ANGLES = [['follow', 'Follow'], ['landing', 'Landing'], ['side', 'Side'], ['high', 'High']];
   const replaybar = h('div', { class: 'replaybar glass hidden', role: 'group', 'aria-label': 'Replay camera' });
@@ -80,7 +161,7 @@ export function createHud(root, { game, settings, haptic, actions }) {
   root.appendChild(skip);
 
   let toastTimer = 0;
-  const hud = { el, stick, toastEl: toast };
+  const hud = { el, stick: zone, zone, toastEl: toast, layoutBox: null };
   hud.toast = (text, sub = '', ms = 2200) => {
     toast.textContent = text;
     if (sub) toast.appendChild(h('small', { text: sub }));
@@ -89,70 +170,120 @@ export function createHud(root, { game, settings, haptic, actions }) {
     toastTimer = setTimeout(() => toast.classList.remove('on'), ms);
   };
   hud.setVisible = (on) => { el.classList.toggle('off', !on); el.setAttribute('aria-hidden', on ? 'false' : 'true'); };
-  hud.setLayout = () => { root.classList.toggle('lefty', !!settings.leftHandLayout); stick.relayout(); };
-  hud.setLook = (on) => lookBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-  hud.setLayout();
 
-  let segKey = '';
-  function buildSeg(types, current) {
-    const key = types.map((t) => t.id).join(',') + ':' + current;
-    if (key === segKey) return;
-    segKey = key;
-    seg.textContent = '';
-    for (const t of types) seg.appendChild(h('button', { type: 'button', 'aria-pressed': t.id === current ? 'true' : 'false', onclick: () => game.setShotType(t.id) }, t.name));
-    seg.classList.toggle('hidden', types.length === 0);
+  // Layout: the swing zone sits under the ball, above the bottom row, centered on the ball. The
+  // ball's place on screen follows from it (the address camera frames the ball there).
+  hud.layout = () => {
+    root.classList.toggle('lefty', !!settings.leftHandLayout);
+    arrowL.setAttribute('aria-label', settings.leftHandLayout ? 'Shorter club' : 'Longer club');
+    arrowR.setAttribute('aria-label', settings.leftHandLayout ? 'Longer club' : 'Shorter club');
+    const W = window.innerWidth || 800, H = window.innerHeight || 600;
+    const bb = bottombar.getBoundingClientRect();
+    const barTop = bb.height ? bb.top : H - 90;
+    const landscape = W > H;
+    const want = Math.round(clamp(H * 0.27, 96, 190) * clamp(settings.stickScale || 1, 0.7, 1.5));
+    // Zone height: the start line, full travel, and a margin above the bottom row; in portrait
+    // at most half of the space under the top panels.
+    const zoneH = Math.round(clamp(want + 46, 130, landscape ? H * 0.46 : H * 0.36));
+    const zoneW = Math.round(clamp(W * (landscape ? 0.2 : 0.42), 150, 220));
+    const x = Math.round(W / 2 - zoneW / 2);
+    // When the club buttons keep to a corner (landscape phones), the zone may come down beside
+    // them; when they are centered under it, it stays above the bottom row.
+    const cg = clubgroup.getBoundingClientRect();
+    const clear = cg.width > 0 && (cg.right < x - 8 || cg.left > x + zoneW + 8);
+    const y = clear ? Math.min(barTop - 4 - zoneH + bb.height * 0.85, H - zoneH - 6) : barTop - 10 - zoneH;
+    const box = { x, y: Math.round(y), w: zoneW, h: zoneH };
+    zone.layout(box);
+    // The ball sits just above the start line.
+    hud.ballY = box.y - (landscape ? 18 : 30);
+    hud.layoutBox = box;
+    // The look button goes under the top column on its side, with room kept for the replay
+    // button (right) or the hazard and putt chips (left), which come and go.
+    const trR = tr.getBoundingClientRect(), tbR = tabs.getBoundingClientRect();
+    const rightBottom = trR.bottom + (replayBtn.classList.contains('hidden') ? 54 : 0);
+    const leftBottom = tabTop(tbR) + 80;
+    const top = Math.max(settings.leftHandLayout ? leftBottom : rightBottom, landscape ? 0 : H * 0.36) + 10;
+    lookBtn.style.top = `${Math.round(Math.min(top, barTop - 66))}px`;
+    if (actions.onLayout) actions.onLayout({ ballY: hud.ballY / H, zone: box });
+  };
+  // Bottom of the three tabs (the chips under them are not counted).
+  function tabTop(tbR) { const r = tabWind.getBoundingClientRect(); return r.height ? r.bottom : tbR.bottom; }
+  hud.setLayout = () => hud.layout();
+  hud.setLook = (on) => lookBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  window.addEventListener('resize', () => requestAnimationFrame(hud.layout));
+  requestAnimationFrame(hud.layout);
+  // Panels change size as their text fills in (and with the replay button): lay out again.
+  if (typeof ResizeObserver === 'function') {
+    let pending = false;
+    const ro = new ResizeObserver(() => { if (pending) return; pending = true; requestAnimationFrame(() => { pending = false; hud.layout(); }); });
+    for (const n of [tr, tabs, bottombar]) ro.observe(n);
   }
 
   hud.update = () => {
-    stick.update();
+    zone.update();
     const v = game.view();
     if (!v) return;
     const u = settings.units;
-    set(holeN, 'hn', `${v.hole}`);
-    set(holeK, 'hk', v.holes > 1 ? `Hole ${v.holeOf} of ${v.holes}` : 'Hole');
-    set(holeS, 'hs', `Par ${v.par}  ${fmtDist(v.yards * 0.9144, u)}`);
-    const scoreText = v.mode === 'stroke' || v.mode === 'daily' || v.mode === 'range' ? `${v.playerCount > 1 ? v.player.name + '  ' : ''}Stroke ${v.strokes + (['aim', 'ai', 'flight', 'settle'].includes(v.phase) ? 1 : 0)}  ${fmtToPar(v.toPar)}` : v.standingsText;
-    set(score, 'sc', scoreText);
-    // Wind: the arrow shows where the wind blows relative to the aim (up is downwind).
+    const aiming = v.phase === 'aim';
+    const putt = !!v.club.putter;
+    // Tab 1: lie, or the live power while swinging.
+    const live = zone.live, swinging = aiming && (live.phase === 'back' || live.phase === 'down');
+    if (swinging) {
+      swapIcon(lieIco, 'lieico', 'power');
+      set(lieV, 'lv', `${Math.round(clamp(live.phase === 'back' ? live.depth : live.top, 0, 1) * 100)}%`);
+      tabLie.classList.add('power');
+    } else {
+      swapIcon(lieIco, 'lieico', 'lie');
+      set(lieV, 'lv', v.lieName);
+      tabLie.classList.remove('power');
+    }
+    // Tab 2: distance with the elevation adjustment.
+    set(distV, 'dv', putt || v.distToPin < 18 ? fmtShort(v.distToPin, u) : fmtDist(v.distToPin, u));
+    set(distA, 'da', fmtAdjust(v.elevation, u, putt || v.distToPin < 18));
+    // Tab 3: wind, arrow relative to the shot (up is helping), and the time of day.
     set(windArrow, 'wa', `rotate(${(v.wind.relAngle / DEG).toFixed(0)}deg)`, 'transform');
     set(windV, 'wv', fmtMph(v.wind.speedMph, u));
+    const w = getWorld && getWorld();
+    swapIcon(todIco, 'tod', TOD_ICON[(w && w.todId) || 'midday'] || 'sun');
     const along = v.wind.along, label = Math.abs(along) < 1 && Math.abs(v.wind.cross) < 1 ? 'calm' : Math.abs(along) >= Math.abs(v.wind.cross) ? (along > 0 ? 'helping' : 'into') : v.wind.cross > 0 ? 'left to right' : 'right to left';
-    set(windU, 'wu', label);
-    wind.setAttribute('aria-label', `Wind ${fmtMph(v.wind.speedMph, u)}, ${label}`);
-    const onGreen = !!v.club.putter;
-    set(pinD, 'pd', onGreen || v.distToPin < 18 ? fmtShort(v.distToPin, u) : fmtDist(v.distToPin, u));
-    set(pinE, 'pe', `to pin  ${fmtElev(v.elevation, u)}`);
-    const aiming = v.phase === 'aim';
-    // Club card and shot types.
-    set(clubName, 'cn', v.club.name);
-    const lie = v.lieName;
-    set(clubSub, 'cs', onGreen ? `${lie}` : `${fmtDist(v.carry, u)} carry  ${lie}`);
-    buildSeg(aiming && v.human ? game.shotTypes() : [], v.shotType.id);
-    for (const b of [prev, next, aimL, aimR]) b.disabled = !aiming;
-    replayBtn.disabled = !v.canReplay;
-    // Hazard warning on the predicted landing.
+    tabWind.setAttribute('aria-label', `Wind ${fmtMph(v.wind.speedMph, u)}, ${label}`);
+    // Top right.
+    set(holeN, 'hn', `${v.hole}`);
+    set(holeS, 'hs', `Par ${v.par}  ${fmtDist(v.yards * YARD, u)}`);
+    set(scoreN, 'sn', fmtToPar(v.toPar));
+    const shotNo = v.strokes + (['aim', 'ai', 'flight', 'settle'].includes(v.phase) ? 1 : 0);
+    set(scoreS, 'ss', `${ordinal(Math.max(1, shotNo))} shot`);
+    const pos = positionText(v, game.state.round);
+    set(badge, 'bd', v.playerCount > 1 ? `${v.player.name}  ${pos}` : pos);
+    badge.classList.toggle('hidden', !pos);
+    replayBtn.classList.toggle('hidden', !v.canReplay);
+    // Hazard on the predicted landing, and the putt read.
     const hz = aiming && v.hazard ? `Careful: ${v.hazard}` : '';
     set(hazard, 'hz', hz);
     hazard.classList.toggle('hidden', !hz);
-    // Putt read: break, elevation, pace.
-    if (onGreen && v.putt && aiming) {
-      const p = v.putt;
-      const txt = `Read  ${fmtBreak(p.breakM, u)}  ${fmtElev(p.elevation, u)}`;
-      set(puttinfo, 'pi', txt);
-      puttinfo.classList.remove('hidden');
-    } else puttinfo.classList.add('hidden');
-    stick.setEnabled(aiming && v.human);
+    if (putt && v.putt && aiming) { set(puttinfo, 'pi', `Break ${fmtBreak(v.putt.breakM, u)}`); puttinfo.classList.remove('hidden'); } else puttinfo.classList.add('hidden');
+    // Club button.
+    set(clubL, 'cl', v.club.short);
+    set(clubC, 'cc', putt ? fmtShort(v.distToPin, u) : fmtDist(v.carry, u));
+    clubBtn.setAttribute('aria-label', `${v.club.name}${putt ? '' : `, carry ${fmtDist(v.carry, u)}`}. Tap for the club list, swipe to change`);
+    for (const b of [arrowL, arrowR, clubBtn, resetBtn]) b.disabled = !aiming;
+    if (!aiming && !clubList.classList.contains('hidden')) toggleClubList(false);
+    zone.setEnabled(aiming && v.human);
     const replaying = v.phase === 'replay';
     replaybar.classList.toggle('hidden', !replaying);
     if (replaying) for (const b of angleBtns) b.setAttribute('aria-pressed', b.dataset.angle === v.replayAngle ? 'true' : 'false');
-    bottom.style.visibility = replaying ? 'hidden' : 'visible';
-    aimrow.classList.toggle('hidden', !aiming);
-    controls.style.visibility = v.human && v.phase !== 'replay' ? 'visible' : 'hidden';
+    const showControls = v.human && !replaying;
+    bottombar.style.visibility = showControls ? 'visible' : 'hidden';
+    const peeking = !!(w && w.rig && w.rig.mode === 'peek');
+    zone.el.style.visibility = aiming && v.human && !peeking ? 'visible' : 'hidden';
+    lookBtn.style.visibility = aiming && v.human ? 'visible' : 'hidden';
     skip.classList.toggle('hidden', v.phase !== 'intro');
     const showHud = v.phase !== 'intro' && v.phase !== 'loading' && v.phase !== 'summary' && v.phase !== 'done';
     hud.setVisible(showHud);
-    pin.style.visibility = v.phase === 'flight' || v.phase === 'replay' ? 'hidden' : 'visible';
+    tabs.style.visibility = replaying ? 'hidden' : 'visible';
   };
-  hud.power = () => clamp(stick.lastResult ? stick.lastResult.power : 0, 0, 1);
+  hud.power = () => clamp(zone.lastResult ? zone.lastResult.power : 0, 0, 1);
+  hud.closeClubList = () => toggleClubList(false);
+  hud.clubListOpen = () => !clubList.classList.contains('hidden');
   return hud;
 }

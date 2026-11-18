@@ -45,7 +45,7 @@ describe('tap targets', () => {
     const v = m[1].trim();
     return v === 'var(--tap)' ? parseFloat(token('tap')) : parseFloat(v);
   };
-  for (const sel of ['.btn', '.btn.small', '.seg button', '.replaybar button', '.arrow', '.iconbtn']) {
-    it(`${sel} is at least 44 px tall`, () => { expect(minHeight(sel)).toBeGreaterThanOrEqual(44); });
+  for (const sel of ['.btn', '.btn.small', '.seg button', '.replaybar button', '.arrow', '.iconbtn', '.roundbtn', '.clubbtn', '.citem']) {
+    it(`${sel} is at least 48 px tall`, () => { expect(minHeight(sel)).toBeGreaterThanOrEqual(48); });
   }
 });

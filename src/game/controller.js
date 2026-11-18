@@ -187,20 +187,33 @@ export function createGame(app) {
     refresh();
   };
   game.nudgeAim = (deltaRad) => game.setAim(state.aim + fin(deltaRad));
+  // The clubs the current lie allows, longest first (the club list in the HUD shows these).
+  game.clubChoices = () => {
+    if (state.club.putter && state.lie === SURFACES.GREEN) return [PUTTER];
+    const list = CLUBS.filter((c) => !c.putter && !(c.id === 'DR' && state.lie !== SURFACES.TEE));
+    return state.lie === SURFACES.FRINGE || state.lie === SURFACES.GREEN ? [...list, PUTTER] : list;
+  };
   game.selectClub = (delta) => {
     if (state.phase !== 'aim' || state.club.putter && state.lie === SURFACES.GREEN) return;
-    const list = CLUBS.filter((c) => !c.putter && !(c.id === 'DR' && state.lie !== SURFACES.TEE));
-    const allow = state.lie === SURFACES.FRINGE || state.lie === SURFACES.GREEN ? [...list, PUTTER] : list;
+    const allow = game.clubChoices();
     let i = allow.indexOf(state.club);
     if (i < 0) i = 0;
-    state.club = allow[clamp(i + Math.sign(delta), 0, allow.length - 1)];
+    pickClub(allow[clamp(i + Math.sign(delta), 0, allow.length - 1)]);
+  };
+  game.setClub = (id) => {
+    if (state.phase !== 'aim' || state.club.putter && state.lie === SURFACES.GREEN) return;
+    const c = game.clubChoices().find((x) => x.id === id);
+    if (c && c !== state.club) pickClub(c);
+  };
+  function pickClub(club) {
+    state.club = club;
     if (state.club.putter) state.shotType = SHOT_TYPES.PUTT; else if (state.shotType.id === 'putt') state.shotType = SHOT_TYPES.FULL;
     if (state.shotType.wedgeOnly && state.club.kind !== 'wedge') state.shotType = SHOT_TYPES.FULL;
     W().rig.ctx = addressCtx();
     computeIdeal();
     refresh();
     emit('club', state.club);
-  };
+  }
   game.setShotType = (id) => {
     if (state.phase !== 'aim' || state.club.putter) return;
     const st = shotTypeById(id);
@@ -413,6 +426,8 @@ export function createGame(app) {
     setPhase('aim');
   };
 
+  // Back to the address view after looking around.
+  game.returnToAddress = () => { if (state.round && W().rig) W().rig.set('address', addressCtx()); };
   game.quit = () => { state.round = null; state.shot = null; W().overlays.hide(); setPhase('menu'); emit('quit', null); };
   // After the world is rebuilt (quality tier change) the current view state is restored.
   game.onWorldChanged = () => { if (state.round && state.phase !== 'menu' && W().terrain) { W().overlays.loadHole(); if (state.phase === 'aim') { W().rig.set('address', addressCtx()); refresh(); } } };
@@ -429,6 +444,7 @@ export function createGame(app) {
       phase: state.phase, mode: r.mode, hole: currentHoleIndex(r) + 1, holeOf: r.hole + 1, holes: r.holes.length, par: parOf(r), yards: t.hole.yards,
       player: r.players[state.turn], human: isHuman(), playerCount: r.players.length,
       strokes: st ? st.strokes : 0, toPar: s.totals[state.turn] ? s.totals[state.turn].toPar : 0, standingsText: s.text,
+      totals: s.totals, turn: state.turn, thru: s.totals[state.turn] ? s.totals[state.turn].played : 0,
       distToPin: state.distToPin, elevation: elev,
       wind: { speedMph: state.windInfo.speedMph, relAngle: wrapAngle(state.windInfo.dir - state.aim), along: rel.along / MPH, cross: rel.cross / MPH },
       club: state.club, shotType: state.shotType, lie: state.lie, lieName: SURFACE_NAMES[state.lie],

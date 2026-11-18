@@ -1,0 +1,193 @@
+// The swing zone: a clear patch of the course view between the ball and the bottom row. Touch
+// it, drag down for the backswing, push up through the start line to strike. A chevron marks
+// where the drag starts; a thin rail with the power guide appears only while dragging.
+//
+// It is a DOM view over the pure gesture logic in game/swingGesture.js, exactly like the old
+// swing stick: same travel rule, same gesture, same three-press meter for keyboard and gamepad.
+// Pointer events cover mouse, touch, and pen; coalesced samples are fed in order.
+import { createSwingGesture, createMeterSwing, PHASE, SWING_DEFAULTS } from '../game/swingGesture.js';
+import { liveFaceAndPath } from '../game/clubPath.js';
+import { clamp } from '../core/math.js';
+import { icon } from './dom.js';
+
+export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings, haptic }) {
+  const el = document.createElement('div');
+  el.className = 'swingzone';
+  el.setAttribute('role', 'slider');
+  el.setAttribute('aria-label', 'Swing. Drag down from the chevron to take the club back, then push up through the start line to strike. Or press Space three times.');
+  el.setAttribute('aria-valuemin', '0');
+  el.setAttribute('aria-valuemax', '100');
+  el.tabIndex = 0;
+  el.innerHTML = '<div class="rail"><div class="fill"></div><div class="ideal"></div></div><div class="startline"></div><div class="chev"></div>';
+  el.querySelector('.chev').appendChild(icon('chevron'));
+  parent.appendChild(el);
+  const rail = el.querySelector('.rail'), fill = el.querySelector('.fill'), ideal = el.querySelector('.ideal');
+  // The tempo grade after impact. It lives outside the zone, which hides once the ball is away.
+  const fb = document.createElement('div');
+  fb.className = 'tempo';
+  fb.setAttribute('aria-live', 'polite');
+  parent.appendChild(fb);
+
+  const zone = {
+    el, enabled: true, travel: 170, gesture: null, meter: createMeterSwing(), pointerId: null, mode: null, lastResult: null,
+    // Live state for the club view and the power tab: phase, depth, deepest point, face, path.
+    live: { phase: 'address', depth: 0, top: 0, face: 0, path: 0 },
+    box: { x: 0, y: 0, w: 0, h: 0 },
+  };
+  const START = 26; // px from the top of the zone to the start line
+
+  // Travel follows the old stick rule (a share of the screen height, scaled by the size
+  // setting), capped so a full backswing fits between the start line and the bottom row.
+  zone.layout = (box) => {
+    // Never change the geometry under a swing in progress; the caller lays out again later.
+    if (zone.mode) { zone.pendingBox = box; return; }
+    const h = window.innerHeight || 640;
+    const want = Math.round(clamp(h * 0.27, 96, 190) * clamp(settings.stickScale || 1, 0.7, 1.5));
+    const travel = Math.max(80, Math.min(want, Math.round(box.h - START - 14)));
+    const same = zone.gesture && travel === zone.travel && zone.hand === settings.handedness;
+    zone.travel = travel;
+    zone.hand = settings.handedness;
+    zone.box = box;
+    Object.assign(el.style, { left: `${box.x}px`, top: `${box.y}px`, width: `${box.w}px`, height: `${box.h}px` });
+    Object.assign(fb.style, { left: `${box.x + box.w / 2}px`, top: `${box.y + START + 18}px` });
+    rail.style.height = `${zone.travel}px`;
+    if (!same) zone.gesture = createSwingGesture({ travel: zone.travel, handedness: settings.handedness });
+  };
+  // A layout that arrived during a swing is applied once the swing is over.
+  const flushLayout = () => { if (zone.pendingBox && !zone.mode) { const b = zone.pendingBox; zone.pendingBox = null; zone.layout(b); } };
+  zone.startY = () => zone.box.y + START;
+
+  function draw(depth) {
+    const d = clamp(depth, 0, 1.1);
+    fill.style.height = `${Math.min(1, d) * zone.travel}px`;
+    const p = Math.round(clamp(d, 0, 1) * 100);
+    el.setAttribute('aria-valuenow', String(p));
+  }
+  zone.setIdeal = (power) => {
+    if (!Number.isFinite(power) || power <= 0) { ideal.style.display = 'none'; return; }
+    ideal.style.display = '';
+    ideal.style.top = `${clamp(power, 0, 1) * zone.travel - 1.5}px`;
+  };
+  zone.setEnabled = (on) => {
+    zone.enabled = !!on;
+    el.classList.toggle('disabled', !on);
+    if (!on && zone.mode) zone.cancel();
+  };
+  zone.feedback = (text) => {
+    fb.textContent = text || '';
+    fb.classList.toggle('on', !!text);
+    clearTimeout(zone._fbT);
+    if (text) zone._fbT = setTimeout(() => fb.classList.remove('on'), 1400);
+  };
+  const setLive = (phase, depth, top, face = 0, path = 0) => { const l = zone.live; l.phase = phase; l.depth = depth; l.top = top; l.face = face; l.path = path; };
+  zone.cancel = () => {
+    if (zone.gesture) zone.gesture.cancel();
+    zone.meter.cancel();
+    zone.mode = null; zone.pointerId = null;
+    el.classList.remove('active');
+    setLive('address', 0, 0);
+    draw(0);
+    flushLayout();
+  };
+
+  function complete(result) {
+    zone.lastResult = result;
+    zone.mode = null;
+    el.classList.remove('active');
+    draw(0);
+    if (haptic) haptic(result.tempoGrade === 'perfect' ? [12, 30, 18] : 16);
+    zone.feedback(result.tempoLabel);
+    setLive('impact', 0, zone.live.top, result.face, result.path);
+    onSwing(result);
+    setLive('address', 0, 0);
+    flushLayout();
+  }
+  function cancelled() {
+    zone.mode = null;
+    el.classList.remove('active');
+    setLive('address', 0, 0);
+    draw(0);
+    flushLayout();
+    if (onCancel) onCancel();
+  }
+  function liveFromGesture(st) {
+    const phase = st.phase === PHASE.BACK ? 'back' : st.phase === PHASE.DOWN ? 'down' : 'address';
+    const fp = phase === 'down' ? liveFaceAndPath(st, { ...SWING_DEFAULTS, travel: zone.travel }, settings.handedness === 'left') : { face: 0, path: 0 };
+    setLive(phase, clamp(st.depth, 0, 1), st.maxDepth, fp.face, fp.path);
+  }
+
+  // --- pointer ---
+  const local = (e) => { const r = el.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+  el.addEventListener('pointerdown', (e) => {
+    if (!zone.enabled || zone.mode) return;
+    e.preventDefault();
+    e.stopPropagation();
+    zone.pointerId = e.pointerId;
+    try { el.setPointerCapture(e.pointerId); } catch { /* capture is a nicety */ }
+    zone.mode = 'pointer';
+    el.classList.add('active');
+    const p = local(e);
+    // The rail is drawn from where the finger landed.
+    rail.style.left = `${p.x}px`; rail.style.top = `${p.y}px`;
+    zone.gesture.down(p.x, p.y, e.timeStamp);
+    if (haptic) haptic(6);
+    zone.feedback('');
+  });
+  el.addEventListener('pointermove', (e) => {
+    if (zone.mode !== 'pointer' || e.pointerId !== zone.pointerId) return;
+    e.preventDefault();
+    const list = typeof e.getCoalescedEvents === 'function' ? e.getCoalescedEvents() : null;
+    const samples = list && list.length ? list : [e];
+    let st = zone.gesture.state;
+    for (const s of samples) {
+      const p = local(s);
+      st = zone.gesture.move(p.x, p.y, s.timeStamp);
+      if (st.phase === PHASE.DONE || st.phase === PHASE.CANCELLED) break;
+    }
+    if (st.phase === PHASE.DONE) { try { el.releasePointerCapture(e.pointerId); } catch { /* fine */ } complete(st.result); return; }
+    if (st.phase === PHASE.CANCELLED) { cancelled(); return; }
+    if (st.phase === PHASE.BACK && haptic && st.depth >= 1 && !zone._buzzTop) { zone._buzzTop = true; haptic(8); }
+    if (st.phase !== PHASE.BACK) zone._buzzTop = false;
+    liveFromGesture(st);
+    draw(st.depth);
+  });
+  const end = (e) => {
+    if (zone.mode !== 'pointer' || e.pointerId !== zone.pointerId) return;
+    const p = local(e);
+    const st = e.type === 'pointercancel' ? zone.gesture.cancel() : zone.gesture.up(p.x, p.y, e.timeStamp);
+    if (st.phase === PHASE.DONE) complete(st.result); else cancelled();
+  };
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', end);
+  el.addEventListener('lostpointercapture', (e) => { if (zone.mode === 'pointer' && e.pointerId === zone.pointerId) end(e); });
+
+  // --- three-press meter (keyboard Space, gamepad A) ---
+  zone.meterPress = (t = performance.now()) => {
+    if (!zone.enabled) return;
+    if (zone.mode === 'pointer') return;
+    const st = zone.meter.press(t);
+    if (st.phase === PHASE.BACK) { zone.mode = 'meter'; el.classList.add('active'); rail.style.left = '50%'; rail.style.top = `${START}px`; zone.feedback(''); }
+    else if (st.phase === PHASE.DONE) complete(st.result);
+    else if (st.phase === PHASE.CANCELLED) cancelled();
+  };
+  el.addEventListener('keydown', (e) => { if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); e.stopPropagation(); if (!e.repeat) zone.meterPress(e.timeStamp); } });
+
+  // Called every frame: the meter animation and the power guide.
+  zone.update = () => {
+    if (zone.mode === 'meter') {
+      const t = performance.now();
+      const st = zone.meter.expire(t);
+      if (st.phase === PHASE.DONE) { complete(st.result); return; }
+      if (st.phase === PHASE.CANCELLED) { cancelled(); return; }
+      const m = zone.meter.meter(t);
+      if (st.phase === PHASE.BACK) setLive('back', clamp(m, 0, 1), clamp(m, 0, 1));
+      else setLive('down', clamp(m, 0, 1), st.power, 0, 0);
+      draw(m);
+    }
+    if (getIdeal) zone.setIdeal(getIdeal());
+  };
+  zone.relayout = () => { if (zone.box.h) zone.layout(zone.box); };
+  zone.flushLayout = flushLayout;
+  draw(0);
+  return zone;
+}

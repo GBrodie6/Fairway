@@ -34,17 +34,35 @@ export function createUI(app) {
       if (st.target && st.phase === 'aim') game.setAim(headingTo(st.ball.x, st.ball.z, st.target.x, st.target.z));
       ui.input.setLook(false);
     },
-    toggleLook: () => ui.input.setLook(!ui.input.look),
+    toggleLook: () => actions.lookHold(!(app.world && app.world.rig.mode === 'peek')),
+    // Hold to look: the camera rises and pans over the hole toward the landing area, and comes
+    // back to the ball when released.
+    lookHold: (on) => {
+      const w = app.world;
+      if (!w || !w.rig) return;
+      if (on && game.state.phase === 'aim') {
+        const st = game.state, p = st.prediction;
+        const land = p ? (p.carryPoint || p.end) : null;
+        w.rig.set('peek', { x: st.ball.x, z: st.ball.z, aim: st.aim, landing: land ? { x: land.x, z: land.z } : null, pin: w.terrain ? { x: w.terrain.pin.x, z: w.terrain.pin.z } : null });
+        ui.hud.setLook(true);
+      } else if (w.rig.mode === 'peek') {
+        game.returnToAddress();
+        ui.hud.setLook(false);
+      }
+    },
+    // The HUD's layout says where the ball goes on screen; the address camera frames it there.
+    onLayout: ({ ballY }) => { if (app.world && app.world.rig) { app.world.rig.ballScreenY = ballY; } },
     continue: () => game.continue(),
     escape: () => {
       if (ui.map.open) { ui.map.close(); return; }
+      if (ui.hud.clubListOpen()) { ui.hud.closeClubList(); return; }
       if (game.state.phase === 'replay') { game.endReplay(); return; }
       if (ui.modal) { ui.screens.back(); return; }
       if (game.state.round) ui.screens.pause();
     },
-    modalOpen: () => !!ui.modal || ui.map.open,
+    modalOpen: () => !!ui.modal || ui.map.open || (ui.hud && ui.hud.clubListOpen()),
   };
-  ui.hud = createHud(root, { game, settings, haptic, actions });
+  ui.hud = createHud(root, { game, settings, haptic, actions, getWorld });
   ui.map = createHoleMap(root, { getWorld, game, settings });
   ui.input = createInput({ view: app.engine.renderer.domElement.parentElement || app.engine.renderer.domElement, game, getWorld, settings, hud: ui.hud, actions, haptic });
   ui.screens = createScreens(root, { app, game, settings, ui, save: () => saveSettings(settings) });
@@ -99,6 +117,7 @@ export function createUI(app) {
   };
   ui.applySettings = () => {
     ui.hud.setLayout();
+    if (app.world && app.world.rig) app.world.rig.lefty = settings.handedness === 'left';
     if (app.world && app.world.overlays) app.world.overlays.setPalette(settings.colorblind);
     if (app.world && app.world.rig) app.world.rig.reducedMotion = app.motionReduced();
     if (app.world && app.world.ball) app.world.ball.setSpinViz(!!settings.spinViz);

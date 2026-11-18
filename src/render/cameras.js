@@ -25,7 +25,7 @@ export function createCameraRig(world, engine) {
     rig.enabled = true;
     const changed = mode !== rig.mode;
     rig.mode = mode; rig.ctx = ctx;
-    if (mode !== 'address' && mode !== 'free') { rig.yaw = 0; rig.pitch = 0; }
+    if (mode !== 'address' && mode !== 'free' && mode !== 'peek') { rig.yaw = 0; rig.pitch = 0; }
     if (mode === 'flyover') rig.fly = { t: 0, dur: ctx.duration || 6.5 };
     if (changed && (ctx.cut || rig.reducedMotion || mode === 'landing' || mode === 'side' || mode === 'high')) rig.cut = true;
     engine.post.state.dof.enabled = mode === 'flyover' || !!ctx.replay;
@@ -41,17 +41,37 @@ export function createCameraRig(world, engine) {
     if (!t) return;
     const b = rig.ballPos;
     if (rig.mode === 'address' || rig.mode === 'free') {
+      // Low and close behind the ball, so the club reads at address. Further back in portrait,
+      // where the screen is narrow, so a full backswing stays in frame. The pitch is solved so
+      // the ball sits where the HUD's layout wants it (just above the swing zone).
       const putt = !!c.putt;
-      const back = putt ? clamp(2.6 + (c.distance || 3) * 0.15, 2.8, 6.5) : 5.2, up = putt ? 1.35 + (c.distance || 3) * 0.05 : 2.1;
+      const portrait = camera.aspect < 1;
+      const back = putt ? clamp(2.6 + (c.distance || 3) * 0.15, 2.8, 6.5) : portrait ? 4.3 : 3.4;
+      const up = putt ? 1.35 + (c.distance || 3) * 0.05 : portrait ? 1.45 : 1.25;
       const h = (c.aim || 0) + rig.yaw;
       const fx = Math.sin(h), fz = -Math.cos(h);
       const cx = c.x - fx * back, cz = c.z - fz * back;
-      dPos.set(cx, Math.max(H(cx, cz) + 0.5, H(c.x, c.z) + up - 0.4) + (putt ? 0.35 : 0.4), cz);
-      const ahead = putt ? Math.max(1.5, (c.distance || 3) * 0.6) : 70;
-      const lx = c.x + fx * ahead, lz = c.z + fz * ahead;
-      const ly = putt ? H(lx, lz) + 0.1 : H(c.x, c.z) + 0.9 + (H(lx, lz) - H(c.x, c.z)) * 0.5;
-      dTgt.set(lx, ly + Math.tan(rig.pitch) * ahead, lz);
+      const by = H(c.x, c.z) + 0.02;
+      dPos.set(cx, Math.max(H(cx, cz) + 0.5, by + up), cz);
+      const ballFrac = clamp(rig.ballScreenY || 0.62, 0.3, 0.85);
+      const tanH = Math.tan((camera.fov * Math.PI) / 360);
+      const below = Math.atan2(dPos.y - by, back);
+      const pitch = below - Math.atan((2 * ballFrac - 1) * tanH) - rig.pitch;
+      const ahead = 60;
+      dTgt.set(dPos.x + fx * Math.cos(pitch) * ahead, dPos.y - Math.sin(pitch) * ahead, dPos.z + fz * Math.cos(pitch) * ahead);
       rig.posRate = 6; rig.tgtRate = 9;
+    } else if (rig.mode === 'peek') {
+      // Look around: rise and pan forward over the hole toward the landing area (or the pin),
+      // and look down at it. Releasing the button sets the address mode again.
+      const h = c.aim || 0, fx = Math.sin(h), fz = -Math.cos(h);
+      const l = c.landing || c.pin || { x: c.x + fx * 150, z: c.z + fz * 150 };
+      const L = Math.max(20, Math.hypot(l.x - c.x, l.z - c.z));
+      const px = c.x + (l.x - c.x) * 0.35 - fx * 6, pz = c.z + (l.z - c.z) * 0.35 - fz * 6;
+      const gy = t.inBounds(px, pz, 1) ? H(px, pz) : H(c.x, c.z);
+      dPos.set(px, Math.max(gy, H(c.x, c.z)) + 14 + L * 0.12, pz);
+      const ly = t.inBounds(l.x, l.z, 1) ? H(l.x, l.z) : gy;
+      dTgt.set(l.x + fx * 15, ly, l.z + fz * 15);
+      rig.posRate = 2.2; rig.tgtRate = 3;
     } else if (rig.mode === 'flyover') {
       const hole = world.holeData;
       rig.fly.t += dt;

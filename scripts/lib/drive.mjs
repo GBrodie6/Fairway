@@ -46,10 +46,11 @@ export async function createPointer(page, { touch = false } = {}) {
 // A swing on the stick: pull down to `power` over backMs, then push up through the start line
 // over downMs, drifting `drift` (fraction of travel) sideways at impact.
 export async function swing(page, pointer, { power = 0.7, backMs = 780, downMs = 260, drift = 0 } = {}) {
+  // Start on the swing zone's start line, under the chevron.
   const info = await page.evaluate(() => {
-    const st = window.__fw.ui.hud.stick;
-    const r = st.el.querySelector('.track').getBoundingClientRect();
-    return { x: r.x + r.width / 2, y: r.y + 30, travel: st.travel };
+    const z = window.__fw.ui.hud.zone;
+    const r = z.el.getBoundingClientRect();
+    return { x: r.x + r.width / 2, y: z.startY(), travel: z.travel };
   });
   const depth = Math.max(0.05, Math.min(1, power)) * info.travel;
   const pts = [{ x: info.x, y: info.y, t: 0 }];
@@ -78,10 +79,11 @@ export async function clickSel(page, pointer, selector) {
 }
 
 // Turn the aim to a heading the way a player makes a small correction: one slow drag across
-// the course (slow drags get the fine-aim gain), then a few taps on the fine-aim buttons
-// (0.25 degrees each) to finish. Timestamps are planned, so this is cheap under slow rendering.
-export async function aimTo(page, pointer, heading, { maxTaps = 6 } = {}) {
-  const STEP = 0.25 * Math.PI / 180;
+// the course (slow drags get the fine-aim gain), then a few fine-aim key presses (Shift and an
+// arrow key, 0.1 degrees each) to finish. Timestamps are planned, so this is cheap under slow
+// rendering.
+export async function aimTo(page, pointer, heading, { maxTaps = 14 } = {}) {
+  const STEP = 0.1 * Math.PI / 180;
   const delta = async () => {
     const aim = await page.evaluate(() => window.__fw.game.state.aim);
     let d = heading - aim;
@@ -107,9 +109,6 @@ export async function aimTo(page, pointer, heading, { maxTaps = 6 } = {}) {
     d = d2;
   }
   const n = Math.min(maxTaps, Math.round(Math.abs(d) / STEP));
-  if (n) {
-    const r = await rectOf(page, d > 0 ? '[aria-label="Aim right a little"]' : '[aria-label="Aim left a little"]');
-    if (r) for (let i = 0; i < n; i++) { await pointer.tap(r.x + r.w / 2, r.y + r.h / 2); taps++; }
-  }
+  if (n) for (let i = 0; i < n; i++) { await page.keyboard.press(d > 0 ? 'Shift+ArrowRight' : 'Shift+ArrowLeft'); taps++; }
   return { drags, taps, left: await delta() };
 }

@@ -212,6 +212,19 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
       look(p.x, H(p.x, p.z) + 1.4, p.z, q.x, H(q.x, q.z), q.z);
       return true;
     }
+    if (name === 'grass') {
+      // Ball height in the landing zone at the edge of the fairway, looking across the first
+      // cut into the rough: the near-camera blades at the distance a player sees them at address.
+      const i = Math.min(h.line.length - 1, Math.round(230 / h.lineStep));
+      const p = h.line[i], q = h.line[Math.min(h.line.length - 1, i + 1)];
+      const dl = Math.hypot(q.x - p.x, q.z - p.z) || 1, nx = -(q.z - p.z) / dl, nz = (q.x - p.x) / dl;
+      let edge = 0;
+      for (let d = 2; d < 60; d += 0.5) { const s = t.surfaceAt(p.x + nx * d, p.z + nz * d); if (s === 0 || s === 1 || s === 2) { edge = d; break; } }
+      if (!edge) return false;
+      const ex = p.x + nx * edge, ez = p.z + nz * edge, bx = ex - nx * 3, bz = ez - nz * 3;
+      look(bx - (q.x - p.x) / dl * 1.2, H(bx, bz) + 1.2, bz - (q.z - p.z) / dl * 1.2, ex + nx * 2, H(ex, ez), ez + nz * 2);
+      return true;
+    }
     if (name === 'greenclose') {
       // Standing on the green 4 m from the pin: grain, collar, and ball marks at putting range.
       const g = h.green;
