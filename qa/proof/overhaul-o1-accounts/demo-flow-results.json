@@ -1,0 +1,32 @@
+{
+ "mode": "demo",
+ "size": "390x844",
+ "signedIn": {
+  "user": true,
+  "account": {
+   "userId": "u1",
+   "email": "ana@example.com",
+   "displayName": "Ana Birdie"
+  }
+ },
+ "posted": "ok",
+ "board": [
+  "1. Ana Birdie-1"
+ ],
+ "afterSignOut": {
+  "user": false,
+  "account": null
+ },
+ "wrongPassword": "That email and password do not match.",
+ "signedBackIn": {
+  "userId": "u1",
+  "email": "ana@example.com",
+  "displayName": "Ana Birdie"
+ },
+ "afterDelete": {
+  "user": false,
+  "history": 0,
+  "account": null
+ },
+ "consoleErrors": []
+}

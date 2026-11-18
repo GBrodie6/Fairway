@@ -105,6 +105,9 @@ mishit = clamp(error x setting x club difficulty / sweet spot - 0.05, 0, 0.9)
 
 - Setting: relaxed 0.6, standard 1, pro 1.5. Club type: driver 1.0, woods 0.9, long irons
   0.85, mid irons 0.75, short irons 0.65, wedges 0.55, putter 0.3. Rarity multiplies it.
+- Feel target (the player's request: only a little harder than before): on standard, a
+  decent swing mishits rarely and most mishits are mild; relaxed stays close to the old game;
+  pro is the setting with real bite. The balance runs check the mishit rate per setting.
 - No mishit: Pured when the error is inside the sweet spot's pure window, otherwise Good.
 - Mishit kind follows the cause: face drift gives Heel or Toe (by side), a rushed or
   overswung tempo gives Thin or Fat (Fat more likely from sand and deep rough), and a rare

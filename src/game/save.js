@@ -6,7 +6,7 @@ import { validateRound } from './round.js';
 import { courseById } from '../course/courses.js';
 import { YARD } from '../core/math.js';
 
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 export const SAVE_KEY = 'fairway-next.save';
 const HISTORY_CAP = 100;
 
@@ -20,6 +20,10 @@ export function defaultSave() {
     daily: {},
     achievements: {},
     inProgress: null,
+    // v4: when this save last changed (for the cloud conflict rule) and the signed-in account
+    // on this device (null for a guest).
+    updatedAt: 0,
+    account: null,
   };
 }
 export function emptyStats() {
@@ -40,6 +44,8 @@ export const MIGRATIONS = {
     achievements: {},
   }),
   2: (s) => ({ ...s, version: 3, career: null, inProgress: null }),
+  // v4 added cloud sync metadata: updatedAt and the account link (none for an old save).
+  3: (s) => ({ ...s, version: 4, updatedAt: 0, account: null }),
 };
 
 export function migrateSave(raw) {
@@ -64,8 +70,14 @@ export function sanitizeSave(s) {
   out.achievements = s.achievements && typeof s.achievements === 'object' ? s.achievements : {};
   out.career = validateCareer(s.career) ? s.career : null;
   out.inProgress = s.inProgress && validateRound(s.inProgress).ok ? s.inProgress : null;
+  out.updatedAt = Number.isFinite(s.updatedAt) ? s.updatedAt : 0;
+  const a = s.account;
+  out.account = a && typeof a === 'object' && typeof a.userId === 'string' ? { userId: a.userId, email: String(a.email || ''), displayName: String(a.displayName || '').slice(0, 18) } : null;
   return out;
 }
+
+// Mark a save as changed now (the cloud conflict rule compares these times).
+export const touchSave = (save, now = Date.now()) => ({ ...save, updatedAt: now });
 
 const mem = new Map();
 const fallbackStorage = { getItem: (k) => (mem.has(k) ? mem.get(k) : null), setItem: (k, v) => mem.set(k, String(v)), removeItem: (k) => mem.delete(k) };

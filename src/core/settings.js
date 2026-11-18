@@ -24,6 +24,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   spinViz: false,
   powerGuide: true, // the gold power mark on the swing rail
   tutorialDone: false,
+  accountPromptSeen: false, // the optional account card after the first round
   stickScale: 1,
   showFps: false,
 });
@@ -134,5 +135,6 @@ export function readUrlParams(search = (typeof location !== 'undefined' ? locati
     noassets: flag('noassets'),
     fresh: flag('fresh'),
     online: flag('online'),
+    cloud: p.get('cloud') || undefined,
   };
 }

@@ -7,7 +7,7 @@ import { COURSES, courseById } from '../course/courses.js';
 import { TOD_ORDER } from '../render/timeOfDay.js';
 import { TIER_ORDER } from '../core/quality.js';
 import { hashString, createRng } from '../core/rng.js';
-import { loadSave, writeSave, recordRound, recordDaily, unlock, dayKey, statsSummary, ACHIEVEMENTS } from '../game/save.js';
+import { loadSave, writeSave, recordRound, recordDaily, unlock, dayKey, statsSummary, ACHIEVEMENTS, touchSave } from '../game/save.js';
 import {
   createCareer, profileFor, spendPoint, equip, nextEvent, completeEvent, currentTier, tierStandings, xpForLevel,
   ATTRIBUTES, ATTRIBUTE_INFO, EQUIPMENT, UNLOCK_LEVEL, unlocked, TIERS, simulateRivalRound,
@@ -23,7 +23,10 @@ export function installMenus(app, ui) {
   const screens = ui.screens;
   let save = loadSave();
   app.save = () => save;
-  const persist = () => writeSave(save);
+  // Every change is stamped (the cloud conflict rule compares times) and queued for sync.
+  const persist = () => { save = touchSave(save); writeSave(save); if (app.cloud) app.cloud.sync.schedule('change'); };
+  // Replace the whole save (cloud sync, restore, delete). Kept as given, not restamped.
+  app.setSave = (s) => { save = s; writeSave(save); };
   const sheet = (cls, ...kids) => h('div', { class: `sheet glass ${cls || ''}` }, ...kids);
   const btn = (label, onclick, cls = 'btn') => h('button', { class: cls, type: 'button', onclick }, label);
   const back = () => btn('Back', () => screens.back());
@@ -63,6 +66,9 @@ export function installMenus(app, ui) {
       field('Effects', range('s-sv', settings.sfxVolume, 0, 1, 0.05, (v) => { settings.sfxVolume = v; save2(); }), 's-sv'),
       field('Ambience', range('s-av', settings.ambientVolume, 0, 1, 0.05, (v) => { settings.ambientVolume = v; save2(); }), 's-av'),
       field('Music', check('s-mu', settings.musicEnabled, (v) => { settings.musicEnabled = v; if (v && !settings.musicVolume) settings.musicVolume = 0.4; save2(); }), 's-mu'),
+      h('h3', { class: 'h', text: 'Account and privacy' }),
+      h('div', { class: 'grid2' }, btn('Account and cloud save', () => screens.registry.account()), btn('Leaderboards', () => screens.registry.leaderboards())),
+      h('div', { class: 'grid2', style: { marginTop: '8px' } }, btn('Privacy', () => screens.registry.privacy()), btn('Delete my data', () => app.deleteMyData())),
       h('div', { class: 'grid2', style: { marginTop: '14px' } }, btn('Show the tutorial again', () => { settings.tutorialDone = false; app.saveSettings(); ui.hud.toast('The tutorial will show on your next shot', '', 2000); }), back()),
     );
   }));
@@ -316,7 +322,7 @@ export function installMenus(app, ui) {
     const scores = r.scores[0].filter(Number.isFinite);
     const course = courseById(r.courseId);
     const toPar = scores.reduce((a, s, i) => a + s - course.pars[r.holes[i]], 0);
-    if (context && context.kind === 'daily') save = recordDaily(save, context.key, { strokes: scores.reduce((a, b) => a + b, 0), toPar }, now);
+    if (context && context.kind === 'daily') { save = recordDaily(save, context.key, { strokes: scores.reduce((a, b) => a + b, 0), toPar }, now); if (app.postScore) app.postScore('daily', toPar); }
     if (context && context.kind === 'career' && save.career) {
       const rivalScores = {};
       r.players.forEach((p, i) => { if (p.kind === 'ai') rivalScores[p.id] = r.scores[i]; });
@@ -335,6 +341,11 @@ export function installMenus(app, ui) {
   };
   // Extra lines on the round-end screen for the context the round was played in.
   screens.roundEndExtra = () => {
+    const prompt = app.accountPrompt ? app.accountPrompt() : null;
+    const extra = roundEndContext();
+    return prompt || extra ? h('div', {}, extra, prompt) : null;
+  };
+  function roundEndContext() {
     if (context && context.kind === 'career' && screens.lastEvent) {
       const e = screens.lastEvent;
       const rows = e.board.slice(0, 5).map((b) => h('div', { class: 'item' }, h('span', { text: `${b.position}. ${b.name}` }), h('span', { text: `${b.total} (${fmtToPar(b.toPar)})` })));
@@ -353,7 +364,7 @@ export function installMenus(app, ui) {
         h('div', { style: { marginTop: '8px' } }, btn('Send your scores back', async (ev) => { const how = await share(url, 'Fairway Next challenge'); ev.target.textContent = how === 'copied' ? 'Link copied' : how === 'shared' ? 'Shared' : url; })));
     }
     return null;
-  };
+  }
   app.menuContext = () => context;
   return { simulateRivalRound };
 }

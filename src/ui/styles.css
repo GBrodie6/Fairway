@@ -116,7 +116,7 @@
 /* ---------- sheets and menus ---------- */
 .screen { position: absolute; inset: 0; display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; justify-items: center; pointer-events: auto; padding: calc(16px + var(--safe-t)) calc(16px + var(--safe-r)) calc(16px + var(--safe-b)) calc(16px + var(--safe-l)); background: linear-gradient(180deg, rgba(8, 14, 11, 0.16), rgba(8, 14, 11, 0.5)); opacity: 1; transition: opacity 0.3s ease; overflow-y: auto; }
 .screen.off { opacity: 0; pointer-events: none; }
-.sheet { width: min(560px, 100%); margin: auto; padding: 22px 20px; }
+.sheet { box-sizing: border-box; width: min(560px, 100%); margin: auto; padding: 22px 20px; }
 .sheet.wide { width: min(760px, 100%); }
 .title { font-weight: 300; font-size: clamp(28px, 7vw, 44px); letter-spacing: 0.3em; text-transform: uppercase; text-align: center; margin: 0 0 4px; text-indent: 0.3em; }
 .tag { text-align: center; color: var(--ink-dim); margin: 0 0 20px; font-size: 14px; }
@@ -137,7 +137,11 @@ h3.h { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform
 .field { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 4px 0; border-bottom: 1px solid var(--line); }
 .field:last-child { border-bottom: 0; }
 .field label, .field .lab { font-size: 15px; }
-.field select, .field input[type="text"] { font: inherit; color: var(--ink); background: rgba(255, 255, 255, 0.1); border: 1px solid var(--line); border-radius: 10px; min-height: 44px; padding: 0 10px; max-width: 58%; }
+.field input[type="text"], .field input[type="email"], .field input[type="password"] { flex: 1 1 auto; min-width: 0; width: 100%; }
+.field label { flex: 0 1 auto; }
+.list .item.me { outline: 1px solid var(--accent); }
+.card .grid2 .btn { min-height: 48px; }
+.field select, .field input[type="text"], .field input[type="email"], .field input[type="password"] { font: inherit; color: var(--ink); background: rgba(255, 255, 255, 0.1); border: 1px solid var(--line); border-radius: 10px; min-height: 44px; padding: 0 10px; max-width: 58%; }
 .field input[type="range"] { width: min(46%, 200px); accent-color: var(--accent); min-height: 36px; }
 .field input[type="checkbox"] { width: 24px; height: 24px; accent-color: var(--accent); }
 .field select option { color: #111; }
@@ -197,3 +201,5 @@ table.card-t .over { color: var(--warm); }
   .hud, .screen, .toast, .tab .warrow { transition: none; }
   .swingzone .chev { animation: none; }
 }
+.screen a { color: var(--accent); }
+

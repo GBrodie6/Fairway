@@ -69,6 +69,9 @@ export function createScreens(root, { app, game, settings, ui, save }) {
       h('div', { class: 'grid2' },
         screens.registry.stats ? btn('Stats and history', () => screens.registry.stats()) : null,
         screens.registry.settings ? btn('Settings', () => screens.registry.settings()) : null),
+      h('div', { class: 'grid2' },
+        screens.registry.leaderboards ? btn('Leaderboards', () => screens.registry.leaderboards()) : null,
+        screens.registry.account ? btn(app.cloud && app.cloud.client.user ? 'Account' : 'Account (optional)', () => screens.registry.account()) : null),
     ),
   ), { modal: true });
 
