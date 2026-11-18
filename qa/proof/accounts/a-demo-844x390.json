@@ -1,0 +1,93 @@
+{
+ "mode": "demo",
+ "size": "844x390",
+ "url": "http://127.0.0.1:34069",
+ "username": "fwtest247451",
+ "cloudEnabled": true,
+ "signupScreen": {
+  "fields": [
+   "a-user:text",
+   "a-pass:password",
+   "a-code:text",
+   ":file"
+  ],
+  "alt": "Security picture with 5 digits",
+  "lines": [
+   "Type the 5 digits you see",
+   "There is no email on this account, so a forgotten password cannot be reset."
+  ],
+  "emailAnywhere": false
+ },
+ "wrongCode": {
+  "status": "That code was wrong or expired. Here is a new picture.",
+  "newPicture": true
+ },
+ "signUp": {
+  "attempt": 1,
+  "digits": "26388"
+ },
+ "signedIn": {
+  "user": {
+   "id": "u3",
+   "username": "fwtest247451",
+   "app_metadata": {
+    "fairway": true
+   }
+  },
+  "account": {
+   "userId": "u3",
+   "username": "fwtest247451",
+   "displayName": "FWTEST247451"
+  }
+ },
+ "marker": 17061,
+ "synced": "Synced.",
+ "posted": "ok",
+ "board": [
+  "1. FWTEST247451287 yd"
+ ],
+ "boardHasMe": true,
+ "afterSignOut": {
+  "user": false,
+  "account": null
+ },
+ "markerAfterWipe": null,
+ "wrongPassword": "That username and password do not match.",
+ "signedBackIn": {
+  "account": {
+   "userId": "u3",
+   "username": "fwtest247451",
+   "displayName": "FWTEST247451"
+  },
+  "marker": 17061
+ },
+ "restored": true,
+ "afterDelete": {
+  "user": false,
+  "account": null,
+  "queue": null,
+  "session": null
+ },
+ "signInAfterDelete": "That username and password do not match.",
+ "accountGone": true,
+ "consoleErrorsByPhase": [
+  {
+   "phase": "start",
+   "errors": []
+  },
+  {
+   "phase": "sign-up (a misread picture is refused by the server)",
+   "errors": []
+  },
+  {
+   "phase": "signed in: save, score, board, sign out",
+   "errors": []
+  },
+  {
+   "phase": "sign in, restore, delete",
+   "errors": []
+  }
+ ],
+ "unexpectedConsoleErrors": [],
+ "consoleErrors": []
+}

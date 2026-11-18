@@ -16,6 +16,22 @@ npm run dev        # http://127.0.0.1:5173
 The processed CC0 assets are in the repository (`public/assets/`, listed in ASSETS.md).
 `npm run assets` downloads and processes them again from their sources.
 
+## Cloud accounts (optional)
+
+Accounts, cloud save, leaderboards and community holes use a Supabase project. The build reads
+two values at build time, from `.env.production` (committed) or the environment:
+
+```
+VITE_SUPABASE_URL=https://htyeqsnydoksmdwjxmqj.supabase.co
+VITE_SUPABASE_ANON_KEY=<the project's public anon key, in .env.production>
+```
+
+The anon key is public by design: row level security on the server decides what each player
+may read and write. No service role key is used or stored anywhere. Without these values the
+game builds with cloud features off and plays fully as a guest; `?cloud=demo` runs the account
+screens against an in-memory stand-in on the device. Accounts are a username and a password
+with a robot check at sign-up and no email (OVERHAUL.md, Accounts, has the design).
+
 ## Controls
 
 | | Touch | Mouse | Keyboard | Gamepad |

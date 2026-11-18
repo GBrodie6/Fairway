@@ -1,6 +1,9 @@
 // Casual leaderboards: daily challenge, weekly long drive, range target points, campaign level.
 // Everyone can read them; only signed-in players write, and every value is bounded on this
-// device before upload. They are not cheat-proof, and the screen says so.
+// device before upload. They are not cheat-proof, and the screen says so. The board's period
+// (a day, an ISO week, or all time) travels in the row's meta, since fairway_scores has no
+// period column.
+import { TABLES } from './tables.js';
 
 export const BOARDS = {
   daily: { id: 'daily', name: 'Daily challenge', unit: 'to par', lowerIsBetter: true, min: -9, max: 18, period: 'day' },
@@ -42,7 +45,7 @@ export async function fetchBoard(client, boardId, { t = Date.now(), limit = 25 }
   if (!b) return { error: 'unknown' };
   if (!client.configured) return { error: 'off' };
   const period = periodFor(boardId, t);
-  const r = await client.select('scores', `board=eq.${b.id}&period=eq.${encodeURIComponent(period)}&order=value.${b.lowerIsBetter ? 'asc' : 'desc'}&limit=${limit}&select=display_name,value,user_id`);
+  const r = await client.select(TABLES.scores, `board=eq.${encodeURIComponent(b.id)}&meta->>period=eq.${encodeURIComponent(period)}&order=value.${b.lowerIsBetter ? 'asc' : 'desc'}&limit=${limit}&select=display_name,value,user_id`);
   if (r.error) return r;
   // One row per player: the best one.
   const best = new Map();
@@ -59,5 +62,5 @@ export async function submitScore(client, boardId, value, displayName, t = Date.
   if (!client.user) return { error: 'session-expired' };
   const v = sanitizeScore(boardId, value);
   if (v === null) return { error: 'out-of-range' };
-  return client.insert('scores', [{ user_id: client.user.id, board: boardId, period: periodFor(boardId, t), value: v, display_name: String(displayName || 'Golfer').slice(0, 18) }]);
+  return client.insert(TABLES.scores, [{ user_id: client.user.id, board: boardId, value: v, display_name: String(displayName || 'Golfer').slice(0, 20), meta: { period: periodFor(boardId, t) } }]);
 }

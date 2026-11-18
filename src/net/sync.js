@@ -8,6 +8,7 @@
 //   queue     every push is queued in local storage first and flushed with a debounce; when
 //             offline it stays queued and is retried later, so offline play never blocks
 import { messageFor } from './supabase.js';
+import { TABLES, RPCS } from './tables.js';
 
 export const BACKUP_KEY = 'fairway-next.backups';
 export const QUEUE_KEY = 'fairway-next.syncqueue';
@@ -125,16 +126,14 @@ export function createSync({ client, getSave, applySave, storage, now = () => Da
 
   async function pull() {
     const user = client.user;
-    const r = await client.select('saves', `user_id=eq.${encodeURIComponent(user.id)}&select=data,updated_at`);
+    const r = await client.select(TABLES.saves, `user_id=eq.${encodeURIComponent(user.id)}&select=data,updated_at`);
     if (r.error) return r;
     const row = Array.isArray(r.data) ? r.data[0] : null;
     return { data: row ? row.data : null };
   }
   async function push(save) {
     const user = client.user;
-    const r = await client.upsert('saves', [{ user_id: user.id, data: cloudPayload(save), version: save.version, updated_at: new Date(save.updatedAt || now()).toISOString() }], 'user_id');
-    if (!r.error && save.account && save.account.displayName) await client.upsert('profiles', [{ user_id: user.id, display_name: save.account.displayName, updated_at: new Date(now()).toISOString() }], 'user_id');
-    return r;
+    return client.upsert(TABLES.saves, [{ user_id: user.id, data: cloudPayload(save), version: save.version, updated_at: new Date(save.updatedAt || now()).toISOString() }], 'user_id');
   }
 
   // Pull, resolve, and push if this device has the newer save.
@@ -178,25 +177,35 @@ export function createSync({ client, getSave, applySave, storage, now = () => Da
   }
 
   // After a sign-up or sign-in on this device: merge the guest save into the account.
-  sync.afterSignIn = async ({ displayName } = {}) => {
+  // created: a new account, whose profile row is made here with the username as typed.
+  sync.afterSignIn = async ({ displayName, created = false } = {}) => {
     const user = client.user;
     if (!user) return { error: 'session-expired' };
     set('syncing', '');
+    if (created && displayName) {
+      const pr = await client.upsert(TABLES.profiles, [{ id: user.id, display_name: String(displayName).slice(0, 20) }], 'id');
+      if (pr.error) return fail(pr.error);
+    }
     const remote = await pull();
     if (remote.error) return fail(remote.error);
     const local = getSave();
     const linkedElsewhere = local.account && local.account.userId && local.account.userId !== user.id;
     // The display name lives in the profile row (the save travels without the account part).
     if (!displayName) {
-      const pr = await client.select('profiles', `user_id=eq.${encodeURIComponent(user.id)}&select=display_name`);
+      const pr = await client.select(TABLES.profiles, `id=eq.${encodeURIComponent(user.id)}&select=display_name`);
       if (!pr.error && Array.isArray(pr.data) && pr.data[0]) displayName = pr.data[0].display_name;
+      else if (!pr.error && user.username) {
+        // An account from before its profile row existed: make it now.
+        displayName = user.username;
+        await client.upsert(TABLES.profiles, [{ id: user.id, display_name: displayName }], 'id');
+      }
     }
     let merged;
     if (!remote.data) merged = local; // a new account takes this device's progress
     else if (linkedElsewhere) { addBackup(storage, local, 'signed in to a different account', now()); merged = remote.data; }
     else merged = mergeSaves(local, remote.data);
-    const name = displayName || (merged.account && merged.account.displayName) || (local.account && local.account.displayName) || (merged.player && merged.player.name) || 'Golfer';
-    merged = { ...merged, updatedAt: now(), player: { ...(merged.player || {}), name }, account: { userId: user.id, email: user.email, displayName: name } };
+    const name = displayName || (merged.account && merged.account.displayName) || user.username || 'Golfer';
+    merged = { ...merged, updatedAt: now(), account: { userId: user.id, username: user.username || '', displayName: name } };
     applySave(merged, 'signed in');
     const p = await push(merged);
     if (p.error) return fail(p.error);
@@ -214,17 +223,38 @@ export function createSync({ client, getSave, applySave, storage, now = () => Da
     set(client.configured ? 'guest' : 'off', '');
   };
 
-  // Delete the account and its data in the cloud (when signed in) and everything on this device.
+  // Delete my data: the player's rows in every table (scores, save, profile), then the account
+  // itself (fairway_delete_my_account), then sign out and clear this device's sync state and
+  // progress. A guest delete wipes this device only.
   sync.deleteEverything = async (freshSave) => {
     if (client.configured && client.user) {
-      const r = await client.rpc('delete_my_account');
+      const id = encodeURIComponent(client.user.id);
+      for (const [table, q] of [[TABLES.scores, `user_id=eq.${id}`], [TABLES.saves, `user_id=eq.${id}`], [TABLES.profiles, `id=eq.${id}`]]) {
+        const d = await client.remove(table, q);
+        if (d.error) return { error: d.error, message: messageFor(d.error) };
+      }
+      const r = await client.rpc(RPCS.deleteMyAccount);
       if (r.error) return { error: r.error, message: messageFor(r.error) };
-      await client.signOut();
+      // The account is gone, so there is nothing to sign out of on the server.
+      await client.signOut({ local: true });
     }
     try { storage.removeItem(BACKUP_KEY); storage.removeItem(QUEUE_KEY); } catch { /* ignore */ }
+    if (timer) { clearTimer(timer); timer = null; }
+    sync.lastSync = 0;
     applySave(freshSave, 'deleted');
     set(client.configured ? 'guest' : 'off', '');
     return { data: true };
+  };
+
+  // Restore from a downloaded backup file (already parsed and migrated by the caller). The
+  // save it replaces is kept as a backup on this device first.
+  sync.restoreFromData = (data) => {
+    if (!isObj(data)) return false;
+    const cur = getSave();
+    addBackup(storage, cur, 'before restoring from a file', now());
+    applySave({ ...data, updatedAt: now(), account: cur.account }, 'restored from file');
+    sync.schedule('restore');
+    return true;
   };
 
   sync.backups = () => readBackups(storage, now());

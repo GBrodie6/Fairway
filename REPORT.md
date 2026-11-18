@@ -14,7 +14,7 @@ Supabase values were blank, so every account and cloud feature is built and test
 sync is dormant in this build: the game says "Cloud sync is off in this build", plays as a
 guest, keeps progress on the device, and the leaderboards say they need cloud sync. A build
 with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` set turns it on (schema and row level
-security in `supabase/schema.sql`); `?cloud=demo` runs the same screens against an in-memory
+security in `supabase/schema.sql`, since replaced by `supabase/README.md`); `?cloud=demo` runs the same screens against an in-memory
 stand-in on the device. Live sign-up with a real email was not verified. Design notes for every
 stage are in OVERHAUL.md. All verification ran on the production build in headless Chrome
 (SwiftShader software rendering), through real touch input.

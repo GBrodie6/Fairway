@@ -1,0 +1,86 @@
+{
+ "mode": "live",
+ "size": "390x844",
+ "url": "http://127.0.0.1:40637",
+ "username": "fwtest381601",
+ "cloudEnabled": true,
+ "signupScreen": {
+  "fields": [
+   "a-user:text",
+   "a-pass:password",
+   "a-code:text",
+   ":file"
+  ],
+  "alt": "Security picture with 5 digits",
+  "lines": [
+   "Type the 5 digits you see",
+   "There is no email on this account, so a forgotten password cannot be reset."
+  ],
+  "emailAnywhere": false
+ },
+ "wrongCode": {
+  "status": "That code was wrong or expired. Here is a new picture.",
+  "newPicture": true
+ },
+ "picture1": "That code was wrong or expired. Here is a new picture.",
+ "signUp": {
+  "attempt": 2,
+  "digits": "75313"
+ },
+ "signedIn": {
+  "user": {
+   "id": "43c1daef-bd2e-4b62-aaaa-d195cd06cd1d",
+   "username": "fwtest381601",
+   "app_metadata": {
+    "fairway": true
+   }
+  },
+  "account": {
+   "userId": "43c1daef-bd2e-4b62-aaaa-d195cd06cd1d",
+   "username": "fwtest381601",
+   "displayName": "FWTEST381601"
+  }
+ },
+ "marker": 302228,
+ "synced": "Synced.",
+ "posted": "ok",
+ "board": [
+  "1. FWTEST381601287 yd"
+ ],
+ "boardHasMe": true,
+ "afterSignOut": {
+  "user": false,
+  "account": null
+ },
+ "markerAfterWipe": null,
+ "wrongPassword": "That username and password do not match.",
+ "signedBackIn": {
+  "account": {
+   "userId": "43c1daef-bd2e-4b62-aaaa-d195cd06cd1d",
+   "username": "fwtest381601",
+   "displayName": "FWTEST381601"
+  },
+  "marker": 302228
+ },
+ "restored": true,
+ "afterDelete": {
+  "user": false,
+  "account": null,
+  "queue": null,
+  "session": null
+ },
+ "signInAfterDelete": "That username and password do not match.",
+ "accountGone": true,
+ "consoleErrors": [
+  "500 https://htyeqsnydoksmdwjxmqj.supabase.co/auth/v1/signup",
+  "Failed to load resource: the server responded with a status of 500 ()",
+  "500 https://htyeqsnydoksmdwjxmqj.supabase.co/auth/v1/signup",
+  "Failed to load resource: the server responded with a status of 500 ()",
+  "400 https://htyeqsnydoksmdwjxmqj.supabase.co/auth/v1/token?grant_type=password",
+  "Failed to load resource: the server responded with a status of 400 ()",
+  "403 https://htyeqsnydoksmdwjxmqj.supabase.co/auth/v1/logout",
+  "Failed to load resource: the server responded with a status of 403 ()",
+  "400 https://htyeqsnydoksmdwjxmqj.supabase.co/auth/v1/token?grant_type=password",
+  "Failed to load resource: the server responded with a status of 400 ()"
+ ]
+}

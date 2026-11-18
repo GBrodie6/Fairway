@@ -113,7 +113,8 @@ export function sanitizeSave(s) {
   out.trophies = Array.isArray(s.trophies) ? s.trophies.filter((t) => t && typeof t.name === 'string' && Number.isFinite(t.toPar)).slice(-40) : [];
   out.range = s.range && typeof s.range === 'object' && !Array.isArray(s.range) ? s.range : {};
   const a = s.account;
-  out.account = a && typeof a === 'object' && typeof a.userId === 'string' ? { userId: a.userId, email: String(a.email || ''), displayName: String(a.displayName || '').slice(0, 18) } : null;
+  // No email is kept: an account is a username (older saves drop their email field here).
+  out.account = a && typeof a === 'object' && typeof a.userId === 'string' ? { userId: a.userId, username: /^[a-z0-9_]{3,16}$/.test(a.username || '') ? a.username : '', displayName: String(a.displayName || '').slice(0, 20) } : null;
   return out;
 }
 

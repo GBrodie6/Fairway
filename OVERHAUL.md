@@ -68,28 +68,76 @@ All-Rounder (changeable once for free).
 
 ## Stage 1: accounts and cloud save
 
+Revised: accounts are a username and a password with a robot check, and there is no email
+anywhere. The first version used email and password with a magic link and password reset; all
+of that is gone (no email field, no magic link, no reset, no `VITE_EMAIL_FLOWS` flag).
+
+The design, and why:
+
+- Shared project. The Supabase project is shared with another app, so every table and
+  procedure of ours carries the `fairway_` prefix, and the names live in one file
+  (`src/net/tables.js`). The game never runs SQL; the server contract is in
+  `supabase/README.md`. Build-time settings: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
+  in `.env.production` (committed; the anon key is public by design, and no service role key
+  is used, requested or stored).
+- Usernames. 3 to 16 of a to z, 0 to 9 and _, lowercased from whatever is typed, and run
+  through the profanity filter. Every auth call maps the username to a private address,
+  `username@fairway.invalid` (a reserved domain that cannot receive mail). That address is
+  never shown and never kept on the device (the stored session keeps the user id, the username
+  and the game flag only). Passwords are 8 to 72 characters and at most 72 bytes. Validation
+  and mapping are pure functions in `src/net/account.js`.
+- Robot check. Sign-up calls `rpc('fairway_new_challenge')` for `{ id, svg }` and shows the
+  svg only as an img data URL (`encodeURIComponent`), never as markup, with the alt text
+  "Security picture with 5 digits" and the line "Type the 5 digits you see". A New picture
+  button works at most once every 3 seconds. The server accepts a picture once, for 10 minutes,
+  and not within 2 seconds of issuing it, so the screen waits out the rest of the 2 seconds
+  before it sends the answer.
+- Sign-up is `signUp({ email, password, options: { data: { app: 'fairway', username,
+  challenge_id, challenge_answer } } })`. `app: 'fairway'` tells the shared project's trigger
+  that this is a game account. Email confirmation is off, so a session comes back at once (and
+  if one does not, the screen signs in with the same details).
+- The player flag. The server sets `app_metadata.fairway = true` on accounts that passed the
+  check, and every write needs it. After sign-up or sign-in the client checks
+  `session.user.app_metadata.fairway === true` (one user fetch and token refresh if it is not
+  there yet). Without it the screen says "Cloud save is not available for this account" and the
+  game stays local-only. With it, sign-up creates the `fairway_profiles` row with
+  `display_name` set to the username as typed (at most 20 characters).
+- No password reset. With no email there is nothing to send a reset to, and the sign-up screen
+  says so in one line before the account is made: "There is no email on this account, so a
+  forgotten password cannot be reset." The account screen has Download backup (the save as a
+  JSON file) and Restore from file (the replaced save is kept as a backup on the device).
+- Errors are plain words, never raw server text: a wrong or expired code ("Robot check failed"
+  or "Database error saving new user") becomes "That code was wrong or expired. Here is a new
+  picture." and loads a new one; "User already registered" becomes "That username is taken.";
+  rate limits and network errors get their own plain lines.
+- Delete my data: the player's rows in `fairway_scores`, `fairway_saves` and
+  `fairway_profiles` (and, from the level creator on, their published holes), then
+  `rpc('fairway_delete_my_account')`, then sign out and clear this device's sync state (queue,
+  backups) and progress.
+- Columns are the server's: `fairway_profiles(id, display_name, created_at)`,
+  `fairway_saves(user_id, version, data, updated_at)`, `fairway_scores(id, user_id,
+  display_name, board, value, meta, created_at)`. The first client wrote `profiles.user_id`,
+  `profiles.updated_at` and `scores.period`, which the shared tables do not have, so the
+  profile row is keyed by `id` and a board's period (a day, an ISO week, or all time) travels
+  in `meta.period`, which the board filters on (`meta->>period=eq.<period>`).
+
+Unchanged from the first version:
+
 - Guest by default. After the first finished round, and from settings, a small card offers an
   account: "Keep your progress on any device". Never a wall.
-- Auth through Supabase's REST endpoints: sign up and sign in with email and password, magic
-  link, password reset, sign out, and delete account and data (an RPC with security definer
-  that removes the caller's rows and their auth user; see `supabase/schema.sql`).
-- Tables: `profiles(user_id, display_name, updated_at)`, `saves(user_id, data jsonb,
-  version, updated_at)`, `scores(id, user_id, board, period, value, display_name,
-  created_at)`. Row level security: everyone may read `scores` and `profiles`' display names;
-  only the owner may write their own rows.
 - Sync: the full save is pushed (debounced by 4 seconds) on round end, level-up, gear change,
   and sign-in. Conflict: compare `updated_at`; the newer save wins and the other is kept as a
-  local backup for 30 days, restorable from settings. On sign-up the guest save merges into
-  the account (progress-wise maximum: higher level and XP, union of gear and achievements,
-  better bests).
+  local backup for 30 days, restorable from the account screen. On sign-up the guest save
+  merges into the account (progress-wise maximum: higher level and XP, union of gear and
+  achievements, better bests).
 - Offline: every push goes into a queue in local storage and is retried with backoff when the
-  network returns. Plain messages for expired sessions ("Please sign in again"), rate limits
-  ("Too many tries, wait a minute"), and network errors ("Offline: saved on this device").
+  network returns. Plain messages for expired sessions, rate limits and network errors.
 - Leaderboards: daily challenge, weekly long drive, range target points, campaign level.
-  Readable by everyone, written only when signed in, and values are bounded client-side
-  before upload. The board says plainly that it is casual and not cheat-proof.
-- Without `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` at build time, the account UI says
-  cloud sync is off and the game is fully playable as a guest.
+  Readable by everyone, written only by signed-in game accounts, and values are bounded
+  client-side before upload. The board says plainly that it is casual and not cheat-proof.
+- Without the two build-time values, the account UI says cloud sync is off and the game is
+  fully playable as a guest. `?cloud=demo` runs the same screens against an in-memory stand-in
+  that follows the server's rules (`src/net/fakeSupabase.js`); nothing leaves the device.
 
 ## Stage 2: strike quality
 

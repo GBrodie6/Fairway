@@ -1,9 +1,10 @@
-// A small Supabase client over fetch: email and password auth, magic link, password reset,
-// sign out, session refresh, table reads and writes, and remote procedure calls. No SDK, so it
-// adds a few kilobytes, and it is unit tested with a fake fetch (tests/cloud.test.js).
+// A small Supabase client over fetch: password sign-up and sign-in (the address is the private
+// username@fairway.invalid mapping in net/account.js; there is no email flow), sign out,
+// session refresh, table reads and writes, and remote procedure calls. No SDK, so it adds a
+// few kilobytes, and it is unit tested with a fake fetch (tests/cloud.test.js).
 //
 // Only the public anon key is ever used. Row level security on the server decides what a
-// signed-in user may read and write (supabase/schema.sql). With no URL or key the client is
+// signed-in user may read and write (supabase/README.md). With no URL or key the client is
 // dormant: `configured` is false and every call resolves to { error: 'off' }.
 
 export const SESSION_KEY = 'fairway-next.session';
@@ -14,11 +15,10 @@ export const MESSAGES = {
   offline: 'You are offline. Your progress is saved on this device and will sync later.',
   'session-expired': 'Your session ended. Please sign in again.',
   'rate-limited': 'Too many tries. Please wait a minute and try again.',
-  'bad-credentials': 'That email and password do not match.',
-  'email-taken': 'An account with that email already exists. Try signing in.',
-  'weak-password': 'Please use a password of at least 8 characters.',
-  'bad-email': 'That email address does not look right.',
-  'not-confirmed': 'Please confirm your email first. Check your inbox for the link.',
+  'bad-credentials': 'That username and password do not match.',
+  taken: 'That username is taken.',
+  'weak-password': 'Please use a password of 8 to 72 characters.',
+  'no-cloud': 'Cloud save is not available for this account.',
   server: 'The server had a problem. Please try again in a moment.',
   unknown: 'Something went wrong. Please try again.',
 };
@@ -28,13 +28,19 @@ function codeFor(status, body) {
   const text = `${(body && (body.error_code || body.code || body.error || '')) || ''} ${(body && (body.msg || body.message || body.error_description || '')) || ''}`.toLowerCase();
   if (status === 429 || text.includes('rate limit')) return 'rate-limited';
   if (text.includes('invalid login') || text.includes('invalid_credentials') || text.includes('invalid grant')) return 'bad-credentials';
-  if (text.includes('already registered') || text.includes('user_already_exists') || text.includes('already exists')) return 'email-taken';
+  if (text.includes('already registered') || text.includes('user_already_exists') || text.includes('already exists')) return 'taken';
   if (text.includes('password') && (text.includes('short') || text.includes('weak') || text.includes('at least'))) return 'weak-password';
-  if (text.includes('email') && (text.includes('invalid') || text.includes('format'))) return 'bad-email';
-  if (text.includes('not confirmed') || text.includes('email_not_confirmed')) return 'not-confirmed';
   if (status === 401 || text.includes('jwt expired') || text.includes('invalid jwt')) return 'session-expired';
   if (status >= 500) return 'server';
   return 'unknown';
+}
+
+// What the game keeps about the signed-in user: the id, the username, and the game flag the
+// server sets after the robot check. Never the auth address.
+export function userOf(u) {
+  if (!u || !u.id) return null;
+  const meta = u.user_metadata || {};
+  return { id: String(u.id), username: typeof meta.username === 'string' ? meta.username : '', app_metadata: { fairway: !!(u.app_metadata && u.app_metadata.fairway === true) } };
 }
 
 const memStore = () => { const m = new Map(); return { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: (k) => m.delete(k) }; };
@@ -83,7 +89,7 @@ export function createSupabase({ url = '', anonKey = '', fetchImpl = typeof fetc
 
   function acceptSession(d) {
     if (!d || !d.access_token) return null;
-    const s = { access_token: d.access_token, refresh_token: d.refresh_token, expires_at: d.expires_at || Math.round(now() / 1000) + (d.expires_in || 3600), user: d.user ? { id: d.user.id, email: d.user.email } : session && session.user };
+    const s = { access_token: d.access_token, refresh_token: d.refresh_token, expires_at: d.expires_at || Math.round(now() / 1000) + (d.expires_in || 3600), user: d.user ? userOf(d.user) : session && session.user };
     setSession(s);
     return s;
   }
@@ -101,38 +107,29 @@ export function createSupabase({ url = '', anonKey = '', fetchImpl = typeof fetc
     onAuth(fn) { listeners.add(fn); return () => listeners.delete(fn); },
     request,
     // --- auth ---
-    async signUp(email, password, displayName) {
-      const r = await request('/auth/v1/signup', { method: 'POST', auth: false, body: { email, password, data: { display_name: displayName } } });
+    // The same shape as supabase.auth.signUp: { email, password, options: { data } }. Email
+    // confirmation is off in this project, so a session normally comes back at once; without
+    // one the caller signs in.
+    async signUp({ email, password, options = {} } = {}) {
+      const r = await request('/auth/v1/signup', { method: 'POST', auth: false, body: { email, password, data: options.data || {} } });
       if (r.error) return r;
-      // With email confirmation on there is no session yet.
       const s = acceptSession(r.data && r.data.session ? r.data.session : r.data);
-      return { data: { session: s, needsConfirmation: !s } };
+      return { data: { session: s, user: s ? s.user : userOf(r.data && (r.data.user || r.data)) } };
     },
     async signIn(email, password) {
       const r = await request('/auth/v1/token?grant_type=password', { method: 'POST', auth: false, body: { email, password } });
       if (r.error) return r;
       return { data: acceptSession(r.data) };
     },
-    async magicLink(email, redirectTo) {
-      return request('/auth/v1/otp', { method: 'POST', auth: false, body: { email, create_user: true, ...(redirectTo ? { options: { email_redirect_to: redirectTo } } : {}) } });
-    },
-    async resetPassword(email, redirectTo) {
-      return request('/auth/v1/recover', { method: 'POST', auth: false, body: { email, ...(redirectTo ? { redirect_to: redirectTo } : {}) } });
-    },
-    // A magic link or reset link lands with the tokens in the URL fragment.
-    acceptRedirect(hash) {
-      const p = new URLSearchParams(String(hash || '').replace(/^#/, ''));
-      if (!p.get('access_token')) return null;
-      return acceptSession({ access_token: p.get('access_token'), refresh_token: p.get('refresh_token'), expires_in: Number(p.get('expires_in')) || 3600 });
-    },
-    async updatePassword(password) { return request('/auth/v1/user', { method: 'PUT', body: { password } }); },
     async fetchUser() {
       const r = await request('/auth/v1/user');
-      if (!r.error && r.data && session) setSession({ ...session, user: { id: r.data.id, email: r.data.email } });
+      if (!r.error && r.data && session) setSession({ ...session, user: userOf(r.data) || session.user });
       return r;
     },
-    async signOut() {
-      if (configured && session) await request('/auth/v1/logout', { method: 'POST' });
+    // local: forget the session on this device only (after the account was deleted, when the
+    // server has nothing left to sign out of).
+    async signOut({ local = false } = {}) {
+      if (configured && session && !local) await request('/auth/v1/logout', { method: 'POST' });
       setSession(null);
       return { data: true };
     },
@@ -141,6 +138,8 @@ export function createSupabase({ url = '', anonKey = '', fetchImpl = typeof fetc
     select(table, query = '') { return request(`/rest/v1/${table}${query ? `?${query}` : ''}`, { headers: { Accept: 'application/json' } }); },
     upsert(table, rows, onConflict) { return request(`/rest/v1/${table}${onConflict ? `?on_conflict=${onConflict}` : ''}`, { method: 'POST', body: rows, headers: { Prefer: 'resolution=merge-duplicates,return=representation' } }); },
     insert(table, rows) { return request(`/rest/v1/${table}`, { method: 'POST', body: rows, headers: { Prefer: 'return=representation' } }); },
+    update(table, query, patch) { return request(`/rest/v1/${table}?${query}`, { method: 'PATCH', body: patch, headers: { Prefer: 'return=representation' } }); },
+    remove(table, query) { return request(`/rest/v1/${table}?${query}`, { method: 'DELETE', headers: { Prefer: 'return=minimal' } }); },
     rpc(fn, args = {}) { return request(`/rest/v1/rpc/${fn}`, { method: 'POST', body: args }); },
   };
   return client;
