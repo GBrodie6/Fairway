@@ -29,8 +29,40 @@ export const RARITY = {
 };
 // Every source of extra carry together (rarity, perks, stats) stops here.
 export const CARRY_CAP = 0.1;
+// A Good strike gets this share of the tier's carry bonus; a Pured strike gets all of it.
+export const GOOD_SHARE = 0.5;
+// Carry rises faster than ball speed. A Pured strike also adds the tier's spin, which costs a
+// little carry, so its speed bonus is 0.88 of the carry bonus. With no spin change (a Good
+// strike, and the carry the game shows) carry rises 1.17 to 1.38 times as fast as speed across
+// the bag, so 0.78 of the carry bonus lands within about half a point of it for every club.
+const SPEED_PER_CARRY = 0.88;
+const SPEED_PER_CARRY_NO_SPIN = 0.78;
+// The ball speed factor of a Good strike with a club of this tier (Common is exactly 1).
+export const goodStrikeFactor = (rarity) => 1 + (RARITY[rarity] || RARITY.common).bonus * GOOD_SHARE * SPEED_PER_CARRY_NO_SPIN;
+// The carry the game shows for a tier (club card, club list, power guide, aim fan) is the
+// carry you can expect from a clean strike: the share of the tier bonus is Good's half plus
+// the other half times how often your clean strikes are Pured. A golfer who mostly strikes it
+// Good sees about the Good carry; one who pures half of them sees the middle of the window.
+// Common is exactly 1 whatever the share, so the base carry ladder and its guide are untouched.
+export const DEFAULT_PURE_RATE = 0.2; // a new player's prior, about an average swing
+export const guideShare = (pureRate = DEFAULT_PURE_RATE) => GOOD_SHARE + (1 - GOOD_SHARE) * clamp(num(pureRate, DEFAULT_PURE_RATE), 0, 1);
+export const tierCarryFactor = (rarity, share = guideShare()) => 1 + (RARITY[rarity] || RARITY.common).bonus * clamp(num(share, GOOD_SHARE), GOOD_SHARE, 1) * SPEED_PER_CARRY_NO_SPIN;
+/**
+ * The running Pured rate among your clean (Pured or Good) full strikes: { rate, count }. It
+ * starts from the prior as if 10 strikes had been seen and then follows about the last 50.
+ * Mishits do not count; the guide is for a clean strike.
+ */
+export function noteStrike(mix, kind) {
+  const m = mix && Number.isFinite(mix.rate) ? mix : { rate: DEFAULT_PURE_RATE, count: 0 };
+  if (kind !== 'pured' && kind !== 'good') return m;
+  const count = Math.min(1e6, Math.floor(num(m.count)) + 1);
+  const rate = clamp(m.rate + ((kind === 'pured' ? 1 : 0) - m.rate) / Math.min(count + 10, 50), 0, 1);
+  return { rate, count };
+}
 // How much of the sideways error a pured higher-tier strike removes, at most.
-export const STRAIGHT_CAP = 0.35;
+export const STRAIGHT_CAP = 0.6;
+// Share of the sideways error removed per unit of tier bonus (Legendary 0.08 x 7 = 0.56).
+export const STRAIGHT_PER_BONUS = 7;
 // No strike leaves less than this share of the clean carry.
 export const CARRY_FLOOR = 0.4;
 
@@ -122,12 +154,16 @@ export function strikeModifiers(strike, ctx = {}) {
   const putter = ctx.clubId === 'PT';
   switch (strike && strike.kind) {
     case 'pured': {
-      // Carry rises a little faster than speed, so the speed bonus is slightly under the carry bonus.
+      // The tier's full carry bonus (plus any golfer perk), inside the cap.
       const bonus = Math.min(CARRY_CAP, rar.bonus + clamp(num(ctx.perkBonus), 0, 0.04));
-      m.speed = 1 + bonus * 0.88;
+      m.speed = 1 + bonus * SPEED_PER_CARRY;
       m.spin = rar.spin;
       break;
     }
+    case 'good':
+      // Half the tier's carry bonus (nothing for Common). Golfer perks stay pured-only.
+      m.speed = goodStrikeFactor(ctx.rarity);
+      break;
     case 'thin':
       m.speed = 1 - (0.05 + 0.12 * s); m.launch = 0.7 + 0.18 * (1 - s); m.spin = 0.6 + 0.3 * (1 - s); break;
     case 'fat':
@@ -160,7 +196,7 @@ export function applyStrike(launch, strike, ctx = {}) {
   // clubs are unchanged. Needs the aim (ctx.aim); without it nothing changes.
   if (strike && strike.kind === 'pured' && !launch.putt && Number.isFinite(ctx.aim)) {
     const rar = RARITY[ctx.rarity] || RARITY.common;
-    const straight = clamp(rar.bonus * 4, 0, STRAIGHT_CAP);
+    const straight = clamp(rar.bonus * STRAIGHT_PER_BONUS, 0, STRAIGHT_CAP);
     if (straight > 0) {
       const off = Math.atan2(Math.sin(out.heading - ctx.aim), Math.cos(out.heading - ctx.aim));
       out.heading = ctx.aim + off * (1 - straight);

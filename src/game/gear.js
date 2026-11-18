@@ -13,7 +13,7 @@ export const TIERS = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
 // Original model names, finishes, and glow per tier (no maker's names or marks).
 export const TIER_INFO = {
   common: { name: 'Common', model: 'Meadow', color: '#b9c0c6', head: 0xb9bec3, crown: 0x1d3328, glow: 0x000000, glowStrength: 0, text: 'Satin steel. Forgiving and honest.' },
-  uncommon: { name: 'Uncommon', model: 'Harrow', color: '#7fd69a', head: 0xa9c8b2, crown: 0x1f4a33, glow: 0x3d9e5c, glowStrength: 0.12, text: 'Green-tinted steel. A touch more pop and a straighter flight when pured.' },
+  uncommon: { name: 'Uncommon', model: 'Harrow', color: '#7fd69a', head: 0xa9c8b2, crown: 0x1f4a33, glow: 0x3d9e5c, glowStrength: 0.12, text: 'Green-tinted steel. A touch more carry, and a straighter flight when pured.' },
   rare: { name: 'Rare', model: 'Kingfisher', color: '#6fb6ff', head: 0x8fb4d8, crown: 0x14304f, glow: 0x2f7fd0, glowStrength: 0.22, text: 'Blue anodized finish. Livelier and straighter from the middle, less forgiving.' },
   epic: { name: 'Epic', model: 'Ember', color: '#c08bff', head: 0xb79ad8, crown: 0x30184a, glow: 0x8a4fd8, glowStrength: 0.35, text: 'Violet finish with a soft glow. Rewards a clean strike.' },
   legendary: { name: 'Legendary', model: 'Solstice', color: '#ffd166', head: 0xe8c66a, crown: 0x4a3410, glow: 0xffb830, glowStrength: 0.5, text: 'Gold finish. Long and spinny from the middle, unforgiving off it.' },

@@ -39,83 +39,97 @@ overhaul pass unchanged. No em dashes were written.
 
 ### Balance tables (qa/balance.md)
 
+Revised after the overhaul: the tier carry bonus now applies at half strength on a Good strike
+and full strength on a Pured one, and the club card and power guide show the tier's carry for
+a clean strike at the player's own Pured rate (OVERHAUL.md, stage 3 and stage 9). The tables
+below are from that build, 400 rounds per cell; the tables before the change, from the same
+simulator on the previous commit, are in qa/balance-before.md.
+
 Method: the simulated golfer plans like the AI and swings with a fixed human-like error model
-(skill 0.6 is an average swing). 9-hole rounds rotate through all five courses and both nines;
-round i is the same course, wind and dice in every cell, so differences come from the cells.
-200 rounds per cell; per-18 values are twice the 9-hole means.
+(skill 0.35 poor, 0.6 average, 0.9 skilled). 9-hole rounds rotate through all five courses and
+both nines; round i is the same course, wind and dice in every cell, so differences come from
+the cells. Per-18 values are twice the 9-hole means.
 
-#### Archetypes at level 5 (average 6.03 over par per 18)
-
-| Archetype | Over par per 18 | vs average | Pured % | Mishit % | Putts per 9 | Within 1.5 |
-| --- | --- | --- | --- | --- | --- | --- |
-| Power Hitter | 6.43 | +0.4 | 24.3 | 3.2 | 16.56 | yes |
-| Sharpshooter | 4.97 | -1.06 | 24.6 | 3.3 | 16.38 | yes |
-| Short Game Artist | 6.37 | +0.34 | 23.2 | 3.9 | 16.41 | yes |
-| Putting Specialist | 6.34 | +0.31 | 22.4 | 3.7 | 16.48 | yes |
-| Links Player | 6.32 | +0.29 | 22.6 | 3.8 | 16.7 | yes |
-| All-Rounder | 5.74 | -0.29 | 23.1 | 3.8 | 16.37 | yes |
-
-#### Archetypes at level 15 (average 5.35 over par per 18)
+#### Archetypes at level 5 (average 6.17 over par per 18)
 
 | Archetype | Over par per 18 | vs average | Pured % | Mishit % | Putts per 9 | Within 1.5 |
 | --- | --- | --- | --- | --- | --- | --- |
-| Power Hitter | 5.9 | +0.55 | 27.4 | 2.8 | 16.73 | yes |
-| Sharpshooter | 4.15 | -1.2 | 28.2 | 2.8 | 16.48 | yes |
-| Short Game Artist | 5.76 | +0.41 | 25.3 | 3.7 | 16.56 | yes |
-| Putting Specialist | 5.7 | +0.35 | 25 | 3.5 | 16.5 | yes |
-| Links Player | 5.4 | +0.05 | 24.7 | 3.1 | 16.45 | yes |
-| All-Rounder | 5.17 | -0.18 | 25.5 | 3.5 | 16.59 | yes |
+| Power Hitter | 6.28 | +0.11 | 24.6 | 3.3 | 16.63 | yes |
+| Sharpshooter | 5.48 | -0.69 | 24.8 | 3.6 | 16.59 | yes |
+| Short Game Artist | 6.39 | +0.22 | 23.5 | 4 | 16.65 | yes |
+| Putting Specialist | 6.54 | +0.37 | 22.9 | 3.9 | 16.62 | yes |
+| Links Player | 6.64 | +0.47 | 22.3 | 4.1 | 16.68 | yes |
+| All-Rounder | 5.7 | -0.47 | 23.4 | 4 | 16.4 | yes |
 
-#### Archetypes at level 30 (average 3.86 over par per 18)
+#### Archetypes at level 15 (average 5.49 over par per 18)
 
 | Archetype | Over par per 18 | vs average | Pured % | Mishit % | Putts per 9 | Within 1.5 |
 | --- | --- | --- | --- | --- | --- | --- |
-| Power Hitter | 5.19 | +1.33 | 28 | 2.7 | 16.64 | yes |
-| Sharpshooter | 3.24 | -0.62 | 28.8 | 2.8 | 16.25 | yes |
-| Short Game Artist | 3.44 | -0.42 | 27.1 | 3 | 16.02 | yes |
-| Putting Specialist | 3.62 | -0.24 | 28.5 | 3.4 | 16.14 | yes |
-| Links Player | 4.14 | +0.28 | 27.3 | 3.5 | 16.38 | yes |
-| All-Rounder | 3.54 | -0.32 | 28.1 | 3.3 | 16.13 | yes |
+| Power Hitter | 6.29 | +0.8 | 26.6 | 2.9 | 16.75 | yes |
+| Sharpshooter | 4.2 | -1.29 | 27.4 | 3.1 | 16.43 | yes |
+| Short Game Artist | 6.04 | +0.55 | 25.4 | 3.8 | 16.54 | yes |
+| Putting Specialist | 5.61 | +0.12 | 25.3 | 3.5 | 16.39 | yes |
+| Links Player | 5.4 | -0.09 | 25.1 | 3.3 | 16.54 | yes |
+| All-Rounder | 5.39 | -0.1 | 25.7 | 3.5 | 16.59 | yes |
 
-#### Club tiers for an average swing (skill 0.6), paired against Common
+#### Archetypes at level 30 (average 4.05 over par per 18)
 
-| Tier | Over par per 18 | Difference vs Common | 95% interval | Pured % | Mishit % | Strictly better than Common |
+| Archetype | Over par per 18 | vs average | Pured % | Mishit % | Putts per 9 | Within 1.5 |
 | --- | --- | --- | --- | --- | --- | --- |
-| common | 6.85 | +0 | 0 to 0 | 22.4 | 3.7 | no |
-| uncommon | 6.62 | -0.23 | -0.92 to 0.46 | 19.1 | 4.5 | no |
-| rare | 7.13 | +0.28 | -0.54 to 1.1 | 15.7 | 5.8 | no |
-| epic | 7.58 | +0.73 | -0.06 to 1.52 | 12 | 7.9 | no |
-| legendary | 8.06 | +1.21 | 0.39 to 2.03 | 9 | 9.4 | no |
+| Power Hitter | 5.22 | +1.17 | 28.6 | 2.9 | 16.74 | yes |
+| Sharpshooter | 3.85 | -0.2 | 29.1 | 3 | 16.39 | yes |
+| Short Game Artist | 3.63 | -0.42 | 27.7 | 3.1 | 16.1 | yes |
+| Putting Specialist | 3.68 | -0.37 | 28.4 | 3.2 | 16.16 | yes |
+| Links Player | 4.13 | +0.08 | 27.8 | 3.4 | 16.39 | yes |
+| All-Rounder | 3.81 | -0.24 | 28.2 | 3.2 | 16.3 | yes |
 
-#### Club tiers for a skilled swing (skill 0.9), paired against Common
+#### Club tiers, poor swing (skill 0.35): strokes per 18 against Common
 
-| Tier | Over par per 18 | Difference vs Common | 95% interval | Pured % | Mishit % | Strictly better than Common |
-| --- | --- | --- | --- | --- | --- | --- |
-| common | -3.09 | +0 | 0 to 0 | 73.3 | 0.6 | no |
-| uncommon | -2.82 | +0.27 | -0.4 to 0.94 | 67 | 0.7 | no |
-| rare | -1.65 | +1.44 | 0.7 to 2.18 | 61 | 1 | no |
-| epic | 0.43 | +3.52 | 2.75 to 4.29 | 53 | 1.1 | no |
-| legendary | 1.79 | +4.88 | 4.03 to 5.73 | 44.6 | 1.6 | no |
+| Tier | Plans with the base carry | Plans for the tier's carry | Pured % | Good % | Mishit % |
+| --- | --- | --- | --- | --- | --- |
+| common | 0 (0 to 0) | 0 (0 to 0) | 10.6 | 80.2 | 9.1 |
+| uncommon | +0.42 (-0.34 to 1.19) | +0.17 (-0.54 to 0.88) | 8.5 | 81.3 | 10.2 |
+| rare | +0.57 (-0.18 to 1.32) | +0.16 (-0.6 to 0.92) | 6.3 | 81 | 12.7 |
+| epic | +0.69 (-0.08 to 1.47) | -0.35 (-1.1 to 0.39) | 5.1 | 80.6 | 14.2 |
+| legendary | +1.79 (0.97 to 2.62) | +0.89 (0.1 to 1.67) | 3.8 | 78.9 | 17.3 |
 
-#### Club tiers for a skilled swing that plans for the tier's usual extra carry, paired against Common
+Common plays 15.3 over par per 18 for this swing.
 
-| Tier | Over par per 18 | Difference vs Common | 95% interval | Pured % | Mishit % | Strictly better than Common |
-| --- | --- | --- | --- | --- | --- | --- |
-| common | -3.09 | +0 | 0 to 0 | 73.3 | 0.6 | no |
-| uncommon | -2.91 | +0.18 | -0.48 to 0.84 | 68.2 | 0.8 | no |
-| rare | -2.55 | +0.54 | -0.25 to 1.33 | 62 | 0.6 | no |
-| epic | -2.18 | +0.91 | 0.19 to 1.63 | 56 | 1.1 | no |
-| legendary | -0.81 | +2.28 | 1.59 to 2.97 | 48.4 | 1.7 | no |
+#### Club tiers, average swing (skill 0.6): strokes per 18 against Common
 
-#### Difficulty settings (Common clubs, level 1)
+| Tier | Plans with the base carry | Plans for the tier's carry | Pured % | Good % | Mishit % |
+| --- | --- | --- | --- | --- | --- |
+| common | 0 (0 to 0) | 0 (0 to 0) | 23 | 73 | 4 |
+| uncommon | -0.21 (-0.83 to 0.4) | -0.14 (-0.75 to 0.47) | 19.5 | 75.6 | 4.8 |
+| rare | -0.17 (-0.82 to 0.47) | -0.79 (-1.4 to -0.17) | 16.2 | 77.8 | 6 |
+| epic | +0.77 (0.09 to 1.45) | -0.21 (-0.86 to 0.44) | 13.1 | 79.7 | 7.3 |
+| legendary | +1.97 (1.3 to 2.63) | +0.12 (-0.5 to 0.73) | 10.1 | 80.3 | 9.6 |
+
+Common plays 6.83 over par per 18 for this swing.
+
+#### Club tiers, skilled swing (skill 0.9): strokes per 18 against Common
+
+| Tier | Plans with the base carry | Plans for the tier's carry | Pured % | Good % | Mishit % |
+| --- | --- | --- | --- | --- | --- |
+| common | 0 (0 to 0) | 0 (0 to 0) | 73.1 | 26.3 | 0.6 |
+| uncommon | +0.09 (-0.4 to 0.57) | -0.29 (-0.74 to 0.15) | 69.2 | 30.1 | 0.7 |
+| rare | +1.69 (1.12 to 2.25) | -0.8 (-1.28 to -0.31) | 63.5 | 35.6 | 1 |
+| epic | +3.38 (2.83 to 3.92) | -0.6 (-1.09 to -0.11) | 56.7 | 42.2 | 1.1 |
+| legendary | +5.4 (4.79 to 6.01) | -0.7 (-1.21 to -0.19) | 49.5 | 49.1 | 1.4 |
+
+Common plays -2.73 over par per 18 for this swing.
+
+#### Difficulty settings (Common clubs, level 1, average swing)
 
 | Setting | Over par per 18 | Pured % | Mishit % | Shank % |
 | --- | --- | --- | --- | --- |
-| relaxed | 6.47 | 60.4 | 0.4 | 0 |
-| standard | 6.85 | 22.4 | 3.7 | 0 |
-| pro | 7.78 | 8.6 | 10.3 | 0 |
+| relaxed | 6.36 | 60 | 0.5 | 0 |
+| standard | 6.83 | 23 | 4 | 0 |
+| pro | 7.72 | 8.9 | 10.1 | 0 |
 
-Result: archetypes within 1.5 strokes: yes. No tier strictly better than Common for an average swing: yes. Run time 61 s.
+Legendary against Common, planning for the tier's carry: poor +0.89, average +0.12, skilled -0.7 strokes per 18. Targets: skilled 0.5 to 1.5 better met; average within 0.5 met; poor costs strokes met.
+Archetypes within 1.5 strokes of their level's average: yes.
+Run time 158 s.
 
 ### Deploy
 
@@ -139,10 +153,10 @@ Result: archetypes within 1.5 strokes: yes. No tier strictly better than Common 
    the cause clear.
 3. Fairness of penalties: whether thin, fat, heel, toe and the rare shank read as earned
    (the card names a cause), and whether pro feels harsh but fair.
-4. Club tiers: in simulation higher tiers cost strokes for every swing tested, because their
-   pured-only carry adds distance scatter; their reward is maximum distance (long drive, reaching
-   long par 5s). Whether players feel that trade is worth making, or the bonus should be
-   predictable carry, is a design call.
+4. Club tiers (revised): with the half-on-Good rule and a guide that follows your Pured rate,
+   Legendary now helps a skilled swing (-0.70 per 18), is level for an average one and costs a
+   poor one. Whether the club card's carry creeping up as you pure more reads as a reward or as
+   confusing, and whether Rare helping an average player (-0.79) is welcome, need a person.
 5. Progression pacing: about 10 campaign events to level 10 and about 90 to level 40, one gear
    token per round (3 a day) plus quests, drills and first clears, the season track at 300 XP a
    tier. Whether it feels generous or slow over a week of play.

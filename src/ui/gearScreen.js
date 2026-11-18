@@ -8,13 +8,13 @@ import {
   TIERS, TIER_INFO, BALLS, GLOVES, clubStats, clubName, equipClub, equipItem, openDrop, DROP_ODDS, PITY_ODDS, PITY_AT, ITEM_ODDS,
   SHARDS_FOR_DUPLICATE, UPGRADE_COST, upgradeClub, dropsUntilPity, STARTER_IDS,
 } from '../game/gear.js';
-import { RARITY } from '../game/strike.js';
+import { RARITY, GOOD_SHARE, guideShare } from '../game/strike.js';
 
 // Coins come from tournament purses (earned, never bought).
 const COINS_PER_TOKEN = 300;
 const STAT_NAMES = { power: 'Power', spin: 'Spin', forgiveness: 'Forgiveness', difficulty: 'Difficulty' };
 const STAT_HELP = {
-  power: 'Extra carry on a pured strike.',
+  power: 'Extra carry: half of it on a Good strike, all of it when pured.',
   spin: 'Extra spin on a pured strike.',
   forgiveness: 'Size of the sweet spot.',
   difficulty: 'How much a mishit costs.',
@@ -47,16 +47,19 @@ export function installGear(app, ui) {
         other == null ? null : h('em', { style: { left: `${other}%` } })),
       h('b', { class: delta == null || delta === 0 ? '' : (stat === 'difficulty' ? delta < 0 : delta > 0) ? 'up' : 'down', text: delta == null || delta === 0 ? String(value) : `${value} (${delta > 0 ? '+' : ''}${delta})` }));
   }
-  const pureCarry = (clubId, rarity) => {
+  // Carry for a Good strike, a Pured strike, and the middle the club card and power guide use.
+  const carries = (clubId, rarity) => {
     const spec = CLUB_SPECS.find((c) => c.id === clubId);
-    return spec && spec.carry ? Math.round(spec.carry * (1 + RARITY[rarity].bonus)) : null;
+    if (!spec || !spec.carry) return null;
+    const b = RARITY[rarity].bonus, mix = app.save().strikeMix;
+    return { good: Math.round(spec.carry * (1 + b * GOOD_SHARE)), pured: Math.round(spec.carry * (1 + b)), shown: Math.round(spec.carry * (1 + b * guideShare(mix ? mix.rate : undefined))), base: spec.carry, rate: mix ? mix.rate : null };
   };
   const statBlock = (clubId, rarity, vs) => {
     const s = clubStats(rarity), o = vs ? clubStats(vs) : null;
-    const carry = pureCarry(clubId, rarity);
+    const carry = carries(clubId, rarity);
     return h('div', { class: 'stats' },
       ...Object.keys(STAT_NAMES).map((k) => bar(k, s[k], o ? o[k] : null)),
-      carry ? h('p', { class: 'muted small', text: `Pured carry about ${carry} yd (Common ${pureCarry(clubId, 'common')} yd). Sweet spot ${Math.round(RARITY[rarity].sweet * 100)} percent of Common.` }) : null);
+      carry ? h('p', { class: 'muted small', text: RARITY[rarity].bonus ? `Carry about ${carry.good} yd on a Good strike and ${carry.pured} yd pured (Common ${carry.base} yd). The club button and power guide use ${carry.shown} yd, your carry ${carry.rate == null ? 'at an average Pured rate' : `at your Pured rate (${Math.round(carry.rate * 100)} percent of clean strikes lately)`}. Sweet spot ${Math.round(RARITY[rarity].sweet * 100)} percent of Common.` : `Carry about ${carry.base} yd, Good or Pured. The most forgiving sweet spot.` }) : null);
   };
 
   // ---------- the bag ----------
@@ -107,7 +110,7 @@ export function installGear(app, ui) {
             h('div', {}, h('h3', { class: 'h small' }, tierChip(inBag.rarity), ' In the bag'), statBlock(clubId, inBag.rarity)),
             h('div', {}, h('h3', { class: 'h small' }, tierChip(cmp.rarity), ' Compared'), statBlock(clubId, cmp.rarity, inBag.rarity)))
           : h('div', {}, h('h3', { class: 'h small' }, tierChip(inBag.rarity), ` ${TIER_INFO[inBag.rarity].model}, in the bag`), statBlock(clubId, inBag.rarity)),
-        h('p', { class: 'muted small', text: 'From the middle of the face, higher tiers fly a little further and straighter (up to 8 percent carry and a third less sideways error for Legendary). The sweet spot is smaller and mishits cost more. Common is the most forgiving.' }),
+        h('p', { class: 'muted small', text: 'Higher tiers carry further: half the tier bonus on a Good strike and all of it when pured (Legendary +4 and +8 percent), and a pured strike also flies straighter (about half the sideways error for Legendary). The club button and power guide show your carry in that window, from how often you pure it. The sweet spot is smaller and mishits cost more. Common is the most forgiving.' }),
         h('div', { class: 'list' }, ...rows),
         h('p', { class: 'muted small', text: `Upgrades use shards. Duplicates from drops become shards (${TIERS.map((t) => `${TIER_INFO[t].name} ${SHARDS_FOR_DUPLICATE[t]}`).join(', ')}).` }),
         h('div', { class: 'grid2' }, back(), btn('Bag', () => { tab = 'bag'; screens.registry.gear(); })));

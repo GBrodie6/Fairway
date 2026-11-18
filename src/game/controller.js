@@ -16,7 +16,7 @@ import { scoreName } from './scoring.js';
 import { DECAL } from '../render/decals.js';
 import { courseById } from '../course/courses.js';
 import { fin } from '../core/guards.js';
-import { strikeResult, applyStrike } from './strike.js';
+import { strikeResult, applyStrike, tierCarryFactor, guideShare } from './strike.js';
 import { bayBall, targetFor } from '../course/range.js';
 import { EXTRA_SHOTS } from './shots.js';
 
@@ -124,7 +124,7 @@ export function createGame(app) {
   };
   function rangeAim() {
     const t = W().terrain, rg = state.range, hole = t.hole;
-    const carry = state.club.putter ? 0 : nominalCarry(state.club, state.profile, state.shotType);
+    const carry = state.club.putter ? 0 : nominalCarry(state.club, guideProfile(state.club), state.shotType);
     const tg = rg.targetYards ? hole.targets.find((x) => x.yards === rg.targetYards) || hole.targets[0] : targetFor(hole, rg.carryYards ? rg.carryYards * YARD : carry);
     state.rangeTarget = tg;
     // The physics cup and the distance readout follow the chosen target.
@@ -230,7 +230,7 @@ export function createGame(app) {
       w.overlays.showPutt({ path: r.points });
     } else {
       const power = game.suggestedPower();
-      const r = predictShot(t, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aim, power, profile: state.profile }, windAt, state.clock);
+      const r = predictShot(t, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aim, power, profile: guideProfile(state.club) }, windAt, state.clock);
       state.prediction = r; state.putt = null;
       const wRel = windRelative(state.wind, state.aim, state.clock);
       const disp = dispersion(state.club, state.lie, { windMps: Math.hypot(wRel.along, wRel.cross), profile: state.profile, shotType: state.shotType });
@@ -245,7 +245,7 @@ export function createGame(app) {
     if (state.club.putter || !state.target) { state.idealPower = 0.5; return; }
     // Solve for where the ball stops, not where it lands: with only part of the roll allowed
     // for, approaches to firm or downhill greens ran 20 yards past the pin in play tests.
-    state.idealPower = solvePower(W().terrain, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aimRef, profile: state.profile }, windAt, state.clock, state.target, 'end');
+    state.idealPower = solvePower(W().terrain, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aimRef, profile: guideProfile(state.club) }, windAt, state.clock, state.target, 'end');
   }
   game.suggestedPower = () => {
     if (state.club.putter) return state.putt ? state.putt.idealPower : 0.5;
@@ -275,7 +275,7 @@ export function createGame(app) {
     pickClub(allow[clamp(i + Math.sign(delta), 0, allow.length - 1)]);
   };
   // Full carry in meters for a club with the current profile and shot type (what the HUD shows).
-  game.clubCarry = (club) => (club.putter ? 0 : nominalCarry(club, state.profile, state.shotType));
+  game.clubCarry = (club) => (club.putter ? 0 : nominalCarry(club, guideProfile(club), state.shotType));
   const rangeClub = () => { if (state.range && state.round && state.round.mode === 'range') { state.range.clubId = state.club.id; if (!state.range.targetYards && !state.range.carryYards && state.phase === 'aim') rangeAim(); } };
   game.setClub = (id) => {
     if (state.phase !== 'aim' || state.club.putter && state.lie === SURFACES.GREEN) return;
@@ -343,6 +343,8 @@ export function createGame(app) {
     // The simulation that follows is unchanged.
     const sctx = { ...strikeContext(club, from), aim };
     const strike = strikeResult(swing, sctx, testLane ? createRng(k) : rng);
+    // Your clean strikes keep the carry the game shows in step with how you strike it.
+    if (isHuman() && !club.putter && app.noteStrike) app.noteStrike(strike.kind);
     launch = applyStrike(launch, strike, sctx);
     result = simulateShot(launch, t.env({ windAt, t0: state.clock }));
     state.compareShot = testLane ? compareSwing(swing, aim, shotType, from, lieRoll, k) : null;
@@ -393,10 +395,23 @@ export function createGame(app) {
     return { club: cclub.id, rarity: ctx2.rarity, strike: s2, carry: r2.carry, total: r2.total, offline: (p.x - from.x) * -fz + (p.z - from.z) * fx, land: { x: p.x, z: p.z } };
   }
 
+  // The profile behind everything the game shows for a club (carry on the club card and list,
+  // the power guide, the aim fan): your profile plus your club's tier carry for a clean strike
+  // at your own recent Pured rate. Common clubs and computer players get the profile unchanged.
+  const myShare = () => guideShare(app.strikeMix ? (app.strikeMix() || {}).rate : undefined);
+  function guideProfile(club) {
+    if (!club || club.putter || !isHuman() || !app.gearFor) return state.profile;
+    const f = tierCarryFactor((app.gearFor(club.id) || {}).rarity, myShare());
+    return f === 1 ? state.profile : { ...state.profile, power: state.profile.power * f };
+  }
+  game.guideFactor = (club = state.club) => (club && !club.putter && isHuman() && app.gearFor ? tierCarryFactor((app.gearFor(club.id) || {}).rarity, myShare()) : 1);
+
   function strikeContext(club, from) {
     const t = W().terrain, n = {};
     t.normalAt(from.x, from.z, n);
-    const gear = { ...((app.gearFor && app.gearFor(club.id)) || {}), ...(state.golfer && app.golferStrike ? app.golferStrike(club.kind) : {}) };
+    // Your gear and golfer perks apply to your shots only; computer players use Common clubs.
+    const mine = isHuman();
+    const gear = { ...((mine && app.gearFor && app.gearFor(club.id)) || {}), ...(mine && state.golfer && app.golferStrike ? app.golferStrike(club.kind) : {}) };
     return { clubId: club.id, lie: from.lie, slope: Math.hypot(n.x, n.z) / Math.max(0.2, n.y), setting: app.settings.difficulty || 'standard', rarity: gear.rarity || 'common', glove: gear.glove || 0, ball: gear.ball || null, forgiveness: gear.forgiveness || 1, perkBonus: gear.perkBonus || 0, lefty: app.settings.handedness === 'left' };
   }
 
@@ -613,7 +628,7 @@ export function createGame(app) {
       distToPin: state.distToPin, elevation: elev,
       wind: { speedMph: state.windInfo.speedMph, relAngle: wrapAngle(state.windInfo.dir - state.aim), along: rel.along / MPH, cross: rel.cross / MPH },
       club: state.club, shotType: state.shotType, lie: state.lie, lieName: SURFACE_NAMES[state.lie],
-      carry: state.club.putter ? 0 : nominalCarry(state.club, state.profile, state.shotType),
+      carry: state.club.putter ? 0 : nominalCarry(state.club, guideProfile(state.club), state.shotType),
       predicted: state.prediction ? { carry: state.prediction.carry, total: state.prediction.total, lie: state.prediction.lie } : null,
       suggestedPower: state.phase === 'aim' ? game.suggestedPower() : 0,
       hazard: state.hazard, putt: state.putt, message: state.message, aim: state.aim,

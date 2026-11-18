@@ -43,6 +43,8 @@ export function defaultSave() {
     quests: null, season: null, cosmetics: { ...DEFAULT_COSMETICS }, weekly: null,
     // A tournament in progress (four rounds, a cut), and trophies won.
     tournament: null, trophies: [],
+    // Your running Pured rate among clean strikes; sets the tier carry the game shows.
+    strikeMix: null,
     // The practice ground record: sessions, bests, medals, and per-club running sums.
     range: {},
   };
@@ -110,6 +112,8 @@ export function sanitizeSave(s) {
   out.quests = obj(s.quests); out.season = obj(s.season); out.weekly = obj(s.weekly);
   out.cosmetics = sanitizeCosmetics(s.cosmetics, out.player.ball);
   out.tournament = sanitizeTournament(s.tournament);
+  const mx = s.strikeMix;
+  out.strikeMix = mx && Number.isFinite(mx.rate) && mx.rate >= 0 && mx.rate <= 1 ? { rate: mx.rate, count: Math.max(0, Math.min(1e6, Math.floor(Number(mx.count) || 0))) } : null;
   out.trophies = Array.isArray(s.trophies) ? s.trophies.filter((t) => t && typeof t.name === 'string' && Number.isFinite(t.toPar)).slice(-40) : [];
   out.range = s.range && typeof s.range === 'object' && !Array.isArray(s.range) ? s.range : {};
   const a = s.account;

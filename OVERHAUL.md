@@ -124,13 +124,26 @@ mishit = clamp(error x setting x club difficulty / sweet spot - 0.05, 0, 0.9)
 
 ## Stage 3: club rarities
 
-| Tier | Difficulty | Pured carry bonus | Spin | Sweet spot |
+| Tier | Difficulty | Carry bonus (Good / Pured) | Spin (Pured) | Sweet spot |
 | --- | --- | --- | --- | --- |
-| Common | 1.00 | 0 | 1.00 | 1.00 |
-| Uncommon | 1.25 | +2 % | 1.02 | 0.92 |
-| Rare | 1.50 | +4 % | 1.04 | 0.84 |
-| Epic | 1.80 | +6 % | 1.06 | 0.76 |
-| Legendary | 2.20 | +8 % | 1.08 | 0.68 |
+| Common | 1.00 | 0 / 0 | 1.00 | 1.00 |
+| Uncommon | 1.25 | +1 % / +2 % | 1.02 | 0.92 |
+| Rare | 1.50 | +2 % / +4 % | 1.04 | 0.84 |
+| Epic | 1.80 | +3 % / +6 % | 1.06 | 0.76 |
+| Legendary | 2.20 | +4 % / +8 % | 1.08 | 0.68 |
+
+Tier carry (revised after the first balance runs): the tier's carry bonus applies at half
+strength on a Good strike and at full strength on a Pured one; golfer perks stay pured-only and
+the total stays inside the 10 percent cap. A pured higher-tier strike also flies straighter
+(about half the sideways error for Legendary, `STRAIGHT_PER_BONUS` 7, capped at 0.6). The
+mishit side is unchanged: difficulty scales severity and the sweet spot shrinks by tier.
+The club card, the club list, the power guide and the aim fan show the tier's carry for a clean
+strike at the player's own recent Pured rate (`tierCarryFactor`, `guideShare`): the Good half
+of the bonus plus the other half times that rate, tracked over about the last 50 clean full
+strikes from a prior of 20 percent. A player who mostly strikes it Good sees the Good carry; one
+who pures most of them sees close to the Pured carry. Common clubs show the base carry, so the
+carry ladder and its guide are untouched. Computer players use Common clubs and none of your
+perks (before this change they used the bag of whoever was playing).
 
 - Original model names per tier (Meadow, Harrow, Kingfisher, Ember, Solstice) with their own
   head finish and glow on the swinging club, the club button ring, and the gear screen (stat
@@ -268,14 +281,22 @@ Outcome (tables in qa/balance.md):
   percent), so its accuracy gains were cut (innate 0.05 to 0.015, tree perks 0.06 to 0.012 and
   0.02, approach nodes +4 to +3, approach-to-accuracy coefficient 0.35 to 0.2), and the Power
   Hitter got a little more from driving (ball speed coefficient 0.05 to 0.07, innate wood sweet
-  spot 0.05 to 0.07) and softer weakness caps (short game 78, putting 82). Final: every
-  archetype within 1.33 strokes of its level's average.
-- Tiers: none is better than Common for an average swing (the Legendary costs about 1.2 strokes
-  per 18). A pured higher-tier strike now also flies straighter (up to a third less sideways
-  error), a bounded change that leaves Common untouched. Even so, in simulation higher tiers
-  also cost a skilled golfer strokes on target golf, because pured-only bonus carry adds
-  distance scatter; their reward is maximum distance. That is reported as a design point for
-  human review rather than changing the specified numbers.
+  spot 0.05 to 0.07) and softer weakness caps (short game 78, putting 82). At 400 rounds per
+  cell the Sharpshooter was again just out at level 15 (-1.56), so its innate accuracy went to
+  0.01 and its last tree perk to 0.015. Final (400 rounds): every archetype within 1.29 strokes
+  of its level's average.
+- Tiers, first version (pured-only bonus): none was better than Common for an average swing,
+  but every tier cost every swing strokes, a skilled one most (Legendary +5.1 per 18), because
+  pured-only carry adds distance scatter on target golf. Tables in qa/balance-before.md.
+- Tiers, revised (the tier carry rule above): with the guide that follows the player's Pured
+  rate, Legendary against Common is +0.89 per 18 for a poor swing (skill 0.35), +0.12 for an
+  average one (0.6) and -0.70 for a skilled one (0.9), meeting the targets (costs a poor swing,
+  within 0.5 for an average one, 0.5 to 1.5 better for a skilled one). A guide fixed at the
+  Good carry left skilled players +0.8 (their pured shots flew past it), and one fixed at the
+  middle of the window cost average players about +0.7. Players who ignore the guide still lose
+  strokes with higher tiers. Rare now helps an average swing (-0.79, interval -1.40 to -0.17),
+  which departs from the first brief's rule that no tier beats Common for an average swing;
+  its numbers were left as specified and the point is reported.
 - Settings: mishits for an average swing are 0.4 percent on relaxed, 3.7 on standard, 10.3 on
   pro, in line with the request for only a little more challenge on standard.
 

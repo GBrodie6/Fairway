@@ -1,0 +1,553 @@
+{
+ "method": "Simulated golfer: plans like the AI and swings with a fixed human-like error model (skill 0.35 poor, 0.6 average, 0.9 skilled). 9-hole rounds across all five courses (front and back nines alternate); paired random draws per round index (strike dice on their own stream); 400 rounds per cell; per-18 values are twice the 9-hole means. Tier differences are paired against Common with the same swing and planning. This build showed the base carry for every tier, so planning for the tier's carry as the game showed it is the same as not planning.",
+ "goodShare": 0,
+ "seconds": 53,
+ "archetypes": {},
+ "tiers": {
+  "poor": {
+   "skill": 0.35,
+   "none": [
+    {
+     "tier": "common",
+     "rounds": 400,
+     "per18": 15.3,
+     "se18": 0.33,
+     "putts9": 18.15,
+     "pured": 10.6,
+     "good": 80.2,
+     "mishit": 9.1,
+     "shank": 0,
+     "diff18": 0,
+     "ci95": [
+      0,
+      0
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "uncommon",
+     "rounds": 400,
+     "per18": 15.77,
+     "se18": 0.33,
+     "putts9": 18.31,
+     "pured": 8.7,
+     "good": 81.1,
+     "mishit": 10.2,
+     "shank": 0,
+     "diff18": 0.46,
+     "ci95": [
+      -0.09,
+      1.01
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "rare",
+     "rounds": 400,
+     "per18": 16.04,
+     "se18": 0.34,
+     "putts9": 18.29,
+     "pured": 6.5,
+     "good": 81.3,
+     "mishit": 12.1,
+     "shank": 0,
+     "diff18": 0.73,
+     "ci95": [
+      0.14,
+      1.33
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "epic",
+     "rounds": 400,
+     "per18": 16.36,
+     "se18": 0.34,
+     "putts9": 18.18,
+     "pured": 5.3,
+     "good": 80.1,
+     "mishit": 14.6,
+     "shank": 0.1,
+     "diff18": 1.05,
+     "ci95": [
+      0.4,
+      1.7
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "legendary",
+     "rounds": 400,
+     "per18": 17.29,
+     "se18": 0.36,
+     "putts9": 18.23,
+     "pured": 3.9,
+     "good": 79,
+     "mishit": 17.1,
+     "shank": 0.1,
+     "diff18": 1.99,
+     "ci95": [
+      1.32,
+      2.65
+     ],
+     "planBoost": 0
+    }
+   ],
+   "guide": [
+    {
+     "tier": "common",
+     "rounds": 400,
+     "per18": 15.3,
+     "se18": 0.33,
+     "putts9": 18.15,
+     "pured": 10.6,
+     "good": 80.2,
+     "mishit": 9.1,
+     "shank": 0,
+     "diff18": 0,
+     "ci95": [
+      0,
+      0
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "uncommon",
+     "rounds": 400,
+     "per18": 15.77,
+     "se18": 0.33,
+     "putts9": 18.31,
+     "pured": 8.7,
+     "good": 81.1,
+     "mishit": 10.2,
+     "shank": 0,
+     "diff18": 0.46,
+     "ci95": [
+      -0.09,
+      1.01
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "rare",
+     "rounds": 400,
+     "per18": 16.04,
+     "se18": 0.34,
+     "putts9": 18.29,
+     "pured": 6.5,
+     "good": 81.3,
+     "mishit": 12.1,
+     "shank": 0,
+     "diff18": 0.73,
+     "ci95": [
+      0.14,
+      1.33
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "epic",
+     "rounds": 400,
+     "per18": 16.36,
+     "se18": 0.34,
+     "putts9": 18.18,
+     "pured": 5.3,
+     "good": 80.1,
+     "mishit": 14.6,
+     "shank": 0.1,
+     "diff18": 1.05,
+     "ci95": [
+      0.4,
+      1.7
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "legendary",
+     "rounds": 400,
+     "per18": 17.29,
+     "se18": 0.36,
+     "putts9": 18.23,
+     "pured": 3.9,
+     "good": 79,
+     "mishit": 17.1,
+     "shank": 0.1,
+     "diff18": 1.99,
+     "ci95": [
+      1.32,
+      2.65
+     ],
+     "planBoost": 0
+    }
+   ]
+  },
+  "average": {
+   "skill": 0.6,
+   "none": [
+    {
+     "tier": "common",
+     "rounds": 400,
+     "per18": 6.83,
+     "se18": 0.28,
+     "putts9": 16.81,
+     "pured": 23,
+     "good": 73,
+     "mishit": 4,
+     "shank": 0,
+     "diff18": 0,
+     "ci95": [
+      0,
+      0
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "uncommon",
+     "rounds": 400,
+     "per18": 6.55,
+     "se18": 0.28,
+     "putts9": 16.57,
+     "pured": 19.4,
+     "good": 75.9,
+     "mishit": 4.6,
+     "shank": 0,
+     "diff18": -0.28,
+     "ci95": [
+      -0.79,
+      0.24
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "rare",
+     "rounds": 400,
+     "per18": 6.97,
+     "se18": 0.29,
+     "putts9": 16.73,
+     "pured": 15.3,
+     "good": 78.9,
+     "mishit": 5.8,
+     "shank": 0,
+     "diff18": 0.14,
+     "ci95": [
+      -0.41,
+      0.69
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "epic",
+     "rounds": 400,
+     "per18": 7.47,
+     "se18": 0.29,
+     "putts9": 16.68,
+     "pured": 12.4,
+     "good": 80.1,
+     "mishit": 7.5,
+     "shank": 0,
+     "diff18": 0.64,
+     "ci95": [
+      0.05,
+      1.23
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "legendary",
+     "rounds": 400,
+     "per18": 7.88,
+     "se18": 0.29,
+     "putts9": 16.79,
+     "pured": 9.1,
+     "good": 81.7,
+     "mishit": 9.2,
+     "shank": 0,
+     "diff18": 1.05,
+     "ci95": [
+      0.49,
+      1.62
+     ],
+     "planBoost": 0
+    }
+   ],
+   "guide": [
+    {
+     "tier": "common",
+     "rounds": 400,
+     "per18": 6.83,
+     "se18": 0.28,
+     "putts9": 16.81,
+     "pured": 23,
+     "good": 73,
+     "mishit": 4,
+     "shank": 0,
+     "diff18": 0,
+     "ci95": [
+      0,
+      0
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "uncommon",
+     "rounds": 400,
+     "per18": 6.55,
+     "se18": 0.28,
+     "putts9": 16.57,
+     "pured": 19.4,
+     "good": 75.9,
+     "mishit": 4.6,
+     "shank": 0,
+     "diff18": -0.28,
+     "ci95": [
+      -0.79,
+      0.24
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "rare",
+     "rounds": 400,
+     "per18": 6.97,
+     "se18": 0.29,
+     "putts9": 16.73,
+     "pured": 15.3,
+     "good": 78.9,
+     "mishit": 5.8,
+     "shank": 0,
+     "diff18": 0.14,
+     "ci95": [
+      -0.41,
+      0.69
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "epic",
+     "rounds": 400,
+     "per18": 7.47,
+     "se18": 0.29,
+     "putts9": 16.68,
+     "pured": 12.4,
+     "good": 80.1,
+     "mishit": 7.5,
+     "shank": 0,
+     "diff18": 0.64,
+     "ci95": [
+      0.05,
+      1.23
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "legendary",
+     "rounds": 400,
+     "per18": 7.88,
+     "se18": 0.29,
+     "putts9": 16.79,
+     "pured": 9.1,
+     "good": 81.7,
+     "mishit": 9.2,
+     "shank": 0,
+     "diff18": 1.05,
+     "ci95": [
+      0.49,
+      1.62
+     ],
+     "planBoost": 0
+    }
+   ]
+  },
+  "skilled": {
+   "skill": 0.9,
+   "none": [
+    {
+     "tier": "common",
+     "rounds": 400,
+     "per18": -2.73,
+     "se18": 0.21,
+     "putts9": 14.35,
+     "pured": 73.1,
+     "good": 26.3,
+     "mishit": 0.6,
+     "shank": 0,
+     "diff18": 0,
+     "ci95": [
+      0,
+      0
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "uncommon",
+     "rounds": 400,
+     "per18": -2.4,
+     "se18": 0.22,
+     "putts9": 14.48,
+     "pured": 67.4,
+     "good": 31.9,
+     "mishit": 0.7,
+     "shank": 0,
+     "diff18": 0.34,
+     "ci95": [
+      -0.15,
+      0.83
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "rare",
+     "rounds": 400,
+     "per18": -1.17,
+     "se18": 0.24,
+     "putts9": 14.63,
+     "pured": 60.8,
+     "good": 38.1,
+     "mishit": 1.1,
+     "shank": 0,
+     "diff18": 1.57,
+     "ci95": [
+      1.03,
+      2.11
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "epic",
+     "rounds": 400,
+     "per18": 1.11,
+     "se18": 0.24,
+     "putts9": 15.11,
+     "pured": 53,
+     "good": 45.9,
+     "mishit": 1,
+     "shank": 0,
+     "diff18": 3.85,
+     "ci95": [
+      3.29,
+      4.41
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "legendary",
+     "rounds": 400,
+     "per18": 2.35,
+     "se18": 0.26,
+     "putts9": 15.09,
+     "pured": 44.6,
+     "good": 53.5,
+     "mishit": 1.8,
+     "shank": 0,
+     "diff18": 5.08,
+     "ci95": [
+      4.48,
+      5.68
+     ],
+     "planBoost": 0
+    }
+   ],
+   "guide": [
+    {
+     "tier": "common",
+     "rounds": 400,
+     "per18": -2.73,
+     "se18": 0.21,
+     "putts9": 14.35,
+     "pured": 73.1,
+     "good": 26.3,
+     "mishit": 0.6,
+     "shank": 0,
+     "diff18": 0,
+     "ci95": [
+      0,
+      0
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "uncommon",
+     "rounds": 400,
+     "per18": -2.4,
+     "se18": 0.22,
+     "putts9": 14.48,
+     "pured": 67.4,
+     "good": 31.9,
+     "mishit": 0.7,
+     "shank": 0,
+     "diff18": 0.34,
+     "ci95": [
+      -0.15,
+      0.83
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "rare",
+     "rounds": 400,
+     "per18": -1.17,
+     "se18": 0.24,
+     "putts9": 14.63,
+     "pured": 60.8,
+     "good": 38.1,
+     "mishit": 1.1,
+     "shank": 0,
+     "diff18": 1.57,
+     "ci95": [
+      1.03,
+      2.11
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "epic",
+     "rounds": 400,
+     "per18": 1.11,
+     "se18": 0.24,
+     "putts9": 15.11,
+     "pured": 53,
+     "good": 45.9,
+     "mishit": 1,
+     "shank": 0,
+     "diff18": 3.85,
+     "ci95": [
+      3.29,
+      4.41
+     ],
+     "planBoost": 0
+    },
+    {
+     "tier": "legendary",
+     "rounds": 400,
+     "per18": 2.35,
+     "se18": 0.26,
+     "putts9": 15.09,
+     "pured": 44.6,
+     "good": 53.5,
+     "mishit": 1.8,
+     "shank": 0,
+     "diff18": 5.08,
+     "ci95": [
+      4.48,
+      5.68
+     ],
+     "planBoost": 0
+    }
+   ]
+  }
+ },
+ "settings": [],
+ "targets": {
+  "skilledBetterBy0_5to1_5": false,
+  "averageWithin0_5": false,
+  "poorCostsStrokes": true,
+  "legendary": {
+   "poor": 1.99,
+   "average": 1.05,
+   "skilled": 5.08
+  }
+ },
+ "pass": {
+  "archetypes": true
+ }
+}

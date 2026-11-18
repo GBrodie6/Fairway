@@ -111,6 +111,22 @@ try {
   await shot('round-rare-7i');
   out.clubBtnTierI7 = await page.evaluate(() => document.querySelector('.clubbtn').dataset.tier);
   out.clubMaterial = await page.evaluate(() => { const c = window.__fw.app.world.club && window.__fw.app.world.club.group; let r = null; if (c) c.traverse((o) => { if (!r && o.userData && o.userData.rarity) r = o.userData.rarity; }); return r; });
+  // The carry the club card shows and the power guide, for each club's tier against Common.
+  out.guide = await page.evaluate(() => {
+    const g = window.__fw.game, app = window.__fw.app;
+    const read = (id) => { g.setClub(id); return { club: id, tier: app.gearFor(id).rarity, card: document.querySelector('.clubbtn .cc').textContent, carryM: +g.clubCarry(g.state.club).toFixed(2), factor: +g.guideFactor(g.state.club).toFixed(4), power: +g.suggestedPower().toFixed(3) }; };
+    const rows = [read('I7'), read('I6')];
+    // The same clubs as Common for comparison (the bag swapped in memory, then back).
+    const keep = app.save().gear;
+    app.updateSave((s) => ({ ...s, gear: { ...s.gear, bag: s.gear.bag.map((u) => (u === 'I7-rare-qa' ? s.gear.clubs.find((c) => c.clubId === 'I7' && c.rarity === 'common').uid : u)) } }));
+    rows.push({ ...read('I7'), note: 'I7 as Common' });
+    app.updateSave((s) => ({ ...s, gear: keep }));
+    return rows;
+  });
+  await page.waitForTimeout(400);
+  await page.evaluate(() => window.__fw.game.setClub('I7'));
+  await page.waitForTimeout(600);
+  out.guideCard = await page.evaluate(() => document.querySelector('.clubbtn .cc').textContent);
 } catch (e) { out.failed = e.message.split('\n')[0]; await shot('failed').catch(() => {}); }
 out.consoleErrors = errors.map((e) => e.text.slice(0, 200));
 console.log(JSON.stringify(out, null, 1));

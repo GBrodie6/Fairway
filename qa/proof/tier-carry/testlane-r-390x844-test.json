@@ -1,0 +1,136 @@
+{
+ "size": "390x844",
+ "mode": "test",
+ "tod": "morning",
+ "shots": [
+  {
+   "club": "I7",
+   "carry": 158.5,
+   "total": 166.2,
+   "offline": 2.7,
+   "curve": 3.8,
+   "ballSpeed": 112,
+   "launch": 16.5,
+   "spin": 6864,
+   "apex": 23.1,
+   "strike": "pured",
+   "msg": "Same swing, Legendary: carry 171 yd (+13), 3 yd right, pured",
+   "score": 0,
+   "used": 1,
+   "over": false
+  },
+  {
+   "club": "I7",
+   "carry": 164.7,
+   "total": 169.9,
+   "offline": 2.3,
+   "curve": 2.3,
+   "ballSpeed": 115.6,
+   "launch": 16.5,
+   "spin": 7050,
+   "apex": 25.2,
+   "strike": "pured",
+   "msg": "Same swing, Legendary: carry 177 yd (+13), 3 yd right, pured",
+   "score": 0,
+   "used": 2,
+   "over": false
+  },
+  {
+   "club": "I7",
+   "carry": 161.5,
+   "total": 168.2,
+   "offline": 1.8,
+   "curve": 0.6,
+   "ballSpeed": 114,
+   "launch": 16.5,
+   "spin": 7050,
+   "apex": 24.3,
+   "strike": "good",
+   "msg": "Same swing, Legendary: carry 168 yd (+7), 2 yd right, good",
+   "score": 0,
+   "used": 3,
+   "over": false
+  },
+  {
+   "club": "I7",
+   "carry": 157.6,
+   "total": 165.4,
+   "offline": 2.6,
+   "curve": 3.7,
+   "ballSpeed": 111.5,
+   "launch": 16.5,
+   "spin": 6864,
+   "apex": 22.9,
+   "strike": "pured",
+   "msg": "Same swing, Legendary: carry 164 yd (+7), 3 yd right, good",
+   "score": 0,
+   "used": 4,
+   "over": false
+  }
+ ],
+ "screens": {
+  "lobby": {
+   "name": "lobby",
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  },
+  "map": {
+   "name": "map",
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  },
+  "summary": {
+   "name": "summary",
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  }
+ },
+ "hudStart": {
+  "hole": "RANGE / 50 / Club test lane: balls left",
+  "score": "0 / balls hit",
+  "club": "I7",
+  "target": 175
+ },
+ "hud1": {
+  "card": [
+   0,
+   184,
+   272,
+   328
+  ],
+  "overlaps": [],
+  "zone": false
+ },
+ "card": "Pured / Blue green, 175 yd / CARRY / 159 yd / TOTAL / 166 yd / OFFLINE / 3 yd right / BALL SPEED / 112 mph / LAUNCH / 16.5° / SPIN / 6860 / APEX / 69 ft / Same swing, Legendary: carry 171 yd (+13), 3 yd right, pured",
+ "summary": "Club test lane: session summary /  / 4 balls hit. /  / 2 XP. / ",
+ "save": {
+  "range": {
+   "sessions": 1,
+   "balls": 4,
+   "best": {},
+   "medals": {},
+   "clubs": {
+    "I7": {
+     "n": 4,
+     "carry": 642.3409949457271,
+     "offline": 9.390035075376638
+    }
+   },
+   "goldDay": {}
+  },
+  "xp": 2,
+  "tokens": 0
+ },
+ "rangeInfo": {
+  "netX": 19.1,
+  "towers": 6,
+  "signs": 12,
+  "targets": 5,
+  "bays": 5
+ },
+ "lieAtBay": "Tee",
+ "consoleErrors": []
+}

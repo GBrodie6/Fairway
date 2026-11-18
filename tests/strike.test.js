@@ -156,3 +156,52 @@ describe('pured strikes with higher tiers fly straighter', () => {
     expect(applyStrike(launch, pured, { rarity: 'legendary' }).heading).toBeCloseTo(0.06, 12);
   });
 });
+
+describe('tier carry: half the bonus on a Good strike, all of it when pured', () => {
+  it('Good strikes carry half the tier bonus (within 0.7 points); Common Good equals the base ladder', async () => {
+    const want = { common: 0, uncommon: 0.01, rare: 0.02, epic: 0.03, legendary: 0.04 };
+    for (const id of ['DR', 'I7', 'SW']) {
+      const club = FULL.find((c) => c.id === id);
+      const clean = nominalCarry(club);
+      expect(carryOf(club, { kind: 'good', severity: 0 }, 'common')).toBe(clean);
+      for (const [r, b] of Object.entries(want)) expect(Math.abs(carryOf(club, { kind: 'good', severity: 0 }, r) / clean - 1 - b)).toBeLessThanOrEqual(0.007);
+    }
+  });
+  it('the shown carry follows the Pured rate inside the window, and is exactly the base for Common', async () => {
+    const { tierCarryFactor, goodStrikeFactor, guideShare, GOOD_SHARE, DEFAULT_PURE_RATE } = await import('../src/game/strike.js');
+    expect(GOOD_SHARE).toBe(0.5);
+    expect(guideShare(0)).toBe(0.5); expect(guideShare(1)).toBe(1); expect(guideShare()).toBeCloseTo(0.5 + 0.5 * DEFAULT_PURE_RATE, 12);
+    expect(guideShare(7)).toBe(1); expect(guideShare(NaN)).toBeCloseTo(guideShare(), 12);
+    for (const share of [0.5, 0.75, 1]) { expect(tierCarryFactor('common', share)).toBe(1); expect(tierCarryFactor('nonsense', share)).toBe(1); }
+    expect(goodStrikeFactor('common')).toBe(1);
+    const club = FULL.find((c) => c.id === 'I7');
+    for (const r of ['uncommon', 'rare', 'epic', 'legendary']) {
+      // A Good-only striker sees exactly the Good carry.
+      expect(tierCarryFactor(r, guideShare(0))).toBeCloseTo(goodStrikeFactor(r), 12);
+      const good = carryOf(club, { kind: 'good', severity: 0 }, r), pured = carryOf(club, { kind: 'pured' }, r);
+      const shown = (rate) => nominalCarry(club, { ...BASE_PROFILE, power: tierCarryFactor(r, guideShare(rate)) });
+      expect(shown(0.5)).toBeGreaterThan(good); expect(shown(0.5)).toBeLessThan(pured);
+      expect(shown(0.9)).toBeGreaterThan(shown(0.2));
+      // A Good strike's launch is exactly the base launch at the Good factor.
+      expect(applyStrike(launchFor(club), { kind: 'good', severity: 0 }, { rarity: r }).speed).toBeCloseTo(launchFor(club).speed * goodStrikeFactor(r), 9);
+    }
+  });
+  it('the Pured rate starts from the prior, ignores mishits and follows clean strikes', async () => {
+    const { noteStrike, DEFAULT_PURE_RATE } = await import('../src/game/strike.js');
+    let m = noteStrike(null, 'thin');
+    expect(m).toEqual({ rate: DEFAULT_PURE_RATE, count: 0 });
+    for (let i = 0; i < 200; i++) m = noteStrike(m, 'pured');
+    expect(m.rate).toBeGreaterThan(0.95); expect(m.count).toBe(200);
+    for (let i = 0; i < 200; i++) m = noteStrike(m, i % 4 === 0 ? 'pured' : 'good');
+    expect(m.rate).toBeGreaterThan(0.15); expect(m.rate).toBeLessThan(0.4);
+    expect(noteStrike(m, 'shank')).toBe(m);
+    const one = noteStrike(null, 'pured');
+    expect(one.rate).toBeGreaterThan(DEFAULT_PURE_RATE); expect(one.rate).toBeLessThan(0.3); // one strike moves it only a little
+  });
+  it('golfer perks stay pured-only and the cap holds', () => {
+    const g = strikeModifiers({ kind: 'good', severity: 0 }, { rarity: 'legendary', perkBonus: 0.04 });
+    const g0 = strikeModifiers({ kind: 'good', severity: 0 }, { rarity: 'legendary' });
+    expect(g.speed).toBe(g0.speed);
+    for (const r of Object.keys(RARITY)) expect(strikeModifiers({ kind: 'good', severity: 0 }, { rarity: r }).speed).toBeLessThanOrEqual(1 + CARRY_CAP);
+  });
+});
