@@ -114,9 +114,9 @@ mishit = clamp(error x setting x club difficulty / sweet spot - 0.05, 0, 0.9)
   Shank needs a large face and path error together.
 - Effects (carry relative to the same swing struck clean): Thin and Fat lose 10 to 40 percent
   by severity; Heel and Toe lose 8 to 25 percent and add side spin; a Shank goes about 30
-  degrees off line at half speed. A Pured strike gets the club's rarity bonus (Common 0).
-  Carry never drops below 40 percent of the clean value and never exceeds the cap (+10
-  percent at most from every source together).
+  degrees off line at half speed. Pured and Good fly exactly the clean launch with every club
+  tier (the carry rule, Stage 3). Carry never drops below 40 percent of the clean value and no
+  strike result ever carries further than the clean shot (`CARRY_CAP` is 0).
 - Shown: a strike label with the tempo label, a dot on the club face where it made contact,
   a haptic and sound per kind, and a post-shot card with carry, offline, and the cause in plain
   words ("too fast on the way down", "face open at impact", "heavy, hit the ground first").
@@ -124,26 +124,32 @@ mishit = clamp(error x setting x club difficulty / sweet spot - 0.05, 0, 0.9)
 
 ## Stage 3: club rarities
 
-| Tier | Difficulty | Carry bonus (Good / Pured) | Spin (Pured) | Sweet spot |
-| --- | --- | --- | --- | --- |
-| Common | 1.00 | 0 / 0 | 1.00 | 1.00 |
-| Uncommon | 1.25 | +1 % / +2 % | 1.02 | 0.92 |
-| Rare | 1.50 | +2 % / +4 % | 1.04 | 0.84 |
-| Epic | 1.80 | +3 % / +6 % | 1.06 | 0.76 |
-| Legendary | 2.20 | +4 % / +8 % | 1.08 | 0.68 |
+The carry rule (current): no club tier adds distance. A Pured strike carries exactly the
+club's table carry at the chosen power, identical for every tier, so the power guide's mark is
+exact; a Good strike flies the same; every other strike carries shorter and/or goes offline,
+never longer (the existing flier lie is the only exception). Rarity changes risk and control
+only: a higher tier has a smaller sweet spot (more mishits) and harsher mishits (severity times
+the square root of its difficulty), and in return a wider range on the ball-contact dot for
+draw, fade, backspin and topspin (`src/data/spinControl.js`, Part 2 of the next run).
 
-Tier carry (revised after the first balance runs): the tier's carry bonus applies at half
-strength on a Good strike and at full strength on a Pured one; golfer perks stay pured-only and
-the total stays inside the 10 percent cap. A pured higher-tier strike also flies straighter
-(about half the sideways error for Legendary, `STRAIGHT_PER_BONUS` 7, capped at 0.6). The
-mishit side is unchanged: difficulty scales severity and the sweet spot shrinks by tier.
-The club card, the club list, the power guide and the aim fan show the tier's carry for a clean
-strike at the player's own recent Pured rate (`tierCarryFactor`, `guideShare`): the Good half
-of the bonus plus the other half times that rate, tracked over about the last 50 clean full
-strikes from a prior of 20 percent. A player who mostly strikes it Good sees the Good carry; one
-who pures most of them sees close to the Pured carry. Common clubs show the base carry, so the
-carry ladder and its guide are untouched. Computer players use Common clubs and none of your
-perks (before this change they used the bag of whoever was playing).
+| Tier | Difficulty (mishit severity) | Sweet spot | Spin dot reach | Carry |
+| --- | --- | --- | --- | --- |
+| Common | 1.00 | 1.00 | 50 percent of the pad | the table carry |
+| Uncommon | 1.25 | 0.92 | 60 percent | the table carry |
+| Rare | 1.50 | 0.84 | 70 percent | the table carry |
+| Epic | 1.80 | 0.76 | 80 percent | the table carry |
+| Legendary | 2.20 | 0.68 | 100 percent | the table carry |
+
+What this replaced: earlier versions gave Pured strikes (and later Good strikes, at half
+strength) a tier carry bonus of up to 8 percent, a pured higher tier a straighter flight, and a
+guide that showed the tier's carry at the player's own Pured rate. All of that is removed: the
+`bonus` and `spin` fields, `goodStrikeFactor`, `tierCarryFactor`, `guideShare`, the Pured-rate
+tracking (`strikeMix`), and the straighter pured flight. The power guide now folds only the
+golfer's profile and the ball into its mark: a ball's small speed and spin factors are linear
+in the launch, so the guide includes them and a Pured strike lands on the mark with any ball
+(tests/strike.test.js). The golfer perk that added carry on pured strikes (Pure contact) now
+adds half its value as ball speed on every full swing through the golfer's profile ("Clean
+speed"), so the guide shows it too; its node values and caps are unchanged.
 
 - Original model names per tier (Meadow, Harrow, Kingfisher, Ember, Solstice) with their own
   head finish and glow on the swinging club, the club button ring, and the gear screen (stat
@@ -283,20 +289,23 @@ Outcome (tables in qa/balance.md):
   Hitter got a little more from driving (ball speed coefficient 0.05 to 0.07, innate wood sweet
   spot 0.05 to 0.07) and softer weakness caps (short game 78, putting 82). At 400 rounds per
   cell the Sharpshooter was again just out at level 15 (-1.56), so its innate accuracy went to
-  0.01 and its last tree perk to 0.015. Final (400 rounds): every archetype within 1.29 strokes
-  of its level's average.
+  0.01 and its last tree perk to 0.015. At 400 rounds every archetype was within 1.29 strokes
+  of its level's average. With the carry rule and per-shot strike dice (1000 rounds per cell,
+  qa/balance.md) every archetype is within 0.72.
 - Tiers, first version (pured-only bonus): none was better than Common for an average swing,
   but every tier cost every swing strokes, a skilled one most (Legendary +5.1 per 18), because
   pured-only carry adds distance scatter on target golf. Tables in qa/balance-before.md.
-- Tiers, revised (the tier carry rule above): with the guide that follows the player's Pured
-  rate, Legendary against Common is +0.89 per 18 for a poor swing (skill 0.35), +0.12 for an
-  average one (0.6) and -0.70 for a skilled one (0.9), meeting the targets (costs a poor swing,
-  within 0.5 for an average one, 0.5 to 1.5 better for a skilled one). A guide fixed at the
-  Good carry left skilled players +0.8 (their pured shots flew past it), and one fixed at the
-  middle of the window cost average players about +0.7. Players who ignore the guide still lose
-  strokes with higher tiers. Rare now helps an average swing (-0.79, interval -1.40 to -0.17),
-  which departs from the first brief's rule that no tier beats Common for an average swing;
-  its numbers were left as specified and the point is reported.
+- Tiers, second version (half the tier carry on Good strikes and a guide at the player's Pured
+  rate): Legendary was +0.89, +0.12 and -0.70 per 18 for poor, average and skilled swings, and
+  Rare helped an average swing (-0.79). Tables in qa/balance-tier-carry.md.
+- Tiers, current (the carry rule, Stage 3): every tier carries the table carry, so the golfer
+  plans the same way with every tier. Strike dice are now drawn fresh per shot from the strike
+  stream, so a tier's different outcome on one shot no longer shifts the dice of the next. At
+  3000 rounds per cell (qa/balance-tiers.md), against Common per 18: average swing Uncommon
+  +0.02 (-0.09 to +0.12), Rare +0.29, Epic +0.53, Legendary +0.97; poor swing +0.31 to +1.76;
+  skilled swing +0.02 to +0.17. No tier is better than Common for an average swing (the
+  target); higher tiers cost a poor swing most and a skilled one least. Until the spin dot
+  ships, a higher tier is pure risk.
 - Settings: mishits for an average swing are 0.4 percent on relaxed, 3.7 on standard, 10.3 on
   pro, in line with the request for only a little more challenge on standard.
 

@@ -45,7 +45,7 @@ export const evolutionStage = (level) => (level >= 25 ? 2 : level >= 10 ? 1 : 0)
 export const ARCHETYPES = {
   power: {
     id: 'power', name: 'Power Hitter', titles: ['Power Hitter', 'Long Baller', 'Thunder Driver'], color: '#ff8a5a', signature: 'driving',
-    text: 'Big drives and a bigger reward when you middle it.', innateText: 'A bigger sweet spot with the driver and woods.',
+    text: 'Big drives and a forgiving strike off the tee.', innateText: 'A bigger sweet spot with the driver and woods.',
     weakness: 'Short game capped at 78, putting at 82.', caps: { shortGame: 78, putting: 82 }, innate: { woodSweet: 0.07 },
   },
   sharp: {
@@ -90,7 +90,9 @@ export function pointsTotal(level, archetype) {
 //   shot  { shot }                 unlocks a shot type: punch, high, flop, bump
 export const SHOTS = { punch: 'Punch', high: 'High', flop: 'Flop', bump: 'Bump and run' };
 export const PERK_INFO = {
-  pureCarry: { name: 'Pure contact', unit: 'carry on a pured strike', fmt: (v) => `+${(v * 100).toFixed(1)} percent` },
+  // Stored as pureCarry so old saves keep their nodes. It is part of the golfer's profile (ball
+  // speed on every full swing, half the value), so the power guide includes it exactly.
+  pureCarry: { name: 'Clean speed', unit: 'ball speed on full swings, shown in the guide', fmt: (v) => `+${(v * 50).toFixed(1)} percent` },
   sweet: { name: 'Sweet spot', unit: 'sweet spot size', fmt: (v) => `+${Math.round(v * 100)} percent` },
   woodSweet: { name: 'Wood sweet spot', unit: 'sweet spot with driver and woods', fmt: (v) => `+${Math.round(v * 100)} percent` },
   accuracy: { name: 'True line', unit: 'less face and path error', fmt: (v) => `${Math.round(v * 100)} percent` },
@@ -269,7 +271,7 @@ export function golferProfile(g) {
   const st = golferStats(g), pk = golferPerks(g);
   const v = (k) => (clamp(st[k], 30, STAT_MAX) - 50) / 50;
   const p = { ...BASE_PROFILE };
-  p.power = 1 + v('driving') * 0.07;
+  p.power = (1 + v('driving') * 0.07) * (1 + pk.pureCarry * 0.5);
   p.accuracy = (1 - v('approach') * 0.2) * (1 - pk.accuracy);
   p.spin = (1 + v('shortGame') * 0.08) * (1 + pk.spin);
   p.touch = (1 - v('shortGame') * 0.3) * (1 - pk.touch);
@@ -281,12 +283,12 @@ export function golferProfile(g) {
   p.spin = clamp(p.spin, 0.88, 1.15);
   return Object.freeze(p);
 }
-// What the strike model reads: a sweet spot multiplier and the pured carry bonus (both capped
-// again in game/strike.js).
+// What the strike model reads: a sweet spot multiplier (capped again in game/strike.js). No
+// strike adds carry; the speed perk lives in the profile above.
 export function golferStrike(g, clubKind = 'iron') {
   const pk = golferPerks(g);
   const sweet = 1 + pk.sweet + (clubKind === 'wood' ? pk.woodSweet : 0);
-  return { forgiveness: clamp(sweet, 0.85, 1.15), perkBonus: clamp(pk.pureCarry, 0, 0.04) };
+  return { forgiveness: clamp(sweet, 0.85, 1.15) };
 }
 
 // ---------------------------------------------------------------- bosses and chapters

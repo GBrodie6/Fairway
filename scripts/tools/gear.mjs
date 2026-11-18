@@ -114,7 +114,7 @@ try {
   // The carry the club card shows and the power guide, for each club's tier against Common.
   out.guide = await page.evaluate(() => {
     const g = window.__fw.game, app = window.__fw.app;
-    const read = (id) => { g.setClub(id); return { club: id, tier: app.gearFor(id).rarity, card: document.querySelector('.clubbtn .cc').textContent, carryM: +g.clubCarry(g.state.club).toFixed(2), factor: +g.guideFactor(g.state.club).toFixed(4), power: +g.suggestedPower().toFixed(3) }; };
+    const read = (id) => { g.setClub(id); return { club: id, tier: app.gearFor(id).rarity, card: document.querySelector('.clubbtn .cc').textContent, carryM: +g.clubCarry(g.state.club).toFixed(2), power: +g.suggestedPower().toFixed(3) }; };
     const rows = [read('I7'), read('I6')];
     // The same clubs as Common for comparison (the bag swapped in memory, then back).
     const keep = app.save().gear;

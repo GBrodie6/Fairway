@@ -3,8 +3,9 @@
 // This sits between the swing and the ball flight. computeLaunch (physics/shot.js) builds the
 // launch from the swing exactly as before; applyStrike then scales its speed, launch angle,
 // spin, start direction, and side spin by a bounded amount, and the unchanged simulation flies
-// the result. A perfect swing is always Pured, and a Pured strike with a Common club changes
-// nothing, so the calibrated carry ladder is untouched (tests/strike.test.js).
+// the result. A perfect swing is always Pured, and a Pured strike changes nothing with any club
+// tier, so the calibrated carry ladder is untouched and the power guide is exact
+// (tests/strike.test.js).
 //
 // Tuned to be only a little harder than the game was: on the standard setting a decent swing
 // rarely mishits, and most mishits are mild. Relaxed is close to the old game; Pro has bite.
@@ -18,51 +19,21 @@ export const DIFFICULTY = { relaxed: 0.55, standard: 1, pro: 1.5 };
 // How hard each club is to strike cleanly (longer and flatter faces are harder).
 export const CLUB_DIFFICULTY = { DR: 1.0, W3: 0.92, W5: 0.88, I4: 0.85, I5: 0.8, I6: 0.76, I7: 0.72, I8: 0.68, I9: 0.64, PW: 0.58, GW: 0.57, SW: 0.56, LW: 0.58, PT: 0.3 };
 
-// Rarity: difficulty multiplier, Pured carry bonus (fraction), spin, and sweet spot size.
+// Rarity changes risk and control only, never distance. A higher tier has a smaller sweet
+// spot (more mishits) and harsher mishits (severity grows with difficulty); in return its
+// ball-contact dot reaches further (data/spinControl.js). A Pured strike carries exactly the
+// club's table carry at the chosen power with every tier, so the power guide's mark is exact,
+// and a Good strike flies the same. Every other strike carries shorter and/or goes offline.
 // Kept here so the strike model is self-contained; game/gear.js reads the same table.
 export const RARITY = {
-  common: { difficulty: 1.0, bonus: 0, spin: 1.0, sweet: 1.0 },
-  uncommon: { difficulty: 1.25, bonus: 0.02, spin: 1.02, sweet: 0.92 },
-  rare: { difficulty: 1.5, bonus: 0.04, spin: 1.04, sweet: 0.84 },
-  epic: { difficulty: 1.8, bonus: 0.06, spin: 1.06, sweet: 0.76 },
-  legendary: { difficulty: 2.2, bonus: 0.08, spin: 1.08, sweet: 0.68 },
+  common: { difficulty: 1.0, sweet: 1.0 },
+  uncommon: { difficulty: 1.25, sweet: 0.92 },
+  rare: { difficulty: 1.5, sweet: 0.84 },
+  epic: { difficulty: 1.8, sweet: 0.76 },
+  legendary: { difficulty: 2.2, sweet: 0.68 },
 };
-// Every source of extra carry together (rarity, perks, stats) stops here.
-export const CARRY_CAP = 0.1;
-// A Good strike gets this share of the tier's carry bonus; a Pured strike gets all of it.
-export const GOOD_SHARE = 0.5;
-// Carry rises faster than ball speed. A Pured strike also adds the tier's spin, which costs a
-// little carry, so its speed bonus is 0.88 of the carry bonus. With no spin change (a Good
-// strike, and the carry the game shows) carry rises 1.17 to 1.38 times as fast as speed across
-// the bag, so 0.78 of the carry bonus lands within about half a point of it for every club.
-const SPEED_PER_CARRY = 0.88;
-const SPEED_PER_CARRY_NO_SPIN = 0.78;
-// The ball speed factor of a Good strike with a club of this tier (Common is exactly 1).
-export const goodStrikeFactor = (rarity) => 1 + (RARITY[rarity] || RARITY.common).bonus * GOOD_SHARE * SPEED_PER_CARRY_NO_SPIN;
-// The carry the game shows for a tier (club card, club list, power guide, aim fan) is the
-// carry you can expect from a clean strike: the share of the tier bonus is Good's half plus
-// the other half times how often your clean strikes are Pured. A golfer who mostly strikes it
-// Good sees about the Good carry; one who pures half of them sees the middle of the window.
-// Common is exactly 1 whatever the share, so the base carry ladder and its guide are untouched.
-export const DEFAULT_PURE_RATE = 0.2; // a new player's prior, about an average swing
-export const guideShare = (pureRate = DEFAULT_PURE_RATE) => GOOD_SHARE + (1 - GOOD_SHARE) * clamp(num(pureRate, DEFAULT_PURE_RATE), 0, 1);
-export const tierCarryFactor = (rarity, share = guideShare()) => 1 + (RARITY[rarity] || RARITY.common).bonus * clamp(num(share, GOOD_SHARE), GOOD_SHARE, 1) * SPEED_PER_CARRY_NO_SPIN;
-/**
- * The running Pured rate among your clean (Pured or Good) full strikes: { rate, count }. It
- * starts from the prior as if 10 strikes had been seen and then follows about the last 50.
- * Mishits do not count; the guide is for a clean strike.
- */
-export function noteStrike(mix, kind) {
-  const m = mix && Number.isFinite(mix.rate) ? mix : { rate: DEFAULT_PURE_RATE, count: 0 };
-  if (kind !== 'pured' && kind !== 'good') return m;
-  const count = Math.min(1e6, Math.floor(num(m.count)) + 1);
-  const rate = clamp(m.rate + ((kind === 'pured' ? 1 : 0) - m.rate) / Math.min(count + 10, 50), 0, 1);
-  return { rate, count };
-}
-// How much of the sideways error a pured higher-tier strike removes, at most.
-export const STRAIGHT_CAP = 0.6;
-// Share of the sideways error removed per unit of tier bonus (Legendary 0.08 x 7 = 0.56).
-export const STRAIGHT_PER_BONUS = 7;
+// No source adds carry: no strike result is faster than the clean launch.
+export const CARRY_CAP = 0;
 // No strike leaves less than this share of the clean carry.
 export const CARRY_FLOOR = 0.4;
 
@@ -148,21 +119,13 @@ export function strikeResult(swing, ctx = {}, rng) {
  */
 export function strikeModifiers(strike, ctx = {}) {
   const s = clamp(num(strike && strike.severity), 0, 1);
-  const rar = RARITY[ctx.rarity] || RARITY.common;
   const side = (strike && strike.faceSign) || 1;
   const m = { speed: 1, launch: 1, spin: 1, heading: 0, tilt: 0 };
   const putter = ctx.clubId === 'PT';
   switch (strike && strike.kind) {
-    case 'pured': {
-      // The tier's full carry bonus (plus any golfer perk), inside the cap.
-      const bonus = Math.min(CARRY_CAP, rar.bonus + clamp(num(ctx.perkBonus), 0, 0.04));
-      m.speed = 1 + bonus * SPEED_PER_CARRY;
-      m.spin = rar.spin;
-      break;
-    }
+    case 'pured':
     case 'good':
-      // Half the tier's carry bonus (nothing for Common). Golfer perks stay pured-only.
-      m.speed = goodStrikeFactor(ctx.rarity);
+      // Out of the middle (or close): the launch exactly as computeLaunch built it.
       break;
     case 'thin':
       m.speed = 1 - (0.05 + 0.12 * s); m.launch = 0.7 + 0.18 * (1 - s); m.spin = 0.6 + 0.3 * (1 - s); break;
@@ -176,8 +139,16 @@ export function strikeModifiers(strike, ctx = {}) {
       m.speed = 0.76 - 0.04 * s; m.launch = 0.85; m.spin = 0.85; m.heading = (ctx.lefty ? -1 : 1) * (26 + 10 * s) * DEG; m.tilt = (ctx.lefty ? -1 : 1) * 8 * DEG; break;
     default: break;
   }
+  // Never faster than the clean launch.
   m.speed = clamp(m.speed, 0.5, 1 + CARRY_CAP);
   return m;
+}
+
+// The ball's bounded speed and spin factors. Both are linear in the launch, so the power guide
+// folds them into the profile and lands exactly where a Pured strike with that ball does.
+export function ballFactors(ball) {
+  if (!ball) return { speed: 1, spin: 1 };
+  return { speed: clamp(num(ball.speed, 1), 0.98, 1), spin: clamp(num(ball.spin, 1), 1, 1.15) };
 }
 
 // Apply a strike to a launch from computeLaunch. Returns a new launch (the input is untouched).
@@ -191,23 +162,11 @@ export function applyStrike(launch, strike, ctx = {}) {
     out.axisTilt = clamp(num(launch.axisTilt) + m.tilt, -40 * DEG, 40 * DEG);
   }
   out.heading = num(launch.heading) + m.heading;
-  // A pured strike with a higher tier also flies straighter: part of the sideways error (start
-  // direction off the aim, and curve) is taken out, up to 32 percent for Legendary. Common
-  // clubs are unchanged. Needs the aim (ctx.aim); without it nothing changes.
-  if (strike && strike.kind === 'pured' && !launch.putt && Number.isFinite(ctx.aim)) {
-    const rar = RARITY[ctx.rarity] || RARITY.common;
-    const straight = clamp(rar.bonus * STRAIGHT_PER_BONUS, 0, STRAIGHT_CAP);
-    if (straight > 0) {
-      const off = Math.atan2(Math.sin(out.heading - ctx.aim), Math.cos(out.heading - ctx.aim));
-      out.heading = ctx.aim + off * (1 - straight);
-      out.axisTilt = num(out.axisTilt) * (1 - straight);
-    }
-  }
   // The ball (game/gear.js BALLS): a little more spin for a little less speed. Bounded.
-  const ball = ctx.ball;
-  if (ball && !launch.putt) {
-    out.speed *= clamp(num(ball.speed, 1), 0.98, 1);
-    out.spin *= clamp(num(ball.spin, 1), 1, 1.15);
+  if (ctx.ball && !launch.putt) {
+    const b = ballFactors(ctx.ball);
+    out.speed *= b.speed;
+    out.spin *= b.spin;
   }
   return out;
 }

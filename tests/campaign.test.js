@@ -72,7 +72,7 @@ describe('bounded effects', () => {
       const p = golferProfile(newGolfer(a));
       expect(p.power).toBe(1); expect(p.spin).toBe(1);
       for (const c of CLUBS.filter((x) => !x.putter)) expect(nominalCarry(c, p, SHOT_TYPES.FULL)).toBeCloseTo(nominalCarry(c, BASE_PROFILE, SHOT_TYPES.FULL), 9);
-      expect(golferStrike(newGolfer(a)).perkBonus).toBe(0);
+      expect(golferStrike(newGolfer(a))).toEqual({ forgiveness: 1 });
     }
   });
   it('stats, perks and the profile stay inside their caps at every level', () => {
@@ -85,7 +85,7 @@ describe('bounded effects', () => {
         expect(p.power).toBeGreaterThanOrEqual(0.95); expect(p.power).toBeLessThanOrEqual(1.08);
         expect(p.spin).toBeLessThanOrEqual(1.15);
         for (const k of ['accuracy', 'touch', 'putting', 'recovery', 'forgiveness']) { expect(p[k]).toBeGreaterThanOrEqual(0.45); expect(p[k]).toBeLessThanOrEqual(1.3); }
-        expect(s.perkBonus).toBeLessThanOrEqual(0.04); expect(s.forgiveness).toBeLessThanOrEqual(1.15);
+        expect(s.perkBonus).toBeUndefined(); expect(s.forgiveness).toBeLessThanOrEqual(1.15);
         for (const v of Object.values(p)) expect(Number.isFinite(v)).toBe(true);
       }
     }

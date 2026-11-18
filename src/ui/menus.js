@@ -15,7 +15,6 @@ import {
 import { makeChallenge, challengeUrl, readChallengeFromHash, mergeIntoChallenge, toCompact, challengeStandings } from '../game/share.js';
 import { holesFor } from '../game/round.js';
 import { gearFor } from '../game/gear.js';
-import { noteStrike } from '../game/strike.js';
 import { roundRewards } from '../game/rewards.js';
 import { levelForXp, golferProfile, golferStrike, shotUnlocked, eventById, roundFacts } from '../game/campaign.js';
 import { rollQuests, progressQuests } from '../game/quests.js';
@@ -71,8 +70,6 @@ export function installMenus(app, ui) {
   // What the strike model reads for a club: its rarity, the ball, and the glove.
   app.gearFor = (clubId) => gearFor(save.gear, clubId);
   // Your running Pured rate among clean strikes (kept in memory, saved with the next change).
-  app.strikeMix = () => save.strikeMix;
-  app.noteStrike = (kind) => { const m = noteStrike(save.strikeMix, kind); if (m !== save.strikeMix) save = { ...save, strikeMix: m }; };
   // Experience for the golfer from anything played. A level-up is announced and kept for the
   // round-end and range summary screens to offer the level-up card.
   app.addXp = (n, reason) => {

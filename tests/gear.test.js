@@ -13,19 +13,19 @@ describe('gear: tiers and caps', () => {
     const names = TIERS.map((t) => TIER_INFO[t].model);
     expect(names).toEqual(['Meadow', 'Harrow', 'Kingfisher', 'Ember', 'Solstice']);
   });
-  it('the strike table matches the brief and never passes the carry cap', () => {
-    const want = { common: [1, 0], uncommon: [1.25, 0.02], rare: [1.5, 0.04], epic: [1.8, 0.06], legendary: [2.2, 0.08] };
+  it('the strike table matches the brief and no tier adds carry', () => {
+    const want = { common: [1, 1], uncommon: [1.25, 0.92], rare: [1.5, 0.84], epic: [1.8, 0.76], legendary: [2.2, 0.68] };
     for (const t of TIERS) {
       expect(RARITY[t].difficulty).toBeCloseTo(want[t][0], 6);
-      expect(RARITY[t].bonus).toBeCloseTo(want[t][1], 6);
-      const m = strikeModifiers({ kind: 'pured', severity: 0 }, { rarity: t, perkBonus: 0.04 });
-      expect(m.speed).toBeLessThanOrEqual(1 + CARRY_CAP + 1e-9);
+      expect(RARITY[t].sweet).toBeCloseTo(want[t][1], 6);
+      const m = strikeModifiers({ kind: 'pured', severity: 0 }, { rarity: t });
+      expect(m.speed).toBe(1); expect(CARRY_CAP).toBe(0);
     }
   });
-  it('every tier above Common trades forgiveness for power (no strict upgrade)', () => {
+  it('every tier above Common trades forgiveness for control (no strict upgrade)', () => {
     for (let i = 1; i < TIERS.length; i++) {
       const a = clubStats(TIERS[i - 1]), b = clubStats(TIERS[i]);
-      expect(b.power).toBeGreaterThan(a.power);
+      expect(b.control).toBeGreaterThan(a.control);
       expect(b.forgiveness).toBeLessThan(a.forgiveness);
       expect(b.difficulty).toBeGreaterThan(a.difficulty);
     }

@@ -16,7 +16,7 @@ import { scoreName } from './scoring.js';
 import { DECAL } from '../render/decals.js';
 import { courseById } from '../course/courses.js';
 import { fin } from '../core/guards.js';
-import { strikeResult, applyStrike, tierCarryFactor, guideShare } from './strike.js';
+import { strikeResult, applyStrike, ballFactors } from './strike.js';
 import { bayBall, targetFor } from '../course/range.js';
 import { EXTRA_SHOTS } from './shots.js';
 
@@ -343,8 +343,6 @@ export function createGame(app) {
     // The simulation that follows is unchanged.
     const sctx = { ...strikeContext(club, from), aim };
     const strike = strikeResult(swing, sctx, testLane ? createRng(k) : rng);
-    // Your clean strikes keep the carry the game shows in step with how you strike it.
-    if (isHuman() && !club.putter && app.noteStrike) app.noteStrike(strike.kind);
     launch = applyStrike(launch, strike, sctx);
     result = simulateShot(launch, t.env({ windAt, t0: state.clock }));
     state.compareShot = testLane ? compareSwing(swing, aim, shotType, from, lieRoll, k) : null;
@@ -396,15 +394,14 @@ export function createGame(app) {
   }
 
   // The profile behind everything the game shows for a club (carry on the club card and list,
-  // the power guide, the aim fan): your profile plus your club's tier carry for a clean strike
-  // at your own recent Pured rate. Common clubs and computer players get the profile unchanged.
-  const myShare = () => guideShare(app.strikeMix ? (app.strikeMix() || {}).rate : undefined);
+  // the power guide, the aim fan). No club tier changes carry, so it is the golfer's profile
+  // for every tier; your ball's small speed and spin factors are folded in, so the guide's
+  // mark is exactly where a Pured strike lands. Computer players use the profile unchanged.
   function guideProfile(club) {
     if (!club || club.putter || !isHuman() || !app.gearFor) return state.profile;
-    const f = tierCarryFactor((app.gearFor(club.id) || {}).rarity, myShare());
-    return f === 1 ? state.profile : { ...state.profile, power: state.profile.power * f };
+    const b = ballFactors((app.gearFor(club.id) || {}).ball);
+    return b.speed === 1 && b.spin === 1 ? state.profile : { ...state.profile, power: state.profile.power * b.speed, spin: state.profile.spin * b.spin };
   }
-  game.guideFactor = (club = state.club) => (club && !club.putter && isHuman() && app.gearFor ? tierCarryFactor((app.gearFor(club.id) || {}).rarity, myShare()) : 1);
 
   function strikeContext(club, from) {
     const t = W().terrain, n = {};
@@ -412,7 +409,7 @@ export function createGame(app) {
     // Your gear and golfer perks apply to your shots only; computer players use Common clubs.
     const mine = isHuman();
     const gear = { ...((mine && app.gearFor && app.gearFor(club.id)) || {}), ...(mine && state.golfer && app.golferStrike ? app.golferStrike(club.kind) : {}) };
-    return { clubId: club.id, lie: from.lie, slope: Math.hypot(n.x, n.z) / Math.max(0.2, n.y), setting: app.settings.difficulty || 'standard', rarity: gear.rarity || 'common', glove: gear.glove || 0, ball: gear.ball || null, forgiveness: gear.forgiveness || 1, perkBonus: gear.perkBonus || 0, lefty: app.settings.handedness === 'left' };
+    return { clubId: club.id, lie: from.lie, slope: Math.hypot(n.x, n.z) / Math.max(0.2, n.y), setting: app.settings.difficulty || 'standard', rarity: gear.rarity || 'common', glove: gear.glove || 0, ball: gear.ball || null, forgiveness: gear.forgiveness || 1, lefty: app.settings.handedness === 'left' };
   }
 
   function addDecal(type, x, z, rot, scale) { W().decals.add(type, x, z, rot, scale); saveDecals(); }

@@ -9,16 +9,18 @@ import { simulateShot } from '../physics/ball.js';
 import { SURFACES } from '../physics/surfaces.js';
 import { strikeResult, applyStrike } from './strike.js';
 import { clamp, DEG } from '../core/math.js';
+import { createRng } from '../core/rng.js';
 import { BASE_PROFILE } from '../physics/shot.js';
 
 /**
  * Play one hole. opts: { profile, gearFor(clubId) -> { rarity, glove, ball }, perks(kind) ->
- * { forgiveness, perkBonus }, setting, skill (planning and swing spread, 0.6 = average),
+ * { forgiveness }, setting, skill (planning and swing spread, 0.6 = average),
  * rng, windAt }. Returns { strokes, putts, penalties, strikes: { kind: n }, pickedUp }.
  */
 export function playHoleGolfer(terrain, opts) {
   const { profile = BASE_PROFILE, gearFor = () => ({}), perks = () => ({}), setting = 'standard', skill = 0.6, rng, windAt } = opts;
-  // Strike dice on their own stream, so cells compared side by side see the same play.
+  // Strike dice on their own stream, one fresh draw per shot, so cells compared side by side
+  // see the same dice for the same shot whatever happened on the shots before.
   const srng = opts.strikeRng || rng;
   const par = terrain.hole.par, cap = par + 5;
   let pos = { x: terrain.tee.x, z: terrain.tee.z }, lie = SURFACES.TEE;
@@ -49,7 +51,7 @@ export function playHoleGolfer(terrain, opts) {
       terrain.normalAt(pos.x, pos.z, n);
       const gear = gearFor(plan.club.id) || {};
       const ctx = { aim: plan.aim, clubId: plan.club.id, lie, slope: Math.hypot(n.x, n.z) / Math.max(0.2, n.y), setting, rarity: gear.rarity || 'common', glove: gear.glove || 0, ball: gear.ball || null, ...(perks(plan.club.kind) || {}) };
-      const st = strikeResult(swing, ctx, srng);
+      const st = strikeResult(swing, ctx, createRng(Math.floor(srng.next() * 2147483647) + 1));
       strikes[st.kind] = (strikes[st.kind] || 0) + 1;
       launch = applyStrike(launch, st, ctx);
     }
