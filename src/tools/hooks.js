@@ -72,7 +72,7 @@ export function installHooks(app) {
       if (w.overlays && w.overlays.screenBox) out.fan = w.overlays.screenBox(fw.project);
       if (w.club && w.club.visible && w.club.screenPoints) {
         const pts = w.club.screenPoints().map((q) => fw.project(q.x, q.y, q.z)).filter((q) => !q.behind);
-        if (pts.length) { const xs = pts.map((q) => q.x), ys = pts.map((q) => q.y); out.club = { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) }; }
+        if (pts.length) { const xs = pts.map((q) => q.x), ys = pts.map((q) => q.y); out.club = { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) }; out.clubPts = pts.map((q) => [q.x, q.y]); }
       }
       return out;
     },

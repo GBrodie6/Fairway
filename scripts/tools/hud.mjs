@@ -62,7 +62,7 @@ for (const [W, H] of sizes) {
   const pointer = await createPointer(page, { touch: true });
   const tag = `${W}x${H}`;
   try {
-    await page.goto(`${server.url}/?mode=stroke&course=${course}&hole=1&holes=1&tier=low&scale=0.6&bot=1&seed=7${lefty ? '&lefty=1' : ''}`, { waitUntil: 'load' });
+    await page.goto(`${server.url}/?mode=stroke&course=${course}&hole=${process.env.HOLE || 1}&holes=1&tier=low&scale=0.6&bot=1&seed=${process.env.SEED || 7}${lefty ? '&lefty=1' : ''}`, { waitUntil: 'load' });
     await page.waitForFunction(() => window.__fw && window.__fw.ready, null);
     if ((await waitPhase(page, ['intro', 'aim'])) === 'intro') await clickSel(page, pointer, '.intro-skip');
     await waitPhase(page, 'aim');
@@ -88,16 +88,35 @@ for (const [W, H] of sizes) {
         t0 = Date.now();
         await pointer.down(zinfo.x, zinfo.y, t0);
         down = true;
-        for (let i = 1; i <= 16; i++) await pointer.move(zinfo.x, zinfo.y + zinfo.travel * (i / 16), t0 + 50 * i);
+        // Full power unless POWER=ideal (the HUD's power guide) or a number is given.
+        const pw = process.env.POWER === 'ideal' ? await page.evaluate(() => window.__fw.game.suggestedPower()) : Number(process.env.POWER || 1);
+        zinfo.depth = Math.max(0.1, Math.min(1, pw)) * zinfo.travel;
+        for (let i = 1; i <= 16; i++) await pointer.move(zinfo.x, zinfo.y + zinfo.depth * (i / 16), t0 + 50 * i);
         await frames(3);
       } else if (m === 'impact') {
         if (!down) continue;
         await page.evaluate(() => { window.__fw.app.loop.timescale = 0.02; });
+        // DRIFT (fraction of travel) moves the thumb sideways on the way up: a slice or a draw.
+        const drift = Number(process.env.DRIFT || 0) * zinfo.travel;
         const tt = t0 + 800;
-        for (let i = 1; i <= 8; i++) await pointer.move(zinfo.x, zinfo.y + zinfo.travel - (zinfo.travel + 16) * (i / 8), tt + 33 * i);
-        await pointer.up(zinfo.x, zinfo.y - 16, tt + 33 * 8 + 1);
+        for (let i = 1; i <= 8; i++) await pointer.move(zinfo.x + drift * (i / 8), zinfo.y + zinfo.depth - (zinfo.depth + 16) * (i / 8), tt + 33 * i);
+        await pointer.up(zinfo.x + drift, zinfo.y - 16, tt + 33 * 8 + 1);
         down = false;
         await frames(1);
+      } else if (m === 'down') {
+        // Mid-downswing, finger still on the glass: the face and path already show the drift.
+        if (!down) continue;
+        const drift = Number(process.env.DRIFT || 0) * zinfo.travel;
+        const tt = t0 + 800;
+        for (let i = 1; i <= 6; i++) await pointer.move(zinfo.x + drift * (i / 6), zinfo.y + zinfo.depth - zinfo.depth * 0.8 * (i / 6), tt + 30 * i);
+        await frames(3);
+      } else if (m === 'next') {
+        // The next shot's address (after the ball has stopped): putter views on a par 3.
+        await page.evaluate(() => { window.__fw.app.loop.timescale = 4; });
+        await waitPhase(page, ['aim', 'summary']);
+        await page.evaluate(() => { window.__fw.app.loop.timescale = 1; });
+        for (let i = 0; i < 40; i++) { const a = await page.evaluate(() => window.__fw.app.loop.stats.frame); await page.waitForTimeout(300); const b = await page.evaluate(() => window.__fw.app.loop.stats.frame); if (b > a + 6) break; }
+        await frames(12);
       } else if (m === 'follow') {
         await page.evaluate(() => { window.__fw.app.loop.timescale = 0.25; });
         await page.waitForFunction(() => { const f = window.__fw.app.world.club.follow; return !f || f.t > 0.3; }, null, { polling: 30 });

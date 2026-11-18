@@ -51,7 +51,9 @@ export function createUI(app) {
       }
     },
     // The HUD's layout says where the ball goes on screen; the address camera frames it there.
-    onLayout: ({ ballY }) => { if (app.world && app.world.rig) { app.world.rig.ballScreenY = ballY; } },
+    onLayout: ({ ballY, keep }) => { if (app.world && app.world.rig) { app.world.rig.ballScreenY = ballY; app.world.rig.hudKeep = keep; app.world.rig.lefty = settings.handedness === 'left'; } },
+    // The drag crossed the start line and the shot is away: the club shows impact this frame.
+    onSwing: (res) => { if (app.world && app.world.club) app.world.club.impact({ face: res.face, path: res.path }); },
     continue: () => game.continue(),
     escape: () => {
       if (ui.map.open) { ui.map.close(); return; }
@@ -110,7 +112,20 @@ export function createUI(app) {
   // A tap on the course ends the replay; the replay bar picks camera angles.
   app.engine.renderer.domElement.addEventListener('pointerdown', () => { if (game.state.phase === 'replay') game.endReplay(); });
 
+  // What the first-person club shows: the live drag while the player is at address.
+  const clubCtx = { show: false, ball: { x: 0, y: 0, z: 0 }, heading: 0, clubId: 'I7', lefty: false, state: null };
+  const clubSource = () => {
+    const st = game.state, w = app.world;
+    const v = st.round ? game.view() : null;
+    clubCtx.show = !!(v && v.phase === 'aim' && v.human && w.rig.mode === 'address' && !ui.map.open && !ui.modal && w.ball && w.ball.group.visible !== false);
+    if (w.ball) { const p = w.ball.position; clubCtx.ball.x = p.x; clubCtx.ball.y = p.y; clubCtx.ball.z = p.z; }
+    clubCtx.heading = st.aim; clubCtx.clubId = st.club ? st.club.id : 'I7';
+    clubCtx.lefty = settings.handedness === 'left';
+    clubCtx.state = ui.hud.zone.live;
+    return clubCtx;
+  };
   ui.update = (dt) => {
+    if (app.world && app.world.club && app.world.clubSource !== clubSource) app.world.clubSource = clubSource;
     ui.input.update(dt);
     ui.hud.update();
     if (ui.map.open) ui.map.draw();

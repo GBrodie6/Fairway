@@ -41,11 +41,12 @@ export const clubGeometry = (id) => CLUB_GEOMETRY[id] || CLUB_GEOMETRY.I7;
 
 // Arc shape per kind: the turn at the top of a full swing and at the finish, the hinge at the
 // top, and the arm (grip to pivot). Putters rock from the shoulders: a short arc, no hinge.
+// Sized so a full swing stays on a phone screen from the address camera (see cameraBack).
 export const ARC = {
-  driver: { top: 128, finish: 140, hinge: 34, arm: 0.26 },
-  wood: { top: 124, finish: 136, hinge: 34, arm: 0.26 },
-  iron: { top: 118, finish: 130, hinge: 38, arm: 0.24 },
-  wedge: { top: 112, finish: 122, hinge: 40, arm: 0.24 },
+  driver: { top: 102, finish: 112, hinge: 27, arm: 0.15 },
+  wood: { top: 99, finish: 109, hinge: 27, arm: 0.15 },
+  iron: { top: 95, finish: 104, hinge: 30, arm: 0.15 },
+  wedge: { top: 90, finish: 98, hinge: 32, arm: 0.15 },
   putter: { top: 26, finish: 22, hinge: 0, arm: 0.42 },
 };
 // The heel of the face sits this far from the contact point toward the player, and the shaft
@@ -116,9 +117,10 @@ export function arcAngles(p, top, arc) {
     // Downswing. pStart is where a backswing of depth d enters this half.
     const k = Math.sin(clamp((1 - p) * 2, 0, 1) * Math.PI / 2);
     turn = T * k;
-    // The hinge is held a little longer than the turn (lag), then released by impact. It
-    // starts from the backswing's own hinge (H d^2) so a partial swing does not jump.
-    hinge = d > 1e-3 ? H * d * d * Math.pow(clamp(k / d, 0, 1), 1.6) : 0;
+    // The hinge unwinds in step with the turn, from the backswing's own hinge (H d^2, so a
+    // partial swing does not jump) to none at impact. Its fastest release is at impact. The
+    // visible lag is the separate lagDeg term, held mid-downswing and gone by impact.
+    hinge = d > 1e-3 ? H * d * d * clamp(k / d, 0, 1) : 0;
   } else {
     const q = clamp((p - 1) * 2, 0, 1);
     const e = Math.sin(q * Math.PI / 2);
@@ -188,7 +190,7 @@ export function clubPose(frame, p, { top = 1, faceDeg = 0, lagDeg = 0 } = {}) {
   // Turning about the shaft by minus the face angle opens the face to the right for either hand
   // (the shaft leans the other way for a left-hander, and so does the turn).
   face = rot(face, shaftDir, -faceDeg * DEG);
-  return { head, hosel: hz, grip: g1, shaft: shaftDir, face, turn: a.turn, hinge: a.hinge };
+  return { head, hosel: hz, grip: g1, shaft: shaftDir, face, turn: a.turn, hinge: a.hinge, sgn };
 }
 
 /** Horizontal face angle (degrees) of a pose relative to the target line: + is to the right. */
@@ -211,4 +213,47 @@ export function liveFaceAndPath(st, cfg, lefty) {
   const lineDeg = (Math.atan2(st.lastX - st.topX, depthPx) * 180) / Math.PI;
   const path = clamp(lineDeg * cfg.pathGain, -cfg.maxPath, cfg.maxPath) * mirror;
   return { face, path };
+}
+
+/**
+ * How far behind the ball the address camera stands so the whole swing of the longest club
+ * (the driver at the top and at the finish) stays on screen and clear of the HUD corner on the
+ * player's side. All screen values are fractions of the viewport.
+ *   aspect, fovDeg  the camera's
+ *   ballFrac        where the ball sits, from the top
+ *   up              camera height above the ball (m)
+ *   keep            { x, y } the HUD corner box on the player's side: the club must stay below
+ *                   y or beyond x (to the right of it for a right-hander, left for a lefty)
+ * Returns the distance in meters (between minBack and maxBack).
+ */
+export function cameraBack({ aspect, fovDeg, ballFrac, up, keep = { x: 0, y: 0 }, lefty = false, minBack = 3.2, maxBack = 8 }) {
+  const b = v(0, BALL_R, 0);
+  const fr = swingFrame(b, 0, 'DR', { lefty });
+  // The head's far corners and the grip end, not only the contact point: the drawn head is a
+  // little larger than life (render/clubModel.js) and reaches about 0.15 m from the contact.
+  const pts = [];
+  for (const p of [0.5, 1.25, 1.5]) {
+    const q = clubPose(fr, p, { top: 1 });
+    pts.push(q.grip, add(q.grip, mul(q.shaft, 0.04)));
+    for (const dx of [-0.15, 0.15]) for (const dy of [-0.15, 0.15]) pts.push(add(q.head, v(dx, dy, 0)));
+  }
+  const tanH = Math.tan((fovDeg * Math.PI) / 360);
+  const margin = 0.03;
+  for (let back = minBack; back <= maxBack; back += 0.1) {
+    // Camera at (0, up, back) looking down -z, pitched so the ball lands at ballFrac.
+    const pitch = Math.atan2(up, back) - Math.atan((2 * ballFrac - 1) * tanH);
+    const c = Math.cos(pitch), sn = Math.sin(pitch);
+    let ok = true;
+    for (const q of pts) {
+      const dx = q.x, dy = q.y - (BALL_R + up), dz = q.z - back;
+      const zf = -dy * sn - dz * c, yu = dy * c - dz * sn;
+      if (zf <= 0.05) { ok = false; break; }
+      const sx = 0.5 + (dx / zf) / (tanH * aspect) / 2, sy = 0.5 - (yu / zf) / tanH / 2;
+      if (sx < margin || sx > 1 - margin || sy < margin) { ok = false; break; }
+      const inCorner = lefty ? sx > keep.x - margin && sy < keep.y + margin : sx < keep.x + margin && sy < keep.y + margin;
+      if (inCorner) { ok = false; break; }
+    }
+    if (ok) return Math.round(back * 10) / 10;
+  }
+  return maxBack;
 }

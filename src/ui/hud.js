@@ -184,7 +184,7 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     const want = Math.round(clamp(H * 0.27, 96, 190) * clamp(settings.stickScale || 1, 0.7, 1.5));
     // Zone height: the start line, full travel, and a margin above the bottom row; in portrait
     // at most half of the space under the top panels.
-    const zoneH = Math.round(clamp(want + 46, 130, landscape ? H * 0.46 : H * 0.36));
+    const zoneH = Math.round(clamp(want + 46, 130, landscape ? H * 0.46 : H < 700 ? H * 0.31 : H * 0.36));
     const zoneW = Math.round(clamp(W * (landscape ? 0.2 : 0.42), 150, 220));
     const x = Math.round(W / 2 - zoneW / 2);
     // When the club buttons keep to a corner (landscape phones), the zone may come down beside
@@ -204,7 +204,11 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     const leftBottom = tabTop(tbR) + 80;
     const top = Math.max(settings.leftHandLayout ? leftBottom : rightBottom, landscape ? 0 : H * 0.36) + 10;
     lookBtn.style.top = `${Math.round(Math.min(top, barTop - 66))}px`;
-    if (actions.onLayout) actions.onLayout({ ballY: hud.ballY / H, zone: box });
+    // The HUD corner on the player's side (tabs for a right-hander, the top-right panel for a
+    // left-hander): the camera keeps the club's swing clear of it.
+    const cr = settings.handedness === 'left' ? tr.getBoundingClientRect() : tabWind.getBoundingClientRect();
+    const keep = settings.handedness === 'left' ? { x: (cr.left - 6) / W, y: (Math.max(cr.bottom, mapBtn.getBoundingClientRect().bottom) + 6) / H } : { x: (Math.max(cr.right, tabDist.getBoundingClientRect().right) + 6) / W, y: (cr.bottom + 6) / H };
+    if (actions.onLayout) actions.onLayout({ ballY: hud.ballY / H, zone: box, keep });
   };
   // Bottom of the three tabs (the chips under them are not counted).
   function tabTop(tbR) { const r = tabWind.getBoundingClientRect(); return r.height ? r.bottom : tbR.bottom; }

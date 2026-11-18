@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { clamp, lerp } from '../core/math.js';
 import { fin, allFinite } from '../core/guards.js';
 import { pointAt } from '../course/layout.js';
+import { cameraBack } from '../game/clubPath.js';
 
 export const REPLAY_ANGLES = ['follow', 'landing', 'side', 'high'];
 
@@ -46,8 +47,8 @@ export function createCameraRig(world, engine) {
       // the ball sits where the HUD's layout wants it (just above the swing zone).
       const putt = !!c.putt;
       const portrait = camera.aspect < 1;
-      const back = putt ? clamp(2.6 + (c.distance || 3) * 0.15, 2.8, 6.5) : portrait ? 4.3 : 3.4;
-      const up = putt ? 1.35 + (c.distance || 3) * 0.05 : portrait ? 1.45 : 1.25;
+      const up = putt ? 1.35 + (c.distance || 3) * 0.05 : portrait ? 1.5 : 1.45;
+      const back = putt ? clamp(2.6 + (c.distance || 3) * 0.15, 2.8, 6.5) : fitBack(up);
       const h = (c.aim || 0) + rig.yaw;
       const fx = Math.sin(h), fz = -Math.cos(h);
       const cx = c.x - fx * back, cz = c.z - fz * back;
@@ -142,6 +143,15 @@ export function createCameraRig(world, engine) {
     }
   }
 
+  // Distance behind the ball for full shots: the nearest that keeps a full swing on screen and
+  // clear of the HUD corner on the player's side. Cached until the inputs change.
+  let fitKey = '', fitVal = 4.6;
+  function fitBack(up) {
+    const ballFrac = clamp(rig.ballScreenY || 0.62, 0.3, 0.85), keep = rig.hudKeep || { x: 0, y: 0 };
+    const key = `${camera.aspect.toFixed(3)}|${camera.fov.toFixed(2)}|${ballFrac.toFixed(3)}|${keep.x.toFixed(3)}|${keep.y.toFixed(3)}|${!!rig.lefty}|${up}`;
+    if (key !== fitKey) { fitKey = key; fitVal = cameraBack({ aspect: camera.aspect, fovDeg: camera.fov, ballFrac, up, keep, lefty: !!rig.lefty }); }
+    return fitVal;
+  }
   rig.update = (dt) => {
     if (!world.terrain) return;
     desired(dt);

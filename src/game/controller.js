@@ -254,7 +254,8 @@ export function createGame(app) {
       launch = computeLaunch(swing, { club, shotType, lie: from.lie, aim, x: from.x, z: from.z, profile: state.profile, lieRoll: rng.range(-1, 1) });
       result = simulateShot(launch, t.env({ windAt, t0: state.clock }));
     }
-    state.shot = { from, swing, club, shotType, launch, result, t: 0, speedUp, player: state.turn, landingCam: false };
+    // hold: the first frame after launch shows the ball still at rest with the club at impact.
+    state.shot = { from, swing, club, shotType, launch, result, t: 0, speedUp, player: state.turn, landingCam: false, hold: 1 };
     apexShown = false; landShown = false; eventIdx = 0;
     w.overlays.hide();
     w.ball.clearTrace();
@@ -272,9 +273,14 @@ export function createGame(app) {
     w.ball.spin.axis.set(-fz * Math.cos(launch.axisTilt || 0), -Math.sin(launch.axisTilt || 0), fx * Math.cos(launch.axisTilt || 0)).normalize();
     w.ball.spin.rate = club.putter ? 0 : -Math.min(launch.spin, 260);
     const landing = result.carryPoint || result.end;
+    // A human full shot holds the address view for half a second, so the club's follow-through
+    // is seen with the ball leaving; then the camera chases the ball.
     if (club.putter) w.rig.set('green', {});
+    else if (isHuman() && !state.fast && !motionReduced()) state.shot.camAt = 0.5;
     else w.rig.set('follow', { dirX: fx, dirZ: fz });
     w.ball.hideMarkers();
+    // The launch line: from the ball, rising along the launch direction.
+    w.overlays.showLaunch({ x: from.x, y: gy + 0.021, z: from.z, putt: !!club.putter }, launch.heading, launch.vAngle || 0, club.putter ? 6 : 34);
     if (!club.putter && result.carry > 25) w.ball.showLanding(landing.x, t.inBounds(landing.x, landing.z, 1) ? t.heightAt(landing.x, landing.z) : landing.y, landing.z, 1.2 + result.carry * 0.008);
     emit('swing', { swing, club, putt: !!club.putter, lie: from.lie, player: state.turn, human: isHuman() });
     setPhase('flight');
@@ -292,6 +298,8 @@ export function createGame(app) {
     if (holdTimer > 0) { holdTimer -= dt; if (holdTimer <= 0 && afterHold) { const f = afterHold; afterHold = null; f(); } }
     if (state.phase !== 'flight' || !state.shot) return;
     const sh = state.shot, r = sh.result, t = w.terrain;
+    if (sh.hold > 0) { sh.hold--; return; }
+    if (sh.camAt != null && sh.t >= sh.camAt) { sh.camAt = null; w.rig.set('follow', { dirX: Math.sin(sh.launch.heading), dirZ: -Math.cos(sh.launch.heading) }); }
     const prevT = sh.t;
     sh.t += dt * sh.speedUp;
     samplePath(r.points, sh.t, tmp);

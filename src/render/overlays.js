@@ -61,6 +61,49 @@ export function createOverlays(world) {
   ring.renderOrder = 4; ring.visible = false;
   group.add(aimLine, puttLine, ring);
 
+  // Aim fan: a wedge on the ground from just ahead of the ball out to the predicted landing,
+  // as wide as the expected dispersion for the club, lie, and wind. Each vertex is tinted by
+  // the surface under it (short grass light, rough straw, sand, water blue, out of bounds red),
+  // with brighter edges so the wedge reads at a glance.
+  const FAN_ROWS = 48, FAN_COLS = 5;
+  const fanPos = new Float32Array(FAN_ROWS * FAN_COLS * 3), fanCol = new Float32Array(FAN_ROWS * FAN_COLS * 3), fanUV = new Float32Array(FAN_ROWS * FAN_COLS * 2);
+  const fanGeo = new THREE.BufferGeometry();
+  fanGeo.setAttribute('position', new THREE.BufferAttribute(fanPos, 3).setUsage(THREE.DynamicDrawUsage));
+  fanGeo.setAttribute('color', new THREE.BufferAttribute(fanCol, 3).setUsage(THREE.DynamicDrawUsage));
+  fanGeo.setAttribute('aUV', new THREE.BufferAttribute(fanUV, 2));
+  const fanD = new Float32Array(FAN_ROWS * FAN_COLS);
+  fanGeo.setAttribute('aD', new THREE.BufferAttribute(fanD, 1).setUsage(THREE.DynamicDrawUsage));
+  const fIdx = [];
+  for (let r = 0; r < FAN_ROWS - 1; r++) for (let c = 0; c < FAN_COLS - 1; c++) { const a = r * FAN_COLS + c, b = a + FAN_COLS; fIdx.push(a, b, a + 1, a + 1, b, b + 1); }
+  fanGeo.setIndex(fIdx);
+  for (let r = 0; r < FAN_ROWS; r++) for (let c = 0; c < FAN_COLS; c++) { const k = r * FAN_COLS + c; fanUV[k * 2] = (c / (FAN_COLS - 1)) * 2 - 1; fanUV[k * 2 + 1] = r / (FAN_ROWS - 1); }
+  const fanMat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -6, polygonOffsetUnits: -6,
+    uniforms: { uO: { value: 1 } },
+    vertexShader: 'attribute vec3 color; attribute vec2 aUV; attribute float aD; varying vec3 vC; varying vec2 vUV; varying float vD; void main(){ vC = color; vUV = aUV; vD = aD; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    // A fill that thins with distance, bright rims at both edges, and a tick across the fan
+    // every 50 yards so its length reads on the ground.
+    fragmentShader: 'uniform float uO; varying vec3 vC; varying vec2 vUV; varying float vD; void main(){ float e = abs(vUV.x); float rim = smoothstep(0.78, 0.95, e) * (1.0 - smoothstep(0.985, 1.0, e)); float fill = mix(0.22, 0.1, sqrt(vUV.y)); float k = abs(fract(vD / 45.72 + 0.5) - 0.5) * 45.72; float tick = (1.0 - smoothstep(0.25, 0.7, k)) * step(10.0, vD); float a = fill + rim * 0.6 + tick * 0.45; a *= smoothstep(0.0, 0.004, vUV.y); gl_FragColor = vec4(vC, a * uO); }',
+  });
+  const fan = new THREE.Mesh(fanGeo, fanMat);
+  fan.frustumCulled = false; fan.renderOrder = 4; fan.visible = false;
+  group.add(fan);
+  const TINT = {};
+  const tint = (s) => TINT[s] || TINT.def;
+  TINT.def = [0.96, 1.0, 0.94];
+  TINT[SURFACES.ROUGH] = [1.0, 0.9, 0.58]; TINT[SURFACES.DEEP_ROUGH] = [1.0, 0.78, 0.45]; TINT[SURFACES.WASTE] = [1.0, 0.78, 0.45];
+  TINT[SURFACES.BUNKER] = [1.0, 0.66, 0.36]; TINT[SURFACES.WATER] = [0.42, 0.74, 1.0]; TINT[SURFACES.WETLAND] = [0.5, 0.8, 0.95];
+  TINT[SURFACES.GREEN] = [0.72, 1.0, 0.7]; TINT[SURFACES.FRINGE] = [0.8, 1.0, 0.76]; TINT[SURFACES.ROCK] = [0.85, 0.85, 0.9];
+  const OOB = [1.0, 0.42, 0.38];
+
+  // Launch line: on commit, a clean line from the ball rising along the launch direction.
+  const launchLine = ribbon(2, 0xffffff, 0.9);
+  launchLine.renderOrder = 6;
+  launchLine.material.polygonOffset = false; launchLine.material.depthTest = false;
+  launchLine.visible = false;
+  group.add(launchLine);
+  let launchT = -1;
+
   // Green grid: lines and arrows in one mesh each, colored per vertex by slope.
   const gridMat = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -5, polygonOffsetUnits: -5,
@@ -135,7 +178,7 @@ export function createOverlays(world) {
     // Rebuilding the grid for a new palette keeps it shown if it was shown.
     setPalette(id) { palette = PALETTES[id] || PALETTES.off; if (grid) { const vis = grid.visible; buildGrid(); grid.visible = vis; } },
     loadHole() { buildGrid(); ov.hide(); },
-    hide() { aimLine.visible = false; puttLine.visible = false; ring.visible = false; if (grid) grid.visible = false; },
+    hide() { aimLine.visible = false; puttLine.visible = false; ring.visible = false; fan.visible = false; if (grid) grid.visible = false; },
     /**
      * Full-shot aim: a line from the ball to the predicted landing point and a ring whose
      * size is the one-sigma dispersion (lateral degrees and distance fraction).
@@ -152,7 +195,35 @@ export function createOverlays(world) {
       const pts = [];
       for (let i = 0; i < n; i++) { const f = start + (1 - start) * (i / (n - 1)); pts.push(from.x + (land.x - from.x) * f, from.z + (land.z - from.z) * f); }
       aimLine.setPath(t, pts, (i, m) => 0.02 + dist * (start + (1 - start) * (i / (m - 1))) * 0.0016);
-      aimLine.visible = true;
+      // The fan replaces the old aim line (kept for the map and tests, but not drawn).
+      aimLine.visible = false;
+      {
+        const ux = (land.x - from.x) / Math.max(dist, 1e-3), uz = (land.z - from.z) / Math.max(dist, 1e-3);
+        const px = -uz, pz = ux;
+        // Two standard deviations of the lateral spread: the shots that land inside.
+        const tanL = Math.tan((2 * disp.lateralDeg * Math.PI) / 180);
+        const d0 = Math.min(0.35, dist * 0.1);
+        for (let r = 0; r < FAN_ROWS; r++) {
+          // Rows are packed near the ball, where the low camera sees most of the fan.
+          const f = r / (FAN_ROWS - 1), d = d0 + (dist - d0) * f * f;
+          const half = Math.max(0.06 + d * 0.02, tanL * d);
+          for (let c = 0; c < FAN_COLS; c++) {
+            const k = r * FAN_COLS + c, o = ((c / (FAN_COLS - 1)) * 2 - 1) * half;
+            const x = from.x + ux * d + px * o, z = from.z + uz * d + pz * o;
+            const inb = t.inBounds(x, z, 1);
+            fanPos[k * 3] = x; fanPos[k * 3 + 1] = (inb ? t.heightAt(x, z) : 0) + 0.025 + d * 0.0006; fanPos[k * 3 + 2] = z;
+            fanD[k] = d;
+            const col = inb ? tint(t.surfaceAt(x, z)) : OOB;
+            fanCol[k * 3] = col[0]; fanCol[k * 3 + 1] = col[1]; fanCol[k * 3 + 2] = col[2];
+          }
+        }
+        fanGeo.attributes.position.needsUpdate = true; fanGeo.attributes.color.needsUpdate = true; fanGeo.attributes.aD.needsUpdate = true;
+        fan.visible = true;
+        const h0 = Math.max(0.06 + d0 * 0.02, tanL * d0);
+        ov.fanQuad = [[from.x + ux * d0 + px * h0, from.z + uz * d0 + pz * h0], [from.x + ux * d0 - px * h0, from.z + uz * d0 - pz * h0]];
+        const hl = Math.max(0.06 + dist * 0.02, tanL * dist);
+        ov.fanQuad.push([land.x - px * hl, land.z - pz * hl], [land.x + px * hl, land.z + pz * hl]);
+      }
       // Ring: lateral radius from the angle spread at this distance, depth from the distance spread.
       const lat = Math.max(1.2, Math.tan((disp.lateralDeg * Math.PI) / 180) * dist), dep = Math.max(1.5, disp.distFrac * dist * 1.6);
       const y = t.inBounds(land.x, land.z, 1) ? t.heightAt(land.x, land.z) : land.y || 0;
@@ -182,8 +253,30 @@ export function createOverlays(world) {
       } else puttLine.visible = false;
     },
     setGridVisible(v) { if (grid) grid.visible = !!v; },
-    update(dt, t) { gridMat.uniforms.uT.value = fin(t, 0) % 1000; },
-    dispose() { if (grid) grid.geometry.dispose(); gridMat.dispose(); aimLine.geometry.dispose(); puttLine.geometry.dispose(); ring.geometry.dispose(); },
+    update(dt, t) {
+      gridMat.uniforms.uT.value = fin(t, 0) % 1000;
+      if (launchT >= 0) {
+        launchT += fin(dt, 0);
+        launchLine.material.opacity = 0.9 * (1 - clamp((launchT - 0.45) / 0.5, 0, 1));
+        if (launchT > 0.95) { launchT = -1; launchLine.visible = false; }
+      }
+    },
+    /** The committed shot: a line from the ball along the launch direction, fading out. */
+    showLaunch(from, heading, vAngle, length = 32) {
+      const len = from.putt ? Math.min(length, 6) : length;
+      const dx = Math.sin(heading) * Math.cos(vAngle), dy = Math.sin(vAngle), dz = -Math.cos(heading) * Math.cos(vAngle);
+      const pts = [from.x, from.y, from.z, from.x + dx * len, from.y + dy * len, from.z + dz * len];
+      // A ribbon that faces up; with depth testing off it reads as a clean overlay line.
+      launchLine.setPath(world.terrain, pts, 0.012, 3, 0.01);
+      launchLine.visible = true; launchLine.material.opacity = 0.9; launchT = 0;
+    },
+    /** The fan's outline as screen points, for the layout check. */
+    screenBox(project) {
+      if (!fan.visible || !ov.fanQuad) return null;
+      const t = world.terrain;
+      return ov.fanQuad.map(([x, z]) => project(x, t.inBounds(x, z, 1) ? t.heightAt(x, z) : 0, z));
+    },
+    dispose() { if (grid) grid.geometry.dispose(); gridMat.dispose(); aimLine.geometry.dispose(); puttLine.geometry.dispose(); ring.geometry.dispose(); fanGeo.dispose(); fanMat.dispose(); launchLine.geometry.dispose(); },
   };
   return ov;
 }

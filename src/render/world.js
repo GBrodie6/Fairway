@@ -18,6 +18,7 @@ import { createProps } from './props.js';
 import { createBallView } from './ballView.js';
 import { createCameraRig } from './cameras.js';
 import { createOverlays } from './overlays.js';
+import { createClubView } from './clubView.js';
 import { DEG, clamp } from '../core/math.js';
 import { fin } from '../core/guards.js';
 
@@ -64,6 +65,10 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
   world.decals = createDecals(world);
   scene.add(world.decals.group);
   world.systems.push(world.greenProps, world.decals);
+  // The first-person club. The UI supplies what it should show through world.clubSource.
+  world.club = createClubView(world);
+  scene.add(world.club.group);
+  world.systems.push({ update: (dt) => { if (world.clubSource) world.club.update(dt, world.clubSource()); }, dispose: () => world.club.dispose() });
 
   // --- time of day ---
   world.setTimeOfDay = (id) => {

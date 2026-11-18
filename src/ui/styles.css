@@ -177,6 +177,13 @@ table.card-t .over { color: var(--warm); }
   .lefty .clublist { left: auto; right: calc(12px + var(--safe-r)); }
   .tip { bottom: calc(150px + var(--safe-b)); }
 }
+/* Short portrait phones: compact tabs, so a full swing has room on the player's side. */
+@media (orientation: portrait) and (max-height: 700px) {
+  .tabs { gap: 4px; }
+  .tab { min-height: 36px; padding-top: 1px; padding-bottom: 1px; }
+  .tab .v { font-size: 15px; }
+  .tab .ico, .tab svg { width: 20px; height: 20px; }
+}
 @media (max-width: 380px) {
   .tab { min-width: 100px; padding-right: 10px; }
   .tab .v { font-size: 15.5px; }
