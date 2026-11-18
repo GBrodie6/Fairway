@@ -38,7 +38,10 @@ try {
   await page.waitForFunction(() => window.__fw && window.__fw.ready, null);
   await page.waitForTimeout(800);
   await shot('menu');
-  await tapText(mode === 'demo' ? 'Account (optional)' : 'Account (optional)');
+  // The account lives under Profile.
+  await page.evaluate(() => { const b = [...document.querySelectorAll('#ui button')].find((x) => x.textContent.trim().startsWith('Profile')); if (b) b.click(); });
+  await page.waitForTimeout(400);
+  await tapText('Account (optional)');
   await shot('account');
   if (mode === 'demo') {
     await type('a-name', 'Ana Birdie');

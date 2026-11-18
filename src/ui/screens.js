@@ -55,36 +55,26 @@ export function createScreens(root, { app, game, settings, ui, save }) {
   const btn = (label, onclick, cls = 'btn') => h('button', { class: cls, type: 'button', onclick }, label);
 
   // --- main menu ---
-  screens.menu = () => show('menu', () => sheet('',
-    h('h1', { class: 'title', text: 'Fairway Next' }),
-    h('p', { class: 'tag', text: 'A calm round of golf. One gesture per shot.' }),
-    h('div', { class: 'stack' },
-      app.resumeAvailable && app.resumeAvailable() ? btn('Resume round', () => app.resume(), 'btn primary') : null,
-      btn('Quick round', () => screens.setup(), app.resumeAvailable && app.resumeAvailable() ? 'btn' : 'btn primary'),
-      screens.registry.campaign ? btn('Campaign', () => screens.registry.campaign()) : screens.registry.career ? btn('Career', () => screens.registry.career()) : null,
-      screens.registry.daily ? btn('Daily challenge', () => screens.registry.daily()) : null,
-      h('div', { class: 'grid2' },
-        btn('Driving range', () => (app.openRange ? app.openRange() : startRange())),
-        screens.registry.tournament ? btn('Tournament', () => screens.registry.tournament()) : null),
-      h('div', { class: 'grid2' },
-        screens.registry.passplay ? btn('Pass and play', () => screens.registry.passplay()) : btn('Two players', () => screens.setup({ players: 2 }))),
-      screens.registry.online ? btn('Online play (experimental)', () => screens.registry.online()) : null,
-      h('div', { class: 'grid2' },
-        screens.registry.quests ? btn('Quests and season', () => screens.registry.quests()) : null,
-        screens.registry.feats ? btn('Achievements', () => screens.registry.feats()) : null),
-      h('div', { class: 'grid2' },
-        screens.registry.locker ? btn('Locker', () => screens.registry.locker()) : null,
-        screens.registry.gear ? btn('Gear', () => screens.registry.gear()) : null),
-      h('div', { class: 'grid2' },
-        screens.registry.stats ? btn('Stats and history', () => screens.registry.stats()) : null),
-      h('div', { class: 'grid2' },
-        screens.registry.settings ? btn('Settings', () => screens.registry.settings()) : null,
-        screens.registry.privacy ? btn('Privacy', () => screens.registry.privacy()) : null),
-      h('div', { class: 'grid2' },
-        screens.registry.leaderboards ? btn('Leaderboards', () => screens.registry.leaderboards()) : null,
-        screens.registry.account ? btn(app.cloud && app.cloud.client.user ? 'Account' : 'Account (optional)', () => screens.registry.account()) : null),
-    ),
-  ), { modal: true });
+  screens.menu = () => show('menu', () => {
+    const resume = app.resumeAvailable && app.resumeAvailable();
+    const claim = app.questBadge ? app.questBadge() : 0;
+    const pts = app.save && app.save().profile && app.pointsFree ? app.pointsFree() : 0;
+    const big = (label, sub, onclick, primary) => h('button', { class: `btn menu-btn${primary ? ' primary' : ''}`, type: 'button', onclick }, h('b', { text: label }), h('small', { text: sub }));
+    return sheet('mainmenu',
+      h('h1', { class: 'title', text: 'Fairway Next' }),
+      h('p', { class: 'tag', text: 'A calm round of golf. One gesture per shot.' }),
+      h('div', { class: 'stack' },
+        resume ? btn('Resume round', () => app.resume(), 'btn primary') : null,
+        big('Quick Play', 'A round on any course, 3 to 18 holes', () => screens.setup(), !resume),
+        screens.registry.campaign ? big('Campaign', 'Six chapters, bosses, your golfer', () => screens.registry.campaign()) : null,
+        big('Range', 'Practice ground and drills', () => (app.openRange ? app.openRange() : startRange())),
+        screens.registry.daily ? big('Daily', claim ? `Today's challenge. ${claim} quest${claim === 1 ? '' : 's'} to claim` : 'Challenge, quests, this week', () => screens.registry.daily()) : null,
+        screens.registry.profile ? big('Profile', pts ? `${pts} skill point${pts === 1 ? '' : 's'} to spend` : 'Golfer, gear, achievements', () => screens.registry.profile()) : null,
+        h('div', { class: 'grid2' },
+          screens.registry.settings ? btn('Settings', () => screens.registry.settings()) : null,
+          screens.registry.leaderboards ? btn('Leaderboards', () => screens.registry.leaderboards()) : null)),
+    );
+  }, { modal: true });
 
   // --- quick round setup ---
   const setupState = { courseId: COURSES[0].id, holes: 9, mode: 'stroke', tod: 'morning', rival: false, players: 1 };
@@ -106,13 +96,18 @@ export function createScreens(root, { app, game, settings, ui, save }) {
       const needsRival = setupState.mode === 'match' || setupState.mode === 'skins';
       const rival = h('input', { type: 'checkbox', id: 'rival', checked: setupState.rival || needsRival, disabled: needsRival && setupState.players < 2, onchange: (e) => { setupState.rival = e.target.checked; } });
       return sheet('wide',
-        h('h2', { class: 'h', text: 'Quick round' }),
+        h('h2', { class: 'h', text: 'Quick Play' }),
         h('h3', { class: 'h', text: 'Course' }), cards,
         h('h3', { class: 'h', text: 'Format' }), h('div', { class: 'row' }, modeSeg, holeSeg),
         h('p', { class: 'muted', text: info.text }),
         h('div', { class: 'field' }, h('label', { text: 'Time of day' }), tod),
         setupState.players < 2 ? h('div', { class: 'field' }, h('label', { for: 'rival', text: `Play against a computer rival (adapts to your form: ${rivalLabel(adaptiveRivalSkill(app.save ? app.save().history : []))} right now)` }), rival) : h('p', { class: 'muted', text: `${setupState.players} players share this device and pass it between shots.` }),
         h('div', { class: 'grid2', style: { marginTop: '14px' } }, btn('Back', () => screens.back()), btn('Tee off', () => startQuick(), 'btn primary')),
+        h('h3', { class: 'h small', style: { marginTop: '14px' }, text: 'Other formats' }),
+        h('div', { class: 'grid2' },
+          screens.registry.tournament ? btn('Tournament', () => screens.registry.tournament()) : null,
+          screens.registry.passplay ? btn('Pass and play', () => screens.registry.passplay()) : btn('Two players', () => screens.setup({ players: 2 }))),
+        screens.registry.online ? h('div', { class: 'stack', style: { marginTop: '8px' } }, btn('Online play (experimental)', () => screens.registry.online())) : null,
       );
     });
   };
@@ -241,29 +236,43 @@ export function createScreens(root, { app, game, settings, ui, save }) {
   // Under the map and the menus, over the HUD.
   root.insertBefore(tip, ui.map.el);
   const STEPS = [
-    { title: 'Aim', text: 'Drag across the course to aim. The fan shows where the ball should land.', until: 'aim' },
-    { title: 'Backswing', text: 'Put your thumb on the chevron under the ball and drag down. The gold mark is the power this shot needs.', until: null },
-    { title: 'Strike', text: 'Then push up through the white line. Slower back than through flies straightest.', until: 'swing' },
+    { title: 'Swing', text: 'Put your thumb on the chevron under the ball and pull down to the gold mark, then push up through the white line. Drag across the course first if you want to aim.' },
+    { title: 'Strike result', text: 'The card shows how cleanly you struck it. Pured is the sweet spot. Rushing the downswing or drifting sideways can catch it thin, fat, or off the heel or toe.' },
+    { title: 'Club choice', text: 'Tap the club button to pick another club, or swipe across it. The number under it is how far that club carries.' },
   ];
-  let step = -1, unsub = null;
+  let step = -1, unsub = null, waiting = null;
   function showStep() {
     const s = STEPS[step];
     tip.textContent = '';
     tip.append(h('div', { class: 'step', text: `${step + 1} of ${STEPS.length}  ${s.title}` }), h('div', { text: s.text }),
-      h('div', { class: 'row', style: { justifyContent: 'center' } }, h('button', { class: 'btn small', type: 'button', onclick: () => advance() }, step < STEPS.length - 1 ? 'Next' : 'Got it'), h('button', { class: 'btn small', type: 'button', onclick: () => finish() }, 'Skip')));
+      h('div', { class: 'row', style: { justifyContent: 'center' } },
+        step === 0 ? null : h('button', { class: 'btn small', type: 'button', onclick: () => advance() }, step < STEPS.length - 1 ? 'Next' : 'Got it'),
+        step === STEPS.length - 1 ? null : h('button', { class: 'btn small', type: 'button', onclick: () => finish() }, 'Skip')));
+    tip.classList.toggle('top', step === 0);
     tip.classList.remove('hidden');
   }
-  function advance() { step++; if (step >= STEPS.length) finish(); else showStep(); }
-  function finish() { tip.classList.add('hidden'); settings.tutorialDone = true; save(); if (unsub) unsub(); unsub = null; step = -1; }
+  // Each prompt waits for its moment: the swing, the first shot's result, the next address.
+  function advance() {
+    tip.classList.add('hidden');
+    step++;
+    if (step >= STEPS.length) return finish();
+    waiting = step === 1 ? 'shotEnd' : 'aim';
+    // Already at the next address (the usual case after reading the strike card): show it now.
+    if (waiting === 'aim' && game.state.phase === 'aim') { waiting = null; showStep(); }
+  }
+  function finish() { tip.classList.add('hidden'); settings.tutorialDone = true; save(); if (unsub) unsub(); unsub = null; step = -1; waiting = null; }
+  app.tutorialStep = () => step;
   screens.maybeTutorial = () => {
     if (settings.tutorialDone || step >= 0 || app.params.bot || app.params.smoke) return;
     const r = game.state.round;
     if (!r || r.players[game.state.turn].kind !== 'human') return;
-    step = 0; showStep();
-    unsub = game.on((type) => {
+    step = 0; waiting = null; showStep();
+    unsub = game.on((type, d) => {
       if (step < 0) return;
-      if (type === 'aim' && STEPS[step].until === 'aim' && game.state.phase === 'aim') setTimeout(() => { if (step === 0) advance(); }, 900);
-      if (type === 'swing') finish();
+      if (type === 'swing' && step === 0) advance();
+      else if (type === 'shotEnd' && waiting === 'shotEnd') { waiting = null; setTimeout(() => { if (step === 1) showStep(); }, 400); }
+      else if (type === 'phase' && d === 'aim' && waiting === 'aim') { waiting = null; showStep(); }
+      else if (type === 'club' && step === 2 && !waiting) finish();
     });
   };
   return screens;

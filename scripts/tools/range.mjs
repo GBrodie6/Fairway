@@ -53,7 +53,7 @@ try {
   await page.goto(`${server.url}/?tier=low&scale=0.6&timescale=4`, { waitUntil: 'load' });
   await page.waitForFunction(() => window.__fw && window.__fw.ready, null);
   await page.waitForTimeout(600);
-  await tapButton('Driving range');
+  await tapButton('Range', true);
   if (mode !== 'free') await tapButton({ target: 'Target points', longdrive: 'Long drive', ladder: 'Wedge ladder', shape: 'Shape shots', streak: 'Pressure streak', test: 'Club test lane' }[mode], true);
   if (tod === 'dusk') await tapButton('Evening lights');
   if (process.env.GRASS) await tapButton('Grass');

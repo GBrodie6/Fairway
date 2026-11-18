@@ -80,7 +80,8 @@ export function installBroadcast(app, ui) {
     if (type === 'hole') pendingLT = true;
     if (type === 'phase') {
       if (d === 'intro') showIntro(); else intro.classList.add('hidden');
-      if (d === 'aim' && pendingLT && game.state.round && game.state.round.mode !== 'range' && game.state.round.players[game.state.turn].kind === 'human') {
+      // The lower third waits while the first-minute tutorial is speaking.
+      if (d === 'aim' && pendingLT && game.state.round && game.state.round.mode !== 'range' && game.state.round.players[game.state.turn].kind === 'human' && !(app.tutorialStep && app.tutorialStep() >= 0)) {
         pendingLT = false;
         const v = game.view();
         if (!v) return;

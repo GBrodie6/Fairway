@@ -18,7 +18,7 @@ const errors = trackErrors(page);
 const pointer = await createPointer(page, {});
 const shot = (n) => page.screenshot({ path: `${prefix}-${n}.png` });
 const tapText = async (t) => {
-  const r = await page.evaluate((x) => { const b = [...document.querySelectorAll('#ui button')].find((e) => e.textContent.trim() === x && e.offsetParent !== null); if (!b) return null; b.scrollIntoView({ block: 'center' }); const q = b.getBoundingClientRect(); return { x: q.x + q.width / 2, y: q.y + q.height / 2 }; }, t);
+  const r = await page.evaluate((x) => { const b = [...document.querySelectorAll('#ui button')].find((e) => (e.textContent.trim() === x || e.textContent.trim().startsWith(x)) && e.offsetParent !== null); if (!b) return null; b.scrollIntoView({ block: 'center' }); const q = b.getBoundingClientRect(); return { x: q.x + q.width / 2, y: q.y + q.height / 2 }; }, t);
   if (!r) throw new Error(`no button ${t}`);
   await pointer.tap(r.x, r.y); await page.waitForTimeout(250);
 };
@@ -61,7 +61,7 @@ try {
   await page.evaluate(() => { const a = window.__fw.app; a.settings.reducedMotion = true; a.ui.applySettings(); });
   await page.evaluate(() => window.__fw.game.quit());
   await page.waitForTimeout(300);
-  await tapText('Quick round');
+  await tapText('Quick Play');
   await tapText('Tee off');
   const seen = new Set();
   for (let i = 0; i < 60; i++) { seen.add(await page.evaluate(() => window.__fw.phase())); if (seen.has('aim')) break; await page.waitForTimeout(250); }

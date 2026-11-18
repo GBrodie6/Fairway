@@ -88,7 +88,7 @@ try {
     if (flow === 'career') { await tapText('Career'); await tapText('Begin'); report.before = await saveSummary(); await tapText('Play event'); }
     else if (flow === 'campaign') {
       // Campaign: choose an archetype, open the next event's briefing, tee off.
-      await tapText('Campaign');
+      await tapStarts('Campaign');
       await snap('campaign-pick');
       await tapStarts(args.archetype || 'Power Hitter');
       await snap('campaign-hub');
@@ -99,10 +99,10 @@ try {
     } else if (flow === 'quick3') {
       // A 3-hole quick round against the adaptive rival, from the setup screen.
       await snap('menu');
-      await tapText('Daily challenge');
+      await tapStarts('Daily');
       await snap('daily-thisweek');
       await tapText('Back');
-      await tapText('Quick round');
+      await tapStarts('Quick Play');
       await tapText('3 holes');
       await page.evaluate(() => { const c = document.getElementById('rival'); if (c && !c.checked) c.click(); });
       report.rivalLabel = await page.evaluate(() => document.querySelector('label[for="rival"]').textContent);
@@ -110,7 +110,7 @@ try {
       await tapText('Tee off');
     } else if (flow === 'tournament') {
       // The tournament is on the main menu (stage 7) or under Quick Play (stage 8 menu).
-      if (!(await page.evaluate(() => [...document.querySelectorAll('#ui button')].some((b) => b.textContent.trim() === 'Tournament' && b.offsetParent !== null)))) await tapText('Quick Play');
+      if (!(await page.evaluate(() => [...document.querySelectorAll('#ui button')].some((b) => b.textContent.trim() === 'Tournament' && b.offsetParent !== null)))) await tapStarts('Quick Play');
       await tapText('Tournament');
       await snap('tournament-lobby');
       await tapText('Alderwick Park');
@@ -119,21 +119,21 @@ try {
     } else if (flow === 'campaign-match') {
       // Match play against a boss, which plays its shots on screen. The first four chapters are
       // marked cleared here (as if played) so the Rivalry chapter is open.
-      await tapText('Campaign');
+      await tapStarts('Campaign');
       await tapStarts(args.archetype || 'All-Rounder');
       await page.evaluate(() => window.__fw.app.updateSave((s) => {
         const progress = { ...s.campaign.progress };
         for (const id of window.__fw.campaignEventIds().filter((e) => /^(club|regional|tour|majors)-/.test(e))) progress[id] = { stars: 1, cleared: true, plays: 1, best: 0, met: [] };
         return { ...s, campaign: { ...s.campaign, progress } };
       }));
-      await tapText('Back'); await tapText('Campaign');
+      await tapText('Back'); await tapStarts('Campaign');
       await tapStarts('Next: ');
       await snap('match-briefing');
       await tapStarts('Tee off');
     }
-    else if (flow === 'daily') { await tapText('Daily challenge'); report.daily = await page.evaluate(() => window.__fw.app.dailySetup()); await tapText('Play'); }
+    else if (flow === 'daily') { await tapStarts('Daily'); report.daily = await page.evaluate(() => window.__fw.app.dailySetup()); await tapText('Play'); }
     else if (flow === 'passplay') { await tapText('Pass and play'); await page.selectOption('#pp-holes', '3'); await page.selectOption('#pp-mode', 'skins'); await tapText('Tee off'); }
-    else if (flow === 'resume') { await tapText('Quick round'); await tapText('Tee off'); resumeAfterHoles = 1; }
+    else if (flow === 'resume') { await tapStarts('Quick Play'); await tapText('Tee off'); resumeAfterHoles = 1; }
   }
   report.timing.bootSec = (Date.now() - T0) / 1000;
   let holeIdx = -1, firstAimOfHole = true, lastProgress = Date.now();
@@ -193,7 +193,9 @@ try {
         report.fun = await page.evaluate(() => { const s = window.__fw.app.save(); return { counters: s.counters, quests: s.quests, season: s.season, achievements: Object.keys(s.achievements), xp: s.profile.xp }; });
         await page.waitForTimeout(400);
         await tapText('Main menu');
-        await tapText('Quests and season');
+        await tapStarts('Profile');
+        await snap('profile');
+        await tapText('Quests');
         await snap('quests');
         const claim = await page.evaluate(() => [...document.querySelectorAll('.quest button')].filter((b) => !b.disabled).length);
         if (claim) { await tapText('Claim'); await snap('quests-claimed'); }

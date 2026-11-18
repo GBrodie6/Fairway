@@ -47,6 +47,7 @@ try {
   await page.goto(`${server.url}/?tier=low&scale=0.5&fresh=1`, { waitUntil: 'load' });
   await page.waitForFunction(() => window.__fw && window.__fw.ready, null);
   await page.waitForTimeout(800);
+  await tapStarts('Profile');
   await tapText('Gear');
   await shot('bag');
   out.screens.bag = await measure('bag');

@@ -160,7 +160,11 @@ table.card-t .over { color: var(--warm); }
 .badge.on { background: var(--accent); color: var(--accent-ink); }
 
 /* ---------- tutorial, map ---------- */
-.tip { position: absolute; left: 50%; bottom: calc(250px + var(--safe-b)); transform: translateX(-50%); padding: 12px 16px; max-width: min(360px, 84vw); text-align: center; font-size: 15px; pointer-events: auto; }
+.tip { position: absolute; left: 50%; bottom: calc(250px + var(--safe-b)); transform: translateX(-50%); padding: 12px 16px; max-width: min(360px, 84vw); text-align: center; font-size: 15px; pointer-events: none; }
+/* Touches pass through the prompt to the swing and the course; only its buttons take taps. */
+.tip button { pointer-events: auto; }
+/* The swing prompt sits high so the chevron and the swing path stay in view. */
+.tip.top { top: calc(196px + var(--safe-t)); bottom: auto; }
 .tip .step { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
 .tip button { margin-top: 8px; }
 .mapwrap { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: auto; background: rgba(6, 12, 9, 0.55); }
@@ -183,6 +187,7 @@ table.card-t .over { color: var(--warm); }
   .clublist { bottom: calc(84px + var(--safe-b)); left: calc(12px + var(--safe-l)); transform: none; }
   .lefty .clublist { left: auto; right: calc(12px + var(--safe-r)); }
   .tip { bottom: calc(150px + var(--safe-b)); }
+  .tip.top { top: calc(64px + var(--safe-t)); bottom: auto; max-width: min(420px, 52vw); }
 }
 /* Short portrait phones: compact tabs, so a full swing has room on the player's side. */
 @media (orientation: portrait) and (max-height: 700px) {
@@ -401,3 +406,16 @@ p.comm { font-style: italic; color: #f4ecd2; }
 .tour .tresult { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 14px; background: rgba(255, 255, 255, 0.06); margin-bottom: 10px; }
 .tour .tresult.win { outline: 2px solid #ffd166; }
 .tour-end .big2 { font-size: 19px; font-weight: 700; }
+
+/* --- main menu and profile --- */
+.mainmenu .menu-btn { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 58px; padding: 8px 14px; }
+.mainmenu .menu-btn b { font-size: 17px; }
+.mainmenu .menu-btn small { font-size: 12px; color: var(--ink-dim); font-weight: 400; }
+.mainmenu .menu-btn.primary small { color: rgba(16, 24, 18, 0.75); }
+.profile .golfer { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; border: 2px solid var(--line); background: rgba(255, 255, 255, 0.05); margin: 6px 0 10px; }
+.profile .golfer .stack { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.profile .small { font-size: 12.5px; }
+.profile .pstats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 0 0 12px; }
+.profile .pstats span { display: flex; flex-direction: column; align-items: center; padding: 8px 4px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); }
+.profile .pstats b { font-size: 17px; font-variant-numeric: tabular-nums; }
+.profile .pstats small { font-size: 11px; color: var(--ink-dim); text-align: center; }

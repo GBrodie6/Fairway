@@ -273,4 +273,5 @@ export function installCampaign(app, ui) {
   screens.register('character', () => (golfer().archetype ? characterSheet() : pickArchetype()));
   screens.register('skilltree', () => (golfer().archetype ? skillTree() : pickArchetype()));
   app.openCampaign = hub;
+  app.pointsFree = () => pointsFree(golfer());
 }

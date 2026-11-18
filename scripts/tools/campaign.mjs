@@ -48,7 +48,7 @@ try {
   await page.goto(`${server.url}/?tier=low&scale=0.5`, { waitUntil: 'load' });
   await page.waitForFunction(() => window.__fw && window.__fw.ready, null);
   await page.waitForTimeout(600);
-  await tapButton('Campaign');
+  await tapButton('Campaign', true);
   await step('pick');
   await tapButton(arch, true);
   await step('hub');

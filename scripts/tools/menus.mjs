@@ -1,4 +1,5 @@
-// Dev tool: walk the menus with real clicks and screenshot each screen.
+// Note: written for the menu before the overhaul (it opens the old career, which the menu no longer
+// shows); scripts/tools/screens.mjs covers the current menus. Dev tool: walk the menus with real clicks and screenshot each screen.
 //   node scripts/tools/menus.mjs qa/tmp/menu [w] [h]
 import { createServer } from 'vite';
 import { mkdirSync } from 'node:fs';
@@ -35,7 +36,7 @@ try {
   await page.selectOption('#s-units', 'yards'); await page.uncheck('#s-lh');
   await click('Back');
   await click('Stats and history'); await shot('stats'); await click('Back');
-  await click('Daily challenge'); await shot('daily'); log('daily', await page.$eval('.sheet .muted', (e) => e.textContent)); await click('Back');
+  await click('Daily'); await shot('daily'); log('daily', await page.$eval('.sheet .muted', (e) => e.textContent)); await click('Back');
   await click('Pass and play'); await shot('passplay'); await click('Back');
   await click('Career'); await shot('career-new');
   await page.fill('#c-name', 'Robin Test');
@@ -44,7 +45,7 @@ try {
   await click('Equipment'); await shot('career-equipment'); await click('Done');
   await click('Standings and rivals'); await shot('career-standings'); await click('Back');
   await click('Main menu');
-  await click('Quick round'); await shot('setup'); await click('Back');
+  await click('Quick Play'); await shot('setup'); await click('Back');
   // A valid challenge link and a tampered one.
   const r = createRound({ courseId: 'desert', holeCount: 3, seed: 777, tod: 'golden', players: [{ name: 'Sam' }] });
   r.scores[0] = [4, 3, 5];
