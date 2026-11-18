@@ -1,0 +1,120 @@
+{
+ "size": "390x844",
+ "mode": "free",
+ "tod": "dusk",
+ "shots": [
+  {
+   "club": "I7",
+   "carry": 152.8,
+   "total": 167.2,
+   "offline": -0.3,
+   "curve": 0.8,
+   "ballSpeed": 107.1,
+   "launch": 16.5,
+   "spin": 6563,
+   "apex": 18.3,
+   "strike": "pured",
+   "msg": "153 yd carry",
+   "score": 0,
+   "used": 1,
+   "over": false
+  },
+  {
+   "club": "I7",
+   "carry": 161,
+   "total": 175.5,
+   "offline": 0.1,
+   "curve": 0.1,
+   "ballSpeed": 110.7,
+   "launch": 16.5,
+   "spin": 6751,
+   "apex": 19.9,
+   "strike": "pured",
+   "msg": "161 yd carry",
+   "score": 0,
+   "used": 2,
+   "over": false
+  },
+  {
+   "club": "I7",
+   "carry": 167.4,
+   "total": 176.7,
+   "offline": -0.4,
+   "curve": -1.6,
+   "ballSpeed": 114,
+   "launch": 16.5,
+   "spin": 7050,
+   "apex": 21.5,
+   "strike": "good",
+   "msg": "167 yd carry",
+   "score": 0,
+   "used": 3,
+   "over": false
+  }
+ ],
+ "screens": {
+  "lobby": {
+   "name": "lobby",
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  },
+  "map": {
+   "name": "map",
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  },
+  "summary": {
+   "name": "summary",
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  }
+ },
+ "hudStart": {
+  "hole": "RANGE / 50 / Free practice: balls left",
+  "score": "0 / balls hit",
+  "club": "I7",
+  "target": 175
+ },
+ "hud1": {
+  "card": [
+   0,
+   184,
+   272,
+   294
+  ],
+  "overlaps": [],
+  "zone": false
+ },
+ "card": "Pured / Blue green, 175 yd / CARRY / 153 yd / TOTAL / 167 yd / OFFLINE / on line / BALL SPEED / 107 mph / LAUNCH / 16.5° / SPIN / 6560 / APEX / 55 ft",
+ "summary": "Free practice: session summary /  / 3 balls hit. /  / 2 XP. / ",
+ "save": {
+  "range": {
+   "sessions": 1,
+   "balls": 3,
+   "best": {},
+   "medals": {},
+   "clubs": {
+    "I7": {
+     "n": 3,
+     "carry": 481.2480789272909,
+     "offline": 0.7701575021583531
+    }
+   },
+   "goldDay": {}
+  },
+  "xp": 2,
+  "tokens": 0
+ },
+ "rangeInfo": {
+  "netX": 19.1,
+  "towers": 6,
+  "signs": 12,
+  "targets": 5,
+  "bays": 5
+ },
+ "lieAtBay": "Tee",
+ "consoleErrors": []
+}

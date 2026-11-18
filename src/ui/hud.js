@@ -128,7 +128,8 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     const grid = h('div', { class: 'cgrid' });
     for (const c of game.clubChoices()) {
       grid.appendChild(h('button', { type: 'button', class: `citem t-${(actions.tierFor && actions.tierFor(c.id)) || 'common'}`, 'aria-pressed': c.id === game.state.club.id ? 'true' : 'false', onclick: () => { game.setClub(c.id); toggleClubList(false); } },
-        h('b', { text: c.short }), h('span', { text: c.putter ? 'Putt' : fmtDist(game.clubCarry(c), u) })));
+        h('b', { text: c.short }), h('span', { text: c.putter ? 'Putt' : fmtDist(game.clubCarry(c), u) }),
+        actions.rangeAverage && actions.rangeAverage(c.id) ? h('small', { class: 'ravg', text: `range ${fmtDist(actions.rangeAverage(c.id), u)}` }) : null));
     }
     clubList.appendChild(grid);
     const types = game.shotTypes();
@@ -185,8 +186,14 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     shotcard.textContent = '';
     const row1 = h('div', { class: 'row1' }, h('span', { class: `sk sk-${st.kind}`, text: STRIKE_NAMES[st.kind] || 'Good' }), h('b', { text: s.message || '' }));
     shotcard.append(row1, h('div', { class: 'nums' }, h('span', {}, h('small', { text: 'Carry' }), h('b', { text: fmtDist(o.carry, u) })), h('span', {}, h('small', { text: 'Total' }), h('b', { text: fmtDist(o.total, u) })), h('span', {}, h('small', { text: 'Offline' }), h('b', { text: offTxt }))));
+    if (s.range) {
+      // Launch monitor numbers on the range.
+      const r = s.range;
+      shotcard.append(h('div', { class: 'nums lm' }, h('span', {}, h('small', { text: 'Ball speed' }), h('b', { text: fmtMph(r.ballSpeed, u) })), h('span', {}, h('small', { text: 'Launch' }), h('b', { text: `${r.launch.toFixed(1)}°` })), h('span', {}, h('small', { text: 'Spin' }), h('b', { text: `${Math.round(r.spin / 10) * 10}` })), h('span', {}, h('small', { text: 'Apex' }), h('b', { text: fmtShort(r.apex, u) }))));
+    }
     if (st.cause && st.kind !== 'pured' && st.kind !== 'good') shotcard.append(h('div', { class: 'why', text: st.cause }));
-    const mull = app_mulligans();
+    if (s.drill && s.drill.message && s.drill.mode !== 'free') shotcard.append(h('div', { class: `why drill${s.drill.points ? ' good' : ''}`, text: s.drill.message }));
+    const mull = s.range ? 0 : app_mulligans();
     if (mull > 0 && st.kind !== 'pured' && !(game.state.round && game.state.round.mulliganUsed)) {
       // In the header line, so the card stays short (clear of the fan and the bottom row).
       const b = h('button', { class: 'btn small mull', type: 'button', 'aria-label': `Mulligan, ${mull} left`, onclick: () => { if (game.canMulligan()) game.mulligan(); } }, `Mulligan ${mull}`);
@@ -199,7 +206,7 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     shotcard.classList.remove('hidden');
     if (actions.holdFan) actions.holdFan(true);
     clearTimeout(cardTimer);
-    cardTimer = setTimeout(() => hud.hideShotCard(), st.kind === 'pured' || st.kind === 'good' ? 3200 : 7000);
+    cardTimer = setTimeout(() => hud.hideShotCard(), s.range ? 6500 : st.kind === 'pured' || st.kind === 'good' ? 3200 : 7000);
   };
   const app_mulligans = () => (actions.mulligans ? actions.mulligans() : 0);
   // Under the tabs and under any chip showing beneath them.
@@ -308,12 +315,18 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     const along = v.wind.along, label = Math.abs(along) < 1 && Math.abs(v.wind.cross) < 1 ? 'calm' : Math.abs(along) >= Math.abs(v.wind.cross) ? (along > 0 ? 'helping' : 'into') : v.wind.cross > 0 ? 'left to right' : 'right to left';
     tabWind.setAttribute('aria-label', `Wind ${fmtMph(v.wind.speedMph, u)}, ${label}`);
     // Top right.
-    set(holeN, 'hn', `${v.hole}`);
-    set(holeS, 'hs', `Par ${v.par}  ${fmtDist(v.yards * YARD, u)}`);
-    set(scoreN, 'sn', fmtToPar(v.toPar));
-    const shotNo = v.strokes + (['aim', 'ai', 'flight', 'settle'].includes(v.phase) ? 1 : 0);
-    set(scoreS, 'ss', `${ordinal(Math.max(1, shotNo))} shot`);
-    const pos = positionText(v, game.state.round);
+    const rh = v.range && actions.rangeHud ? actions.rangeHud() : null;
+    if (rh) {
+      set(holeK, 'hk', rh.k); set(holeN, 'hn', rh.n); set(holeS, 'hs', rh.s); set(scoreN, 'sn', rh.sn); set(scoreS, 'ss', rh.ss);
+    } else {
+      set(holeK, 'hk', 'Hole');
+      set(holeN, 'hn', `${v.hole}`);
+      set(holeS, 'hs', `Par ${v.par}  ${fmtDist(v.yards * YARD, u)}`);
+      set(scoreN, 'sn', fmtToPar(v.toPar));
+      const shotNo = v.strokes + (['aim', 'ai', 'flight', 'settle'].includes(v.phase) ? 1 : 0);
+      set(scoreS, 'ss', `${ordinal(Math.max(1, shotNo))} shot`);
+    }
+    const pos = v.range ? '' : positionText(v, game.state.round);
     set(badge, 'bd', v.playerCount > 1 ? `${v.player.name}  ${pos}` : pos);
     badge.classList.toggle('hidden', !pos);
     replayBtn.classList.toggle('hidden', !v.canReplay);

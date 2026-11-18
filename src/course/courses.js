@@ -1,6 +1,8 @@
 // Course registry. Names are invented for this game. Each theme drives the layout generator,
 // the terrain shaper, the vegetation mix, the backdrop, and the wind profile.
 // par sequences each total 72 over 18 holes.
+import { RANGE_COURSE } from './range.js';
+
 export const COURSES = Object.freeze([
   {
     id: 'parkland', name: 'Alderwick Park', flagship: true, seed: 0x51a7,
@@ -80,5 +82,6 @@ theme: {
 ]);
 
 export const COURSE_IDS = COURSES.map((c) => c.id);
-export const courseById = (id) => COURSES.find((c) => c.id === id) || COURSES[0];
+// The practice ground (course/range.js) is found by id but is not one of the playable courses.
+export const courseById = (id) => (id === RANGE_COURSE.id ? RANGE_COURSE : COURSES.find((c) => c.id === id) || COURSES[0]);
 export const coursePar = (c) => c.pars.reduce((a, b) => a + b, 0);

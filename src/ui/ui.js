@@ -11,6 +11,7 @@ import { SURFACE_NAMES } from '../physics/surfaces.js';
 import { saveSettings } from '../core/settings.js';
 import { headingTo } from '../core/math.js';
 import { STRIKE_NAMES, STRIKE_HAPTIC } from '../game/strike.js';
+import { clubAverageCarry } from '../game/range.js';
 
 export function createUI(app) {
   const root = document.getElementById('ui');
@@ -27,7 +28,8 @@ export function createUI(app) {
   app.motionReduced = () => !!settings.reducedMotion || !!(mq && mq.matches);
   if (mq && mq.addEventListener) mq.addEventListener('change', () => ui.applySettings());
   const actions = {
-    map: () => { if (game.state.round) ui.map.toggle(); },
+    map: () => { if (game.state.round && game.state.round.mode === 'range' && app.rangeMap) app.rangeMap(); else if (game.state.round) ui.map.toggle(); },
+    rangeHud: () => (app.rangeHud ? app.rangeHud() : null),
     pause: () => { if (game.state.round && !ui.modal) ui.screens.pause(); },
     replay: () => { if (game.replay('follow')) ui.hud.toast('Replay', 'Half speed. Tap the course to return', 1600); },
     resetAim: () => {
@@ -57,6 +59,8 @@ export function createUI(app) {
     // The drag crossed the start line and the shot is away: the club shows impact this frame.
     onSwing: (res) => { if (app.world && app.world.club) app.world.club.impact({ face: res.face, path: res.path, strike: game.state.shot && game.state.shot.strike }); },
     mulligans: () => (app.save ? (app.save().wallet || {}).mulligans || 0 : 0),
+    // Average carry from range sessions (meters), once a club has three or more range shots.
+    rangeAverage: (clubId) => { const y = app.save ? clubAverageCarry(app.save().range, clubId) : null; return y ? y * 0.9144 : null; },
     tierFor: (clubId) => (app.gearFor ? app.gearFor(clubId).rarity : 'common'),
     holdFan: (on) => { if (app.world && app.world.overlays && app.world.overlays.holdFan) app.world.overlays.holdFan(on); },
     continue: () => game.continue(),
@@ -88,7 +92,8 @@ export function createUI(app) {
         break;
       case 'hole':
         ui.map.invalidate();
-        ui.hud.toast(`Hole ${d.number}`, `Par ${d.par}  ${fmtDist(d.yards * 0.9144, u)}`, 2600);
+        if (game.state.round && game.state.round.mode === 'range') ui.hud.toast('Practice ground', 'Target greens at 75 to 275 yards. Signs every 25', 2600);
+        else ui.hud.toast(`Hole ${d.number}`, `Par ${d.par}  ${fmtDist(d.yards * 0.9144, u)}`, 2600);
         break;
       case 'turn': {
         const r = game.state.round;

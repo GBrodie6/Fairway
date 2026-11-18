@@ -1,0 +1,274 @@
+{
+ "size": "360x640",
+ "mode": "ladder",
+ "tod": "morning",
+ "shots": [
+  {
+   "club": "LW",
+   "carry": 43.8,
+   "total": 47.6,
+   "offline": -0.1,
+   "curve": 0.3,
+   "ballSpeed": 48.8,
+   "launch": 34,
+   "spin": 7007,
+   "apex": 8.9,
+   "strike": "pured",
+   "msg": "Carried 44 yd, 6 yd short of 50. Try again",
+   "score": 0,
+   "used": 1,
+   "over": false
+  },
+  {
+   "club": "LW",
+   "carry": 46.1,
+   "total": 49.9,
+   "offline": 0.1,
+   "curve": 0.1,
+   "ballSpeed": 50.3,
+   "launch": 34,
+   "spin": 7185,
+   "apex": 9.5,
+   "strike": "pured",
+   "msg": "Carried 46 yd. Next: 60 yd",
+   "score": 1,
+   "used": 2,
+   "over": false
+  },
+  {
+   "club": "LW",
+   "carry": 56.7,
+   "total": 60.2,
+   "offline": 0.4,
+   "curve": -0.1,
+   "ballSpeed": 57.5,
+   "launch": 34,
+   "spin": 8383,
+   "apex": 12.5,
+   "strike": "good",
+   "msg": "Carried 57 yd. Next: 70 yd",
+   "score": 2,
+   "used": 3,
+   "over": false
+  },
+  {
+   "club": "LW",
+   "carry": 63.3,
+   "total": 66.5,
+   "offline": 0,
+   "curve": 0.4,
+   "ballSpeed": 62,
+   "launch": 34,
+   "spin": 8977,
+   "apex": 14.6,
+   "strike": "pured",
+   "msg": "Carried 63 yd, 7 yd short of 70. Try again",
+   "score": 2,
+   "used": 4,
+   "over": false
+  },
+  {
+   "club": "LW",
+   "carry": 66.4,
+   "total": 69.3,
+   "offline": 0.2,
+   "curve": 0.2,
+   "ballSpeed": 64.1,
+   "launch": 34,
+   "spin": 9233,
+   "apex": 15.6,
+   "strike": "pured",
+   "msg": "Carried 66 yd. Next: 80 yd",
+   "score": 3,
+   "used": 5,
+   "over": false
+  },
+  {
+   "club": "LW",
+   "carry": 79.3,
+   "total": 81.8,
+   "offline": 0.5,
+   "curve": -0.1,
+   "ballSpeed": 73.4,
+   "launch": 34,
+   "spin": 10500,
+   "apex": 20.5,
+   "strike": "pured",
+   "msg": "Carried 79 yd. Next: 90 yd",
+   "score": 4,
+   "used": 6,
+   "over": false
+  },
+  {
+   "club": "SW",
+   "carry": 81,
+   "total": 85.4,
+   "offline": 0,
+   "curve": 0.6,
+   "ballSpeed": 72.6,
+   "launch": 30.5,
+   "spin": 9116,
+   "apex": 17.7,
+   "strike": "good",
+   "msg": "Carried 81 yd, 9 yd short of 90. Try again",
+   "score": 4,
+   "used": 7,
+   "over": false
+  },
+  {
+   "club": "SW",
+   "carry": 84.7,
+   "total": 88.6,
+   "offline": 0.3,
+   "curve": 0.3,
+   "ballSpeed": 75,
+   "launch": 30.5,
+   "spin": 9360,
+   "apex": 18.9,
+   "strike": "pured",
+   "msg": "Carried 85 yd, 5 yd short of 90. Try again",
+   "score": 4,
+   "used": 8,
+   "over": false
+  },
+  {
+   "club": "SW",
+   "carry": 87.9,
+   "total": 91.5,
+   "offline": 0.4,
+   "curve": -0.2,
+   "ballSpeed": 77.2,
+   "launch": 30.5,
+   "spin": 9588,
+   "apex": 20.1,
+   "strike": "pured",
+   "msg": "Carried 88 yd. Next: 100 yd",
+   "score": 5,
+   "used": 9,
+   "over": false
+  },
+  {
+   "club": "GW",
+   "carry": 91.8,
+   "total": 96.4,
+   "offline": 0.2,
+   "curve": 0.8,
+   "ballSpeed": 77.9,
+   "launch": 27,
+   "spin": 8394,
+   "apex": 17.7,
+   "strike": "pured",
+   "msg": "Carried 92 yd, 8 yd short of 100. Try again",
+   "score": 5,
+   "used": 10,
+   "over": false
+  },
+  {
+   "club": "GW",
+   "carry": 92.9,
+   "total": 97.4,
+   "offline": 0.3,
+   "curve": 0.3,
+   "ballSpeed": 78.8,
+   "launch": 27,
+   "spin": 8617,
+   "apex": 18.2,
+   "strike": "pured",
+   "msg": "Carried 93 yd, 7 yd short of 100. Try again",
+   "score": 5,
+   "used": 11,
+   "over": false
+  },
+  {
+   "club": "GW",
+   "carry": 96.9,
+   "total": 101.3,
+   "offline": 0.3,
+   "curve": -0.4,
+   "ballSpeed": 81.3,
+   "launch": 27,
+   "spin": 8841,
+   "apex": 19.5,
+   "strike": "pured",
+   "msg": "Carried 97 yd. Ladder complete",
+   "score": 6,
+   "used": 12,
+   "over": true
+  }
+ ],
+ "screens": {
+  "lobby": {
+   "name": "lobby",
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  },
+  "summary": {
+   "name": "summary",
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  }
+ },
+ "hudStart": {
+  "hole": "RANGE / 12 / Wedge ladder: balls left",
+  "score": "0/6 / Carry 50 yd",
+  "club": "LW",
+  "target": 75
+ },
+ "hud1": {
+  "card": [
+   0,
+   144,
+   264,
+   288
+  ],
+  "overlaps": [],
+  "zone": false
+ },
+ "card": "Pured / Red green, 75 yd / CARRY / 44 yd / TOTAL / 48 yd / OFFLINE / on line / BALL SPEED / 49 mph / LAUNCH / 34.0° / SPIN / 7010 / APEX / 27 ft / Carried 44 yd, 6 yd short of 50. Try again",
+ "summary": "Wedge ladder: session summary /  / Gold. Score 6. /  / 70 XP, and a gear token for the gold. / ",
+ "save": {
+  "range": {
+   "sessions": 1,
+   "balls": 12,
+   "best": {
+    "ladder": 6
+   },
+   "medals": {
+    "ladder": "gold"
+   },
+   "clubs": {
+    "LW": {
+     "n": 6,
+     "carry": 355.4869166240379,
+     "offline": 1.1722710164589982
+    },
+    "SW": {
+     "n": 3,
+     "carry": 253.59511379247277,
+     "offline": 0.7162118026603397
+    },
+    "GW": {
+     "n": 3,
+     "carry": 281.62405601940213,
+     "offline": 0.7649993996976452
+    }
+   },
+   "goldDay": {
+    "ladder": "2026-11-18"
+   }
+  },
+  "xp": 70,
+  "tokens": 1
+ },
+ "rangeInfo": {
+  "netX": 19.1,
+  "towers": 6,
+  "signs": 12,
+  "targets": 5,
+  "bays": 5
+ },
+ "lieAtBay": "Tee",
+ "consoleErrors": []
+}

@@ -179,6 +179,8 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
   }
 
   const teeH = hole.tees.map((t) => profAt(t.s) + 0.5);
+  const targets = hole.targets && hole.targets.length > 1 ? hole.targets.filter((tg) => tg !== green) : null;
+  const clearings = hole.clearings || [];
   const sea = hole.sea;
   const seaD = new Float32Array(sea ? n : 0);
 
@@ -224,6 +226,12 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
             if (d2 < 6) h += mo.h * Math.exp(-d2 * 1.4) * fade;
           }
         }
+      }
+      // Range target greens: low, gently crowned, with a soft bank.
+      if (targets) for (const tg of targets) {
+        if (Math.abs(x - tg.x) > tg.radius + 10 || Math.abs(z - tg.z) > tg.radius + 10) continue;
+        const ts = greenSdf(tg, x, z);
+        if (ts < 8) h += tg.raise * (1 - smoothstep(-tg.radius * 0.7, 8, ts)) + 0.12 * (1 - smoothstep(-tg.radius, 0, ts));
       }
       // Tee pads: flat tops with a short bank.
       for (let i = 0; i < hole.tees.length; i++) {
@@ -402,7 +410,8 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
       const out = outside[k];
       const fwSdf = hw > 0.4 ? at - hw : 60;
       const dG = Math.hypot(x - green.x, z - green.z);
-      const gs = dG < gR * 1.4 + 12 ? greenSdf(green, x, z) : 60;
+      let gs = dG < gR * 1.4 + 12 ? greenSdf(green, x, z) : 60;
+      if (targets) for (const tg of targets) if (Math.abs(x - tg.x) < tg.radius + 6 && Math.abs(z - tg.z) < tg.radius + 6) gs = Math.min(gs, greenSdf(tg, x, z));
       masks.fairway[k] = toByte(fwSdf);
       masks.firstCut[k] = toByte(fwSdf - 3.2);
       masks.green[k] = toByte(gs);
@@ -443,6 +452,7 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
       let td = smoothstep(0, 12, out - th.trees.margin * 0.5) * clamp(th.trees.density, 0, 1.2);
       if (wl > NO_WATER + 1 && height[k] - wl < 1.2) td = 0;
       if (pathD[k] < 4) td = 0;
+      for (const c of clearings) if (Math.hypot(x - c.x, z - c.z) < c.r) td = 0;
       if (masks.rock[k] > 100) td *= 0.2;
       if (sea && seaD[k] > -30) td = 0;
       trees[k] = Math.round(clamp(td, 0, 1) * 255);

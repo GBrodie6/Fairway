@@ -151,13 +151,32 @@ mishit = clamp(error x setting x club difficulty / sweet spot - 0.05, 0, 0.9)
 
 ## Stage 4: the range
 
-A separate scene: a wide flat field with a tee line of five bays (mats, a grass tee option),
-a 50-ball bucket or unlimited practice, a picker cart, side nets, a clubhouse, evening lights,
-yardage signs every 25 yards to 300, and target greens with flags at 75, 125, 175, 225, and
-275 yards. A readout per shot (carry, total, ball speed, launch, spin, apex, offline, strike), a
-top-down dispersion map with every shot and a group ellipse, per-club averages, and a session
-summary. Modes: free practice, target points, long drive, wedge ladder, shape shots, pressure
-streak, and a club test lane that replays the same swing with two clubs.
+A separate scene (course/range.js): a wide flat field 360 yards long with a tee line of five
+open bays (turf mats with rubber tees, dividers, ball baskets), a grass strip in front of the
+bays for hitting off turf, side nets on tall poles, a clubhouse with a veranda, six light
+towers that glow at dusk and night ("Evening lights" in the lobby), yardage signs every 25
+yards to 300, five target greens with flags at 75, 125, 175, 225 and 275 yards, practice balls
+on the grass, and a picker cart driving its loop. It has the same shape as a generated hole,
+so the terrain builder, physics and renderer work on it unchanged; range-only parts are extra
+fields (targets, bays, signs, clearings).
+
+- Every ball is teed up again in the same bay; the club stays as chosen. A 50-ball bucket or
+  unlimited balls in free practice.
+- Per-shot readout on the shot card: carry, total, offline, ball speed, launch, spin, apex and
+  the strike. The map button (or the pause menu) opens the dispersion map: every landing,
+  a ring holding about two thirds of each club's shots (1.5 standard deviations), and a table
+  of per-club averages. Ending a session shows the summary with the same map and table.
+- Drills, each with fixed medals (no randomness): Target points (10 balls, two per target,
+  scored where the ball lands: 100 within 3 yd down to 10 within 25, +10 on the green;
+  bronze 200, silver 380, gold 560), Long drive (6 drives, best total inside a 60-yard grid;
+  235, 252, 268), Wedge ladder (carry 50 to 100 yd in 10-yard steps within 5 yd, 12 balls;
+  3, 5, 6 rungs), Shape shots (draw, fade or straight on request; 2, 4, 6) and Pressure streak
+  (land on a chosen target green in a row; 3, 6, 10). Drills that ask for a distance suggest a
+  club that reaches it. The Club test lane replays each swing with a second tier of the same
+  club (any tier, only simulated) and shows both results.
+- Rewards: XP for every session (more for better medals), and a gold medal earns a gear token
+  once per drill per day. Range bests feed the target and long drive leaderboards; per-club
+  range averages show in the club list during rounds, and the campaign reads range medals.
 
 ## Stage 5: campaign and archetypes
 

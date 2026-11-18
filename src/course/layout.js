@@ -6,6 +6,7 @@
 // Hole-local frame: meters, x to the right, play runs toward -Z, the tee is at the origin.
 import { createRng } from '../core/rng.js';
 import { YARD, DEG, clamp, lerp, smoothstep } from '../core/math.js';
+import { generateRange } from './range.js';
 
 const LINE_STEP = 4; // meters between centerline samples
 
@@ -424,6 +425,6 @@ export function pinOf(hole, pinIndex = hole.pinIndex) {
 const holeCache = new Map();
 export function getHole(course, index) {
   const key = course.id + ':' + index;
-  if (!holeCache.has(key)) holeCache.set(key, generateHole(course, index));
+  if (!holeCache.has(key)) holeCache.set(key, course.range ? generateRange(course) : generateHole(course, index));
   return holeCache.get(key);
 }

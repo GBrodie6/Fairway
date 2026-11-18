@@ -63,7 +63,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
       screens.registry.career ? btn('Career', () => screens.registry.career()) : null,
       screens.registry.daily ? btn('Daily challenge', () => screens.registry.daily()) : null,
       h('div', { class: 'grid2' },
-        btn('Driving range', () => startRange()),
+        btn('Driving range', () => (app.openRange ? app.openRange() : startRange())),
         screens.registry.passplay ? btn('Pass and play', () => screens.registry.passplay()) : btn('Two players', () => screens.setup({ players: 2 }))),
       screens.registry.online ? btn('Online play (experimental)', () => screens.registry.online()) : null,
       h('div', { class: 'grid2' },
@@ -132,7 +132,20 @@ export function createScreens(root, { app, game, settings, ui, save }) {
   screens.startQuick = (opts) => { Object.assign(setupState, opts); return startQuick(); };
 
   // --- pause ---
-  screens.pause = () => show('pause', () => sheet('',
+  screens.pause = () => show('pause', () => {
+    const onRange = !!(game.state.round && game.state.round.mode === 'range');
+    if (onRange) {
+      return sheet('',
+        h('h2', { class: 'h', text: 'Paused' }),
+        h('p', { class: 'muted', text: courseById('range').name }),
+        h('div', { class: 'stack' },
+          btn('Resume', () => hide(), 'btn primary'),
+          app.rangeMap ? btn('Dispersion and averages', () => app.rangeMap()) : null,
+          app.endRangeSession ? btn('End session and see the summary', () => app.endRangeSession()) : null,
+          screens.registry.settings ? btn('Settings', () => screens.registry.settings()) : null,
+          btn('Leave the range', () => { hide(); game.quit(); })));
+    }
+    return sheet('',
     h('h2', { class: 'h', text: 'Paused' }),
     h('p', { class: 'muted', text: game.state.round ? `${courseById(game.state.round.courseId).name}, hole ${game.state.round.hole + 1} of ${game.state.round.holes.length}` : '' }),
     h('div', { class: 'stack' },
@@ -141,7 +154,8 @@ export function createScreens(root, { app, game, settings, ui, save }) {
       screens.registry.settings ? btn('Settings', () => screens.registry.settings()) : null,
       screens.registry.share && game.state.round ? btn('Share this round', () => screens.registry.share()) : null,
       btn('Quit round', () => { hide(); game.quit(); })),
-  ));
+    );
+  });
 
   // --- scorecard ---
   function scorecardTable(r) {

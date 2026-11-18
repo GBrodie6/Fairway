@@ -33,6 +33,7 @@ export function installMenus(app, ui) {
   app.updateSave = (fn, reason) => { save = fn(save); persist(); if (reason && app.cloud) app.cloud.sync.schedule(reason); return save; };
   // What the strike model reads for a club: its rarity, the ball, and the glove.
   app.gearFor = (clubId) => gearFor(save.gear, clubId);
+  app.addXp = (n, reason) => { if (!(n > 0)) return; save = { ...save, profile: { ...(save.profile || {}), xp: ((save.profile && save.profile.xp) || 0) + Math.round(n) } }; persist(); if (app.cloud) app.cloud.sync.schedule('xp'); };
   app.spendMulligan = () => { save = { ...save, wallet: { ...save.wallet, mulligans: Math.max(0, (save.wallet.mulligans || 0) - 1) } }; persist(); };
   const sheet = (cls, ...kids) => h('div', { class: `sheet glass ${cls || ''}` }, ...kids);
   const btn = (label, onclick, cls = 'btn') => h('button', { class: cls, type: 'button', onclick }, label);

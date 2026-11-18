@@ -1,0 +1,166 @@
+{
+ "size": "844x390",
+ "mode": "longdrive",
+ "tod": "morning",
+ "shots": [
+  {
+   "club": "DR",
+   "carry": 239.2,
+   "total": 251.3,
+   "offline": 6.9,
+   "curve": 8.2,
+   "ballSpeed": 152.9,
+   "launch": 12,
+   "spin": 2629,
+   "apex": 29.9,
+   "strike": "pured",
+   "msg": "251 yd, your best so far",
+   "score": 251,
+   "used": 1,
+   "over": false
+  },
+  {
+   "club": "DR",
+   "carry": 248.3,
+   "total": 258.8,
+   "offline": 5.8,
+   "curve": 5.8,
+   "ballSpeed": 157.9,
+   "launch": 12,
+   "spin": 2700,
+   "apex": 32.9,
+   "strike": "pured",
+   "msg": "259 yd, your best so far",
+   "score": 259,
+   "used": 2,
+   "over": false
+  },
+  {
+   "club": "DR",
+   "carry": 244.1,
+   "total": 255.2,
+   "offline": 3.1,
+   "curve": 1.7,
+   "ballSpeed": 155.6,
+   "launch": 12,
+   "spin": 2700,
+   "apex": 31.7,
+   "strike": "good",
+   "msg": "255 yd",
+   "score": 259,
+   "used": 3,
+   "over": false
+  },
+  {
+   "club": "DR",
+   "carry": 237.6,
+   "total": 249.7,
+   "offline": 7.3,
+   "curve": 8.6,
+   "ballSpeed": 152.2,
+   "launch": 12,
+   "spin": 2629,
+   "apex": 29.7,
+   "strike": "good",
+   "msg": "250 yd",
+   "score": 259,
+   "used": 4,
+   "over": false
+  },
+  {
+   "club": "DR",
+   "carry": 247.4,
+   "total": 258.1,
+   "offline": 5.3,
+   "curve": 5.3,
+   "ballSpeed": 157.1,
+   "launch": 12,
+   "spin": 2700,
+   "apex": 32.4,
+   "strike": "pured",
+   "msg": "258 yd",
+   "score": 259,
+   "used": 5,
+   "over": false
+  },
+  {
+   "club": "DR",
+   "carry": 248.3,
+   "total": 258.8,
+   "offline": 3,
+   "curve": 1.6,
+   "ballSpeed": 157.9,
+   "launch": 12,
+   "spin": 2700,
+   "apex": 32.8,
+   "strike": "pured",
+   "msg": "259 yd",
+   "score": 259,
+   "used": 6,
+   "over": true
+  }
+ ],
+ "screens": {
+  "lobby": {
+   "name": "lobby",
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  },
+  "summary": {
+   "name": "summary",
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  }
+ },
+ "hudStart": {
+  "hole": "RANGE / 6 / Long drive: balls left",
+  "score": "- / best in the grid",
+  "club": "DR",
+  "target": 275
+ },
+ "hud1": {
+  "card": [
+   0,
+   150,
+   272,
+   279
+  ],
+  "overlaps": [],
+  "zone": false
+ },
+ "card": "Pured / Purple green, 275 yd / CARRY / 239 yd / TOTAL / 251 yd / OFFLINE / 7 yd right / BALL SPEED / 153 mph / LAUNCH / 12.0° / SPIN / 2630 / APEX / 90 ft / 251 yd, your best so far",
+ "summary": "Long drive: session summary /  / Bronze. Score 259 yd. /  / 25 XP. / ",
+ "save": {
+  "range": {
+   "sessions": 1,
+   "balls": 6,
+   "best": {
+    "longdrive": 259
+   },
+   "medals": {
+    "longdrive": "bronze"
+   },
+   "clubs": {
+    "DR": {
+     "n": 6,
+     "carry": 1464.958514890877,
+     "offline": 31.313729806908306
+    }
+   },
+   "goldDay": {}
+  },
+  "xp": 25,
+  "tokens": 0
+ },
+ "rangeInfo": {
+  "netX": 19.1,
+  "towers": 6,
+  "signs": 12,
+  "targets": 5,
+  "bays": 5
+ },
+ "lieAtBay": "Tee",
+ "consoleErrors": []
+}

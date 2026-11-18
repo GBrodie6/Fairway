@@ -11,7 +11,7 @@ import { fin } from '../core/guards.js';
 const TEE_COLORS = [0x1c2a4a, 0xf2f2ee, 0xc8372c];
 const YARD_COLORS = { 100: 0xc8372c, 150: 0xf2f2ee, 200: 0x2c5fa8 };
 
-class Builder {
+export class Builder {
   constructor() { this.pos = []; this.nor = []; this.col = []; this.idx = []; this._m = new THREE.Matrix4(); this._v = new THREE.Vector3(); this._n = new THREE.Vector3(); this._c = new THREE.Color(); this._nm = new THREE.Matrix3(); }
   add(geo, matrix, color) {
     const base = this.pos.length / 3;
@@ -146,6 +146,7 @@ export function createProps(world, engine) {
     loadHole(w) {
       clear();
       const t = w.terrain, h = w.holeData;
+      if (h.range) return; // the practice ground has its own furniture (rangeProps.js)
       const rng = createRng((h.seed ^ 0x51ed27) >>> 0);
       const H = (x, z) => t.heightAt(x, z);
       const b = new Builder();

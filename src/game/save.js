@@ -29,6 +29,10 @@ export function defaultSave() {
     wallet: { coins: 0, shards: 0, mulligans: 1, tokens: 0, tokenDay: 0, dayTokens: 0 },
     // v5: clubs in rarity tiers, the 14-club bag, balls, gloves, and the drop pity counter.
     gear: starterGear(),
+    // Experience outside the career (range drills now; the campaign builds levels on it).
+    profile: { xp: 0 },
+    // The practice ground record: sessions, bests, medals, and per-club running sums.
+    range: {},
   };
 }
 export function emptyStats() {
@@ -82,6 +86,8 @@ export function sanitizeSave(s) {
   const cnt = (v, d) => (Number.isFinite(v) && v >= 0 ? Math.min(Math.floor(v), 1e7) : d);
   out.wallet = { coins: cnt(w.coins, 0), shards: cnt(w.shards, 0), mulligans: cnt(w.mulligans, 1), tokens: cnt(w.tokens, 0), tokenDay: cnt(w.tokenDay, 0), dayTokens: cnt(w.dayTokens, 0) };
   out.gear = sanitizeGear(s.gear);
+  out.profile = { ...(s.profile && typeof s.profile === 'object' ? s.profile : {}), xp: cnt((s.profile || {}).xp, 0) };
+  out.range = s.range && typeof s.range === 'object' && !Array.isArray(s.range) ? s.range : {};
   const a = s.account;
   out.account = a && typeof a === 'object' && typeof a.userId === 'string' ? { userId: a.userId, email: String(a.email || ''), displayName: String(a.displayName || '').slice(0, 18) } : null;
   return out;

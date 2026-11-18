@@ -1,0 +1,250 @@
+{
+ "size": "390x844",
+ "mode": "target",
+ "tod": "morning",
+ "shots": [
+  {
+   "club": "LW",
+   "carry": 69.6,
+   "total": 72.1,
+   "offline": 3.6,
+   "curve": 4.1,
+   "ballSpeed": 64.7,
+   "launch": 34,
+   "spin": 9287,
+   "apex": 15.2,
+   "strike": "pured",
+   "msg": "80 points, 5.9 yd from the flag",
+   "score": 80,
+   "used": 1,
+   "over": false
+  },
+  {
+   "club": "LW",
+   "carry": 73.8,
+   "total": 77,
+   "offline": 4.3,
+   "curve": 4.3,
+   "ballSpeed": 67.1,
+   "launch": 34,
+   "spin": 9585,
+   "apex": 16.3,
+   "strike": "pured",
+   "msg": "80 points, 5.6 yd from the flag",
+   "score": 160,
+   "used": 2,
+   "over": false
+  },
+  {
+   "club": "PW",
+   "carry": 123.2,
+   "total": 127.6,
+   "offline": 8.8,
+   "curve": 7.9,
+   "ballSpeed": 94.5,
+   "launch": 24,
+   "spin": 9002,
+   "apex": 22.6,
+   "strike": "pured",
+   "msg": "25 points, 10.3 yd from the flag",
+   "score": 185,
+   "used": 3,
+   "over": false
+  },
+  {
+   "club": "PW",
+   "carry": 116.3,
+   "total": 122.7,
+   "offline": 7.3,
+   "curve": 8.1,
+   "ballSpeed": 90.3,
+   "launch": 24,
+   "spin": 8557,
+   "apex": 20.5,
+   "strike": "pured",
+   "msg": "25 points, 10.4 yd from the flag",
+   "score": 210,
+   "used": 4,
+   "over": false
+  },
+  {
+   "club": "I6",
+   "carry": 158.3,
+   "total": 174.6,
+   "offline": 7.1,
+   "curve": 7.1,
+   "ballSpeed": 110.8,
+   "launch": 14.5,
+   "spin": 5729,
+   "apex": 18.2,
+   "strike": "pured",
+   "msg": "25 points, 12.7 yd from the flag",
+   "score": 235,
+   "used": 5,
+   "over": false
+  },
+  {
+   "club": "I6",
+   "carry": 164.7,
+   "total": 179.6,
+   "offline": 7.8,
+   "curve": 6.7,
+   "ballSpeed": 114.1,
+   "launch": 14.5,
+   "spin": 5869,
+   "apex": 20,
+   "strike": "pured",
+   "msg": "25 points, 13.5 yd from the flag",
+   "score": 260,
+   "used": 6,
+   "over": false
+  },
+  {
+   "club": "W3",
+   "carry": 190.3,
+   "total": 209.1,
+   "offline": 8.9,
+   "curve": 10.2,
+   "ballSpeed": 128.1,
+   "launch": 11,
+   "spin": 3195,
+   "apex": 17.5,
+   "strike": "good",
+   "msg": "10 points, 20.3 yd from the flag",
+   "score": 270,
+   "used": 7,
+   "over": false
+  },
+  {
+   "club": "W3",
+   "carry": 200.4,
+   "total": 216.4,
+   "offline": 9.6,
+   "curve": 9.6,
+   "ballSpeed": 132.3,
+   "launch": 11,
+   "spin": 3281,
+   "apex": 19.5,
+   "strike": "pured",
+   "msg": "10 points, 15.4 yd from the flag",
+   "score": 280,
+   "used": 8,
+   "over": false
+  },
+  {
+   "club": "DR",
+   "carry": 255.5,
+   "total": 273.6,
+   "offline": 11.4,
+   "curve": 9.8,
+   "ballSpeed": 157.2,
+   "launch": 12,
+   "spin": 2700,
+   "apex": 30.8,
+   "strike": "pured",
+   "msg": "35 points, 14.5 yd from the flag",
+   "score": 315,
+   "used": 9,
+   "over": false
+  },
+  {
+   "club": "DR",
+   "carry": 248.2,
+   "total": 264,
+   "offline": 14.3,
+   "curve": 15.8,
+   "ballSpeed": 153.7,
+   "launch": 12,
+   "spin": 2629,
+   "apex": 28.9,
+   "strike": "pured",
+   "msg": "10 points, 22.4 yd from the flag",
+   "score": 325,
+   "used": 10,
+   "over": true
+  }
+ ],
+ "screens": {
+  "lobby": {
+   "name": "lobby",
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  },
+  "summary": {
+   "name": "summary",
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  }
+ },
+ "hudStart": {
+  "hole": "RANGE / 10 / Target points: balls left",
+  "score": "0 / points. Next 75 yd",
+  "club": "LW",
+  "target": 75
+ },
+ "hud1": {
+  "card": [
+   0,
+   184,
+   272,
+   313
+  ],
+  "overlaps": [],
+  "zone": false
+ },
+ "card": "Pured / Red green, 75 yd / CARRY / 70 yd / TOTAL / 72 yd / OFFLINE / 4 yd right / BALL SPEED / 65 mph / LAUNCH / 34.0° / SPIN / 9290 / APEX / 46 ft / 80 points, 5.9 yd from the flag",
+ "summary": "Target points: session summary /  / Bronze. Score 325. /  / 25 XP. / ",
+ "save": {
+  "range": {
+   "sessions": 1,
+   "balls": 10,
+   "best": {
+    "target": 325
+   },
+   "medals": {
+    "target": "bronze"
+   },
+   "clubs": {
+    "LW": {
+     "n": 2,
+     "carry": 143.42039197975225,
+     "offline": 7.9737395279187915
+    },
+    "PW": {
+     "n": 2,
+     "carry": 239.44344466578116,
+     "offline": 16.01758942495737
+    },
+    "I6": {
+     "n": 2,
+     "carry": 323.0348177804711,
+     "offline": 14.934536572916135
+    },
+    "W3": {
+     "n": 2,
+     "carry": 390.6335725045766,
+     "offline": 18.563976063945766
+    },
+    "DR": {
+     "n": 2,
+     "carry": 503.7388158126363,
+     "offline": 25.68890664031702
+    }
+   },
+   "goldDay": {}
+  },
+  "xp": 25,
+  "tokens": 0
+ },
+ "rangeInfo": {
+  "netX": 19.1,
+  "towers": 6,
+  "signs": 12,
+  "targets": 5,
+  "bays": 5
+ },
+ "lieAtBay": "Tee",
+ "consoleErrors": []
+}

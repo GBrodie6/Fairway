@@ -17,6 +17,7 @@ import { DECAL } from '../render/decals.js';
 import { courseById } from '../course/courses.js';
 import { fin } from '../core/guards.js';
 import { strikeResult, applyStrike } from './strike.js';
+import { bayBall, targetFor } from '../course/range.js';
 
 export function createGame(app) {
   const listeners = new Set();
@@ -77,7 +78,8 @@ export function createGame(app) {
     beginHole(r, t.tee);
     w.decals.set(state.decals[holeIdx] || []);
     w.overlays.loadHole();
-    w.greenProps.setFlagVisible(true);
+    // On the range the target flags are part of the range furniture.
+    w.greenProps.setFlagVisible(r.mode !== 'range');
     w.ball.clearTrace();
     w.ball.place(t.tee.x, t.heightAt(t.tee.x, t.tee.z) + BALL_RADIUS, t.tee.z);
     state.busy = false;
@@ -89,8 +91,72 @@ export function createGame(app) {
   }
   game.skipIntro = () => { if (state.phase === 'intro') beginTurn(); };
 
+  // --- the practice ground ---
+  // A range session is a one-hole round on the range layout that never finishes: every ball
+  // is teed up again in the same bay, the club stays as chosen, and finished shots go to the
+  // UI as 'rangeShot' records instead of being scored.
+  game.startRange = async ({ bay = 2, surface = 'mat', tod = 'morning', club = null, compare = null, players } = {}) => {
+    state.range = { bay, surface, clubId: club || (compare && compare.clubId) || 'I7', forceClub: club || (compare && compare.clubId) || null, targetYards: null, carryYards: null, compare };
+    return game.startRound({ courseId: 'range', mode: 'range', holes: [0], tod, players, seed: (Date.now() >>> 0) || 1 });
+  };
+  // The drill's target green (yards), or a carry distance to aim along the center line.
+  // With suggest, the club changes to one that reaches (the player can still pick another).
+  game.setRangeTarget = (yards, carryYards = null, { suggest = false } = {}) => {
+    if (!state.range) return;
+    state.range.targetYards = yards || null; state.range.carryYards = carryYards || null;
+    if (suggest && !state.range.forceClub) {
+      const d = (carryYards || yards || 0) * YARD;
+      const lie = state.range.surface === 'grass' ? SURFACES.FAIRWAY : SURFACES.TEE;
+      const c = d > 0 ? suggestClub(d, { lie, profile: state.profile }).club : null;
+      if (c && !c.putter) state.range.clubId = c.id;
+    }
+    if (state.phase === 'aim') {
+      const c = CLUBS.find((x) => x.id === state.range.clubId);
+      if (c && c !== state.club) { state.club = c; emit('club', c); }
+      rangeAim();
+    }
+  };
+  function rangeAim() {
+    const t = W().terrain, rg = state.range, hole = t.hole;
+    const carry = state.club.putter ? 0 : nominalCarry(state.club, state.profile, state.shotType);
+    const tg = rg.targetYards ? hole.targets.find((x) => x.yards === rg.targetYards) || hole.targets[0] : targetFor(hole, rg.carryYards ? rg.carryYards * YARD : carry);
+    state.rangeTarget = tg;
+    // The physics cup and the distance readout follow the chosen target.
+    t.pin.x = tg.x; t.pin.z = tg.z;
+    state.target = rg.carryYards ? { x: state.ball.x, z: state.ball.z - rg.carryYards * YARD } : { x: tg.x, z: tg.z };
+    state.aimRef = headingTo(state.ball.x, state.ball.z, state.target.x, state.target.z);
+    state.aim = state.aimRef;
+    state.distToPin = rg.carryYards ? rg.carryYards * YARD : pinDist(state.ball.x, state.ball.z);
+    state.putt = null;
+    computeIdeal();
+    refresh();
+  }
+  function rangeTurn() {
+    const r = state.round, w = W(), t = w.terrain, rg = state.range;
+    const st = r.state[0];
+    const p = bayBall(t.hole, rg.bay, rg.surface);
+    st.x = p.x; st.z = p.z; st.lie = rg.surface === 'grass' ? SURFACES.FAIRWAY : SURFACES.TEE; st.strokes = 0;
+    state.turn = 0;
+    state.ball = { x: st.x, z: st.z }; state.lie = st.lie;
+    w.ball.setColor(r.players[0].ball);
+    w.ball.clearTrace();
+    w.ball.place(st.x, t.heightAt(st.x, st.z) + BALL_RADIUS, st.z);
+    w.ball.spin.rate = 0;
+    const want = rg.forceClub || rg.clubId;
+    state.club = CLUBS.find((c) => c.id === want && !c.putter) || CLUBS.find((c) => c.id === 'I7');
+    if (state.shotType.id === 'putt' || state.shotType.id === 'chip') state.shotType = SHOT_TYPES.FULL;
+    rangeAim();
+    w.grassCenter = null;
+    w.rig.resetLook();
+    w.rig.set('address', addressCtx());
+    if (state.fast) w.rig.cut = true;
+    emit('turn', { player: 0, human: true });
+    setPhase('aim');
+  }
+
   // --- a turn ---
   function beginTurn() {
+    if (state.round && state.round.mode === 'range' && state.range) return rangeTurn();
     const r = state.round, w = W(), t = w.terrain;
     const who = nextTurn(r);
     if (who < 0) return finishHole();
@@ -190,6 +256,7 @@ export function createGame(app) {
   game.nudgeAim = (deltaRad) => game.setAim(state.aim + fin(deltaRad));
   // The clubs the current lie allows, longest first (the club list in the HUD shows these).
   game.clubChoices = () => {
+    if (state.range && state.range.forceClub && state.round && state.round.mode === 'range') return CLUBS.filter((c) => c.id === state.range.forceClub);
     if (state.club.putter && state.lie === SURFACES.GREEN) return [PUTTER];
     const list = CLUBS.filter((c) => !c.putter && !(c.id === 'DR' && state.lie !== SURFACES.TEE));
     return state.lie === SURFACES.FRINGE || state.lie === SURFACES.GREEN ? [...list, PUTTER] : list;
@@ -203,6 +270,7 @@ export function createGame(app) {
   };
   // Full carry in meters for a club with the current profile and shot type (what the HUD shows).
   game.clubCarry = (club) => (club.putter ? 0 : nominalCarry(club, state.profile, state.shotType));
+  const rangeClub = () => { if (state.range && state.round && state.round.mode === 'range') { state.range.clubId = state.club.id; if (!state.range.targetYards && !state.range.carryYards && state.phase === 'aim') rangeAim(); } };
   game.setClub = (id) => {
     if (state.phase !== 'aim' || state.club.putter && state.lie === SURFACES.GREEN) return;
     const c = game.clubChoices().find((x) => x.id === id);
@@ -215,6 +283,7 @@ export function createGame(app) {
     W().rig.ctx = addressCtx();
     computeIdeal();
     refresh();
+    rangeClub();
     emit('club', state.club);
   }
   game.setShotType = (id) => {
@@ -249,20 +318,27 @@ export function createGame(app) {
     // A human shot keeps a snapshot so one Mulligan per round can take it back.
     state.undo = isHuman() ? { round: JSON.parse(JSON.stringify(state.round)), hole: state.round.hole } : null;
     const from = { x: state.ball.x, z: state.ball.z, lie: state.lie };
-    let launch, result;
+    let launch, result, lieRoll = 0;
     if (club.putter) {
       const ceil = (state.putt && state.putt.ceiling) || puttCeiling(state.distToPin);
       const tq = clamp(swing.tempoQuality ?? 1, 0, 1);
       launch = { x: from.x, z: from.z, putt: true, speed: clamp(swing.power, 0, 1) * ceil * (0.97 + 0.03 * tq), heading: aim + (swing.face || 0) * 0.45 * DEG * state.profile.putting, vAngle: 0, spin: 0, axisTilt: 0 };
     } else {
-      launch = computeLaunch(swing, { club, shotType, lie: from.lie, aim, x: from.x, z: from.z, profile: state.profile, lieRoll: rng.range(-1, 1) });
+      lieRoll = rng.range(-1, 1);
+      launch = computeLaunch(swing, { club, shotType, lie: from.lie, aim, x: from.x, z: from.z, profile: state.profile, lieRoll });
     }
+    // The range's club test lane replays the same swing with a second club version, so both
+    // strikes use the same random draw.
+    const testLane = !club.putter && state.range && state.round.mode === 'range' && state.range.compare;
+    const k = testLane ? rng.int(1, 2 ** 30) : 0;
     // Strike quality: a bounded change to the launch from how cleanly the club met the ball.
     // The simulation that follows is unchanged.
     const sctx = strikeContext(club, from);
-    const strike = strikeResult(swing, sctx, rng);
+    const strike = strikeResult(swing, sctx, testLane ? createRng(k) : rng);
     launch = applyStrike(launch, strike, sctx);
     result = simulateShot(launch, t.env({ windAt, t0: state.clock }));
+    state.compareShot = testLane ? compareSwing(swing, aim, shotType, from, lieRoll, k) : null;
+    state.shotRarity = sctx.rarity;
     // hold: the first frame after launch shows the ball still at rest with the club at impact.
     state.shot = { from, swing, club, shotType, launch, result, t: 0, speedUp, player: state.turn, landingCam: false, hold: 1, strike, aim };
     apexShown = false; landShown = false; eventIdx = 0;
@@ -297,6 +373,18 @@ export function createGame(app) {
 
   // What the strike model needs about this shot: the club, its rarity, the lie and the slope
   // under the ball, the difficulty setting, and the player's gear and stats.
+  function compareSwing(swing, aim, shotType, from, lieRoll, k) {
+    const t = W().terrain, cmp = state.range.compare;
+    const cclub = CLUBS.find((c) => c.id === cmp.clubId && !c.putter) || state.club;
+    const ctx2 = { ...strikeContext(cclub, from), rarity: cmp.rarity || 'common' };
+    let l2 = computeLaunch(swing, { club: cclub, shotType, lie: from.lie, aim, x: from.x, z: from.z, profile: state.profile, lieRoll });
+    const s2 = strikeResult(swing, ctx2, createRng(k));
+    l2 = applyStrike(l2, s2, ctx2);
+    const r2 = simulateShot(l2, t.env({ windAt, t0: state.clock }));
+    const p = r2.carryPoint || r2.end, fx = Math.sin(aim), fz = -Math.cos(aim);
+    return { club: cclub.id, rarity: ctx2.rarity, strike: s2, carry: r2.carry, total: r2.total, offline: (p.x - from.x) * -fz + (p.z - from.z) * fx, land: { x: p.x, z: p.z } };
+  }
+
   function strikeContext(club, from) {
     const t = W().terrain, n = {};
     t.normalAt(from.x, from.z, n);
@@ -375,6 +463,7 @@ export function createGame(app) {
 
   function resolve() {
     const w = W(), t = w.terrain, r = state.round, sh = state.shot, res = sh.result;
+    if (r.mode === 'range' && state.range) return resolveRange(sh, res);
     const st = r.state[sh.player];
     const end = res.end;
     const dist = res.holed ? 0 : pinDist(end.x, end.z);
@@ -403,6 +492,30 @@ export function createGame(app) {
     if (holeFinished(r)) return finishHole();
     // After a penalty the same player may not be furthest away, the order is recomputed.
     beginTurn();
+  }
+
+  function resolveRange(sh, res) {
+    const end = res.end, land = res.carryPoint || res.end;
+    const fx = Math.sin(sh.aim), fz = -Math.cos(sh.aim);
+    const lat = (p) => (p.x - sh.from.x) * -fz + (p.z - sh.from.z) * fx;
+    const offline = lat(land);
+    // Where a ball on the launch line would be at the carry distance: the rest is curve.
+    const startLine = Math.sin(wrapAngle(sh.launch.heading - sh.aim)) * res.carry;
+    const rec = {
+      club: sh.club.id, carry: res.carry, total: res.total, offline, curve: offline - startLine,
+      ballSpeed: sh.launch.speed / MPH, launch: (sh.launch.vAngle || 0) / DEG, spin: ((sh.launch.spin || 0) * 60) / (2 * Math.PI), apex: res.apex || 0,
+      strike: sh.strike, lefty: app.settings.handedness === 'left',
+      land: { x: land.x, z: land.z }, rest: { x: end.x, z: end.z }, target: state.rangeTarget || null, holed: !!res.holed,
+      rarity: state.shotRarity || 'common', compare: state.compareShot || null,
+    };
+    const outcome = { from: sh.from, end: { x: end.x, z: end.z }, lie: res.lie, holed: res.holed, water: res.water, oob: res.oob, carry: res.carry, total: res.total, putt: false, distToPin: pinDist(end.x, end.z), offline, strike: sh.strike };
+    const msg = res.holed ? 'In the cup!' : SURFACE_NAMES[res.lie] || 'In play';
+    state.lastShot = { ...sh, outcome, applied: {}, message: msg, strokes: 0, par: 0, distToPin: outcome.distToPin, range: rec };
+    state.message = msg;
+    state.undo = null;
+    emit('rangeShot', rec);
+    state.shot = null;
+    rangeTurn();
   }
 
   function finishHole() {
@@ -470,7 +583,7 @@ export function createGame(app) {
 
   // Back to the address view after looking around.
   game.returnToAddress = () => { if (state.round && W().rig) W().rig.set('address', addressCtx()); };
-  game.quit = () => { state.round = null; state.shot = null; W().overlays.hide(); setPhase('menu'); emit('quit', null); };
+  game.quit = () => { state.range = null; state.round = null; state.shot = null; W().overlays.hide(); setPhase('menu'); emit('quit', null); };
   // After the world is rebuilt (quality tier change) the current view state is restored.
   game.onWorldChanged = () => { if (state.round && state.phase !== 'menu' && W().terrain) { W().overlays.loadHole(); if (state.phase === 'aim') { W().rig.set('address', addressCtx()); refresh(); } } };
 
@@ -495,6 +608,7 @@ export function createGame(app) {
       suggestedPower: state.phase === 'aim' ? game.suggestedPower() : 0,
       hazard: state.hazard, putt: state.putt, message: state.message, aim: state.aim,
       canReplay: !!(state.lastShot && !state.lastShot.club.putter && state.phase === 'aim'), replayAngle: state.replayAngle || 'follow',
+      range: r.mode === 'range' && state.range ? { bay: state.range.bay, surface: state.range.surface, target: state.rangeTarget ? state.rangeTarget.yards : null } : null,
     };
   };
   return game;
