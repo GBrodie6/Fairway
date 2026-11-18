@@ -34,6 +34,7 @@ export function createUI(app) {
       if (st.target && st.phase === 'aim') game.setAim(headingTo(st.ball.x, st.ball.z, st.target.x, st.target.z));
       ui.input.setLook(false);
     },
+    clubList: () => { if (game.state.phase === 'aim') ui.hud.toggleClubList(); },
     toggleLook: () => actions.lookHold(!(app.world && app.world.rig.mode === 'peek')),
     // Hold to look: the camera rises and pans over the hole toward the landing area, and comes
     // back to the ball when released.

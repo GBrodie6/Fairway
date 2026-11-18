@@ -35,6 +35,9 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     box: { x: 0, y: 0, w: 0, h: 0 },
   };
   const START = 26; // px from the top of the zone to the start line
+  // The drag is mirrored for a left-handed golfer and for the left-handed layout: sideways
+  // drift then means the same (open or closed) in the player's own terms.
+  const swingHand = () => (settings.handedness === 'left' || settings.leftHandLayout ? 'left' : 'right');
 
   // Travel follows the old stick rule (a share of the screen height, scaled by the size
   // setting), capped so a full backswing fits between the start line and the bottom row.
@@ -44,14 +47,15 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     const h = window.innerHeight || 640;
     const want = Math.round(clamp(h * 0.27, 96, 190) * clamp(settings.stickScale || 1, 0.7, 1.5));
     const travel = Math.max(80, Math.min(want, Math.round(box.h - START - 14)));
-    const same = zone.gesture && travel === zone.travel && zone.hand === settings.handedness;
+    const hand = swingHand();
+    const same = zone.gesture && travel === zone.travel && zone.hand === hand;
     zone.travel = travel;
-    zone.hand = settings.handedness;
+    zone.hand = hand;
     zone.box = box;
     Object.assign(el.style, { left: `${box.x}px`, top: `${box.y}px`, width: `${box.w}px`, height: `${box.h}px` });
     Object.assign(fb.style, { left: `${box.x + box.w / 2}px`, top: `${box.y + START + 18}px` });
     rail.style.height = `${zone.travel}px`;
-    if (!same) zone.gesture = createSwingGesture({ travel: zone.travel, handedness: settings.handedness });
+    if (!same) zone.gesture = createSwingGesture({ travel: zone.travel, handedness: hand });
   };
   // A layout that arrived during a swing is applied once the swing is over.
   const flushLayout = () => { if (zone.pendingBox && !zone.mode) { const b = zone.pendingBox; zone.pendingBox = null; zone.layout(b); } };
@@ -112,7 +116,7 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
   }
   function liveFromGesture(st) {
     const phase = st.phase === PHASE.BACK ? 'back' : st.phase === PHASE.DOWN ? 'down' : 'address';
-    const fp = phase === 'down' ? liveFaceAndPath(st, { ...SWING_DEFAULTS, travel: zone.travel }, settings.handedness === 'left') : { face: 0, path: 0 };
+    const fp = phase === 'down' ? liveFaceAndPath(st, { ...SWING_DEFAULTS, travel: zone.travel }, swingHand() === 'left') : { face: 0, path: 0 };
     setLive(phase, clamp(st.depth, 0, 1), st.maxDepth, fp.face, fp.path);
   }
 

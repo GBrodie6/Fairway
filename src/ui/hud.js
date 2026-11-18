@@ -127,7 +127,7 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     const grid = h('div', { class: 'cgrid' });
     for (const c of game.clubChoices()) {
       grid.appendChild(h('button', { type: 'button', class: 'citem', 'aria-pressed': c.id === game.state.club.id ? 'true' : 'false', onclick: () => { game.setClub(c.id); toggleClubList(false); } },
-        h('b', { text: c.short }), h('span', { text: c.putter ? 'Putt' : fmtDist(c.carry, u) })));
+        h('b', { text: c.short }), h('span', { text: c.putter ? 'Putt' : fmtDist(game.clubCarry(c), u) })));
     }
     clubList.appendChild(grid);
     const types = game.shotTypes();
@@ -288,6 +288,7 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   };
   hud.power = () => clamp(zone.lastResult ? zone.lastResult.power : 0, 0, 1);
   hud.closeClubList = () => toggleClubList(false);
+  hud.toggleClubList = () => toggleClubList();
   hud.clubListOpen = () => !clubList.classList.contains('hidden');
   return hud;
 }

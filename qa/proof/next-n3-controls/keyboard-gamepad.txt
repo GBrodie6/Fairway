@@ -1,0 +1,11 @@
+scripts/tools/controls.mjs (real key events through the DevTools Input domain; the gamepad is a
+scripted navigator.getGamepads stand-in, so it proves the mapping, not real hardware)
+
+keyboard {"start":{"phase":"aim","club":"DR","shot":"full","aim":0.0041,"map":false,"modal":null,"list":false},"down":"W3","upUp":"DR","aimRight":0.0174,"shotType2":"punch","mapOpen":true,"mapClosedByEsc":true,"clubListB":true,"clubListClosedByEsc":true}
+meter swing {"power":0.727,"face":0,"label":"Perfect"} phase flight
+gamepad {"start":"W3","rb":"W5","lb":"W3","stickAim":0.0983,"xMap":true,"bClose":true,"startPause":"pause","bResume":null,"selectClubList":true,"bClosesList":true}
+gamepad meter {"power":0.636,"label":"Late"} phase flight
+
+Club list carries after the fix (each item uses the same carry as the club button):
+DR 250 yd | 3W 228 yd | 5W 212 yd | 4i 196 yd | 5i 185 yd | 6i 174 yd | 7i 163 yd | 8i 151 yd | 9i 139 yd | PW 127 yd | GW 112 yd | SW 96 yd | LW 80 yd | button: DR 250 yd
+(touch-results.json was recorded before that fix and still shows the old list text.)

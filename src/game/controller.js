@@ -200,6 +200,8 @@ export function createGame(app) {
     if (i < 0) i = 0;
     pickClub(allow[clamp(i + Math.sign(delta), 0, allow.length - 1)]);
   };
+  // Full carry in meters for a club with the current profile and shot type (what the HUD shows).
+  game.clubCarry = (club) => (club.putter ? 0 : nominalCarry(club, state.profile, state.shotType));
   game.setClub = (id) => {
     if (state.phase !== 'aim' || state.club.putter && state.lie === SURFACES.GREEN) return;
     const c = game.clubChoices().find((x) => x.id === id);

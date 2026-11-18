@@ -46,7 +46,7 @@ export function installMenus(app, ui) {
       h('h2', { class: 'h', text: 'Settings' }),
       h('h3', { class: 'h', text: 'Player' }),
       field('Name', name, 's-name'),
-      field('Golfer', select('s-hand', settings.handedness, [['right', 'Right-handed'], ['left', 'Left-handed']], (v) => { settings.handedness = v; save2(); }), 's-hand'),
+      field('Golfer', select('s-hand', settings.handedness, [['right', 'Right-handed'], ['left', 'Left-handed']], (v) => { settings.handedness = v; settings.leftHandLayout = v === 'left'; const c = document.getElementById('s-lh'); if (c) c.checked = settings.leftHandLayout; save2(); }), 's-hand'),
       field('Left-handed layout', check('s-lh', settings.leftHandLayout, (v) => { settings.leftHandLayout = v; save2(); }), 's-lh'),
       field('Swing drag length', range('s-stick', settings.stickScale, 0.7, 1.5, 0.05, (v) => { settings.stickScale = v; save2(); }), 's-stick'),
       field('Power guide while swinging', check('s-guide', settings.powerGuide, (v) => { settings.powerGuide = v; save2(); }), 's-guide'),

@@ -58,6 +58,7 @@ export function createInput({ view, game, getWorld, settings, hud, actions, hapt
         const types = game.shotTypes(); const t = types[Number(k.slice(5)) - 1]; if (t) game.setShotType(t.id); break;
       }
       case 'KeyM': actions.map(); break;
+      case 'KeyB': actions.clubList(); break;
       case 'KeyR': actions.replay(); break;
       case 'KeyL': actions.toggleLook(); break;
       case 'KeyC': actions.resetAim(); break;
@@ -66,8 +67,8 @@ export function createInput({ view, game, getWorld, settings, hud, actions, hapt
   });
 
   // --- gamepad ---
-  // Standard mapping: A meter, B back, X map, Y replay, LB/RB club, LT/RT shot type,
-  // d-pad and left stick aim, right stick look, Start pause.
+  // Standard mapping: A meter, B back, X map, Y replay, LB/RB club, LT/RT shot type, Select
+  // club list, d-pad and left stick aim, right stick look, Start pause.
   const prevButtons = [];
   const pressed = (gp, i) => { const b = gp.buttons[i]; const now = !!(b && (b.pressed || b.value > 0.5)); const was = !!prevButtons[i]; prevButtons[i] = now; return now && !was; };
   window.addEventListener('gamepadconnected', (e) => { input.gamepad = e.gamepad.index; hud.toast('Controller connected', 'A to swing, sticks to aim and look', 2600); });
@@ -99,6 +100,7 @@ export function createInput({ view, game, getWorld, settings, hud, actions, hapt
     // the frame that polled it.
     if (presses[0]) hud.stick.meterPress(gp.timestamp > 0 ? gp.timestamp : performance.now());
     if (presses[2]) actions.map();
+    if (presses[8]) actions.clubList();
     if (presses[3]) actions.replay();
     if (presses[4]) game.selectClub(-1);
     if (presses[5]) game.selectClub(1);

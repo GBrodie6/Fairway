@@ -1,0 +1,67 @@
+{
+ "dragAim": {
+  "before": 0.00408,
+  "after": 0.36531,
+  "turned": true
+ },
+ "arrows": {
+  "start": "DR",
+  "right": "W3",
+  "left": "DR"
+ },
+ "swipe": {
+  "before": "DR",
+  "after": "W3",
+  "listOpened": false
+ },
+ "clubList": {
+  "opened": true,
+  "items": [
+   "DR273 yd",
+   "3W249 yd",
+   "5W232 yd",
+   "4i214 yd",
+   "5i202 yd",
+   "6i190 yd",
+   "7i178 yd",
+   "8i165 yd",
+   "9i152 yd",
+   "PW139 yd",
+   "GW122 yd",
+   "SW105 yd",
+   "LW87 yd"
+  ],
+  "picked": "I7",
+  "closed": true
+ },
+ "look": {
+  "held": "peek",
+  "released": "address"
+ },
+ "map": {
+  "opened": true,
+  "closed": true
+ },
+ "reset": {
+  "before": 0.36531,
+  "after": 0.00408,
+  "backToStart": true
+ },
+ "rightHandedDrift": {
+  "face": 5,
+  "path": 7
+ },
+ "lefty": {
+  "settingsOnRight": true,
+  "lookOnLeft": true,
+  "leftArrowShorter": {
+   "before": "W3",
+   "after": "W5"
+  }
+ },
+ "leftLayoutDrift": {
+  "face": -5,
+  "path": -7
+ },
+ "consoleErrors": []
+}

@@ -18,7 +18,7 @@ const page = await browser.newPage({ viewport: { width: 640, height: 360 }, devi
 const errors = trackErrors(page);
 const cdp = await page.context().newCDPSession(page);
 let clock = 0;
-const KEYS = { Space: [' ', 32], Enter: ['Enter', 13], ArrowUp: ['ArrowUp', 38], ArrowDown: ['ArrowDown', 40], ArrowLeft: ['ArrowLeft', 37], ArrowRight: ['ArrowRight', 39], Digit2: ['2', 50], KeyM: ['m', 77], Escape: ['Escape', 27] };
+const KEYS = { Space: [' ', 32], Enter: ['Enter', 13], ArrowUp: ['ArrowUp', 38], ArrowDown: ['ArrowDown', 40], ArrowLeft: ['ArrowLeft', 37], ArrowRight: ['ArrowRight', 39], Digit2: ['2', 50], KeyM: ['m', 77], KeyB: ['b', 66], Escape: ['Escape', 27] };
 async function key(code, at) {
   clock = Math.max(clock + 1, at ?? Date.now());
   const [k, vk] = KEYS[code];
@@ -27,7 +27,7 @@ async function key(code, at) {
   await cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', ...base, timestamp: (clock + 30) / 1000 });
   clock += 30;
 }
-const st = () => page.evaluate(() => { const s = window.__fw.game.state; return { phase: s.phase, club: s.club.id, shot: s.shotType.id, aim: +s.aim.toFixed(4), map: window.__fw.ui.map.open, modal: window.__fw.ui.modal }; });
+const st = () => page.evaluate(() => { const s = window.__fw.game.state; return { phase: s.phase, club: s.club.id, shot: s.shotType.id, aim: +s.aim.toFixed(4), map: window.__fw.ui.map.open, modal: window.__fw.ui.modal, list: window.__fw.ui.hud.clubListOpen() }; });
 try {
   await page.goto('http://127.0.0.1:5198/?mode=stroke&course=parkland&hole=1&holes=1&tier=low&seed=4&noassets', { waitUntil: 'load' });
   await page.waitForFunction(() => window.__fw && window.__fw.ready, null, { timeout: 240000 });
@@ -40,7 +40,8 @@ try {
   await key('ArrowRight'); await key('ArrowRight'); const s3 = await st();
   await key('ArrowDown'); await key('ArrowDown'); await key('ArrowDown'); await key('Digit2'); const s4 = await st();
   await key('KeyM'); const s5 = await st(); await key('Escape'); const s6 = await st();
-  console.log('keyboard', JSON.stringify({ start: s0, down: s1.club, upUp: s2.club, aimRight: +(s3.aim - s2.aim).toFixed(4), shotType2: s4.shot, mapOpen: s5.map, mapClosedByEsc: !s6.map }));
+  await key('KeyB'); const s7 = await st(); await key('Escape'); const s8 = await st();
+  console.log('keyboard', JSON.stringify({ start: s0, down: s1.club, upUp: s2.club, aimRight: +(s3.aim - s2.aim).toFixed(4), shotType2: s4.shot, mapOpen: s5.map, mapClosedByEsc: !s6.map, clubListB: s7.list, clubListClosedByEsc: !s8.list }));
   await page.screenshot({ path: `${prefix}-keyboard-aim.png` });
   // Three-press meter: start, set power after 0.8 s (about 73 percent), strike when the marker returns.
   const t0 = Date.now();
@@ -63,7 +64,8 @@ try {
   await page.evaluate(() => { window.__pad.axes[0] = 0.8; }); await frames(6); await page.evaluate(() => { window.__pad.axes[0] = 0; }); await frames(1); const g3 = await st();
   await press(2); const g4 = await st(); await press(1); const g5 = await st();
   await press(9); const g6 = await st(); await press(1); const g7 = await st();
-  console.log('gamepad', JSON.stringify({ start: g0.club, rb: g1.club, lb: g2.club, stickAim: +(g3.aim - g2.aim).toFixed(4), xMap: g4.map, bClose: !g5.map, startPause: g6.modal, bResume: g7.modal }));
+  await press(8); const g8 = await st(); await press(1); const g9 = await st();
+  console.log('gamepad', JSON.stringify({ start: g0.club, rb: g1.club, lb: g2.club, stickAim: +(g3.aim - g2.aim).toFixed(4), xMap: g4.map, bClose: !g5.map, startPause: g6.modal, bResume: g7.modal, selectClubList: g8.list, bClosesList: !g9.list }));
   // The pad reports when each press happened (Gamepad.timestamp); presses are a frame apart.
   const padPress = async (b, at) => { await page.evaluate(([i, t]) => { window.__pad.timestamp = t; window.__pad.buttons[i] = { pressed: true, value: 1 }; }, [b, at]); await frames(1); await page.evaluate((i) => { window.__pad.buttons[i] = { pressed: false, value: 0 }; }, b); await frames(1); };
   const now = await page.evaluate(() => performance.now());
