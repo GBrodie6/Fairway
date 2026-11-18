@@ -16,6 +16,7 @@ import { makeChallenge, challengeUrl, readChallengeFromHash, mergeIntoChallenge,
 import { holesFor } from '../game/round.js';
 import { gearFor } from '../game/gear.js';
 import { roundRewards } from '../game/rewards.js';
+import { levelForXp, golferProfile, golferStrike, shotUnlocked, eventById } from '../game/campaign.js';
 
 const TOD_NAMES = { dawn: 'Dawn', morning: 'Morning', midday: 'Midday', golden: 'Golden hour', dusk: 'Dusk', night: 'Night' };
 const BALLS = ['#ffffff', '#ffd23f', '#ff9e7a', '#7fd1ff'];
@@ -33,7 +34,22 @@ export function installMenus(app, ui) {
   app.updateSave = (fn, reason) => { save = fn(save); persist(); if (reason && app.cloud) app.cloud.sync.schedule(reason); return save; };
   // What the strike model reads for a club: its rarity, the ball, and the glove.
   app.gearFor = (clubId) => gearFor(save.gear, clubId);
-  app.addXp = (n, reason) => { if (!(n > 0)) return; save = { ...save, profile: { ...(save.profile || {}), xp: ((save.profile && save.profile.xp) || 0) + Math.round(n) } }; persist(); if (app.cloud) app.cloud.sync.schedule('xp'); };
+  // Experience for the golfer from anything played. A level-up is announced and kept for the
+  // round-end and range summary screens to offer the level-up card.
+  app.addXp = (n, reason) => {
+    if (!(n > 0)) return null;
+    const from = levelForXp(save.profile.xp);
+    save = { ...save, profile: { ...save.profile, xp: save.profile.xp + Math.round(n) } };
+    const to = levelForXp(save.profile.xp);
+    persist();
+    if (app.cloud) app.cloud.sync.schedule(to > from ? 'level-up' : 'xp');
+    if (to > from) { app.pendingLevelUp = { from: (app.pendingLevelUp && app.pendingLevelUp.from) || from, to }; ui.hud.toast(`Level ${to}`, 'A skill point to spend in the campaign', 2600); }
+    return { from, to, reason };
+  };
+  app.golferProfile = () => golferProfile(save.profile);
+  app.golferStrike = (clubKind) => golferStrike(save.profile, clubKind);
+  // Campaign events allow only the shots the golfer has unlocked.
+  app.shotAllowed = (id, round) => !(round && round.eventId && eventById(round.eventId)) || shotUnlocked(save.profile, id);
   app.spendMulligan = () => { save = { ...save, wallet: { ...save.wallet, mulligans: Math.max(0, (save.wallet.mulligans || 0) - 1) } }; persist(); };
   const sheet = (cls, ...kids) => h('div', { class: `sheet glass ${cls || ''}` }, ...kids);
   const btn = (label, onclick, cls = 'btn') => h('button', { class: cls, type: 'button', onclick }, label);
@@ -345,6 +361,11 @@ export function installMenus(app, ui) {
       }
     }
     if (context && context.kind === 'challenge') screens.lastChallenge = mergeIntoChallenge(context.challenge, save.player.name, r.scores[0]);
+    // Campaign events record their result (board, objectives, stars, XP) in campaignUi.
+    const campaignEv = !context && r.eventId ? eventById(r.eventId) : null;
+    if (campaignEv && app.campaignRoundEnd) { persist(); app.campaignRoundEnd(r); save = app.save(); }
+    // Other rounds give a little XP: holes played and birdies.
+    else if (app.addXp && scores.length) app.addXp(scores.length * 5 + Math.max(0, Math.round(scores.length * 0.5) - toPar) * 4, 'Round');
     // Gear tokens for finishing (daily: the first finish today also counts).
     const dailyKey = context && context.kind === 'daily' ? context.key : null;
     const rw = roundRewards(save, { holes: scores.length, kind: context && context.kind, position: screens.lastEvent && context && context.kind === 'career' ? screens.lastEvent.position : null, firstDailyToday: dailyKey ? (save.daily[dailyKey] || {}).attempts === 1 : false, now });
@@ -357,8 +378,11 @@ export function installMenus(app, ui) {
     const prompt = app.accountPrompt ? app.accountPrompt() : null;
     const extra = roundEndContext();
     const lines = screens.lastRewards || [];
+    const lvl = app.pendingLevelUp;
+    const lvlBtn = lvl ? h('div', { class: 'center' }, btn(`Level ${lvl.to}! See what is new`, () => { app.pendingLevelUp = null; app.showLevelUp(lvl.from, lvl.to); }, 'btn primary')) : null;
+    const camp = app.campaignRoundEndExtra && game.state.round && game.state.round.eventId && eventById(game.state.round.eventId) ? app.campaignRoundEndExtra() : null;
     const rewards = lines.length ? h('div', { class: 'rewards' }, ...lines.map((t) => h('p', { class: 'muted center', text: t })), save.wallet.tokens > 0 ? h('div', { class: 'center' }, btn('Open gear drops', () => { screens.hide(); game.quit(); app.openGear('drops'); }, 'btn small')) : null) : null;
-    return prompt || extra || rewards ? h('div', {}, extra, rewards, prompt) : null;
+    return prompt || extra || rewards || camp || lvlBtn ? h('div', {}, camp, extra, rewards, lvlBtn, prompt) : null;
   };
   function roundEndContext() {
     if (context && context.kind === 'career' && screens.lastEvent) {

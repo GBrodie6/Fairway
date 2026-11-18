@@ -6,8 +6,9 @@ import { validateRound } from './round.js';
 import { courseById } from '../course/courses.js';
 import { YARD } from '../core/math.js';
 import { starterGear, sanitizeGear } from './gear.js';
+import { newGolfer, sanitizeGolfer, sanitizeCampaign, golferFromCareer } from './campaign.js';
 
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 export const SAVE_KEY = 'fairway-next.save';
 const HISTORY_CAP = 100;
 
@@ -29,8 +30,10 @@ export function defaultSave() {
     wallet: { coins: 0, shards: 0, mulligans: 1, tokens: 0, tokenDay: 0, dayTokens: 0 },
     // v5: clubs in rarity tiers, the 14-club bag, balls, gloves, and the drop pity counter.
     gear: starterGear(),
-    // Experience outside the career (range drills now; the campaign builds levels on it).
-    profile: { xp: 0 },
+    // v6: the golfer: experience, level (from XP), archetype, and learned skills.
+    profile: newGolfer(),
+    // v6: campaign progress (chapters, events, stars); created when the campaign is opened.
+    campaign: null,
     // The practice ground record: sessions, bests, medals, and per-club running sums.
     range: {},
   };
@@ -57,6 +60,9 @@ export const MIGRATIONS = {
   3: (s) => ({ ...s, version: 4, updatedAt: 0, account: null }),
   // v5 added gear (the fixed starter bag of 14 Common clubs) and gear tokens.
   4: (s) => ({ ...s, version: 5, gear: starterGear(), wallet: { ...(s.wallet || {}), tokens: 0 } }),
+  // v6 added the golfer and the campaign. A career's experience carries over; the archetype is
+  // chosen the first time the campaign opens.
+  5: (s) => ({ ...s, version: 6, profile: golferFromCareer(s.career, s.profile), campaign: null }),
 };
 
 export function migrateSave(raw) {
@@ -86,7 +92,8 @@ export function sanitizeSave(s) {
   const cnt = (v, d) => (Number.isFinite(v) && v >= 0 ? Math.min(Math.floor(v), 1e7) : d);
   out.wallet = { coins: cnt(w.coins, 0), shards: cnt(w.shards, 0), mulligans: cnt(w.mulligans, 1), tokens: cnt(w.tokens, 0), tokenDay: cnt(w.tokenDay, 0), dayTokens: cnt(w.dayTokens, 0) };
   out.gear = sanitizeGear(s.gear);
-  out.profile = { ...(s.profile && typeof s.profile === 'object' ? s.profile : {}), xp: cnt((s.profile || {}).xp, 0) };
+  out.profile = sanitizeGolfer(s.profile);
+  out.campaign = sanitizeCampaign(s.campaign);
   out.range = s.range && typeof s.range === 'object' && !Array.isArray(s.range) ? s.range : {};
   const a = s.account;
   out.account = a && typeof a === 'object' && typeof a.userId === 'string' ? { userId: a.userId, email: String(a.email || ''), displayName: String(a.displayName || '').slice(0, 18) } : null;

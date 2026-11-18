@@ -18,6 +18,11 @@ import { courseById } from '../course/courses.js';
 import { fin } from '../core/guards.js';
 import { strikeResult, applyStrike } from './strike.js';
 import { bayBall, targetFor } from '../course/range.js';
+import { EXTRA_SHOTS } from './shots.js';
+
+const ALL_SHOTS = [...Object.values(SHOT_TYPES), ...EXTRA_SHOTS];
+const shotById = (id) => ALL_SHOTS.find((s) => s.id === id) || SHOT_TYPES.FULL;
+const shotFits = (s, club) => (!s.wedgeOnly || club.kind === 'wedge') && (!s.noWoods || club.kind !== 'wood');
 
 export function createGame(app) {
   const listeners = new Set();
@@ -43,6 +48,7 @@ export function createGame(app) {
   game.startRound = async (opts = {}) => {
     state.round = createRound(opts);
     state.profile = opts.profile || BASE_PROFILE;
+    state.golfer = !!opts.golfer;
     state.fast = !!opts.fast;
     rng = createRng(state.round.seed ^ 0xa53c9);
     state.decals = {};
@@ -95,9 +101,9 @@ export function createGame(app) {
   // A range session is a one-hole round on the range layout that never finishes: every ball
   // is teed up again in the same bay, the club stays as chosen, and finished shots go to the
   // UI as 'rangeShot' records instead of being scored.
-  game.startRange = async ({ bay = 2, surface = 'mat', tod = 'morning', club = null, compare = null, players } = {}) => {
+  game.startRange = async ({ bay = 2, surface = 'mat', tod = 'morning', club = null, compare = null, players, profile = null } = {}) => {
     state.range = { bay, surface, clubId: club || (compare && compare.clubId) || 'I7', forceClub: club || (compare && compare.clubId) || null, targetYards: null, carryYards: null, compare };
-    return game.startRound({ courseId: 'range', mode: 'range', holes: [0], tod, players, seed: (Date.now() >>> 0) || 1 });
+    return game.startRound({ courseId: 'range', mode: 'range', holes: [0], tod, players, seed: (Date.now() >>> 0) || 1, profile, golfer: !!profile });
   };
   // The drill's target green (yards), or a carry distance to aim along the center line.
   // With suggest, the club changes to one that reaches (the player can still pick another).
@@ -279,7 +285,7 @@ export function createGame(app) {
   function pickClub(club) {
     state.club = club;
     if (state.club.putter) state.shotType = SHOT_TYPES.PUTT; else if (state.shotType.id === 'putt') state.shotType = SHOT_TYPES.FULL;
-    if (state.shotType.wedgeOnly && state.club.kind !== 'wedge') state.shotType = SHOT_TYPES.FULL;
+    if (!shotFits(state.shotType, state.club) || !shotAllowed(state.shotType.id)) state.shotType = SHOT_TYPES.FULL;
     W().rig.ctx = addressCtx();
     computeIdeal();
     refresh();
@@ -288,14 +294,16 @@ export function createGame(app) {
   }
   game.setShotType = (id) => {
     if (state.phase !== 'aim' || state.club.putter) return;
-    const st = shotTypeById(id);
-    if (st.id === 'putt' || (st.wedgeOnly && state.club.kind !== 'wedge')) return;
+    const st = shotById(id);
+    if (st.id === 'putt' || !shotFits(st, state.club) || !shotAllowed(st.id)) return;
     state.shotType = st;
     computeIdeal();
     refresh();
     emit('club', state.club);
   };
-  game.shotTypes = () => (state.club.putter ? [] : Object.values(SHOT_TYPES).filter((s) => s.id !== 'putt' && (!s.wedgeOnly || state.club.kind === 'wedge')));
+  // Campaign events offer the shots the golfer has unlocked; everywhere else offers them all.
+  const shotAllowed = (id) => !(app.shotAllowed && state.round) || app.shotAllowed(id, state.round);
+  game.shotTypes = () => (state.club.putter ? [] : ALL_SHOTS.filter((s) => s.id !== 'putt' && shotFits(s, state.club) && shotAllowed(s.id)));
 
   // --- the shot ---
   game.swing = (swing) => {
@@ -388,7 +396,7 @@ export function createGame(app) {
   function strikeContext(club, from) {
     const t = W().terrain, n = {};
     t.normalAt(from.x, from.z, n);
-    const gear = (app.gearFor && app.gearFor(club.id)) || {};
+    const gear = { ...((app.gearFor && app.gearFor(club.id)) || {}), ...(state.golfer && app.golferStrike ? app.golferStrike(club.kind) : {}) };
     return { clubId: club.id, lie: from.lie, slope: Math.hypot(n.x, n.z) / Math.max(0.2, n.y), setting: app.settings.difficulty || 'standard', rarity: gear.rarity || 'common', glove: gear.glove || 0, ball: gear.ball || null, forgiveness: gear.forgiveness || 1, perkBonus: gear.perkBonus || 0, lefty: app.settings.handedness === 'left' };
   }
 

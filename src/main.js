@@ -15,6 +15,7 @@ import { installMenus } from './ui/menus.js';
 import { installAccount } from './ui/account.js';
 import { installGear } from './ui/gearScreen.js';
 import { installRange } from './ui/rangeUi.js';
+import { installCampaign } from './ui/campaignUi.js';
 import { createAudio } from './audio/audio.js';
 import { saveSettings } from './core/settings.js';
 
@@ -67,6 +68,7 @@ async function boot() {
   installAccount(app, app.ui);
   installGear(app, app.ui);
   installRange(app, app.ui);
+  installCampaign(app, app.ui);
   app.audio.attach(app.game, () => app.world);
   // Browsers only allow audio after a user gesture.
   for (const ev of ['pointerdown', 'keydown']) window.addEventListener(ev, () => app.audio.unlock(), { passive: true });

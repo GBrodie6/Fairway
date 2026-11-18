@@ -1,0 +1,394 @@
+{
+ "course": "parkland",
+ "view": "portrait",
+ "holes": 18,
+ "tier": "low",
+ "scale": 0.5,
+ "timescale": 6,
+ "mode": "stroke",
+ "software": true,
+ "input": "touch",
+ "started": "2026-11-18T19:02:21.216Z",
+ "shots": [
+  {
+   "hole": 1,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 341.92,
+   "after": 118.63,
+   "ideal": 0.99,
+   "power": 0.994,
+   "tempo": "Perfect",
+   "ratio": 3.17,
+   "read": null,
+   "result": "Hole 1Par 4  369 yd",
+   "sec": 28.1
+  },
+  {
+   "hole": 1,
+   "club": "I4",
+   "shot": "full",
+   "lie": "Bunker",
+   "before": 118.63,
+   "after": 20.58,
+   "ideal": 0.968,
+   "power": 1,
+   "tempo": "Perfect",
+   "ratio": 3.3,
+   "read": null,
+   "result": "Hole 1Par 4  369 yd",
+   "sec": 22.2
+  },
+  {
+   "hole": 1,
+   "club": "PW",
+   "shot": "chip",
+   "lie": "Rough",
+   "before": 20.58,
+   "after": 3.28,
+   "ideal": 0.58,
+   "power": 0.564,
+   "tempo": "Perfect",
+   "ratio": 3.42,
+   "read": null,
+   "result": "Hole 1Par 4  369 yd",
+   "sec": 33.1
+  },
+  {
+   "hole": 1,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 3.28,
+   "after": 0.11,
+   "ideal": 0.69,
+   "power": 0.677,
+   "tempo": "Good, a little quick",
+   "ratio": 3.63,
+   "read": {
+    "drags": 2,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0.21
+   },
+   "result": "Green0.4 ft left",
+   "sec": 18.9
+  },
+  {
+   "hole": 1,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.11,
+   "after": 0.11,
+   "ideal": 0.477,
+   "power": 0.449,
+   "tempo": "Perfect",
+   "ratio": 3.4,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Bogey5 strokes",
+   "sec": 16.4
+  },
+  {
+   "hole": 2,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 482.23,
+   "after": 252.65,
+   "ideal": 0.954,
+   "power": 1,
+   "tempo": "Good, a little quick",
+   "ratio": 3.65,
+   "read": null,
+   "result": "Hole 2Par 5  534 yd",
+   "sec": 22
+  },
+  {
+   "hole": 2,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 252.65,
+   "after": 44.6,
+   "ideal": 0.954,
+   "power": 0.978,
+   "tempo": "Perfect",
+   "ratio": 2.98,
+   "read": null,
+   "result": "Hole 2Par 5  534 yd",
+   "sec": 19.1
+  },
+  {
+   "hole": 2,
+   "club": "LW",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 44.6,
+   "after": 4.24,
+   "ideal": 0.669,
+   "power": 0.649,
+   "tempo": "Good, a little quick",
+   "ratio": 4.09,
+   "read": null,
+   "result": "Hole 2Par 5  534 yd",
+   "sec": 16.9
+  },
+  {
+   "hole": 2,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 4.24,
+   "after": 0.16,
+   "ideal": 0.69,
+   "power": 0.665,
+   "tempo": "Good, a little quick",
+   "ratio": 3.6,
+   "read": {
+    "drags": 1,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0.13
+   },
+   "result": "Green0.5 ft left",
+   "sec": 15.9
+  },
+  {
+   "hole": 2,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.16,
+   "after": 0.16,
+   "ideal": 0.506,
+   "power": 0.502,
+   "tempo": "Perfect",
+   "ratio": 3.26,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par5 strokes",
+   "sec": 14.5
+  },
+  {
+   "hole": 3,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 398.91,
+   "after": 178.72,
+   "ideal": 0.981,
+   "power": 0.968,
+   "tempo": "Perfect",
+   "ratio": 3.27,
+   "read": null,
+   "result": "Hole 3Par 4  430 yd",
+   "sec": 21.1
+  },
+  {
+   "hole": 3,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 178.72,
+   "after": 4.89,
+   "ideal": 0.89,
+   "power": 0.911,
+   "tempo": "Good, a little quick",
+   "ratio": 3.57,
+   "read": null,
+   "result": "Hole 3Par 4  430 yd",
+   "sec": 25.9
+  },
+  {
+   "hole": 3,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 4.89,
+   "after": 4.89,
+   "ideal": 0.638,
+   "power": 0.648,
+   "tempo": "Good, a little quick",
+   "ratio": 4.21,
+   "read": {
+    "drags": 4,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -0.7
+   },
+   "result": "Birdie3 strokes",
+   "sec": 16.4
+  }
+ ],
+ "holesPlayed": [
+  {
+   "hole": 1,
+   "par": 4,
+   "strokes": [
+    5
+   ]
+  },
+  {
+   "hole": 2,
+   "par": 5,
+   "strokes": [
+    5
+   ]
+  },
+  {
+   "hole": 3,
+   "par": 4,
+   "strokes": [
+    3
+   ]
+  }
+ ],
+ "result": {
+  "scores": [
+   [
+    5,
+    5,
+    3
+   ]
+  ],
+  "players": [
+   "You"
+  ],
+  "complete": true,
+  "holes": [
+   0,
+   1,
+   2
+  ],
+  "mode": "stroke",
+  "standings": "13  (E)"
+ },
+ "errors": [],
+ "stuck": [],
+ "timing": {
+  "bootSec": 32.403,
+  "totalMin": 6.6,
+  "shots": 13,
+  "secPerShot": 20.8
+ },
+ "before": {
+  "profile": {
+   "xp": 0,
+   "archetype": "power",
+   "nodes": [],
+   "respecs": 0
+  },
+  "campaign": {
+   "progress": {}
+  }
+ },
+ "campaign": {
+  "profile": {
+   "xp": 276,
+   "archetype": "power",
+   "nodes": [],
+   "respecs": 0
+  },
+  "progress": {
+   "club-1": {
+    "stars": 3,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": [
+     "club-1-o0",
+     "club-1-o1",
+     "club-1-o2"
+    ]
+   }
+  },
+  "tokens": 2,
+  "result": [
+   "MONTHLY MEDAL: 1ST OF 6",
+   "1. You",
+   "13 (E)",
+   "2. Maren Lindqvist",
+   "14 (+1)",
+   "2. Lena Marchetti",
+   "14 (+1)",
+   "2. Idris Ashby",
+   "14 (+1)",
+   "2. Maren Moreau",
+   "14 (+1)",
+   "Finish in the top 3",
+   "Met",
+   "Make a birdie",
+   "Met",
+   "Hit 2 fairways",
+   "Met",
+   "★★★",
+   "Event cleared!",
+   "Holes played\t+24",
+   "Scoring\t+18",
+   "Birdies (1)\t+14",
+   "Objectives (3 of 3)\t+120",
+   "Finish (1 of 6)\t+50",
+   "First clear\t+50",
+   "Total XP\t+276",
+   "+1 gear token",
+   "Campaign"
+  ]
+ },
+ "after": {
+  "player": "You",
+  "rounds": 1,
+  "history": [
+   {
+    "id": "1795028935490-1653645617",
+    "date": 1795028935490,
+    "courseId": "parkland",
+    "mode": "stroke",
+    "holes": 3,
+    "strokes": 13,
+    "par": 13,
+    "toPar": 0,
+    "birdies": 1,
+    "putts": 5,
+    "eventId": "club-1"
+   }
+  ],
+  "daily": {},
+  "achievements": [
+   "first-round",
+   "birdie"
+  ],
+  "inProgress": false,
+  "career": null
+ },
+ "guard": {
+  "count": 0,
+  "last": null,
+  "bySystem": {}
+ },
+ "consoleErrors": [],
+ "summary": {
+  "holes": 3,
+  "strokes": 13,
+  "par": 13,
+  "putts": 5,
+  "tempo": {
+   "Perfect": 7,
+   "Good, a little quick": 6
+  },
+  "stuck": 0,
+  "consoleErrors": 0,
+  "guardErrors": 0,
+  "toPar": 0
+ }
+}

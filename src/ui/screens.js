@@ -60,7 +60,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
     h('div', { class: 'stack' },
       app.resumeAvailable && app.resumeAvailable() ? btn('Resume round', () => app.resume(), 'btn primary') : null,
       btn('Quick round', () => screens.setup(), app.resumeAvailable && app.resumeAvailable() ? 'btn' : 'btn primary'),
-      screens.registry.career ? btn('Career', () => screens.registry.career()) : null,
+      screens.registry.campaign ? btn('Campaign', () => screens.registry.campaign()) : screens.registry.career ? btn('Career', () => screens.registry.career()) : null,
       screens.registry.daily ? btn('Daily challenge', () => screens.registry.daily()) : null,
       h('div', { class: 'grid2' },
         btn('Driving range', () => (app.openRange ? app.openRange() : startRange())),
@@ -123,7 +123,9 @@ export function createScreens(root, { app, game, settings, ui, save }) {
   async function startQuick() {
     hide();
     const seed = setupState.seed != null ? hashString(String(setupState.seed)) : (Date.now() ^ hashString(setupState.courseId)) >>> 0;
-    await game.startRound({ courseId: setupState.courseId, mode: setupState.mode, holeCount: setupState.holes, startHole: setupState.startHole || 1, tod: setupState.tod, players: playerList(), seed });
+    // Your golfer's stats and perks apply when you play alone; shared and multiplayer rounds are level.
+    const solo = playerList().filter((p) => p.kind === 'human').length === 1 && app.golferProfile;
+    await game.startRound({ courseId: setupState.courseId, mode: setupState.mode, holeCount: setupState.holes, startHole: setupState.startHole || 1, tod: setupState.tod, players: playerList(), seed, profile: solo ? app.golferProfile() : undefined, golfer: !!solo });
   }
   async function startRange() {
     hide();
@@ -219,7 +221,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
       h('p', { class: 'muted center', text: courseById(r.courseId).name }),
       scorecardTable(r),
       screens.roundEndExtra ? screens.roundEndExtra() : null,
-      h('div', { class: 'grid2', style: { marginTop: '14px' } }, btn('Main menu', () => { hide(); game.quit(); }), app.menuContext && app.menuContext() ? btn('Scorecard', () => screens.scorecard()) : btn('Play again', () => startQuick(), 'btn primary')),
+      h('div', { class: 'grid2', style: { marginTop: '14px' } }, btn('Main menu', () => { hide(); game.quit(); }), app.menuContext && app.menuContext() ? btn('Scorecard', () => screens.scorecard()) : game.state.round && game.state.round.eventId && app.startCampaignEvent && app.isCampaignEvent && app.isCampaignEvent(game.state.round.eventId) ? btn('Play the event again', () => { const id = game.state.round.eventId; hide(); app.startCampaignEvent(id); }, 'btn primary') : btn('Play again', () => startQuick(), 'btn primary')),
     ));
   };
 

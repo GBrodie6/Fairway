@@ -1,0 +1,460 @@
+{
+ "course": "parkland",
+ "view": "portrait",
+ "holes": 18,
+ "tier": "low",
+ "scale": 0.5,
+ "timescale": 6,
+ "mode": "stroke",
+ "software": true,
+ "input": "touch",
+ "started": "2026-11-18T19:09:09.433Z",
+ "shots": [
+  {
+   "hole": 5,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 340.96,
+   "after": 340.96,
+   "ideal": 0.903,
+   "power": 0.906,
+   "tempo": "Perfect",
+   "ratio": 3.2,
+   "read": null,
+   "result": "Rafe Halloran to playWatching",
+   "sec": 33
+  },
+  {
+   "hole": 5,
+   "club": "I8",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 127.24,
+   "after": 113.76,
+   "ideal": 0.908,
+   "power": 0.957,
+   "tempo": "Perfect",
+   "ratio": 3.31,
+   "read": null,
+   "result": "Rafe Halloran to playWatching",
+   "sec": 35.8
+  },
+  {
+   "hole": 5,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 8.28,
+   "after": 1.48,
+   "ideal": 0.69,
+   "power": 0.671,
+   "tempo": "Good, a little quick",
+   "ratio": 3.57,
+   "read": {
+    "drags": 4,
+    "taps": 3,
+    "leftDeg": -0.05,
+    "breakM": 1.3
+   },
+   "result": "Rafe Halloran to playWatching",
+   "sec": 18.6
+  },
+  {
+   "hole": 5,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.24,
+   "after": 0.24,
+   "ideal": 0.563,
+   "power": 0.553,
+   "tempo": "Good, a little quick",
+   "ratio": 3.49,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par4 strokes",
+   "sec": 17.1
+  },
+  {
+   "hole": 6,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 320.44,
+   "after": 320.44,
+   "ideal": 0.936,
+   "power": 0.881,
+   "tempo": "Perfect",
+   "ratio": 3.32,
+   "read": null,
+   "result": "Rafe Halloran to playWatching",
+   "sec": 19.6
+  },
+  {
+   "hole": 6,
+   "club": "I9",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 112.21,
+   "after": 94.84,
+   "ideal": 0.876,
+   "power": 0.926,
+   "tempo": "Good, a little quick",
+   "ratio": 3.68,
+   "read": null,
+   "result": "Rafe Halloran to playWatching",
+   "sec": 22.1
+  },
+  {
+   "hole": 6,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 3.08,
+   "after": 2.74,
+   "ideal": 0.56,
+   "power": 0.574,
+   "tempo": "Perfect",
+   "ratio": 2.96,
+   "read": {
+    "drags": 2,
+    "taps": 0,
+    "leftDeg": -0.05,
+    "breakM": -0.24
+   },
+   "result": "Rafe Halloran to playWatching",
+   "sec": 16.1
+  },
+  {
+   "hole": 7,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 194.72,
+   "after": 194.72,
+   "ideal": 0.886,
+   "power": 0.86,
+   "tempo": "Good, a little quick",
+   "ratio": 3.97,
+   "read": null,
+   "result": "Rafe Halloran to playWatching",
+   "sec": 20.7
+  },
+  {
+   "hole": 7,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 10.32,
+   "after": 4.28,
+   "ideal": 0.69,
+   "power": 0.665,
+   "tempo": "Good, a little quick",
+   "ratio": 3.6,
+   "read": {
+    "drags": 2,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0.52
+   },
+   "result": "Rafe Halloran to playWatching",
+   "sec": 17.2
+  },
+  {
+   "hole": 7,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.97,
+   "after": 0.45,
+   "ideal": 0.681,
+   "power": 0.675,
+   "tempo": "Perfect",
+   "ratio": 3.34,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Rafe Halloran to playWatching",
+   "sec": 14.8
+  }
+ ],
+ "holesPlayed": [
+  {
+   "hole": 5,
+   "par": 4,
+   "strokes": [
+    4,
+    3
+   ]
+  },
+  {
+   "hole": 6,
+   "par": 4,
+   "strokes": [
+    3,
+    4
+   ]
+  },
+  {
+   "hole": 7,
+   "par": 3,
+   "strokes": [
+    3,
+    3
+   ]
+  }
+ ],
+ "result": {
+  "scores": [
+   [
+    4,
+    3,
+    3
+   ],
+   [
+    3,
+    4,
+    3
+   ]
+  ],
+  "players": [
+   "You",
+   "Rafe Halloran"
+  ],
+  "complete": true,
+  "holes": [
+   4,
+   5,
+   6
+  ],
+  "mode": "match",
+  "standings": "Match halved"
+ },
+ "errors": [],
+ "stuck": [],
+ "timing": {
+  "bootSec": 25.098,
+  "totalMin": 6.5,
+  "shots": 10,
+  "secPerShot": 21.5
+ },
+ "campaign": {
+  "profile": {
+   "xp": 125,
+   "archetype": "all",
+   "nodes": [],
+   "respecs": 0
+  },
+  "progress": {
+   "club-1": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "club-2": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "club-3": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "club-4": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "regional-1": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "regional-2": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "regional-3": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "regional-4": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "regional-5": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "tour-1": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "tour-2": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "tour-3": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "tour-4": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "tour-5": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "majors-1": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "majors-2": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "majors-3": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "majors-4": {
+    "stars": 1,
+    "cleared": true,
+    "plays": 1,
+    "best": 0,
+    "met": []
+   },
+   "rivalry-1": {
+    "stars": 2,
+    "cleared": false,
+    "plays": 1,
+    "best": -1,
+    "met": [
+     "rivalry-1-o1",
+     "rivalry-1-o2"
+    ]
+   }
+  },
+  "tokens": 1,
+  "result": [
+   "The match is halved",
+   "Win the match",
+   "Missed",
+   "Make a birdie",
+   "Met",
+   "No double bogeys",
+   "Met",
+   "★★☆",
+   "Not cleared yet. Meet the main objective to move on.",
+   "Holes played\t+24",
+   "Scoring\t+27",
+   "Birdies (1)\t+14",
+   "Objectives (2 of 3)\t+60",
+   "Total XP\t+125",
+   "Campaign"
+  ]
+ },
+ "after": {
+  "player": "You",
+  "rounds": 1,
+  "history": [
+   {
+    "id": "1795029334634-2540215194",
+    "date": 1795029334634,
+    "courseId": "parkland",
+    "mode": "match",
+    "holes": 3,
+    "strokes": 10,
+    "par": 11,
+    "toPar": -1,
+    "birdies": 1,
+    "putts": 5,
+    "eventId": "rivalry-1"
+   }
+  ],
+  "daily": {},
+  "achievements": [
+   "first-round",
+   "birdie",
+   "under-par"
+  ],
+  "inProgress": false,
+  "career": null
+ },
+ "guard": {
+  "count": 0,
+  "last": null,
+  "bySystem": {}
+ },
+ "consoleErrors": [],
+ "summary": {
+  "holes": 3,
+  "strokes": 10,
+  "par": 11,
+  "putts": 5,
+  "tempo": {
+   "Perfect": 5,
+   "Good, a little quick": 5
+  },
+  "stuck": 0,
+  "consoleErrors": 0,
+  "guardErrors": 0,
+  "toPar": -1
+ }
+}

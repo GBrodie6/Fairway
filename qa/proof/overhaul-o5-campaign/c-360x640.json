@@ -1,0 +1,123 @@
+{
+ "size": "360x640",
+ "screens": {
+  "pick": {
+   "name": "pick",
+   "overflow": [],
+   "smallButtons": [],
+   "clipped": [],
+   "docScroll": false
+  },
+  "hub": {
+   "name": "hub",
+   "overflow": [],
+   "smallButtons": [],
+   "clipped": [],
+   "docScroll": false
+  },
+  "character-l1": {
+   "name": "character-l1",
+   "overflow": [],
+   "smallButtons": [],
+   "clipped": [],
+   "docScroll": false
+  },
+  "chapter": {
+   "name": "chapter",
+   "overflow": [],
+   "smallButtons": [],
+   "clipped": [],
+   "docScroll": false
+  },
+  "briefing": {
+   "name": "briefing",
+   "overflow": [],
+   "smallButtons": [],
+   "clipped": [],
+   "docScroll": false
+  },
+  "levelup": {
+   "name": "levelup",
+   "overflow": [],
+   "smallButtons": [],
+   "clipped": [],
+   "docScroll": false
+  },
+  "tree-empty": {
+   "name": "tree-empty",
+   "overflow": [],
+   "smallButtons": [],
+   "clipped": [],
+   "docScroll": false
+  },
+  "tree-learned": {
+   "name": "tree-learned",
+   "overflow": [],
+   "smallButtons": [],
+   "clipped": [],
+   "docScroll": false
+  },
+  "character-l10": {
+   "name": "character-l10",
+   "overflow": [],
+   "smallButtons": [],
+   "clipped": [],
+   "docScroll": false
+  },
+  "respec": {
+   "name": "respec",
+   "overflow": [],
+   "smallButtons": [],
+   "clipped": [],
+   "docScroll": false
+  },
+  "tree-respec": {
+   "name": "tree-respec",
+   "overflow": [],
+   "smallButtons": [],
+   "clipped": [],
+   "docScroll": false
+  }
+ },
+ "l1": {
+  "power": 1,
+  "accuracy": 1,
+  "spin": 1,
+  "touch": 1,
+  "putting": 0.9,
+  "recovery": 1,
+  "forgiveness": 1
+ },
+ "levelUp": {
+  "from": 1,
+  "to": 10,
+  "reason": "QA"
+ },
+ "firstNodes": [
+  "Driving +3, 1 point",
+  "Sweet spot, 2 points"
+ ],
+ "afterLearn": {
+  "nodes": [
+   "putt-0-0",
+   "putt-0-1"
+  ],
+  "xp": 3300
+ },
+ "l10": {
+  "power": 1.003,
+  "accuracy": 1,
+  "spin": 1,
+  "touch": 1,
+  "putting": 0.8228,
+  "recovery": 1,
+  "forgiveness": 1
+ },
+ "afterRespec": {
+  "xp": 3300,
+  "archetype": "putt",
+  "nodes": [],
+  "respecs": 1
+ },
+ "consoleErrors": []
+}

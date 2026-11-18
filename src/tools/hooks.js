@@ -2,6 +2,7 @@
 // the perf tool all drive the real app through these. They read state and trigger the same
 // code paths as the UI. Nothing here changes how a measured value is computed.
 import { guardStats } from '../core/guards.js';
+import { ALL_EVENTS } from '../game/campaign.js';
 
 export function installHooks(app) {
   const fw = {
@@ -14,6 +15,8 @@ export function installHooks(app) {
     // Read model of the round for the QA bot. The bot acts only through real input events.
     gameView() { return app.game ? app.game.view() : null; },
     phase() { return app.game ? app.game.state.phase : 'boot'; },
+    // Campaign event ids, for QA flows that open a later chapter.
+    campaignEventIds() { return ALL_EVENTS.map((e) => e.id); },
     rect(selector) { const el = document.querySelector(selector); if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; },
     get errors() {
       return { count: [...guardStats.errors.values()].reduce((a, b) => a + b, 0), last: guardStats.last, bySystem: Object.fromEntries(guardStats.errors) };

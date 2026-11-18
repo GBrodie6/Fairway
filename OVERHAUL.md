@@ -180,19 +180,40 @@ fields (targets, bays, signs, clearings).
 
 ## Stage 5: campaign and archetypes
 
-- Six archetypes, each with a description, starting stats, a signature perk, and a weakness:
-  Power Hitter, Sharpshooter, Short Game Artist, Putting Specialist, Links Player, All-Rounder.
-  Evolutions at levels 10 and 25 follow where points were spent.
-- Levels to 40, one skill point per level. Five stat lines from 0 to 100: driving, approach,
-  short game, putting, course management. A 20-node tree per archetype: stat upgrades, shot
-  unlocks (punch, high, flop, bump and run), and perks with tradeoffs. Every modifier is capped
-  (driving distance at most +6 percent from stats and perks together) and the caps are tested.
-- Six chapters across the five courses: Club, Regional, Tour, Majors, Rivalry, Final. Four to
-  six events each, with objectives (finish top 3, make 4 birdies, hit 70 percent of
-  fairways) and a boss match against a named rival with an archetype, a signature shot, and a
-  personality line. Short plain story lines.
-- Screens: campaign hub with a chapter map, character sheet, skill tree, event briefing,
-  level-up popup, post-round XP breakdown.
+As built (game/campaign.js, ui/campaignUi.js):
+
+- Six archetypes, each with an innate perk that never changes a pured carry (so a level 1
+  golfer of any archetype keeps the calibrated carry ladder), a weakness as a lower cap on
+  one or two stats, and evolutions at levels 10 and 25 with new titles: Power Hitter (Long
+  Baller, Thunder Driver), Sharpshooter (Pin Seeker, Flag Hunter), Short Game Artist (Wedge
+  Wizard, Greenside Maestro), Putting Specialist (Green Reader, Silk Stroke), Links Player
+  (Wind Cheater, Storm Rider) and All-Rounder (Complete Golfer, Total Player). Each evolution
+  grows the innate perk (1.5x, then 2x) and adds 4 to the signature stat.
+- Levels 1 to 40 (about 10 events to level 10 and 90 to level 40), one skill point per level
+  (the All-Rounder gets two extra). Five stats from 30 to 95, starting at 50: driving,
+  approach, short game, putting, course management. They map to the physics profile with the
+  same formula and bounds as the old career (ball speed at most +8 percent, the rest within
+  0.45 to 1.3), and perks are capped in total (pured carry at most +4 percent, inside the
+  strike cap).
+- A 20-node tree per archetype in four branches (off the tee, approach, short game, on the
+  green): stat nodes, perks, and the shot unlocks punch, high, flop and bump and run. Respec
+  is free. Campaign events offer only unlocked shots; other modes offer every shot.
+- Six chapters (The Club, Regional Circuit, The Tour, The Majors, Rivalry, The Final) with 4 to
+  5 events each, 28 in all: 3, 6 or 9 holes, a main objective that clears the event and two
+  star objectives (top finishes, birdies, fairways, greens, putts, no doubles, a long drive,
+  range medals, beating the boss). Each chapter has a named boss (invented people, shown as
+  initials only); the Rivalry chapter is match play against the boss, who plays on screen.
+  Events unlock in order, the next chapter after the boss event. First clears give a gear
+  token (two for a boss event) and the chapter's final event gives a fixed club.
+- XP breakdown per event: holes played, scoring, birdies and eagles, objectives, finish,
+  first clear, and a 10 percent practice bonus while you hold a silver range medal. Quick
+  rounds and range sessions give smaller XP. Level-ups show a card from the round-end and
+  range summary screens.
+- Your golfer's stats and perks apply in campaign events, solo quick rounds and the range;
+  daily challenges, challenge links and multiplayer stay level.
+- Save v6: the golfer (XP, archetype, skills) and campaign progress. A career save keeps its
+  experience; the archetype is chosen when the campaign first opens. The old career screens
+  are no longer in the menu.
 
 ## Stage 6 to 8: fun, presentation, first minute
 

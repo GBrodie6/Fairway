@@ -77,7 +77,7 @@ export function installRange(app, ui) {
     session = createSession({ mode: opts.mode, bucket: opts.mode === 'free' && opts.bucket === 0 ? null : 50, bay: opts.bay, surface: opts.surface, target: opts.streakTarget, now: Date.now() });
     lastResult = null; lastAsked = null;
     const compare = opts.mode === 'test' ? { clubId: opts.testClub, rarity: opts.testTier } : null;
-    await game.startRange({ bay: opts.bay, surface: opts.surface, tod: opts.tod, club: MODES[opts.mode].club || null, compare, players: [{ kind: 'human', name: app.save().player.name, ball: app.save().player.ball }] });
+    await game.startRange({ bay: opts.bay, surface: opts.surface, tod: opts.tod, club: MODES[opts.mode].club || null, compare, profile: app.golferProfile ? app.golferProfile() : null, players: [{ kind: 'human', name: app.save().player.name, ball: app.save().player.ball }] });
     pointAtTarget();
   }
   // Point the game at the drill's target (or let the game pick by club in free practice).
@@ -218,6 +218,7 @@ export function installRange(app, ui) {
         h('h2', { class: 'h', text: `${MODES[s.mode].name}: session summary` }),
         MEDALS[s.mode] ? h('p', { class: `medal m-${res.medal}`, text: `${MEDAL_NAMES[res.medal]}. Score ${s.score}${s.mode === 'longdrive' ? ' yd' : ''}.` }) : h('p', { text: `${s.used} balls hit.` }),
         h('p', { class: 'muted', text: `${res.xp} XP${res.tokens ? ', and a gear token for the gold' : ''}.` }),
+        app.pendingLevelUp ? btn(`Level ${app.pendingLevelUp.to}! See what is new`, () => { const l = app.pendingLevelUp; app.pendingLevelUp = null; app.showLevelUp(l.from, l.to); }, 'btn primary') : null,
         canvas,
         averagesTable(s.shots),
         h('div', { class: 'grid2', style: { marginTop: '12px' } },

@@ -176,7 +176,7 @@ describe('gear: ball effect and save migration', () => {
     delete v4.gear;
     const s = migrateSave(v4);
     expect(s.version).toBe(SAVE_VERSION);
-    expect(SAVE_VERSION).toBe(5);
+    expect(SAVE_VERSION).toBeGreaterThanOrEqual(5);
     expect(s.gear.bag.length).toBe(14);
     expect(s.wallet).toEqual(expect.objectContaining({ shards: 12, tokens: 0 }));
     expect(gearFor(s.gear, 'DR').rarity).toBe('common');

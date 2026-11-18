@@ -60,6 +60,18 @@ async function tapText(text) {
   await pointer.tap(r.x, r.y);
   await page.waitForTimeout(300);
 }
+async function tapStarts(text) {
+  const r = await page.evaluate((t) => {
+    const b = [...document.querySelectorAll('#ui button')].find((x) => x.textContent.trim().startsWith(t) && x.offsetParent !== null && !x.disabled);
+    if (!b) return null;
+    b.scrollIntoView({ block: 'center' });
+    const q = b.getBoundingClientRect();
+    return { x: q.x + q.width / 2, y: q.y + q.height / 2 };
+  }, text);
+  if (!r) throw new Error(`no button starting "${text}"`);
+  await pointer.tap(r.x, r.y);
+  await page.waitForTimeout(300);
+}
 async function boot(query) {
   await page.goto(`${server.url}/?tier=${tier}&scale=${scale}&timescale=${timescale}&bot=1${query}`, { waitUntil: 'load', timeout: 180000 });
   await page.waitForFunction(() => window.__fw && window.__fw.ready, null, { timeout: 240000 });
@@ -74,6 +86,31 @@ try {
     await page.evaluate(() => localStorage.clear());
     await boot('');
     if (flow === 'career') { await tapText('Career'); await tapText('Begin'); report.before = await saveSummary(); await tapText('Play event'); }
+    else if (flow === 'campaign') {
+      // Campaign: choose an archetype, open the next event's briefing, tee off.
+      await tapText('Campaign');
+      await snap('campaign-pick');
+      await tapStarts(args.archetype || 'Power Hitter');
+      await snap('campaign-hub');
+      await tapStarts('Next: ');
+      await snap('campaign-briefing');
+      report.before = await page.evaluate(() => { const s = window.__fw.app.save(); return { profile: s.profile, campaign: s.campaign && { progress: s.campaign.progress } }; });
+      await tapStarts('Tee off');
+    } else if (flow === 'campaign-match') {
+      // Match play against a boss, which plays its shots on screen. The first four chapters are
+      // marked cleared here (as if played) so the Rivalry chapter is open.
+      await tapText('Campaign');
+      await tapStarts(args.archetype || 'All-Rounder');
+      await page.evaluate(() => window.__fw.app.updateSave((s) => {
+        const progress = { ...s.campaign.progress };
+        for (const id of window.__fw.campaignEventIds().filter((e) => /^(club|regional|tour|majors)-/.test(e))) progress[id] = { stars: 1, cleared: true, plays: 1, best: 0, met: [] };
+        return { ...s, campaign: { ...s.campaign, progress } };
+      }));
+      await tapText('Back'); await tapText('Campaign');
+      await tapStarts('Next: ');
+      await snap('match-briefing');
+      await tapStarts('Tee off');
+    }
     else if (flow === 'daily') { await tapText('Daily challenge'); report.daily = await page.evaluate(() => window.__fw.app.dailySetup()); await tapText('Play'); }
     else if (flow === 'passplay') { await tapText('Pass and play'); await page.selectOption('#pp-holes', '3'); await page.selectOption('#pp-mode', 'skins'); await tapText('Tee off'); }
     else if (flow === 'resume') { await tapText('Quick round'); await tapText('Tee off'); resumeAfterHoles = 1; }
@@ -113,6 +150,11 @@ try {
     if (ph === 'done') {
       await page.waitForTimeout(600);
       await snap('round-end');
+      if (flow.startsWith('campaign')) {
+        report.campaign = await page.evaluate(() => { const s = window.__fw.app.save(); const el = document.querySelector('.campaign-result'); return { profile: s.profile, progress: s.campaign && s.campaign.progress, tokens: s.wallet.tokens, result: el ? el.innerText.split('\n').filter(Boolean) : null }; });
+        await page.evaluate(() => { const el = document.querySelector('.campaign-result table'); if (el) el.scrollIntoView({ block: 'center' }); });
+        await snap('round-end-xp');
+      }
       report.result = await page.evaluate(() => { const r = window.__fw.game.state.round; return { scores: r.scores, players: r.players.map((p) => p.name), complete: r.complete, holes: r.holes, mode: r.mode, standings: document.querySelector('.screen .big') && document.querySelector('.screen .big').textContent }; });
       report.after = await saveSummary();
       break;

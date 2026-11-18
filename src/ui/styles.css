@@ -301,3 +301,45 @@ table.avg th { color: var(--ink-dim); font-weight: 600; }
 .shotcard .why.drill.good { color: var(--accent); }
 .range .field select { width: 100%; max-width: 100%; }
 .citem .ravg { display: block; font-size: 10.5px; color: var(--ink-dim); }
+
+/* --- campaign --- */
+.badge { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; color: #10140f; font-weight: 800; font-size: 15px; letter-spacing: 0.02em; }
+.campaign .golfer { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; border: 2px solid var(--line); background: rgba(255, 255, 255, 0.05); margin: 6px 0 12px; }
+.campaign .golfer .stack { flex: 1; min-width: 0; }
+.xpbar { position: relative; height: 18px; border-radius: 9px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+.xpbar i { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, rgba(194, 229, 138, 0.55), var(--accent)); }
+.xpbar span { position: relative; display: block; text-align: center; font-size: 11.5px; line-height: 18px; font-variant-numeric: tabular-nums; color: var(--ink); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
+.campaign .stack.tight { gap: 3px; }
+.campaign .small { font-size: 12.5px; }
+.campaign .good { color: var(--accent); }
+.campaign .bad { color: #ffb37a; }
+.campaign .btn.wide { width: 100%; margin: 10px 0; }
+.campaign .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.campaign .arch { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin: 10px 0 14px; }
+.campaign .archcard { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; text-align: left; padding: 12px; border-left: 4px solid; min-height: 48px; }
+.campaign .list .item.chapter, .campaign .list .item.event { width: 100%; text-align: left; align-items: center; color: var(--ink); border: 0; min-height: 56px; }
+.campaign .list .item.locked { opacity: 0.5; }
+.campaign .list .item.bossev { border-left: 4px solid #ffd166; }
+.campaign .stars { color: #ffd166; font-size: 15px; letter-spacing: 1px; white-space: nowrap; }
+.campaign .boss { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; background: rgba(255, 255, 255, 0.06); margin: 8px 0; }
+.campaign .objectives .item.done, .campaign-result .objectives .item.done { outline: 1px solid rgba(194, 229, 138, 0.6); }
+.campaign-result .big2, .campaign .big2 { font-size: 20px; font-weight: 700; }
+.campaign-result .stars { color: #ffd166; font-size: 26px; letter-spacing: 3px; margin: 6px 0; }
+.campaign-result table.xp td:last-child { text-align: right; color: var(--accent); }
+.campaign-result table.xp tr.tot td { font-weight: 700; border-top: 1px solid var(--line); }
+.levelup { text-align: center; }
+.levelup .kicker { text-transform: uppercase; letter-spacing: 0.14em; font-size: 12px; color: var(--accent); margin: 0; }
+.levelup .h.big { font-size: 34px; margin: 4px 0 8px; }
+.levelup .evolve { display: flex; flex-direction: column; gap: 4px; padding: 12px; border: 2px solid; border-radius: 14px; margin: 10px 0 14px; }
+.statbar em.cap { background: #ffb37a; width: 2px; }
+.tree { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 10px 0; }
+.tree .branch { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.tree .bname { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-dim); text-align: center; min-height: 28px; }
+.tree .node { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 56px; padding: 6px 4px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--line); color: var(--ink-dim); text-align: center; }
+.tree .node b { font-size: 11.5px; line-height: 1.15; overflow-wrap: break-word; hyphens: auto; }
+.tree .node small { font-size: 10.5px; }
+.tree .node.avail { border-color: var(--accent); color: var(--ink); }
+.tree .node.own { background: rgba(194, 229, 138, 0.22); border-color: rgba(194, 229, 138, 0.7); color: var(--ink); }
+.tree .node.k-shot b { color: #9fd0ff; }
+.tree .node.sel { outline: 2px solid #fff; }
+.campaign .nodeinfo { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.06); }
