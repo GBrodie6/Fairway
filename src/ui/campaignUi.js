@@ -15,6 +15,8 @@ import {
 } from '../game/campaign.js';
 import { addTokens } from '../game/rewards.js';
 import { grantClub, TIER_INFO, clubName } from '../game/gear.js';
+import { simulateRivalRound } from '../game/career.js';
+import { eventBoard } from '../game/tournament.js';
 
 const initials = (name) => name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 export const badge = (name, color) => h('span', { class: 'badge', style: { background: color || '#3a4a40' }, 'aria-hidden': 'true', text: initials(name) });
@@ -128,8 +130,22 @@ export function installCampaign(app, ui) {
     });
   }
 
+  // The field's rounds for the live leaderboard, seeded exactly as the result will be.
+  let liveField = null;
+  app.boardProviders = app.boardProviders || [];
+  app.boardProviders.push((r, mine, thru) => {
+    const ev = eventById(r.eventId);
+    if (!ev || ev.mode !== 'stroke' || !liveField || liveField.id !== ev.id) return null;
+    const course = courseById(ev.courseId);
+    return eventBoard(app.save().player.name || 'You', mine, liveField.field, holesOf(ev).map((x) => course.pars[x]), thru);
+  });
   async function start(ev) {
     const c = campaign(), g = golfer(), s = app.save();
+    {
+      const plays0 = (c.progress[ev.id] && c.progress[ev.id].plays) || 0;
+      const seed = (c.seed + hashString(ev.id) + plays0 * 7919) >>> 0;
+      liveField = { id: ev.id, field: ev.mode === 'stroke' ? fieldFor(c, ev).map((f) => ({ id: f.id, name: f.name, boss: !!f.boss, scores: simulateRivalRound(f, { courseId: ev.courseId, holes: holesOf(ev), seed }) })) : [] };
+    }
     screens.hide();
     const players = [{ id: 'p1', name: s.player.name || 'You', kind: 'human', handed: s.player.handed, ball: s.player.ball }];
     if (ev.mode === 'match') { const b = fieldFor(c, ev)[0]; players.push({ id: b.id, name: b.name, kind: 'ai', skill: b.skill, ball: '#ffd23f' }); }

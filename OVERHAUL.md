@@ -217,20 +217,34 @@ As built (game/campaign.js, ui/campaignUi.js):
 
 ## Stage 6 to 8: fun, presentation, first minute
 
-- Game feel: camera punch on contact, a short slow-motion beat on Pured strikes (off with
-  reduced motion), streaks for consecutive fairways and greens, level-up and drop animations.
-- Daily and weekly quests, the daily course with a shared seed, a weekly long drive, and a
-  rotating mini-game (closest to the pin, par 3 contest, target practice, trick shot hole).
-  More than 50 achievements, cosmetics earned by play (ball trails, club skins, emblem
-  frames, banners), and a free season track that resets each season. Async head-to-head
-  through the existing share links. Rivals adapt a little to the player's level. 3 and 6 hole
-  quick rounds. An optional ambient music loop.
-- Broadcast: lower thirds, a leaderboard overlay with movement arrows, a hole intro card over
-  the flyover, a shot card, slow-motion replays with angles, an original commentary line for
-  notable moments, a round recap, and a tournament mode with a cut, a purse, and a trophy.
-- First minute: a skippable three-prompt tutorial (swing, strike result, club choice), a main
-  menu with Quick Play, Campaign, Range, Daily, and Profile, and settings for quality, units,
-  handedness, sound, difficulty, color-blind palette, and reduced motion.
+As built:
+
+- Stage 6, fun layer: daily and weekly quests (three each, the same for everyone, weekly ones
+  pay a gear token); a free 30-tier season track over four weeks with fixed rewards; 57 new
+  achievements (69 in all) checked over the save, several unlocking cosmetics; ball and tracer
+  colors in a locker; streaks (pars, birdies, pured strikes, fairways in a row) with a HUD chip
+  and announcements; confetti for a birdie or better (off with reduced motion); this week's
+  rotating mini-game and weekly long drive on the Daily screen; 3 and 6 hole quick rounds; a
+  quick-round rival that adapts to recent form and leans slightly toward winning. The
+  existing optional ambient music loop stays.
+- Stage 7, broadcast: a hole intro card over the flyover (course, hole, par, length, a short
+  description of the hole, the leader); a lower third as each hole starts (score and
+  position); a live leaderboard with movement arrows in the hole summary and a position badge
+  in the HUD for campaign events and tournaments (the field's rounds are seeded so the live
+  board and the final result agree); an original commentary line on notable shots and holes;
+  replay controls for angle (follow, landing, side, high) and speed (half, quarter); a round
+  recap (score by hole, fairways, greens, putts, pured strikes, longest drive and putt); and
+  tournaments: four rounds of six holes against 29 rivals, a cut to the top 15 and ties after
+  round two, a purse in coins (earned only; 300 coins trade for a gear token) and a trophy
+  cabinet. New elements share the shot card's dock under the tabs, so they cannot overlap the
+  HUD.
+- Stage 8, first minute: the main menu is Quick Play, Campaign, Range, Daily and Profile (with
+  Settings and Leaderboards); tournaments, pass and play and online live on the Quick Play
+  screen; Profile gathers the golfer, gear, locker, achievements, stats, quests, season,
+  trophies and the account. The tutorial is three skippable prompts at their moments: the
+  swing (first address), the strike result (after the first shot) and club choice (the next
+  address). Settings already covered quality, units, handedness, sound, difficulty,
+  color-blind palettes and reduced motion.
 
 ## Stage 9: balance method
 

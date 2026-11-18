@@ -400,6 +400,7 @@ export function installMenus(app, ui) {
     if (context && context.kind === 'challenge') screens.lastChallenge = mergeIntoChallenge(context.challenge, save.player.name, r.scores[0]);
     // Campaign events record their result (board, objectives, stars, XP) in campaignUi.
     const campaignEv = !context && r.eventId ? eventById(r.eventId) : null;
+    if (app.isTournamentRound && app.isTournamentRound(r) && app.tournamentRoundEnd) { persist(); app.tournamentRoundEnd(r); save = app.save(); }
     if (campaignEv && app.campaignRoundEnd) { persist(); app.campaignRoundEnd(r); save = app.save(); }
     // Other rounds give a little XP: holes played and birdies.
     else if (app.addXp && scores.length) app.addXp(scores.length * 5 + Math.max(0, Math.round(scores.length * 0.5) - toPar) * 4, 'Round');
@@ -430,7 +431,7 @@ export function installMenus(app, ui) {
     const lines = screens.lastRewards || [];
     const lvl = app.pendingLevelUp;
     const lvlBtn = lvl ? h('div', { class: 'center' }, btn(`Level ${lvl.to}! See what is new`, () => { app.pendingLevelUp = null; app.showLevelUp(lvl.from, lvl.to); }, 'btn primary')) : null;
-    const camp = app.campaignRoundEndExtra && game.state.round && game.state.round.eventId && eventById(game.state.round.eventId) ? app.campaignRoundEndExtra() : null;
+    const camp = app.campaignRoundEndExtra && game.state.round && game.state.round.eventId && eventById(game.state.round.eventId) ? app.campaignRoundEndExtra() : app.isTournamentRound && app.isTournamentRound(game.state.round) && app.tournamentRoundEndExtra ? app.tournamentRoundEndExtra() : null;
     const rewards = lines.length ? h('div', { class: 'rewards' }, ...lines.map((t) => h('p', { class: 'muted center', text: t })), save.wallet.tokens > 0 ? h('div', { class: 'center' }, btn('Open gear drops', () => { screens.hide(); game.quit(); app.openGear('drops'); }, 'btn small')) : null) : null;
     return prompt || extra || rewards || camp || lvlBtn ? h('div', {}, camp, extra, rewards, lvlBtn, prompt) : null;
   };

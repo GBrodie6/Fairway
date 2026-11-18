@@ -65,6 +65,8 @@ export function createScreens(root, { app, game, settings, ui, save }) {
       screens.registry.daily ? btn('Daily challenge', () => screens.registry.daily()) : null,
       h('div', { class: 'grid2' },
         btn('Driving range', () => (app.openRange ? app.openRange() : startRange())),
+        screens.registry.tournament ? btn('Tournament', () => screens.registry.tournament()) : null),
+      h('div', { class: 'grid2' },
         screens.registry.passplay ? btn('Pass and play', () => screens.registry.passplay()) : btn('Two players', () => screens.setup({ players: 2 }))),
       screens.registry.online ? btn('Online play (experimental)', () => screens.registry.online()) : null,
       h('div', { class: 'grid2' },
@@ -202,6 +204,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
         h('div', { class: 'big', text: r.players.length === 1 ? scoreName(s.strokes[0], s.par) : stand.text || 'Hole complete' }),
         h('div', { class: 'list', style: { margin: '12px 0' } }, ...rows),
         r.players.length === 1 ? h('p', { class: 'muted center', text: `Round ${fmtToPar(stand.totals[0].toPar)} through ${stand.totals[0].played}` }) : h('p', { class: 'muted center', text: stand.text }),
+        app.holeSummaryExtra ? app.holeSummaryExtra(s) : null,
         h('div', { class: 'grid2', style: { marginTop: '12px' } }, btn('Scorecard', () => screens.scorecard()), btn(s.over ? 'See results' : 'Next hole', () => { hide(); game.continue(); }, 'btn primary')),
       );
     });
@@ -228,7 +231,8 @@ export function createScreens(root, { app, game, settings, ui, save }) {
       h('p', { class: 'muted center', text: courseById(r.courseId).name }),
       scorecardTable(r),
       screens.roundEndExtra ? screens.roundEndExtra() : null,
-      h('div', { class: 'grid2', style: { marginTop: '14px' } }, btn('Main menu', () => { hide(); game.quit(); }), app.menuContext && app.menuContext() ? btn('Scorecard', () => screens.scorecard()) : game.state.round && game.state.round.eventId && app.startCampaignEvent && app.isCampaignEvent && app.isCampaignEvent(game.state.round.eventId) ? btn('Play the event again', () => { const id = game.state.round.eventId; hide(); app.startCampaignEvent(id); }, 'btn primary') : btn('Play again', () => startQuick(), 'btn primary')),
+      app.recap && r.mode !== 'range' && r.mode !== 'ctp' ? h('div', { class: 'center', style: { marginTop: '8px' } }, btn('Round recap', () => app.recap(r), 'btn small')) : null,
+      h('div', { class: 'grid2', style: { marginTop: '14px' } }, btn('Main menu', () => { hide(); game.quit(); }), app.menuContext && app.menuContext() ? btn('Scorecard', () => screens.scorecard()) : app.isTournamentRound && app.isTournamentRound(game.state.round) ? btn('Tournament', () => { hide(); game.quit(); app.openTournament(); }, 'btn primary') : game.state.round && game.state.round.eventId && app.startCampaignEvent && app.isCampaignEvent && app.isCampaignEvent(game.state.round.eventId) ? btn('Play the event again', () => { const id = game.state.round.eventId; hide(); app.startCampaignEvent(id); }, 'btn primary') : btn('Play again', () => startQuick(), 'btn primary')),
     ));
   };
 

@@ -66,6 +66,7 @@ export function createUI(app) {
     mulligans: () => (app.save ? (app.save().wallet || {}).mulligans || 0 : 0),
     // Average carry from range sessions (meters), once a club has three or more range shots.
     rangeAverage: (clubId) => { const y = app.save ? clubAverageCarry(app.save().range, clubId) : null; return y ? y * 0.9144 : null; },
+    boardBadge: () => (app.boardBadge ? app.boardBadge() : null),
     tierFor: (clubId) => (app.gearFor ? app.gearFor(clubId).rarity : 'common'),
     holdFan: (on) => { if (app.world && app.world.overlays && app.world.overlays.holdFan) app.world.overlays.holdFan(on); },
     continue: () => game.continue(),
@@ -158,7 +159,8 @@ export function createUI(app) {
       case 'shotEnd': {
         const s = d;
         const lip = lipped; lipped = false;
-        if (s.outcome.holed) { ui.hud.toast(s.message, `${s.strokes} ${s.strokes === 1 ? 'stroke' : 'strokes'}`, 2600); break; }
+        s.commentary = app.commentFor ? app.commentFor(s) : null;
+        if (s.outcome.holed) { ui.hud.toast(s.message, s.commentary || `${s.strokes} ${s.strokes === 1 ? 'stroke' : 'strokes'}`, 2600); break; }
         if (lip && s.outcome.putt) { ui.hud.toast('Lipped out', `${fmtShort(s.distToPin, u)} left`, 2400); break; }
         if (s.outcome.putt) { ui.hud.toast(s.message || SURFACE_NAMES[s.outcome.lie], `${fmtShort(s.distToPin, u)} left`, 2600); break; }
         // A tee shot on a par 4 or 5 that finds the fairway feeds the fairway streak.

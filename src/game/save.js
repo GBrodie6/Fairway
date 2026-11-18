@@ -9,6 +9,7 @@ import { starterGear, sanitizeGear } from './gear.js';
 import { newGolfer, sanitizeGolfer, sanitizeCampaign, golferFromCareer } from './campaign.js';
 import { FEATS } from './feats.js';
 import { DEFAULT_COSMETICS, sanitizeCosmetics } from './cosmetics.js';
+import { sanitizeTournament } from './tournament.js';
 
 export const SAVE_VERSION = 6;
 export const SAVE_KEY = 'fairway-next.save';
@@ -40,6 +41,8 @@ export function defaultSave() {
     counters: {},
     // Daily and weekly quests, the season track, cosmetics, and the weekly record.
     quests: null, season: null, cosmetics: { ...DEFAULT_COSMETICS }, weekly: null,
+    // A tournament in progress (four rounds, a cut), and trophies won.
+    tournament: null, trophies: [],
     // The practice ground record: sessions, bests, medals, and per-club running sums.
     range: {},
   };
@@ -106,6 +109,8 @@ export function sanitizeSave(s) {
   const obj = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : null);
   out.quests = obj(s.quests); out.season = obj(s.season); out.weekly = obj(s.weekly);
   out.cosmetics = sanitizeCosmetics(s.cosmetics, out.player.ball);
+  out.tournament = sanitizeTournament(s.tournament);
+  out.trophies = Array.isArray(s.trophies) ? s.trophies.filter((t) => t && typeof t.name === 'string' && Number.isFinite(t.toPar)).slice(-40) : [];
   out.range = s.range && typeof s.range === 'object' && !Array.isArray(s.range) ? s.range : {};
   const a = s.account;
   out.account = a && typeof a === 'object' && typeof a.userId === 'string' ? { userId: a.userId, email: String(a.email || ''), displayName: String(a.displayName || '').slice(0, 18) } : null;

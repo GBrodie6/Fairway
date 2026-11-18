@@ -374,3 +374,30 @@ table.avg th { color: var(--ink-dim); font-weight: 600; }
 .thisweek .item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.06); }
 .thisweek .stack.tight { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
 .thisweek .small { font-size: 12.5px; }
+
+/* --- broadcast: intro card, lower third, board, commentary, replay, recap, tournament --- */
+.introcard { position: absolute; left: calc(12px + var(--safe-l)); right: calc(12px + var(--safe-r)); bottom: calc(26px + var(--safe-b)); max-width: 460px; display: flex; flex-direction: column; gap: 4px; padding: 12px 16px 13px; border-radius: 14px; background: linear-gradient(90deg, rgba(10, 20, 14, 0.92), rgba(10, 20, 14, 0.72)); border-left: 5px solid var(--accent); color: var(--ink); pointer-events: none; z-index: 4; animation: ltin 380ms ease-out; }
+.introcard .kicker { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.introcard .ititle { font-size: 19px; }
+.introcard .line, .introcard .lead { font-size: 13.5px; color: var(--ink-dim); }
+@keyframes ltin { from { transform: translateX(-24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .introcard { animation: none; } }
+.shotcard.lt { border-left: 4px solid var(--accent); display: flex; flex-direction: column; gap: 2px; }
+.shotcard.lt .ltt { font-size: 14px; }
+.shotcard.lt .lts { font-size: 13px; color: var(--accent); }
+.shotcard.lt .ltl { font-size: 12px; color: var(--ink-dim); }
+.shotcard .why.comm { font-style: italic; color: #f4ecd2; }
+.shotcard.rp .rpbtns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.shotcard.rp .rpbtns .btn.small { min-height: 44px; padding: 0 12px; }
+.list.board .item { align-items: center; }
+.list.board .pos { display: inline-block; min-width: 30px; }
+.list.board .mv { display: inline-block; min-width: 24px; font-size: 11px; }
+.list.board .mv.up { color: var(--accent); }
+.list.board .mv.down { color: #ffb37a; }
+.list.board .row { display: inline-flex; align-items: center; gap: 6px; }
+p.comm { font-style: italic; color: #f4ecd2; }
+.recapchart { margin: 8px 0; }
+.tour .cards .card { min-height: 52px; }
+.tour .tresult { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 14px; background: rgba(255, 255, 255, 0.06); margin-bottom: 10px; }
+.tour .tresult.win { outline: 2px solid #ffd166; }
+.tour-end .big2 { font-size: 19px; font-weight: 700; }

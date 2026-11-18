@@ -1,0 +1,621 @@
+{
+ "course": "parkland",
+ "view": "portrait",
+ "holes": 18,
+ "tier": "low",
+ "scale": 0.5,
+ "timescale": 6,
+ "mode": "stroke",
+ "software": true,
+ "input": "touch",
+ "started": "2026-11-18T19:51:16.494Z",
+ "shots": [
+  {
+   "hole": 1,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 341.92,
+   "after": 117.24,
+   "ideal": 0.93,
+   "power": 0.934,
+   "tempo": "Perfect",
+   "ratio": 3.19,
+   "read": null,
+   "result": "Hole 1Par 4  369 yd",
+   "sec": 42.4
+  },
+  {
+   "hole": 1,
+   "club": "I8",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 117.24,
+   "after": 11.39,
+   "ideal": 0.874,
+   "power": 0.921,
+   "tempo": "Perfect",
+   "ratio": 3.32,
+   "read": null,
+   "result": "ReplayHalf speed. Tap the course to return",
+   "sec": 26.6
+  },
+  {
+   "hole": 1,
+   "club": "SW",
+   "shot": "chip",
+   "lie": "Rough",
+   "before": 11.39,
+   "after": 1.98,
+   "ideal": 0.476,
+   "power": 0.463,
+   "tempo": "Good, a little quick",
+   "ratio": 3.53,
+   "read": null,
+   "result": "ReplayHalf speed. Tap the course to return",
+   "sec": 27.5
+  },
+  {
+   "hole": 1,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 1.98,
+   "after": 1.98,
+   "ideal": 0.69,
+   "power": 0.677,
+   "tempo": "Good, a little quick",
+   "ratio": 3.63,
+   "read": {
+    "drags": 2,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -0.11
+   },
+   "result": "Par4 strokes",
+   "sec": 23.7
+  },
+  {
+   "hole": 2,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 482.23,
+   "after": 275.13,
+   "ideal": 0.903,
+   "power": 0.851,
+   "tempo": "Perfect",
+   "ratio": 3.33,
+   "read": null,
+   "result": "Hole 2Par 5  534 yd",
+   "sec": 31
+  },
+  {
+   "hole": 2,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 275.13,
+   "after": 62.3,
+   "ideal": 0.906,
+   "power": 0.959,
+   "tempo": "Good, a little quick",
+   "ratio": 3.67,
+   "read": null,
+   "result": "Hole 2Par 5  534 yd",
+   "sec": 27.3
+  },
+  {
+   "hole": 2,
+   "club": "LW",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 62.3,
+   "after": 3.14,
+   "ideal": 0.836,
+   "power": 0.857,
+   "tempo": "Perfect",
+   "ratio": 3.02,
+   "read": null,
+   "result": "Hole 2Par 5  534 yd",
+   "sec": 24.6
+  },
+  {
+   "hole": 2,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 3.14,
+   "after": 0.08,
+   "ideal": 0.69,
+   "power": 0.669,
+   "tempo": "Good, a little quick",
+   "ratio": 4.08,
+   "read": {
+    "drags": 2,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -0.15
+   },
+   "result": "Green0.3 ft left",
+   "sec": 24.4
+  },
+  {
+   "hole": 2,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.08,
+   "after": 0.08,
+   "ideal": 0.471,
+   "power": 0.455,
+   "tempo": "Good, a little quick",
+   "ratio": 3.56,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par5 strokes",
+   "sec": 23.9
+  },
+  {
+   "hole": 3,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 398.91,
+   "after": 178.11,
+   "ideal": 0.897,
+   "power": 0.889,
+   "tempo": "Perfect",
+   "ratio": 3.24,
+   "read": null,
+   "result": "Streak3 fairways in a row",
+   "sec": 30.7
+  },
+  {
+   "hole": 3,
+   "club": "W5",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 178.11,
+   "after": 14.06,
+   "ideal": 0.861,
+   "power": 0.849,
+   "tempo": "Perfect",
+   "ratio": 3.31,
+   "read": null,
+   "result": "Streak5 pured strikes in a row",
+   "sec": 31
+  },
+  {
+   "hole": 3,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 14.06,
+   "after": 0.98,
+   "ideal": 0.69,
+   "power": 0.706,
+   "tempo": "Good, a little quick",
+   "ratio": 3.67,
+   "read": {
+    "drags": 2,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -0.84
+   },
+   "result": "Green3.2 ft left",
+   "sec": 26.2
+  },
+  {
+   "hole": 3,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.98,
+   "after": 0.98,
+   "ideal": 0.585,
+   "power": 0.594,
+   "tempo": "Good, a little quick",
+   "ratio": 4.26,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Streak3 holes at par or better",
+   "sec": 24.6
+  },
+  {
+   "hole": 4,
+   "club": "W5",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 183.73,
+   "after": 5.41,
+   "ideal": 0.874,
+   "power": 0.876,
+   "tempo": "Perfect",
+   "ratio": 2.9,
+   "read": null,
+   "result": "Streak8 pured strikes in a row",
+   "sec": 28.5
+  },
+  {
+   "hole": 4,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 5.41,
+   "after": 0.67,
+   "ideal": 0.69,
+   "power": 0.638,
+   "tempo": "Perfect",
+   "ratio": 3.27,
+   "read": {
+    "drags": 4,
+    "taps": 14,
+    "leftDeg": 0.08,
+    "breakM": 0.76
+   },
+   "result": "Green2.2 ft left",
+   "sec": 18.4
+  },
+  {
+   "hole": 4,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.67,
+   "after": 0.67,
+   "ideal": 0.647,
+   "power": 0.628,
+   "tempo": "Good, a little quick",
+   "ratio": 4.03,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par3 strokes",
+   "sec": 14.8
+  },
+  {
+   "hole": 5,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 340.96,
+   "after": 136.64,
+   "ideal": 0.863,
+   "power": 0.834,
+   "tempo": "Perfect",
+   "ratio": 3.44,
+   "read": null,
+   "result": "Hole 5Par 4  386 yd",
+   "sec": 18.9
+  },
+  {
+   "hole": 5,
+   "club": "I7",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 136.64,
+   "after": 11.45,
+   "ideal": 0.881,
+   "power": 0.893,
+   "tempo": "Good, a little quick",
+   "ratio": 3.76,
+   "read": null,
+   "result": "Hole 5Par 4  386 yd",
+   "sec": 17.3
+  },
+  {
+   "hole": 5,
+   "club": "SW",
+   "shot": "chip",
+   "lie": "Rough",
+   "before": 11.45,
+   "after": 0.59,
+   "ideal": 0.57,
+   "power": 0.564,
+   "tempo": "Perfect",
+   "ratio": 3.36,
+   "read": null,
+   "result": "Hole 5Par 4  386 yd",
+   "sec": 16.7
+  },
+  {
+   "hole": 5,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.59,
+   "after": 0.59,
+   "ideal": 0.669,
+   "power": 0.659,
+   "tempo": "Perfect",
+   "ratio": 3,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Streak5 holes at par or better",
+   "sec": 14.9
+  },
+  {
+   "hole": 6,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 320.44,
+   "after": 98.93,
+   "ideal": 0.897,
+   "power": 0.887,
+   "tempo": "Perfect",
+   "ratio": 2.79,
+   "read": null,
+   "result": "Streak5 fairways in a row",
+   "sec": 23.6
+  },
+  {
+   "hole": 6,
+   "club": "GW",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 98.93,
+   "after": 7.92,
+   "ideal": 0.917,
+   "power": 0.88,
+   "tempo": "Good, a little quick",
+   "ratio": 3.71,
+   "read": null,
+   "result": "Streak5 fairways in a row",
+   "sec": 17.5
+  },
+  {
+   "hole": 6,
+   "club": "SW",
+   "shot": "chip",
+   "lie": "Fringe",
+   "before": 7.92,
+   "after": 0.53,
+   "ideal": 0.322,
+   "power": 0.322,
+   "tempo": "Good, a little quick",
+   "ratio": 3.92,
+   "read": null,
+   "result": "Streak5 fairways in a row",
+   "sec": 15.6
+  },
+  {
+   "hole": 6,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.53,
+   "after": 0.53,
+   "ideal": 0.679,
+   "power": 0.726,
+   "tempo": "Perfect",
+   "ratio": 3.17,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par4 strokes",
+   "sec": 15.8
+  }
+ ],
+ "holesPlayed": [
+  {
+   "hole": 1,
+   "par": 4,
+   "strokes": [
+    4
+   ]
+  },
+  {
+   "hole": 2,
+   "par": 5,
+   "strokes": [
+    5
+   ]
+  },
+  {
+   "hole": 3,
+   "par": 4,
+   "strokes": [
+    4
+   ]
+  },
+  {
+   "hole": 4,
+   "par": 3,
+   "strokes": [
+    3
+   ]
+  },
+  {
+   "hole": 5,
+   "par": 4,
+   "strokes": [
+    4
+   ]
+  },
+  {
+   "hole": 6,
+   "par": 4,
+   "strokes": [
+    4
+   ]
+  }
+ ],
+ "result": {
+  "scores": [
+   [
+    4,
+    5,
+    4,
+    3,
+    4,
+    4
+   ]
+  ],
+  "players": [
+   "You"
+  ],
+  "complete": true,
+  "holes": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "mode": "stroke",
+  "standings": "24  (E)"
+ },
+ "errors": [],
+ "stuck": [],
+ "timing": {
+  "bootSec": 28.695,
+  "totalMin": 13,
+  "shots": 24,
+  "secPerShot": 23.6
+ },
+ "introCards": [
+  "ALDERWICK PARK / HOLE 1 · PAR 4 · 369 YD / A par 4 and two bunkers. / You lead at E",
+  "ALDERWICK PARK / HOLE 2 · PAR 5 · 534 YD / A three-shot par 5 with water in play and two bunkers. / Pax Vale leads at -1"
+ ],
+ "commentary": [
+  "That is right out of the middle.",
+  "Oh, that is close!",
+  "Struck. Listen to that.",
+  "Green found. Now for the putt.",
+  "Flushed down the middle.",
+  "Safely on the putting surface.",
+  "Flushed down the middle.",
+  "Right at it. What a shot.",
+  "Struck. Listen to that.",
+  "Stiff. That is a tap-in birdie look."
+ ],
+ "badges": [
+  "T3 of 30",
+  "T3 of 30",
+  "T2 of 30"
+ ],
+ "replay": {
+  "controls": [
+   "Angle: Follow",
+   "Speed: half",
+   "Done"
+  ],
+  "after": {
+   "angle": "landing",
+   "phase": "replay"
+  },
+  "end": "aim"
+ },
+ "roundEndText": [
+  "Round complete",
+  "24 (E)",
+  "Alderwick Park",
+  "Hole\t1\t2\t3\t4\t5\t6\tTot",
+  "Par\t4\t5\t4\t3\t4\t4\t24",
+  "You\t4\t5\t4\t3\t4\t4\t24",
+  "LAKESIDE INVITATIONAL: ROUND 1 OF 4",
+  "1",
+  "Ellis Marchetti",
+  "-1",
+  "T2",
+  "You",
+  "E",
+  "T2",
+  "Pax Vale",
+  "E",
+  "T2",
+  "Noor Marchetti",
+  "E",
+  "T5",
+  "Maren Marchetti",
+  "+1",
+  "On to round 2",
+  "Round finished: +1 gear token",
+  "Open gear drops",
+  "Round recap",
+  "Main menu",
+  "Tournament"
+ ],
+ "recap": [
+  "Round recap",
+  "Alderwick Park, 6 holes.",
+  "Score\t24 (E)",
+  "Birdies or better\t0",
+  "Fairways\t5 of 5",
+  "Greens in regulation\t3 of 6",
+  "Putts\t9",
+  "Pured strikes\t20",
+  "Longest drive\t246 yd",
+  "Longest putt holed\t2 yd",
+  "Back"
+ ],
+ "after": {
+  "player": "You",
+  "rounds": 1,
+  "history": [
+   {
+    "id": "1795032250421-869101860",
+    "date": 1795032250421,
+    "courseId": "parkland",
+    "mode": "stroke",
+    "holes": 6,
+    "strokes": 24,
+    "par": 24,
+    "toPar": 0,
+    "birdies": 0,
+    "putts": 9,
+    "eventId": "tour:t869101860:0"
+   }
+  ],
+  "daily": {},
+  "achievements": [
+   "par-train-5",
+   "pure-run-5",
+   "first-round",
+   "course-parkland"
+  ],
+  "inProgress": false,
+  "career": null
+ },
+ "guard": {
+  "count": 0,
+  "last": null,
+  "bySystem": {}
+ },
+ "consoleErrors": [],
+ "summary": {
+  "holes": 6,
+  "strokes": 24,
+  "par": 24,
+  "putts": 9,
+  "tempo": {
+   "Perfect": 13,
+   "Good, a little quick": 11
+  },
+  "stuck": 0,
+  "consoleErrors": 0,
+  "guardErrors": 0,
+  "toPar": 0
+ }
+}

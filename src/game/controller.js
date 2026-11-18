@@ -547,11 +547,13 @@ export function createGame(app) {
   };
 
   // --- replay ---
-  game.replay = (angle = 'follow') => {
+  game.replay = (angle = 'follow', speed) => {
     const last = state.lastShot;
     if (!last || (state.phase !== 'aim' && state.phase !== 'replay') || last.club.putter) return false;
     const w = W(), t = w.terrain, res = last.result;
-    state.shot = { ...last, t: 0, speedUp: 0.5, landingCam: true, replay: true };
+    // Half or quarter speed; the choice holds while the angle changes.
+    state.replaySpeed = speed === 0.25 || speed === 0.5 ? speed : state.replaySpeed || 0.5;
+    state.shot = { ...last, t: 0, speedUp: state.replaySpeed, landingCam: true, replay: true };
     apexShown = true; landShown = true; eventIdx = res.events.length;
     w.overlays.hide();
     w.ball.clearTrace();

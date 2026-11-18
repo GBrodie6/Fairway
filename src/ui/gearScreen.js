@@ -10,6 +10,8 @@ import {
 } from '../game/gear.js';
 import { RARITY } from '../game/strike.js';
 
+// Coins come from tournament purses (earned, never bought).
+const COINS_PER_TOKEN = 300;
 const STAT_NAMES = { power: 'Power', spin: 'Spin', forgiveness: 'Forgiveness', difficulty: 'Difficulty' };
 const STAT_HELP = {
   power: 'Extra carry on a pured strike.',
@@ -32,7 +34,8 @@ export function installGear(app, ui) {
 
   const walletLine = () => h('p', { class: 'wallet' },
     h('span', { class: 'chip' }, 'Gear tokens ', h('b', { text: String(wallet().tokens || 0) })),
-    h('span', { class: 'chip' }, 'Shards ', h('b', { text: String(wallet().shards || 0) })));
+    h('span', { class: 'chip' }, 'Shards ', h('b', { text: String(wallet().shards || 0) })),
+    h('span', { class: 'chip' }, 'Coins ', h('b', { text: String(wallet().coins || 0) })));
 
   // One stat bar, with an optional second value drawn as a thin marker for compare.
   function bar(stat, value, other) {
@@ -148,6 +151,7 @@ export function installGear(app, ui) {
         if (ui.haptic) ui.haptic(r.drop.rarity === 'legendary' ? [20, 40, 20, 40, 60] : r.drop.rarity === 'epic' ? [20, 40, 40] : 14);
         screens.registry.gear();
       }, 'btn primary', { disabled: tokens <= 0 }),
+      btn(`Trade ${COINS_PER_TOKEN} coins for a token`, () => { app.updateSave((s) => ((s.wallet.coins || 0) < COINS_PER_TOKEN ? s : { ...s, wallet: { ...s.wallet, coins: s.wallet.coins - COINS_PER_TOKEN, tokens: (s.wallet.tokens || 0) + 1 } }), 'purchase'); screens.registry.gear(); }, 'btn small', { disabled: (wallet().coins || 0) < COINS_PER_TOKEN }),
       h('p', { class: 'muted small', text: `Epic or better is guaranteed within ${dropsUntilPity(g)} more drop${dropsUntilPity(g) === 1 ? '' : 's'} (at most ${PITY_AT} in a row without one; the guaranteed drop is Epic ${PITY_ODDS.epic} percent, Legendary ${PITY_ODDS.legendary} percent).` }),
       h('h3', { class: 'h small', text: 'Drop odds' }),
       h('div', { class: 'list odds' }, ...oddsRows),

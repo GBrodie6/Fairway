@@ -108,6 +108,14 @@ try {
       report.rivalLabel = await page.evaluate(() => document.querySelector('label[for="rival"]').textContent);
       await snap('setup-3holes');
       await tapText('Tee off');
+    } else if (flow === 'tournament') {
+      // The tournament is on the main menu (stage 7) or under Quick Play (stage 8 menu).
+      if (!(await page.evaluate(() => [...document.querySelectorAll('#ui button')].some((b) => b.textContent.trim() === 'Tournament' && b.offsetParent !== null)))) await tapText('Quick Play');
+      await tapText('Tournament');
+      await snap('tournament-lobby');
+      await tapText('Alderwick Park');
+      await snap('tournament-standings');
+      await tapText('Play round 1');
     } else if (flow === 'campaign-match') {
       // Match play against a boss, which plays its shots on screen. The first four chapters are
       // marked cleared here (as if played) so the Rivalry chapter is open.
@@ -133,7 +141,11 @@ try {
     if ((Date.now() - T0) / 60000 > maxMinutes) { report.stuck.push({ reason: 'time limit', at: (Date.now() - T0) / 1000 }); break; }
     let ph;
     try { ph = await waitPhase(page, ['intro', 'aim', 'summary', 'done'], 240000); } catch { report.stuck.push({ reason: 'no playable phase for 240 s', state: await st() }); break; }
-    if (ph === 'intro') { await clickSel(page, pointer, '.intro-skip'); await page.waitForTimeout(200); continue; }
+    if (ph === 'intro') {
+      // The hole intro card shows over the flyover; capture it on the first two holes.
+      if (args.broadcast && report.holesPlayed.length < 2) { await page.waitForTimeout(1200); await snap(`intro-${report.holesPlayed.length + 1}`); report.introCards = (report.introCards || []).concat(await page.evaluate(() => { const c = document.querySelector('.introcard'); return c && !c.classList.contains('hidden') ? c.innerText.replace(/\n/g, ' / ') : null; })); }
+      await clickSel(page, pointer, '.intro-skip'); await page.waitForTimeout(200); continue;
+    }
     if (ph === 'summary') {
       await page.waitForTimeout(300);
       const s = await page.evaluate(() => window.__fw.game.state.holeSummary);
@@ -162,6 +174,15 @@ try {
     if (ph === 'done') {
       await page.waitForTimeout(600);
       await snap('round-end');
+      if (args.broadcast) {
+        await page.evaluate(() => { const b = [...document.querySelectorAll('#ui button')].find((x) => x.textContent.trim() === 'Round recap'); if (b) b.scrollIntoView({ block: 'center' }); });
+        await snap('round-end-broadcast');
+        report.roundEndText = await page.evaluate(() => document.querySelector('.screen:not(.hidden) .sheet').innerText.split('\n').filter(Boolean).slice(0, 40));
+        await tapText('Round recap');
+        await snap('recap');
+        report.recap = await page.evaluate(() => document.querySelector('.screen:not(.hidden) .sheet').innerText.split('\n').filter(Boolean));
+        await tapText('Back');
+      }
       if (flow.startsWith('campaign')) {
         report.campaign = await page.evaluate(() => { const s = window.__fw.app.save(); const el = document.querySelector('.campaign-result'); return { profile: s.profile, progress: s.campaign && s.campaign.progress, tokens: s.wallet.tokens, result: el ? el.innerText.split('\n').filter(Boolean) : null }; });
         await page.evaluate(() => { const el = document.querySelector('.campaign-result table'); if (el) el.scrollIntoView({ block: 'center' }); });
@@ -214,6 +235,29 @@ try {
     await waitPhase(page, ['aim', 'summary', 'done', 'ai', 'intro'], 240000);
     const s2 = await st();
     const toast = await page.evaluate(() => document.querySelector('.toast').textContent);
+    if (args.broadcast) {
+      const card = await page.evaluate(() => { const c = document.querySelector('.shotcard'); return c && !c.classList.contains('hidden') ? c.innerText.replace(/\n/g, ' / ') : null; });
+      if (card && /comm/.test(await page.evaluate(() => (document.querySelector('.shotcard .why.comm') ? 'comm' : '')))) { report.commentary = (report.commentary || []).concat(card.split(' / ').slice(-1)); if (report.commentary.length === 1) await snap('commentary'); }
+      report.badges = (report.badges || []).concat(await page.evaluate(() => { const b = document.querySelector('.posbadge'); return b && !b.classList.contains('hidden') ? b.textContent : null; })).slice(-3);
+      // Replay controls once, after the first full shot that left a replay.
+      if (!report.replay && s2.phase === 'aim' && s1.v.club !== 'PT' && await page.evaluate(() => { const b = document.querySelector('[aria-label="Replay the last shot"]'); return !!(b && !b.classList.contains('hidden') && b.offsetParent); })) {
+        await clickSel(page, pointer, '[aria-label="Replay the last shot"]');
+        await page.waitForTimeout(800);
+        report.replay = { controls: await page.evaluate(() => [...document.querySelectorAll('.shotcard.rp button')].map((b) => b.textContent)) };
+        await snap('replay-controls');
+        // Speed from the replay card, then an angle from the HUD's angle chips.
+        const tapIn = async (sel, text) => { const r = await page.evaluate(([q, t]) => { const b = [...document.querySelectorAll(q)].find((x) => x.textContent.trim().startsWith(t) && x.offsetParent); if (!b) return null; const k = b.getBoundingClientRect(); return { x: k.x + k.width / 2, y: k.y + k.height / 2 }; }, [sel, text]); if (r) { await pointer.tap(r.x, r.y); await page.waitForTimeout(900); } return !!r; };
+        await tapIn('.shotcard.rp button', 'Speed');
+        report.replay.speed = await page.evaluate(() => window.__fw.game.state.replaySpeed);
+        await tapIn('#ui button', 'Side');
+        report.replay.after = await page.evaluate(() => ({ angle: window.__fw.game.state.replayAngle, speed: window.__fw.game.state.replaySpeed, phase: window.__fw.phase() }));
+        await snap('replay-angle');
+        const done = await page.evaluate(() => { const b = [...document.querySelectorAll('#ui button')].find((x) => x.textContent.trim() === 'Done' && x.offsetParent); if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+        if (done) await pointer.tap(done.x, done.y);
+        await waitPhase(page, ['aim', 'summary', 'done', 'ai'], 60000).catch(() => {});
+        report.replay.end = await page.evaluate(() => window.__fw.phase());
+      }
+    }
     console.log(`  h${s1.v.hole} ${s1.v.club} ${s1.v.shot} from ${s1.v.lie} ${s1.v.dist.toFixed(1)} m -> ${s2.v ? s2.v.dist.toFixed(1) : '-'} m  power ${sw ? sw.power.toFixed(2) : '-'} (${sw ? sw.tempoLabel : '-'})${read ? `  read ${(read.left * 57.3).toFixed(1)} deg off` : ''}  ${toast.slice(0, 60)}`);
     report.shots.push({ hole: s1.v.hole, club: s1.v.club, shot: s1.v.shot, lie: s1.v.lie, before: +s1.v.dist.toFixed(2), after: s2.v ? +s2.v.dist.toFixed(2) : null, ideal: +ideal.toFixed(3), power: sw ? +sw.power.toFixed(3) : null, tempo: sw ? sw.tempoLabel : null, ratio: sw ? +sw.tempoRatio.toFixed(2) : null, read: read && { drags: read.drags, taps: read.taps, leftDeg: +(read.left * 57.2958).toFixed(2), breakM: +s1.putt.breakM.toFixed(2) }, result: toast, sec: +((Date.now() - t) / 1000).toFixed(1) });
     lastProgress = Date.now();

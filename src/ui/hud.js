@@ -185,6 +185,7 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     const off = Math.abs(o.offline || 0);
     const offTxt = off < 0.9 ? 'on line' : `${fmtDist(off, u)} ${o.offline > 0 ? 'right' : 'left'}`;
     shotcard.textContent = '';
+    shotcard.className = 'shotcard glass';
     const row1 = h('div', { class: 'row1' }, h('span', { class: `sk sk-${st.kind}`, text: STRIKE_NAMES[st.kind] || 'Good' }), h('b', { text: s.message || '' }));
     shotcard.append(row1, h('div', { class: 'nums' }, h('span', {}, h('small', { text: 'Carry' }), h('b', { text: fmtDist(o.carry, u) })), h('span', {}, h('small', { text: 'Total' }), h('b', { text: fmtDist(o.total, u) })), h('span', {}, h('small', { text: 'Offline' }), h('b', { text: offTxt }))));
     if (s.range) {
@@ -194,6 +195,7 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     }
     if (st.cause && st.kind !== 'pured' && st.kind !== 'good') shotcard.append(h('div', { class: 'why', text: st.cause }));
     if (s.drill && s.drill.message && s.drill.mode !== 'free') shotcard.append(h('div', { class: `why drill${s.drill.points ? ' good' : ''}`, text: s.drill.message }));
+    if (s.commentary) shotcard.append(h('div', { class: 'why comm', text: s.commentary }));
     const mull = s.range ? 0 : app_mulligans();
     if (mull > 0 && st.kind !== 'pured' && !(game.state.round && game.state.round.mulliganUsed)) {
       // In the header line, so the card stays short (clear of the fan and the bottom row).
@@ -229,8 +231,29 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     el.appendChild(box);
     setTimeout(() => box.remove(), 1700);
   };
+  // A broadcast lower third in the same dock as the shot card (so it never overlaps the HUD).
+  hud.lowerThird = (title, sub, line, ms = 3200) => {
+    shotcard.textContent = '';
+    shotcard.className = 'shotcard glass lt';
+    shotcard.append(h('b', { class: 'ltt', text: title }), h('span', { class: 'lts', text: sub }), line ? h('span', { class: 'ltl', text: line }) : null);
+    placeCard();
+    shotcard.classList.remove('hidden');
+    clearTimeout(cardTimer);
+    cardTimer = setTimeout(() => hud.hideShotCard(), ms);
+  };
+  // Replay controls: angle, speed, done.
+  hud.replayControls = (items) => {
+    shotcard.textContent = '';
+    shotcard.className = 'shotcard glass rp';
+    shotcard.append(h('b', { class: 'ltt', text: 'Replay' }), h('div', { class: 'rpbtns' }, ...items.map(([label, fn]) => h('button', { class: 'btn small', type: 'button', onclick: fn }, label))));
+    placeCard();
+    shotcard.classList.remove('hidden');
+    clearTimeout(cardTimer);
+    cardTimer = setTimeout(() => hud.hideShotCard(), 12000);
+  };
   hud.note = (title, text, ms = 2200) => {
     shotcard.textContent = '';
+    shotcard.className = 'shotcard glass';
     shotcard.append(h('div', { class: 'row1' }, h('b', { text: title })));
     if (text) shotcard.append(h('div', { class: 'why', text }));
     placeCard();
@@ -340,7 +363,7 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
       const shotNo = v.strokes + (['aim', 'ai', 'flight', 'settle'].includes(v.phase) ? 1 : 0);
       set(scoreS, 'ss', `${ordinal(Math.max(1, shotNo))} shot`);
     }
-    const pos = v.range ? '' : positionText(v, game.state.round);
+    const pos = v.range ? '' : (actions.boardBadge && actions.boardBadge()) || positionText(v, game.state.round);
     set(badge, 'bd', v.playerCount > 1 ? `${v.player.name}  ${pos}` : pos);
     badge.classList.toggle('hidden', !pos);
     replayBtn.classList.toggle('hidden', !v.canReplay);
