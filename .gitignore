@@ -1,7 +1,6 @@
 node_modules/
 dist/
 asset-src/
-public/assets/
 .vercel/
 qa/tmp/
 qa/raw/
