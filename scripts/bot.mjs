@@ -30,9 +30,10 @@ const touch = view === 'portrait';
 const vp = view === 'portrait' ? { width: 390, height: 844 } : { width: 844, height: 390 };
 mkdirSync(path.join(outDir, 'shots'), { recursive: true });
 
+// --url plays against a deployed site instead of the local build.
 const dist = path.resolve('dist');
-if (!existsSync(path.join(dist, 'index.html'))) { console.error('build first: npx vite build'); process.exit(2); }
-const server = await serveStatic(dist);
+if (!args.url && !existsSync(path.join(dist, 'index.html'))) { console.error('build first: npx vite build'); process.exit(2); }
+const server = args.url ? { url: String(args.url).replace(/\/$/, ''), close: async () => {} } : await serveStatic(dist);
 const { browser, software } = await launchBrowser();
 const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: 1, hasTouch: touch, isMobile: touch });
 const page = await ctx.newPage();

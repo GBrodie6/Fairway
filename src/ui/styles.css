@@ -29,7 +29,9 @@
 
 /* ---------- HUD ---------- */
 .hud { position: absolute; inset: 0; pointer-events: none; opacity: 1; transition: opacity 0.35s ease; }
+/* A hidden HUD takes no taps (during the flyover its buttons are invisible but were still live). */
 .hud.off { opacity: 0; }
+.hud.off, .hud.off * { pointer-events: none !important; }
 .hud > * { pointer-events: auto; }
 /* Top left: three tabs flush to the left edge. */
 .tabs { position: absolute; left: 0; top: calc(10px + var(--safe-t)); display: flex; flex-direction: column; align-items: flex-start; gap: 6px; pointer-events: none; }
@@ -160,7 +162,8 @@ table.card-t .over { color: var(--warm); }
 .mapwrap { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: auto; background: rgba(6, 12, 9, 0.55); }
 .mapwrap canvas { max-width: 92vw; max-height: 82vh; border-radius: 14px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); }
 .mapwrap .close { position: absolute; top: calc(14px + var(--safe-t)); right: calc(14px + var(--safe-r)); }
-.intro-skip { position: absolute; left: 50%; bottom: calc(26px + var(--safe-b)); transform: translateX(-50%); pointer-events: auto; }
+/* Top center, where no HUD control lives, so a late tap cannot land on the club button. */
+.intro-skip { position: absolute; left: 50%; top: calc(14px + var(--safe-t)); transform: translateX(-50%); pointer-events: auto; }
 
 /* Landscape phones: the same pieces pushed to the edges, a little smaller. */
 @media (orientation: landscape) and (max-height: 520px) {

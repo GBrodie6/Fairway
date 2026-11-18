@@ -46,6 +46,8 @@ export async function createPointer(page, { touch = false } = {}) {
 // A swing on the stick: pull down to `power` over backMs, then push up through the start line
 // over downMs, drifting `drift` (fraction of travel) sideways at impact.
 export async function swing(page, pointer, { power = 0.7, backMs = 780, downMs = 260, drift = 0 } = {}) {
+  // A player closes an open club list before swinging (it covers the swing zone).
+  if (await page.evaluate(() => window.__fw.ui.hud.clubListOpen && window.__fw.ui.hud.clubListOpen())) { await page.keyboard.press('Escape'); await page.waitForTimeout(150); }
   // Start on the swing zone's start line, under the chevron.
   const info = await page.evaluate(() => {
     const z = window.__fw.ui.hud.zone;
