@@ -1,11 +1,161 @@
 # Fairway Next: stage report
 
 Running log, one section per stage: what changed, evidence, commit, test counts, asset size.
-The first brief's stages come first, with their final report. The second brief (HUD, the
-first-person club, controls, surfaces, water, proof, and the deploy) follows under "Second
-brief", with its own final report at the very end. Live site: https://gbrodie6.github.io/Fairway/
+The overhaul (fourth brief) report comes first, right below. Then the first brief's stages with
+their final report, and the second brief (HUD, the first-person club, controls, surfaces,
+water, proof, and the deploy) under "Second brief", with its own final report at the very end.
+Live site: https://gbrodie6.github.io/Fairway/
 Evidence is always a test, a measurement, or a headless Chrome run. Headless Chrome uses
 SwiftShader (software rendering), so frame times from it are not representative of a real GPU.
+
+## Overhaul brief (fourth brief): final report
+
+Supabase values were blank, so every account and cloud feature is built and tested, but cloud
+sync is dormant in this build: the game says "Cloud sync is off in this build", plays as a
+guest, keeps progress on the device, and the leaderboards say they need cloud sync. A build
+with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` set turns it on (schema and row level
+security in `supabase/schema.sql`); `?cloud=demo` runs the same screens against an in-memory
+stand-in on the device. Live sign-up with a real email was not verified. Design notes for every
+stage are in OVERHAUL.md. All verification ran on the production build in headless Chrome
+(SwiftShader software rendering), through real touch input.
+
+| Stage | What changed | Evidence | Commit | Tests | Build |
+| --- | --- | --- | --- | --- | --- |
+| 0 Recon | Read the code, baseline gate, OVERHAUL.md | baseline verify | edf6b5e | 259 | 43.13 MB |
+| 1 Accounts | Guest by default; email and password, magic link, reset, sign out, delete account and data; display names with a profanity filter; merge on sign-up; newer-wins sync with 30-day backups and restore; offline queue; four casual leaderboards; plain error messages; privacy page; all dormant without keys | 18 mocked tests (merge, conflict, migration, offline queue, delete, RLS); demo-mode tap-through; qa/proof/overhaul-o1-accounts | 37e8e66 | 277 | 43.16 MB |
+| 2 Strike quality | Pured, Good, Heel, Toe, Thin, Fat, Shank with severity from tempo, face drift, path, release timing, overswing, lie, slope and club; bounded launch modifiers before the unchanged simulation; label, contact marker, haptic, sound, shot card with the cause; relaxed, standard, pro; earned Mulligan | 10 tests (distribution, floor 40 percent, cap, no NaN, determinism, Common pured equals the carry ladder); real-touch mishit and Mulligan; qa/proof/overhaul-o2-strike | bb08a0d | 287 | 43.17 MB |
+| 3 Club tiers | Common to Legendary (Meadow, Harrow, Kingfisher, Ember, Solstice): pured carry bonus 0 to 8 percent in the cap, smaller sweet spot, costlier mishits; gear screen with stat bars and compare; drops with printed odds and pity; duplicates to shards; upgrades; 14-club bag; balls and gloves; tier finish on the club | 20 tests (caps, odds over 20,000 drops, pity, duplicates, loadout, migration); real taps at three sizes; qa/proof/overhaul-o3-gear | dd3719e | 310 | 43.19 MB |
+| 4 Range | A real practice ground: five bays, mats and grass, nets, clubhouse, evening lights, signs every 25 yd to 300, five target greens, picker cart; 50-ball bucket or unlimited; launch monitor card; dispersion map with ellipse; per-club averages; summary; target points, long drive, wedge ladder, shape shots, pressure streak, club test lane; XP, medals, a token for gold; range averages in the club list | 13 tests; every mode played with real swings at four sizes; qa/proof/overhaul-o4-range | ed81464 | 323 | 43.22 MB |
+| 5 Campaign | Six archetypes with perks, weaknesses and evolutions at 10 and 25; levels to 40; five stats; a 20-node tree each with punch, high, flop and bump and run; free respec; six chapters, 28 events, objectives and stars, named bosses, match play against the rival; save migration | 20 tests (caps, carry ladder for every archetype, unlocks, migration); the QA bot played an event and a boss match; qa/proof/overhaul-o5-campaign | fc9f607 | 341 | 43.26 MB |
+| 6 Fun layer | Daily and weekly quests, a free 30-tier season, 69 achievements, ball and tracer cosmetics, streaks and confetti, this week's mini-game and long drive, 3 and 6 hole rounds, an adaptive rival | 11 tests; a real 3-hole round against the adaptive rival; qa/proof/overhaul-o6-fun | 94e9857 | 359 | 43.29 MB |
+| 7 Broadcast | Hole intro card over the flyover, lower thirds, live leaderboard with movement arrows, commentary lines, replay speed with the existing angles, round recap, tournaments with a cut, purse in coins and trophies | 7 tests; a tournament round and a campaign event through real touch; qa/proof/overhaul-o7-broadcast | 3f212ed | 359 | 43.31 MB |
+| 8 First minute | Main menu: Quick Play, Campaign, Range, Daily, Profile; Profile hub; three skippable tutorial prompts (swing, strike result, club choice); settings already complete | 22 screens at four sizes with no overflow, small buttons, clipped text or overlaps; tutorial completed at every size; qa/proof/overhaul-o8-menus | 831c07c | 359 | 43.31 MB |
+| 9 Balance | Headless simulated golfer and paired balance runs; Sharpshooter and Power Hitter retuned; pured higher-tier strikes fly straighter | qa/balance.md, qa/balance.json | c414850 | 361 | 43.31 MB |
+| 10 Proof and deploy | Final screens at four sizes (22 screens each, no overflow, small buttons, clipped text or overlaps; tutorial completed), a range session (Target points, bronze), a campaign event (first of 6) and a daily challenge (even par) through real taps on the gated build; GitHub Pages deploy and live checks | qa/proof/overhaul-o10-final | this commit (site on gh-pages 5789ae0) | 361 | 43.31 MB |
+
+Every gate also passed the headless smoke (5 courses, 40 combinations, renderer and physics
+agreement at least 99 percent). The physics, swing, career and share-link tests from before the
+overhaul pass unchanged. No em dashes were written.
+
+### Balance tables (qa/balance.md)
+
+Method: the simulated golfer plans like the AI and swings with a fixed human-like error model
+(skill 0.6 is an average swing). 9-hole rounds rotate through all five courses and both nines;
+round i is the same course, wind and dice in every cell, so differences come from the cells.
+200 rounds per cell; per-18 values are twice the 9-hole means.
+
+#### Archetypes at level 5 (average 6.03 over par per 18)
+
+| Archetype | Over par per 18 | vs average | Pured % | Mishit % | Putts per 9 | Within 1.5 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Power Hitter | 6.43 | +0.4 | 24.3 | 3.2 | 16.56 | yes |
+| Sharpshooter | 4.97 | -1.06 | 24.6 | 3.3 | 16.38 | yes |
+| Short Game Artist | 6.37 | +0.34 | 23.2 | 3.9 | 16.41 | yes |
+| Putting Specialist | 6.34 | +0.31 | 22.4 | 3.7 | 16.48 | yes |
+| Links Player | 6.32 | +0.29 | 22.6 | 3.8 | 16.7 | yes |
+| All-Rounder | 5.74 | -0.29 | 23.1 | 3.8 | 16.37 | yes |
+
+#### Archetypes at level 15 (average 5.35 over par per 18)
+
+| Archetype | Over par per 18 | vs average | Pured % | Mishit % | Putts per 9 | Within 1.5 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Power Hitter | 5.9 | +0.55 | 27.4 | 2.8 | 16.73 | yes |
+| Sharpshooter | 4.15 | -1.2 | 28.2 | 2.8 | 16.48 | yes |
+| Short Game Artist | 5.76 | +0.41 | 25.3 | 3.7 | 16.56 | yes |
+| Putting Specialist | 5.7 | +0.35 | 25 | 3.5 | 16.5 | yes |
+| Links Player | 5.4 | +0.05 | 24.7 | 3.1 | 16.45 | yes |
+| All-Rounder | 5.17 | -0.18 | 25.5 | 3.5 | 16.59 | yes |
+
+#### Archetypes at level 30 (average 3.86 over par per 18)
+
+| Archetype | Over par per 18 | vs average | Pured % | Mishit % | Putts per 9 | Within 1.5 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Power Hitter | 5.19 | +1.33 | 28 | 2.7 | 16.64 | yes |
+| Sharpshooter | 3.24 | -0.62 | 28.8 | 2.8 | 16.25 | yes |
+| Short Game Artist | 3.44 | -0.42 | 27.1 | 3 | 16.02 | yes |
+| Putting Specialist | 3.62 | -0.24 | 28.5 | 3.4 | 16.14 | yes |
+| Links Player | 4.14 | +0.28 | 27.3 | 3.5 | 16.38 | yes |
+| All-Rounder | 3.54 | -0.32 | 28.1 | 3.3 | 16.13 | yes |
+
+#### Club tiers for an average swing (skill 0.6), paired against Common
+
+| Tier | Over par per 18 | Difference vs Common | 95% interval | Pured % | Mishit % | Strictly better than Common |
+| --- | --- | --- | --- | --- | --- | --- |
+| common | 6.85 | +0 | 0 to 0 | 22.4 | 3.7 | no |
+| uncommon | 6.62 | -0.23 | -0.92 to 0.46 | 19.1 | 4.5 | no |
+| rare | 7.13 | +0.28 | -0.54 to 1.1 | 15.7 | 5.8 | no |
+| epic | 7.58 | +0.73 | -0.06 to 1.52 | 12 | 7.9 | no |
+| legendary | 8.06 | +1.21 | 0.39 to 2.03 | 9 | 9.4 | no |
+
+#### Club tiers for a skilled swing (skill 0.9), paired against Common
+
+| Tier | Over par per 18 | Difference vs Common | 95% interval | Pured % | Mishit % | Strictly better than Common |
+| --- | --- | --- | --- | --- | --- | --- |
+| common | -3.09 | +0 | 0 to 0 | 73.3 | 0.6 | no |
+| uncommon | -2.82 | +0.27 | -0.4 to 0.94 | 67 | 0.7 | no |
+| rare | -1.65 | +1.44 | 0.7 to 2.18 | 61 | 1 | no |
+| epic | 0.43 | +3.52 | 2.75 to 4.29 | 53 | 1.1 | no |
+| legendary | 1.79 | +4.88 | 4.03 to 5.73 | 44.6 | 1.6 | no |
+
+#### Club tiers for a skilled swing that plans for the tier's usual extra carry, paired against Common
+
+| Tier | Over par per 18 | Difference vs Common | 95% interval | Pured % | Mishit % | Strictly better than Common |
+| --- | --- | --- | --- | --- | --- | --- |
+| common | -3.09 | +0 | 0 to 0 | 73.3 | 0.6 | no |
+| uncommon | -2.91 | +0.18 | -0.48 to 0.84 | 68.2 | 0.8 | no |
+| rare | -2.55 | +0.54 | -0.25 to 1.33 | 62 | 0.6 | no |
+| epic | -2.18 | +0.91 | 0.19 to 1.63 | 56 | 1.1 | no |
+| legendary | -0.81 | +2.28 | 1.59 to 2.97 | 48.4 | 1.7 | no |
+
+#### Difficulty settings (Common clubs, level 1)
+
+| Setting | Over par per 18 | Pured % | Mishit % | Shank % |
+| --- | --- | --- | --- | --- |
+| relaxed | 6.47 | 60.4 | 0.4 | 0 |
+| standard | 6.85 | 22.4 | 3.7 | 0 |
+| pro | 7.78 | 8.6 | 10.3 | 0 |
+
+Result: archetypes within 1.5 strokes: yes. No tier strictly better than Common for an average swing: yes. Run time 61 s.
+
+### Deploy
+
+- Route A, Vercel: failed. Vercel CLI 66.2.0, `vercel whoami` reported "Logged out.", and there
+  is no `VERCEL_TOKEN` in the environment. The CLI suggests `vercel deploy --temporary`, which
+  publishes outside your account; it was not used.
+- Route B, GitHub Pages: worked. The gated build (c414850, byte-identical) was pushed to the
+  `gh-pages` branch (5789ae0) and was live about 30 seconds later. Built with blank Supabase
+  values, so cloud sync is dormant on the live site.
+- Route C was not needed.
+- Live checks at 390x844 and 1366x768: no console errors, all 202 requests over HTTPS and none failed, 8.5 MB to the settled menu on a cold cache, the service worker active with scope `/Fairway/` and controlling the page, and Chrome reporting no installability errors in a normal profile.
+- Live tap-through on the deployed site at 390x844: from the new main menu to Daily (this week card), Quick Play with 3 holes against the adaptive rival, a full round through touch (13 strokes, even par), then Profile, Quests, Achievements and Locker: no console errors, counters, quests, streak bests and four achievements recorded.
+
+### For a person to check on a real device (most important first)
+
+1. Frame rate and heat on a real phone. Every measurement here used software rendering, which
+   says nothing about a real GPU; the range adds bays, nets, signs, a cart and light glows.
+2. Swing feel with strike penalties on: whether standard feels only a little harder than
+   before (the target was a mishit on about 4 percent of full shots for an average swing, and
+   the simulation says 3.7), and whether the strike label, contact marker, haptic and card make
+   the cause clear.
+3. Fairness of penalties: whether thin, fat, heel, toe and the rare shank read as earned
+   (the card names a cause), and whether pro feels harsh but fair.
+4. Club tiers: in simulation higher tiers cost strokes for every swing tested, because their
+   pured-only carry adds distance scatter; their reward is maximum distance (long drive, reaching
+   long par 5s). Whether players feel that trade is worth making, or the bonus should be
+   predictable carry, is a design call.
+5. Progression pacing: about 10 campaign events to level 10 and about 90 to level 40, one gear
+   token per round (3 a day) plus quests, drills and first clears, the season track at 300 XP a
+   tier. Whether it feels generous or slow over a week of play.
+6. Live sign-up with a real email: needs the Supabase project URL and anon key at build time,
+   then a check of confirmation mail, magic link and reset links, and delete my data.
+7. Campaign difficulty: whether the bosses and the later chapters' objectives are reachable for
+   a casual player, and whether 9-hole events are the right length on a phone.
+8. The first minute: whether the three tutorial prompts land at the right moments for a new
+   player and the new menu reads at a glance.
+9. The quick-round rival: it adapts to recent form and should lean slightly toward winning,
+   but in the live run a new player's rival ("even") shot 5 over on three holes. The on-screen
+   AI may play below the statistical model the adaptation is based on; worth a look over
+   several rounds.
 
 ## Stage 0: recon and plan
 

@@ -1,0 +1,467 @@
+{
+ "course": "parkland",
+ "view": "portrait",
+ "holes": 18,
+ "tier": "low",
+ "scale": 0.5,
+ "timescale": 6,
+ "mode": "stroke",
+ "software": true,
+ "input": "touch",
+ "started": "2026-11-18T21:22:29.741Z",
+ "shots": [
+  {
+   "hole": 1,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 341.92,
+   "after": 121.62,
+   "ideal": 1,
+   "power": 1,
+   "tempo": "Perfect",
+   "ratio": 3.17,
+   "read": null,
+   "result": "Hole 1Par 4  369 yd",
+   "sec": 108.6
+  },
+  {
+   "hole": 1,
+   "club": "I7",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 121.62,
+   "after": 5.52,
+   "ideal": 0.868,
+   "power": 0.915,
+   "tempo": "Perfect",
+   "ratio": 3.32,
+   "read": null,
+   "result": "ReplayHalf speed. Tap the course to return",
+   "sec": 56.3
+  },
+  {
+   "hole": 1,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 5.52,
+   "after": 0.85,
+   "ideal": 0.69,
+   "power": 0.671,
+   "tempo": "Good, a little quick",
+   "ratio": 3.56,
+   "read": {
+    "drags": 4,
+    "taps": 14,
+    "leftDeg": 8.15,
+    "breakM": 1.81
+   },
+   "result": "Green2.8 ft left",
+   "sec": 75.5
+  },
+  {
+   "hole": 1,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.85,
+   "after": 0.85,
+   "ideal": 0.69,
+   "power": 0.677,
+   "tempo": "Good, a little quick",
+   "ratio": 3.63,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par4 strokes",
+   "sec": 48.1
+  },
+  {
+   "hole": 2,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 482.23,
+   "after": 275.07,
+   "ideal": 0.912,
+   "power": 0.859,
+   "tempo": "Perfect",
+   "ratio": 3.33,
+   "read": null,
+   "result": "Streak5 pured strikes in a row",
+   "sec": 46
+  },
+  {
+   "hole": 2,
+   "club": "W5",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 275.07,
+   "after": 73.31,
+   "ideal": 0.957,
+   "power": 1,
+   "tempo": "Good, a little quick",
+   "ratio": 3.65,
+   "read": null,
+   "result": "Streak5 pured strikes in a row",
+   "sec": 34
+  },
+  {
+   "hole": 2,
+   "club": "SW",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 73.31,
+   "after": 4.25,
+   "ideal": 0.83,
+   "power": 0.851,
+   "tempo": "Perfect",
+   "ratio": 3.02,
+   "read": null,
+   "result": "Streak5 pured strikes in a row",
+   "sec": 31.2
+  },
+  {
+   "hole": 2,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 4.25,
+   "after": 0.11,
+   "ideal": 0.69,
+   "power": 0.669,
+   "tempo": "Good, a little quick",
+   "ratio": 4.08,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Green0.3 ft left",
+   "sec": 38.1
+  },
+  {
+   "hole": 2,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.11,
+   "after": 0.11,
+   "ideal": 0.488,
+   "power": 0.47,
+   "tempo": "Good, a little quick",
+   "ratio": 3.54,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par5 strokes",
+   "sec": 33.9
+  },
+  {
+   "hole": 3,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 398.91,
+   "after": 178.38,
+   "ideal": 0.921,
+   "power": 0.913,
+   "tempo": "Perfect",
+   "ratio": 3.24,
+   "read": null,
+   "result": "Streak3 fairways in a row",
+   "sec": 41.9
+  },
+  {
+   "hole": 3,
+   "club": "W5",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 178.38,
+   "after": 5.15,
+   "ideal": 0.908,
+   "power": 0.896,
+   "tempo": "Perfect",
+   "ratio": 3.29,
+   "read": null,
+   "result": "Streak5 pured strikes in a row",
+   "sec": 33.5
+  },
+  {
+   "hole": 3,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 5.15,
+   "after": 5.15,
+   "ideal": 0.662,
+   "power": 0.677,
+   "tempo": "Good, a little quick",
+   "ratio": 3.68,
+   "read": {
+    "drags": 4,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": -0.6
+   },
+   "result": "Achievement: In the zonePure 5 shots in a row.",
+   "sec": 26.9
+  }
+ ],
+ "holesPlayed": [
+  {
+   "hole": 1,
+   "par": 4,
+   "strokes": [
+    4
+   ]
+  },
+  {
+   "hole": 2,
+   "par": 5,
+   "strokes": [
+    5
+   ]
+  },
+  {
+   "hole": 3,
+   "par": 4,
+   "strokes": [
+    3
+   ]
+  }
+ ],
+ "result": {
+  "scores": [
+   [
+    4,
+    5,
+    3
+   ]
+  ],
+  "players": [
+   "You"
+  ],
+  "complete": true,
+  "holes": [
+   0,
+   1,
+   2
+  ],
+  "mode": "stroke",
+  "standings": "12  (-1)"
+ },
+ "errors": [],
+ "stuck": [],
+ "timing": {
+  "bootSec": 95.23,
+  "totalMin": 15.9,
+  "shots": 12,
+  "secPerShot": 47.8
+ },
+ "before": {
+  "profile": {
+   "xp": 0,
+   "archetype": "power",
+   "nodes": [],
+   "respecs": 0
+  },
+  "campaign": {
+   "progress": {}
+  }
+ },
+ "introCards": [
+  "ALDERWICK PARK / Hole 1 · Par 4 · 369 yd / A par 4 and two bunkers. / You share the lead at E",
+  "ALDERWICK PARK / Hole 2 · Par 5 · 534 yd / A three-shot par 5 with water in play and two bunkers. / You share the lead at E"
+ ],
+ "commentary": [
+  "A proper strike, and it is still going.",
+  "Green found. Now for the putt.",
+  "Flushed down the middle.",
+  "Safely on the putting surface.",
+  "Flushed down the middle.",
+  "Green found. Now for the putt."
+ ],
+ "badges": [
+  "T1 of 6",
+  "T1 of 6",
+  "1 of 6"
+ ],
+ "replay": {
+  "controls": [
+   "Speed: half"
+  ],
+  "speed": 0.25,
+  "after": {
+   "angle": "side",
+   "speed": 0.25,
+   "phase": "replay"
+  },
+  "end": "aim"
+ },
+ "roundEndText": [
+  "Round complete",
+  "12 (-1)",
+  "Alderwick Park",
+  "Hole\t1\t2\t3\tTot",
+  "Par\t4\t5\t4\t13",
+  "You\t4\t5\t3\t12",
+  "MONTHLY MEDAL: 1ST OF 6",
+  "1. You",
+  "12 (-1)",
+  "2. Darian Halvard",
+  "13 (E)",
+  "2. Darian Kerrow",
+  "13 (E)",
+  "4. Maren Moreau",
+  "14 (+1)",
+  "5. Maren Penrose",
+  "15 (+2)",
+  "Finish in the top 3",
+  "Met",
+  "Make a birdie",
+  "Met",
+  "Hit 2 fairways",
+  "Met",
+  "★★★",
+  "Event cleared!",
+  "Holes played\t+24",
+  "Scoring\t+27",
+  "Birdies (1)\t+14",
+  "Objectives (3 of 3)\t+120",
+  "Finish (1 of 6)\t+50",
+  "First clear\t+50",
+  "Total XP\t+285",
+  "+1 gear token",
+  "Campaign",
+  "Round finished: +1 gear token",
+  "Open gear drops",
+  "Level 3! See what is new",
+  "Round recap",
+  "Main menu",
+  "Play the event again"
+ ],
+ "recap": [
+  "Round recap",
+  "Alderwick Park, 3 holes. Best hole: the 3rd.",
+  "Score\t12 (-1)",
+  "Birdies or better\t1",
+  "Fairways\t3 of 3",
+  "Greens in regulation\t3 of 3",
+  "Putts\t5",
+  "Pured strikes\t11",
+  "Longest drive\t242 yd",
+  "Longest putt holed\t6 yd",
+  "Back"
+ ],
+ "campaign": {
+  "profile": {
+   "xp": 285,
+   "archetype": "power",
+   "nodes": [],
+   "respecs": 0
+  },
+  "progress": {
+   "club-1": {
+    "stars": 3,
+    "cleared": true,
+    "plays": 1,
+    "best": -1,
+    "met": [
+     "club-1-o0",
+     "club-1-o1",
+     "club-1-o2"
+    ]
+   }
+  },
+  "tokens": 2,
+  "result": [
+   "MONTHLY MEDAL: 1ST OF 6",
+   "1. You",
+   "12 (-1)",
+   "2. Darian Halvard",
+   "13 (E)",
+   "2. Darian Kerrow",
+   "13 (E)",
+   "4. Maren Moreau",
+   "14 (+1)",
+   "5. Maren Penrose",
+   "15 (+2)",
+   "Finish in the top 3",
+   "Met",
+   "Make a birdie",
+   "Met",
+   "Hit 2 fairways",
+   "Met",
+   "★★★",
+   "Event cleared!",
+   "Holes played\t+24",
+   "Scoring\t+27",
+   "Birdies (1)\t+14",
+   "Objectives (3 of 3)\t+120",
+   "Finish (1 of 6)\t+50",
+   "First clear\t+50",
+   "Total XP\t+285",
+   "+1 gear token",
+   "Campaign"
+  ]
+ },
+ "after": {
+  "player": "You",
+  "rounds": 1,
+  "history": [
+   {
+    "id": "1795037892290-1645335477",
+    "date": 1795037892290,
+    "courseId": "parkland",
+    "mode": "stroke",
+    "holes": 3,
+    "strokes": 12,
+    "par": 13,
+    "toPar": -1,
+    "birdies": 1,
+    "putts": 5,
+    "eventId": "club-1"
+   }
+  ],
+  "daily": {},
+  "achievements": [
+   "pure-run-5",
+   "first-round",
+   "birdie",
+   "under-par",
+   "course-parkland",
+   "event-first"
+  ],
+  "inProgress": false,
+  "career": null
+ },
+ "guard": {
+  "count": 0,
+  "last": null,
+  "bySystem": {}
+ },
+ "consoleErrors": [],
+ "summary": {
+  "holes": 3,
+  "strokes": 12,
+  "par": 13,
+  "putts": 5,
+  "tempo": {
+   "Perfect": 6,
+   "Good, a little quick": 6
+  },
+  "stuck": 0,
+  "consoleErrors": 0,
+  "guardErrors": 0,
+  "toPar": -1
+ }
+}

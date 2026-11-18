@@ -1,0 +1,211 @@
+{
+ "size": "390x844",
+ "screens": [
+  {
+   "name": "menu",
+   "title": "Fairway Next",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "quickplay",
+   "title": "Quick Play",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "tournament",
+   "title": "Tournament",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "campaign-pick",
+   "title": "Choose your golfer",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "campaign-hub",
+   "title": "Campaign",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "campaign-chapter",
+   "title": "1. The Club",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "campaign-briefing",
+   "title": "Monthly Medal",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "character",
+   "title": "Character",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "skilltree",
+   "title": "Skill tree: Links Player",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "range-lobby",
+   "title": "Practice ground",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "daily",
+   "title": "Daily challenge",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "quests",
+   "title": "Quests",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "season",
+   "title": "Season: First Light",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "profile",
+   "title": "Profile",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "gear",
+   "title": "Gear",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "gear-drops",
+   "title": "Gear",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "locker",
+   "title": "Locker",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "achievements",
+   "title": "Achievements",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "stats",
+   "title": "Stats and history",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "leaderboards",
+   "title": "Leaderboards",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "account",
+   "title": "Account and cloud save",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  },
+  {
+   "name": "settings",
+   "title": "Settings",
+   "overflow": [],
+   "small": [],
+   "clipped": [],
+   "overlaps": [],
+   "docScroll": false
+  }
+ ],
+ "tutorial": {
+  "t1": "1 OF 3 SWING / Put your thumb on the chevron under the ball and pull down to the gold mark, then push up through the white line. Drag across the course first if you want to aim. / Skip",
+  "t2": "2 OF 3 STRIKE RESULT / The card shows how cleanly you struck it. Pured is the sweet spot. Rushing the downswing or drifting sideways can catch it thin, fat, or off the heel or toe. / Next / Skip",
+  "t3": "3 OF 3 CLUB CHOICE / Tap the club button to pick another club, or swipe across it. The number under it is how far that club carries. / Got it",
+  "done": true
+ },
+ "consoleErrors": [],
+ "problems": []
+}

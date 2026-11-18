@@ -286,3 +286,10 @@ check; a range session, a campaign event, and a daily challenge played through r
 the same deploy routes as before (Vercel with existing credentials, then the GitHub Pages
 flow, then another host with credentials already in the environment), Supabase values passed at
 build time when present, and a live test at phone size.
+
+As done: 22 screens at all four sizes with no overflow, buttons under 40 px, clipped text or
+overlapping controls, and the tutorial completed at every size; a Target points session, the
+first campaign event and the daily challenge through real touch on the gated build. Vercel had
+no login or token (the `--temporary` mode was not used); the gated build went to the
+`gh-pages` branch and is live, built without Supabase values, so cloud sync is dormant there.
+Live checks and a live 3-hole tap-through at 390x844 found no errors.
