@@ -175,18 +175,23 @@ mishit = clamp(error x setting x club difficulty / sweet spot - 0.05, 0, 0.9)
 The carry rule (current): no club tier adds distance. A Pured strike carries exactly the
 club's table carry at the chosen power, identical for every tier, so the power guide's mark is
 exact; a Good strike flies the same; every other strike carries shorter and/or goes offline,
-never longer (the existing flier lie is the only exception). Rarity changes risk and control
-only: a higher tier has a smaller sweet spot (more mishits) and harsher mishits (severity times
-the square root of its difficulty), and in return a wider range on the ball-contact dot for
-draw, fade, backspin and topspin (`src/data/spinControl.js`, Part 2 of the next run).
+never longer (the existing flier lie is the only exception). A higher tier costs risk: a
+smaller sweet spot (more mishits) and harsher mishits (severity times the square root of its
+difficulty). In return it gets three bounded benefits, none of which adds carry (`src/data/
+tierBenefits.js`, see "Tier benefits" below): a crosswind moves its ball less, rough, sand and
+bad lies cost it less, and the ball-contact dot reaches further for draw, fade, backspin and
+topspin (`src/data/spinControl.js`).
 
-| Tier | Difficulty (mishit severity) | Sweet spot | Spin dot reach | Carry |
-| --- | --- | --- | --- | --- |
-| Common | 1.00 | 1.00 | 50 percent of the pad | the table carry |
-| Uncommon | 1.25 | 0.92 | 60 percent | the table carry |
-| Rare | 1.50 | 0.84 | 70 percent | the table carry |
-| Epic | 1.80 | 0.76 | 80 percent | the table carry |
-| Legendary | 2.20 | 0.68 | 100 percent | the table carry |
+| Tier | Difficulty (mishit severity) | Sweet spot | Crosswind push | Lie penalties | Spin dot reach | Carry |
+| --- | --- | --- | --- | --- | --- | --- |
+| Common | 1.0 | 1.00 | full | full | 50 percent of the pad | the table carry |
+| Uncommon | 1.5 | 0.95 | 5 percent less | 8 percent smaller | 60 percent | the table carry |
+| Rare | 2.0 | 0.90 | 10 percent less | 15 percent smaller | 70 percent | the table carry |
+| Epic | 2.6 | 0.85 | 15 percent less | 22 percent smaller | 80 percent | the table carry |
+| Legendary | 3.2 | 0.80 | 20 percent less (the cap) | 30 percent smaller (the cap) | 100 percent | the table carry |
+
+The difficulty and sweet spot values were retuned with the tier benefits (they were 1.25 to
+2.2 and 0.92 to 0.68); see "Tier benefits" for why and for the balance tables.
 
 What this replaced: earlier versions gave Pured strikes (and later Good strikes, at half
 strength) a tier carry bonus of up to 8 percent, a pured higher tier a straighter flight, and a
@@ -354,6 +359,8 @@ Outcome (tables in qa/balance.md):
   skilled swing +0.02 to +0.17. No tier is better than Common for an average swing (the
   target); higher tiers cost a poor swing most and a skilled one least. Until the spin dot
   ships, a higher tier is pure risk.
+- Tiers, with tier benefits (current): see "Tier benefits" below. The runs now cover all seven
+  courses and three conditions (calm fairway play, normal, wind and rough).
 - Settings: mishits for an average swing are 0.4 percent on relaxed, 3.7 on standard, 10.3 on
   pro, in line with the request for only a little more challenge on standard.
 
@@ -579,6 +586,70 @@ and counting plays need a signed-in game account (the server checks it and limit
   Measured with real taps at both phone sizes (`scripts/tools/levels.mjs`): 11 taps at 390x844
   and 10 at 844x390, counting every swing and aim nudge, the flyover skip and the first-run tip;
   5 of them are menu taps. The target was 25.
+
+## Tier benefits
+
+Higher club tiers now give real benefits that never add carry. All values and caps are in one
+file, `src/data/tierBenefits.js`; the cost stays in `src/game/strike.js` (RARITY).
+
+| Tier | Crosswind push | Rough, sand and bad lies | Spin and shape range | Sweet spot (cost) | Mishit severity (cost) |
+| --- | --- | --- | --- | --- | --- |
+| Common | full | full | 1x (50 percent of the pad) | 1.00 | 1.0 |
+| Uncommon | 5 percent less | 8 percent smaller | 1.2x | 0.95 | 1.5 |
+| Rare | 10 percent less | 15 percent smaller | 1.4x | 0.90 | 2.0 |
+| Epic | 15 percent less | 22 percent smaller | 1.6x | 0.85 | 2.6 |
+| Legendary | 20 percent less | 30 percent smaller | 2x (the edge) | 0.80 | 3.2 |
+| Cap | 20 percent (WIND_CAP) | 30 percent (LIE_CAP) | 2x (RANGE_CAP; the pad's edge also caps it) | | |
+
+- Wind: the part of the wind blowing across the line of the shot is scaled by (1 - wind) for
+  that shot (`tierWind`, by the launch heading); the part along the line acts in full. A first
+  version scaled the whole wind, which let a Legendary ball carry further than a Common one into
+  a headwind; that is extra carry, so only the crosswind is reduced. Measured: an 18 mph
+  crosswind pushes a Common 7 iron 20.8 yd offline and a Legendary one 16.6 yd (20 percent
+  less; a driver 28.3 and 22.6 yd), and the Legendary carry is 0.3 yd shorter, never longer; with
+  the wind straight behind or in front, both carry the same to 0.1 yd (tests allow 0.01 m).
+- Lies: the speed a lie takes away (through the profile's existing `recovery`) and the spin it
+  takes away (a new optional `profile.lieRelief`, 0 by default, so the base swing math is
+  unchanged) shrink by the same share, and so do the lie and slope terms of the strike model
+  (more and worse mishits from a bad lie). The carry moves toward the clean carry and never past
+  it: a flyer lie in the rough, where a wedge already carries a little past its table carry with
+  less spin, gains nothing (a test checks every club, lie and lie roll for every tier).
+- Spin and shape range: the existing wider reach of the ball-contact dot, now the table's third
+  value (`data/spinControl.js` reads it).
+- Pured carry: from a fairway or a tee in calm air, a Pured strike carries exactly the table
+  carry with every tier (tests/tierBenefits.test.js, and the existing carry tests unchanged).
+  Common shots go through the same code bit for bit (the same wind function and profile).
+- Shown: the gear card and the compare view have Wind and Bad lies bars with the real
+  percentages, the Spin range bar, and the two costs (Forgiveness, Mishit cost), plus three
+  plain lines ("Crosswind moves the ball 20 percent less", "Rough, sand and bad lies cost 30
+  percent less", "Spin and shape range 2x"). The power guide and the aim fan use the tier's wind
+  and lie, so the mark stays exact in wind and rough too.
+- Cost retuned: with the benefits, the old cost (Legendary sweet spot 0.68, severity 2.2) left
+  an average swing on calm fairways 0.52 strokes worse than Common, outside the 0.3 target. The
+  sweet spot is the lever that reaches an average swing; severity mostly reaches a poor swing
+  (it mishits two to four times as often). Legendary is now sweet spot 0.80 and severity 3.2.
+
+### Balance (qa/balance-tiers.md, 3,000 paired rounds per cell, all seven courses)
+
+Conditions: calm fairway play (no wind, every lie through the green played as a flat fairway
+lie), normal (each course's wind and lies), wind and rough (a 10 to 20 mph gusty wind and every
+fairway lie played as rough). Legendary against Common, strokes per 18 (negative is better):
+
+| Swing | Calm fairway play | Normal | Wind and rough |
+| --- | --- | --- | --- |
+| Poor (0.35) | +0.58 (0.39 to 0.77) | +0.33 (0.05 to 0.60) | +0.14 (-0.16 to 0.43) |
+| Average (0.6) | +0.21 (0.08 to 0.33) | +0.21 (-0.01 to 0.44) | -0.01 (-0.27 to 0.25) |
+| Skilled (0.9) | +0.02 (-0.02 to 0.06) | -0.17 (-0.32 to -0.01) | -0.81 (-1.02 to -0.60) |
+
+Targets: Legendary 0.3 to 1.0 strokes better for a skilled swing in wind and rough (-0.81,
+met); no better than Common for a poor swing (+0.58, +0.33, +0.14, met); within 0.3 of Common
+for an average swing on calm fairway play (+0.21, met). For a skilled swing in wind and rough
+every step helps a little more: Uncommon -0.31, Rare -0.52, Epic -0.65. For a poor swing in
+wind and rough, Uncommon (-0.20) and Rare (-0.14) come out slightly better than Common, both
+within noise (their intervals reach 0). The simulated golfer does not use the spin pad, so the
+third benefit is not in these numbers. Tuning notes: with the whole wind scaled, a skilled
+swing gained 1.86 strokes in a 15 to 25 mph test wind (wind alone 1.56, lies alone 0.53); the
+crosswind-only rule and a 10 to 20 mph windy round brought it into the target.
 
 ## Stage 10: proof and deploy
 

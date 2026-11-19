@@ -11,6 +11,7 @@
 // rarely mishits, and most mishits are mild. Relaxed is close to the old game; Pro has bite.
 import { clamp, DEG } from '../core/math.js';
 import { SURFACES } from '../physics/surfaces.js';
+import { LIE_CAP } from '../data/tierBenefits.js';
 
 export const STRIKE_KINDS = ['pured', 'good', 'heel', 'toe', 'thin', 'fat', 'shank'];
 export const STRIKE_NAMES = { pured: 'Pured', good: 'Good', heel: 'Heel', toe: 'Toe', thin: 'Thin', fat: 'Fat', shank: 'Shank' };
@@ -19,18 +20,19 @@ export const DIFFICULTY = { relaxed: 0.55, standard: 1, pro: 1.5 };
 // How hard each club is to strike cleanly (longer and flatter faces are harder).
 export const CLUB_DIFFICULTY = { DR: 1.0, W3: 0.92, W5: 0.88, I4: 0.85, I5: 0.8, I6: 0.76, I7: 0.72, I8: 0.68, I9: 0.64, PW: 0.58, GW: 0.57, SW: 0.56, LW: 0.58, PT: 0.3 };
 
-// Rarity changes risk and control only, never distance. A higher tier has a smaller sweet
-// spot (more mishits) and harsher mishits (severity grows with difficulty); in return its
-// ball-contact dot reaches further (data/spinControl.js). A Pured strike carries exactly the
+// Rarity never changes distance. A higher tier has a smaller sweet spot (more mishits) and
+// harsher mishits (severity grows with difficulty); in return the wind moves its ball less,
+// rough, sand and bad lies cost less, and its ball-contact dot reaches further (all three in
+// data/tierBenefits.js, with their caps). A Pured strike carries exactly the
 // club's table carry at the chosen power with every tier, so the power guide's mark is exact,
 // and a Good strike flies the same. Every other strike carries shorter and/or goes offline.
 // Kept here so the strike model is self-contained; game/gear.js reads the same table.
 export const RARITY = {
   common: { difficulty: 1.0, sweet: 1.0 },
-  uncommon: { difficulty: 1.25, sweet: 0.92 },
-  rare: { difficulty: 1.5, sweet: 0.84 },
-  epic: { difficulty: 1.8, sweet: 0.76 },
-  legendary: { difficulty: 2.2, sweet: 0.68 },
+  uncommon: { difficulty: 1.5, sweet: 0.95 },
+  rare: { difficulty: 2.0, sweet: 0.9 },
+  epic: { difficulty: 2.6, sweet: 0.85 },
+  legendary: { difficulty: 3.2, sweet: 0.8 },
 };
 // No source adds carry: no strike result is faster than the clean launch.
 export const CARRY_CAP = 0;
@@ -59,8 +61,10 @@ export function strikeFactors(swing, ctx = {}) {
   const over = power >= 0.97 && (grade === 'rushed' || ratio < 2.2) ? 1 : 0;
   // Timing of the crossing: a thumb lifted early (completed at its pace) or a very slow push.
   const timing = (swing && swing.auto ? 0.2 : 0) + (num(swing && swing.downMs, 250) > 650 ? 0.12 : 0);
-  const lie = LIE_TERM(ctx.lie);
-  const slope = Math.min(0.12, Math.max(0, num(ctx.slope)) * 0.6);
+  // A higher club tier takes part of the lie's penalty away (data/tierBenefits.js, lieRelief).
+  const relief = clamp(num(ctx.lieRelief), 0, LIE_CAP);
+  const lie = LIE_TERM(ctx.lie) * (1 - relief);
+  const slope = Math.min(0.12, Math.max(0, num(ctx.slope)) * 0.6) * (1 - relief);
   // Asking for shape (the ball-contact dot off center, game/spin.js) adds a little: 0 neutral.
   const shape = clamp(num(ctx.shapeError), 0, 0.2);
   const error = 0.55 * tempo + 0.35 * faceT + 0.25 * pathT + 0.35 * over + timing + lie + slope + shape;
@@ -71,7 +75,8 @@ export function strikeFactors(swing, ctx = {}) {
  * strikeResult(swing, ctx, rng)
  *   swing  the gesture result (power, face, path, tempoQuality, tempoGrade, tempoRatio, auto, downMs)
  *   ctx    { clubId, lie, slope, rarity, setting, glove (sweet spot bonus 0..0.08), forgiveness (stat, 0.85..1.15), lefty,
- *            shapeError (from the spin dot, 0..0.2), shotMishit (the shot type's risk, 0.5..2) }
+ *            shapeError (from the spin dot, 0..0.2), shotMishit (the shot type's risk, 0.5..2),
+ *            lieRelief (the tier's share off the lie and slope terms, 0..0.3, data/tierBenefits.js) }
  *   rng    a seeded rng with next() in [0, 1)
  * Returns { kind, severity, cause, chance, x }.
  */

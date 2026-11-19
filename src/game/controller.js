@@ -21,6 +21,7 @@ import { bayBall, targetFor } from '../course/range.js';
 import { SHOT_DATA, shotData, shotFitsData, shotPower, SPLASH_RANGE } from '../data/shotTypes.js';
 import { clampOffset, offsetSize, spinRange, SPIN_FX, curveAndRoll, applySpin, isNeutral } from './spin.js';
 import { archetypeRange } from '../data/spinControl.js';
+import { tierBenefits, tierWind, tierProfile } from '../data/tierBenefits.js';
 import { proById, proProfile, proStrike } from './pros.js';
 
 // Shot types (data/shotTypes.js): Normal is the physics module's Full shot, unchanged.
@@ -242,7 +243,7 @@ export function createGame(app) {
       w.overlays.showPutt({ path: r.points });
     } else {
       const power = game.suggestedPower();
-      const r = predictShot(t, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aim, power, profile: guideProfile(state.club), spin: mySpin() }, windAt, state.clock);
+      const r = predictShot(t, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aim, power, profile: guideProfile(state.club), spin: mySpin() }, guideWind(state.club, state.aim), state.clock);
       state.prediction = r; state.putt = null;
       const wRel = windRelative(state.wind, state.aim, state.clock);
       const disp = dispersion(state.club, state.lie, { windMps: Math.hypot(wRel.along, wRel.cross), profile: state.profile, shotType: state.shotType });
@@ -257,7 +258,7 @@ export function createGame(app) {
     if (state.club.putter || !state.target) { state.idealPower = 0.5; return; }
     // Solve for where the ball stops, not where it lands: with only part of the roll allowed
     // for, approaches to firm or downhill greens ran 20 yards past the pin in play tests.
-    state.idealPower = solvePower(W().terrain, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aimRef, profile: guideProfile(state.club), spin: mySpin() }, windAt, state.clock, state.target, 'end');
+    state.idealPower = solvePower(W().terrain, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aimRef, profile: guideProfile(state.club), spin: mySpin() }, guideWind(state.club, state.aimRef), state.clock, state.target, 'end');
   }
   game.suggestedPower = () => {
     if (state.club.putter) return state.putt ? state.putt.idealPower : 0.5;
@@ -383,6 +384,8 @@ export function createGame(app) {
     // A human shot keeps a snapshot so one Mulligan per round can take it back.
     state.undo = isHuman() ? { round: JSON.parse(JSON.stringify(state.round)), hole: state.round.hole } : null;
     const from = { x: state.ball.x, z: state.ball.z, lie: state.lie };
+    // The club's tier: the wind moves its ball less and the lie costs less (data/tierBenefits.js).
+    const base = strikeContext(club, from);
     let launch, result, lieRoll = 0;
     if (club.putter) {
       const ceil = (state.putt && state.putt.ceiling) || puttCeiling(state.distToPin);
@@ -392,7 +395,7 @@ export function createGame(app) {
       lieRoll = rng.range(-1, 1);
       // The shot type's power range (a knockdown is three-quarter at most).
       if (shotType && shotType.id !== 'full') swing = { ...swing, power: shotPower(shotData(shotType.id), swing.power) };
-      launch = computeLaunch(swing, { club, shotType, lie: from.lie, aim, x: from.x, z: from.z, profile: shooterProfile(), lieRoll });
+      launch = computeLaunch(swing, { club, shotType, lie: from.lie, aim, x: from.x, z: from.z, profile: tierProfile(shooterProfile(), base.rarity), lieRoll });
     }
     // The range's club test lane replays the same swing with a second club version, so both
     // strikes use the same random draw.
@@ -401,12 +404,12 @@ export function createGame(app) {
     // Strike quality: a bounded change to the launch from how cleanly the club met the ball.
     // The simulation that follows is unchanged.
     const spin = isHuman() && !club.putter ? clampOffset(state.spin, game.spinRange()) : null;
-    const sctx = { ...strikeContext(club, from), aim, shapeError: spin ? SPIN_FX.mishit * offsetSize(spin) ** 2 : 0, shotMishit: club.putter ? 1 : shotData(shotType.id).mishit };
+    const sctx = { ...base, aim, shapeError: spin ? SPIN_FX.mishit * offsetSize(spin) ** 2 : 0, shotMishit: club.putter ? 1 : shotData(shotType.id).mishit };
     const strike = strikeResult(swing, sctx, testLane ? createRng(k) : rng);
     launch = applyStrike(launch, strike, sctx);
     // The ball-contact dot: bounded changes to curve, spin and launch, never more carry.
     if (spin && !isNeutral(spin)) launch = applySpin(launch, spin, { club, shotType, profile: state.profile });
-    result = simulateShot(launch, t.env({ windAt, t0: state.clock }));
+    result = simulateShot(launch, t.env({ windAt: tierWind(windAt, sctx.rarity, launch.heading), t0: state.clock }));
     state.compareShot = testLane ? compareSwing(swing, aim, shotType, from, lieRoll, k) : null;
     state.shotRarity = sctx.rarity;
     // hold: the first frame after launch shows the ball still at rest with the club at impact.
@@ -446,11 +449,12 @@ export function createGame(app) {
   function compareSwing(swing, aim, shotType, from, lieRoll, k) {
     const t = W().terrain, cmp = state.range.compare;
     const cclub = CLUBS.find((c) => c.id === cmp.clubId && !c.putter) || state.club;
-    const ctx2 = { ...strikeContext(cclub, from), rarity: cmp.rarity || 'common', aim };
-    let l2 = computeLaunch(swing, { club: cclub, shotType, lie: from.lie, aim, x: from.x, z: from.z, profile: state.profile, lieRoll });
+    const rarity2 = cmp.rarity || 'common';
+    const ctx2 = { ...strikeContext(cclub, from), rarity: rarity2, lieRelief: tierBenefits(rarity2).lie, aim };
+    let l2 = computeLaunch(swing, { club: cclub, shotType, lie: from.lie, aim, x: from.x, z: from.z, profile: tierProfile(state.profile, rarity2), lieRoll });
     const s2 = strikeResult(swing, ctx2, createRng(k));
     l2 = applyStrike(l2, s2, ctx2);
-    const r2 = simulateShot(l2, t.env({ windAt, t0: state.clock }));
+    const r2 = simulateShot(l2, t.env({ windAt: tierWind(windAt, rarity2, l2.heading), t0: state.clock }));
     const p = r2.carryPoint || r2.end, fx = Math.sin(aim), fz = -Math.cos(aim);
     return { club: cclub.id, rarity: ctx2.rarity, strike: s2, carry: r2.carry, total: r2.total, offline: (p.x - from.x) * -fz + (p.z - from.z) * fx, land: { x: p.x, z: p.z } };
   }
@@ -459,11 +463,17 @@ export function createGame(app) {
   // the power guide, the aim fan). No club tier changes carry, so it is the golfer's profile
   // for every tier; your ball's small speed and spin factors are folded in, so the guide's
   // mark is exactly where a Pured strike lands. Computer players use the profile unchanged.
+  // The tier's smaller lie penalty is folded in too (it changes nothing from a fairway or a
+  // tee), and guideWind is the wind the tier's ball feels, so the mark stays exact in wind and
+  // rough as well.
   function guideProfile(club) {
     if (!club || club.putter || !isHuman() || !app.gearFor) return state.profile;
-    const b = ballFactors((app.gearFor(club.id) || {}).ball);
-    return b.speed === 1 && b.spin === 1 ? state.profile : { ...state.profile, power: state.profile.power * b.speed, spin: state.profile.spin * b.spin };
+    const gear = app.gearFor(club.id) || {};
+    const b = ballFactors(gear.ball);
+    const p = b.speed === 1 && b.spin === 1 ? state.profile : { ...state.profile, power: state.profile.power * b.speed, spin: state.profile.spin * b.spin };
+    return tierProfile(p, gear.rarity || 'common');
   }
+  const guideWind = (club, heading) => (club && !club.putter && isHuman() && app.gearFor ? tierWind(windAt, (app.gearFor(club.id) || {}).rarity, heading) : windAt);
 
   // The pro behind the current player, if any, and the profile that player's shots fly with:
   // a computer pro flies with the pro's profile; everyone else with the round's profile.
@@ -477,7 +487,8 @@ export function createGame(app) {
     // A pro (human or computer) brings the pro's own perks (game/pros.js).
     const pro = currentPro();
     const gear = { ...((mine && app.gearFor && app.gearFor(club.id)) || {}), ...(pro ? proStrike(pro, club.kind) : mine && state.golfer && app.golferStrike ? app.golferStrike(club.kind) : {}) };
-    return { clubId: club.id, lie: from.lie, slope: Math.hypot(n.x, n.z) / Math.max(0.2, n.y), setting: app.settings.difficulty || 'standard', rarity: gear.rarity || 'common', glove: gear.glove || 0, ball: gear.ball || null, forgiveness: gear.forgiveness || 1, lefty: app.settings.handedness === 'left' };
+    const rarity = gear.rarity || 'common';
+    return { clubId: club.id, lie: from.lie, slope: Math.hypot(n.x, n.z) / Math.max(0.2, n.y), setting: app.settings.difficulty || 'standard', rarity, lieRelief: tierBenefits(rarity).lie, glove: gear.glove || 0, ball: gear.ball || null, forgiveness: gear.forgiveness || 1, lefty: app.settings.handedness === 'left' };
   }
 
   function addDecal(type, x, z, rot, scale) { W().decals.add(type, x, z, rot, scale); saveDecals(); }

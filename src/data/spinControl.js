@@ -5,9 +5,12 @@
 // at MAX_RANGE. Higher tiers are harder to strike (game/strike.js: smaller sweet spot, harsher
 // mishits) and in return reach further on the pad: more draw, fade, backspin and topspin.
 // No tier and no perk adds carry. Neutral (the center) is the base flight exactly.
+import { TIER_BENEFITS, tierBenefits } from './tierBenefits.js';
+
 export const BASE_RANGE = 0.5; // a Common club reaches half way to the edge
 export const MAX_RANGE = 1; // the edge of the pad, never more
-export const TIER_RANGE = { common: 1, uncommon: 1.2, rare: 1.4, epic: 1.6, legendary: 2 };
+// The tier's multiplier is one of the three tier benefits (data/tierBenefits.js).
+export const TIER_RANGE = Object.fromEntries(Object.keys(TIER_BENEFITS).map((t) => [t, tierBenefits(t).range]));
 // Golfer perks add at most this share. An archetype's own perk (by campaign archetype id;
 // the pros in data/pros.json use the same ids):
 export const PERK_RANGE_CAP = 0.25;

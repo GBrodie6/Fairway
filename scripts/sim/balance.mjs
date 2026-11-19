@@ -1,16 +1,18 @@
 // Balance runs. The simulated golfer (src/game/simGolfer.js) plays 9-hole rounds across all
-// five courses (front and back nines alternate), with paired random draws: round i is the same
+// seven courses (front and back nines alternate), with paired random draws: round i is the same
 // course, nine, wind and dice in every cell, so differences between cells come from the cells.
-//   node scripts/sim/balance.mjs [roundsPerCell=200] [workers=4] [all|arch|tier|setting] [tag]
+//   node scripts/sim/balance.mjs [roundsPerCell=200] [workers=4] [all|arch|tier|setting|pros] [tag]
 // Cells:
-//   archetypes at levels 5, 15 and 30 (auto-built skills, Common clubs);
-//   each club tier for a poor (0.35), average (0.6) and skilled (0.9) swing. Builds whose guide
-//     showed a tier carry (strike.tierCarryFactor, before the carry rule) also get a second
-//     pass that plans for it; in this build every tier shows the table carry, so the golfer
-//     plans the same way with every tier;
-//   each difficulty setting.
-// Criteria: no archetype more than 1.5 strokes per 18 holes from its level's average, and the
-// carry rule's target: no tier beats Common for an average swing.
+//   archetypes at levels 5, 15 and 30 (auto-built skills, Common clubs, normal conditions);
+//   each club tier for a poor (0.35), average (0.6) and skilled (0.9) swing in three conditions
+//     (scripts/sim/worker.mjs): calm fairway play (no wind, every lie through the green played
+//     as fairway, no slope), normal (the course's own wind and lies), and wind and rough (a 10
+//     to 20 mph gusty wind and every fairway lie played as rough);
+//   each difficulty setting; the twelve pros.
+// Criteria: no archetype or pro more than 1.5 strokes per 18 holes from its group's average;
+// the tier targets (tier benefits, data/tierBenefits.js): Legendary 0.3 to 1.0 strokes better
+// than Common for a skilled swing in wind and rough, no better than Common for a poor swing,
+// and within 0.3 strokes of Common for an average swing on calm fairway play.
 // Output: qa/balance.json and qa/balance.md for "all" (or qa/tmp/balance-<tag>.* when tagged).
 import { runCells } from './run.mjs';
 import { PROS, PRO_LEVEL } from '../../src/game/pros.js';
@@ -49,7 +51,8 @@ const paired = (rows, ref) => {
 // ---- phase 1: archetypes, tiers without planning and with the guide, settings ----
 const cells = [];
 if (ONLY === 'all' || ONLY === 'arch') for (const level of [5, 15, 30]) for (const a of ARCHETYPE_IDS) cells.push({ kind: 'arch', archetype: a, level });
-if (ONLY === 'all' || ONLY === 'tier') for (const [name, skill] of SKILLS) for (const tier of TIERS) cells.push({ kind: 'tier', tier, skill, skillName: name, plan: 'none' });
+const CONDITIONS = [['calm-fairway', 'Calm fairway play'], ['normal', 'Normal conditions'], ['wind-rough', 'Wind and rough']];
+if (ONLY === 'all' || ONLY === 'tier') for (const [cond] of CONDITIONS) for (const [name, skill] of SKILLS) for (const tier of TIERS) cells.push({ kind: 'tier', tier, skill, skillName: name, plan: 'none', conditions: cond });
 if (ONLY === 'all' || ONLY === 'setting') for (const setting of ['relaxed', 'standard', 'pro']) cells.push({ kind: 'setting', setting });
 // The pros (data/pros.json) at their matched level, with a tour swing and an average one.
 const PRO_SKILLS = [['tour', 0.85], ['average', 0.6]];
@@ -60,14 +63,14 @@ const find = (f) => { const i = cells.findIndex(f); return i < 0 ? null : rows1[
 // ---- phase 2: tiers planned with the game's guide at the golfer's own clean-strike Pured rate ----
 const cells2 = [];
 if (hasGuide && (ONLY === 'all' || ONLY === 'tier')) for (const [name, skill] of SKILLS) for (const tier of TIERS) {
-  const mix = strikeMix(find((c) => c.kind === 'tier' && c.tier === tier && c.skill === skill && c.plan === 'none'));
+  const mix = strikeMix(find((c) => c.kind === 'tier' && c.tier === tier && c.skill === skill && c.plan === 'none' && c.conditions === 'normal'));
   const rate = mix.pured / Math.max(1e-9, mix.pured + mix.good);
   cells2.push({ kind: 'tier', tier, skill, skillName: name, plan: 'guide', pureRate: +rate.toFixed(3), planBoost: guideBoost(tier, rate) });
 }
 const rows2 = cells2.length ? await run(cells2) : [];
-const tierRows = (skill, plan) => {
+const tierRows = (skill, plan, cond = 'normal') => {
   const src = plan === 'guide' ? [cells2, rows2] : [cells, rows1];
-  const get = (tier) => { const i = src[0].findIndex((c) => c.kind === 'tier' && c.tier === tier && c.skill === skill && c.plan === plan); return i < 0 ? null : src[1][i]; };
+  const get = (tier) => { const i = src[0].findIndex((c) => c.kind === 'tier' && c.tier === tier && c.skill === skill && c.plan === plan && (plan === 'guide' || c.conditions === cond)); return i < 0 ? null : src[1][i]; };
   const ref = get('common');
   if (!ref) return null;
   return TIERS.map((tier) => ({ tier, ...summary(get(tier)), ...paired(get(tier), ref), planBoost: +((src[0].find((c) => c.kind === 'tier' && c.tier === tier && c.skill === skill && c.plan === plan) || {}).planBoost || 0).toFixed(4) }));
@@ -83,6 +86,10 @@ if (ONLY === 'all' || ONLY === 'arch') for (const level of [5, 15, 30]) {
 }
 const tiers = {};
 if (ONLY === 'all' || ONLY === 'tier') for (const [name, skill] of SKILLS) tiers[name] = { skill, none: tierRows(skill, 'none'), guide: hasGuide ? tierRows(skill, 'guide') : tierRows(skill, 'none') };
+// The same tiers in each condition.
+const byCondition = {};
+if (ONLY === 'all' || ONLY === 'tier') for (const [cond, label] of CONDITIONS) byCondition[cond] = { label, skills: Object.fromEntries(SKILLS.map(([name, skill]) => [name, { skill, rows: tierRows(skill, 'none', cond) }])) };
+const legIn = (cond, name) => byCondition[cond].skills[name].rows.find((t) => t.tier === 'legendary');
 const pros = {};
 if (ONLY === 'all' || ONLY === 'pros') for (const [name, skill] of PRO_SKILLS) {
   const rows = PROS.map((p) => ({ pro: p.id, name: p.name, archetype: p.archetype, ...summary(find((c) => c.kind === 'pro' && c.pro === p.id && c.skill === skill)) }));
@@ -94,14 +101,15 @@ const settings = (ONLY === 'all' || ONLY === 'setting') ? ['relaxed', 'standard'
 const leg = (name, plan) => (tiers[name] && tiers[name][plan] ? tiers[name][plan].find((t) => t.tier === 'legendary').diff18 : null);
 const legOf = (name) => leg(name, 'guide');
 const targets = tiers.average ? {
-  // No tier measurably better than Common: every tier's 95 percent interval reaches 0 or above.
-  averageNoTierBetter: tiers.average.guide.slice(1).every((t) => t.ci95[1] >= 0),
+  // Tier benefits: Legendary against Common (negative is better than Common).
+  skilledWindRough: { value: legIn('wind-rough', 'skilled').diff18, ci95: legIn('wind-rough', 'skilled').ci95, met: legIn('wind-rough', 'skilled').diff18 <= -0.3 && legIn('wind-rough', 'skilled').diff18 >= -1.0 },
+  poorNoBetter: { values: Object.fromEntries(CONDITIONS.map(([c]) => [c, legIn(c, 'poor').diff18])), met: CONDITIONS.every(([c]) => legIn(c, 'poor').diff18 >= 0) },
+  averageCalm: { value: legIn('calm-fairway', 'average').diff18, ci95: legIn('calm-fairway', 'average').ci95, met: Math.abs(legIn('calm-fairway', 'average').diff18) <= 0.3 },
   legendary: { poor: legOf('poor'), average: legOf('average'), skilled: legOf('skilled') },
-  averageByTier: Object.fromEntries(tiers.average.guide.map((t) => [t.tier, t.diff18])),
 } : null;
 const report = {
-  method: `Simulated golfer: plans like the AI and swings with a fixed human-like error model (skill 0.35 poor, 0.6 average, 0.9 skilled). 9-hole rounds across all five courses (front and back nines alternate); paired random draws per round index (strike dice on their own stream); ${N} rounds per cell; per-18 values are twice the 9-hole means. Tier differences are paired against Common with the same swing and planning.${hasGuide ? ' "Plans for the tier\'s carry" uses the carry the game shows: the tier\'s Good-strike bonus plus the rest in proportion to the golfer\'s own Pured rate among clean strikes (strike.tierCarryFactor).' : ' Every tier carries the table carry in this build and the guide shows it, so the golfer plans the same way with every tier.'}`,
-  carryRule: !hasGuide, seconds: Math.round((Date.now() - t0) / 1000), archetypes: arch, tiers, settings, targets,
+  method: `Simulated golfer: plans like the AI and swings with a fixed human-like error model (skill 0.35 poor, 0.6 average, 0.9 skilled). 9-hole rounds across all seven courses (front and back nines alternate); paired random draws per round index (strike dice on their own stream); ${N} rounds per cell; per-18 values are twice the 9-hole means. Tier differences are paired against Common with the same swing, planning and conditions. Conditions: calm fairway play (no wind, every lie through the green played as a flat fairway lie), normal (each course's own wind and the real lies), and wind and rough (a 10 to 20 mph gusty wind and every fairway lie played as rough). Archetypes, settings and pros play normal conditions. Tier benefits (data/tierBenefits.js) apply to the shots and the plan: a crosswind moves a higher tier's ball less and rough, sand and bad lies cost it less; the golfer does not use the spin pad, so the third benefit, the wider spin and shape range, is not in these numbers.${hasGuide ? ' "Plans for the tier\'s carry" uses the carry the game shows: the tier\'s Good-strike bonus plus the rest in proportion to the golfer\'s own Pured rate among clean strikes (strike.tierCarryFactor).' : ' Every tier carries the table carry in this build and the guide shows it, so the golfer plans the same way with every tier.'}`,
+  carryRule: !hasGuide, seconds: Math.round((Date.now() - t0) / 1000), archetypes: arch, tiers, byCondition, settings, targets,
   pros, proLevel: PRO_LEVEL,
   pass: { archetypes: Object.values(arch).every((l) => l.rows.every((r) => r.pass)), pros: Object.values(pros).every((l) => l.rows.every((r) => r.pass)) },
 };
@@ -114,15 +122,10 @@ for (const [level, l] of Object.entries(arch)) {
   md.push('');
 }
 const sgn = (x) => `${x > 0 ? '+' : ''}${x}`;
-for (const [name, t] of Object.entries(tiers)) {
-  md.push(`## Club tiers, ${name} swing (skill ${t.skill}): strokes per 18 against Common`, '',
-    hasGuide ? '| Tier | Plans with the base carry | Plans for the tier\'s carry | Pured % | Good % | Mishit % |' : '| Tier | Strokes per 18 vs Common (95 percent interval) | Pured % | Good % | Mishit % |',
-    hasGuide ? '| --- | --- | --- | --- | --- | --- |' : '| --- | --- | --- | --- | --- |');
-  for (let i = 0; i < TIERS.length; i++) {
-    const a = t.none[i], b = t.guide[i];
-    md.push(hasGuide ? `| ${a.tier} | ${sgn(a.diff18)} (${a.ci95[0]} to ${a.ci95[1]}) | ${sgn(b.diff18)} (${b.ci95[0]} to ${b.ci95[1]}) | ${b.pured} | ${b.good} | ${b.mishit} |` : `| ${a.tier} | ${sgn(a.diff18)} (${a.ci95[0]} to ${a.ci95[1]}) | ${a.pured} | ${a.good} | ${a.mishit} |`);
-  }
-  md.push('', `Common plays ${t.none[0].per18} over par per 18 for this swing.`, '');
+for (const [cond, c] of Object.entries(byCondition)) {
+  md.push(`## Club tiers, ${c.label.toLowerCase()}: strokes per 18 against Common`, '', '| Swing | Tier | Strokes per 18 vs Common (95 percent interval) | Pured % | Mishit % |', '| --- | --- | --- | --- | --- |');
+  for (const [name, x] of Object.entries(c.skills)) for (const t of x.rows) md.push(`| ${t.tier === 'common' ? `${name} (${x.skill}), Common ${x.rows[0].per18} over par` : ''} | ${t.tier} | ${t.tier === 'common' ? '0' : `${sgn(t.diff18)} (${t.ci95[0]} to ${t.ci95[1]})`} | ${t.pured} | ${t.mishit} |`);
+  md.push('');
 }
 for (const [name, l] of Object.entries(pros)) {
   md.push(`## Pros, ${name} swing (skill ${l.skill}), matched level (average ${l.average18} over par per 18)`, '', '| Pro | Archetype | Over par per 18 | vs average | Pured % | Mishit % | Putts per 9 | Within 1.5 |', '| --- | --- | --- | --- | --- | --- | --- | --- |');
@@ -134,7 +137,12 @@ if (settings.length) {
   for (const x of settings) md.push(`| ${x.setting} | ${x.per18} | ${x.pured} | ${x.mishit} | ${x.shank} |`);
   md.push('');
 }
-if (targets) md.push(`Legendary against Common: poor ${sgn(targets.legendary.poor)}, average ${sgn(targets.legendary.average)}, skilled ${sgn(targets.legendary.skilled)} strokes per 18. Target, no tier measurably better than Common for an average swing (every 95 percent interval reaches 0 or above): ${targets.averageNoTierBetter ? 'met' : 'NOT met'} (${Object.entries(targets.averageByTier).slice(1).map(([k, v]) => `${k} ${sgn(v)}`).join(', ')}).`);
+if (targets) {
+  md.push(`Targets for Legendary against Common (negative is better than Common):`, '');
+  md.push(`- Skilled swing in wind and rough, 0.3 to 1.0 strokes better: ${sgn(targets.skilledWindRough.value)} (${targets.skilledWindRough.ci95[0]} to ${targets.skilledWindRough.ci95[1]}), ${targets.skilledWindRough.met ? 'met' : 'NOT met'}.`);
+  md.push(`- Poor swing no better than Common: calm fairway ${sgn(targets.poorNoBetter.values['calm-fairway'])}, normal ${sgn(targets.poorNoBetter.values.normal)}, wind and rough ${sgn(targets.poorNoBetter.values['wind-rough'])}, ${targets.poorNoBetter.met ? 'met' : 'NOT met'}.`);
+  md.push(`- Average swing on calm fairway play within 0.3 strokes: ${sgn(targets.averageCalm.value)} (${targets.averageCalm.ci95[0]} to ${targets.averageCalm.ci95[1]}), ${targets.averageCalm.met ? 'met' : 'NOT met'}.`, '');
+}
 if (Object.keys(arch).length) md.push(`Archetypes within 1.5 strokes of their level's average: ${report.pass.archetypes ? 'yes' : 'no'}.`);
 if (Object.keys(pros).length) md.push(`Pros within 1.5 strokes of the pros' average: ${report.pass.pros ? 'yes' : 'no'}.`);
 md.push(`Run time ${report.seconds} s.`);

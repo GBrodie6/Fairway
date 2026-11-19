@@ -81,7 +81,11 @@ export function computeLaunch(swing, ctx) {
   const speed = club.speed * profile.power * powerToSpeedFactor(swing.power) * type.speed * (1 - loss) * (1 - tempoLoss);
   // A poor tempo also opens the face a little in the direction it was already going.
   const faceEff = face * (1 + (1 - tq) * 0.6 * profile.forgiveness);
-  const spin = club.spin * profile.spin * type.spin * powerToSpeedFactor(swing.power) * lie.spinKeep;
+  // A higher club tier keeps more of the spin a bad lie takes away (profile.lieRelief, 0 by
+  // default, game data/tierBenefits.js), the same share it takes off the speed loss through
+  // recovery, so the lie's whole effect shrinks toward a clean strike and a flyer gains nothing.
+  const keep = 1 - (1 - lie.spinKeep) * (1 - clamp(profile.lieRelief ?? 0, 0, 1));
+  const spin = club.spin * profile.spin * type.spin * powerToSpeedFactor(swing.power) * keep;
   const tilt = clamp((faceEff - path) * club.tiltGain * DEG, -35 * DEG, 35 * DEG);
   const startWeight = club.kind === 'wood' ? 0.82 : 0.75;
   const heading = ctx.aim + (startWeight * faceEff + (1 - startWeight) * path) * DEG;

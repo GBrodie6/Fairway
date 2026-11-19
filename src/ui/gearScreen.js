@@ -9,15 +9,22 @@ import {
   SHARDS_FOR_DUPLICATE, UPGRADE_COST, upgradeClub, dropsUntilPity, STARTER_IDS,
 } from '../game/gear.js';
 import { RARITY } from '../game/strike.js';
+import { benefitLines, WIND_CAP, LIE_CAP } from '../data/tierBenefits.js';
 
 // Coins come from tournament purses (earned, never bought).
 const COINS_PER_TOKEN = 300;
-const STAT_NAMES = { control: 'Control', forgiveness: 'Forgiveness', difficulty: 'Difficulty' };
+// Three benefits, then the two costs. Wind and Bad lies show the real percentage; their bars
+// fill to the cap (data/tierBenefits.js).
+const STAT_NAMES = { wind: 'Wind', lie: 'Bad lies', control: 'Spin range', forgiveness: 'Forgiveness', difficulty: 'Mishit cost' };
 const STAT_HELP = {
+  wind: `How much less a crosswind moves the ball, up to ${Math.round(WIND_CAP * 100)} percent. Head and tail winds act in full. No extra carry.`,
+  lie: `How much smaller the distance and accuracy penalties from rough, sand and bad lies are, up to ${Math.round(LIE_CAP * 100)} percent. Never past a clean strike.`,
   control: 'How far the ball-contact dot reaches: more draw, fade, backspin and topspin. No extra carry.',
   forgiveness: 'Size of the sweet spot.',
   difficulty: 'How much a mishit costs.',
 };
+const STAT_BAR = { wind: (v) => (v / (WIND_CAP * 100)) * 100, lie: (v) => (v / (LIE_CAP * 100)) * 100 };
+const STAT_TEXT = { wind: (v) => (v ? `${v}% less` : 'none'), lie: (v) => (v ? `${v}% less` : 'none') };
 
 export const tierChip = (rarity, extra = '') => h('span', { class: `tier t-${rarity}${extra ? ` ${extra}` : ''}`, text: TIER_INFO[rarity].name });
 
@@ -39,12 +46,14 @@ export function installGear(app, ui) {
   // One stat bar, with an optional second value drawn as a thin marker for compare.
   function bar(stat, value, other) {
     const delta = other == null ? null : value - other;
+    const w = (v) => Math.round((STAT_BAR[stat] ? STAT_BAR[stat](v) : v) * 10) / 10;
+    const shown = STAT_TEXT[stat] ? STAT_TEXT[stat](value) : String(value);
     return h('div', { class: 'statrow' },
       h('span', { class: 'statname', text: STAT_NAMES[stat], title: STAT_HELP[stat] }),
-      h('span', { class: 'statbar', role: 'meter', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(value), 'aria-label': `${STAT_NAMES[stat]} ${value}` },
-        h('i', { style: { width: `${value}%` } }),
-        other == null ? null : h('em', { style: { left: `${other}%` } })),
-      h('b', { class: delta == null || delta === 0 ? '' : (stat === 'difficulty' ? delta < 0 : delta > 0) ? 'up' : 'down', text: delta == null || delta === 0 ? String(value) : `${value} (${delta > 0 ? '+' : ''}${delta})` }));
+      h('span', { class: 'statbar', role: 'meter', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(w(value)), 'aria-label': `${STAT_NAMES[stat]} ${shown}` },
+        h('i', { style: { width: `${w(value)}%` } }),
+        other == null ? null : h('em', { style: { left: `${w(other)}%` } })),
+      h('b', { class: delta == null || delta === 0 ? '' : (stat === 'difficulty' ? delta < 0 : delta > 0) ? 'up' : 'down', text: delta == null || delta === 0 ? shown : `${shown} (${delta > 0 ? '+' : ''}${delta})` }));
   }
   // The table carry: the same for every tier, Good or Pured.
   const carries = (clubId) => {
@@ -54,9 +63,11 @@ export function installGear(app, ui) {
   const statBlock = (clubId, rarity, vs) => {
     const s = clubStats(rarity), o = vs ? clubStats(vs) : null;
     const carry = carries(clubId);
+    const lines = benefitLines(rarity);
     return h('div', { class: 'stats' },
       ...Object.keys(STAT_NAMES).map((k) => bar(k, s[k], o ? o[k] : null)),
-      carry ? h('p', { class: 'muted small', text: rarity === 'common' ? `Carry about ${carry.base} yd, Good or Pured. The most forgiving sweet spot.` : `Carry about ${carry.base} yd, Good or Pured, the same as Common. Sweet spot ${Math.round(RARITY[rarity].sweet * 100)} percent of Common, harsher mishits, and the spin dot reaches ${clubStats(rarity).control} percent of the way to the edge (Common 50).` }) : null);
+      rarity === 'common' ? null : h('ul', { class: 'benefits small' }, h('li', { text: lines.wind }), h('li', { text: lines.lie }), h('li', { text: `${lines.range}: the spin dot reaches ${s.control} percent of the way to the edge (Common 50)` })),
+      carry ? h('p', { class: 'muted small', text: rarity === 'common' ? `Carry about ${carry.base} yd, Good or Pured. The most forgiving sweet spot.` : `Carry about ${carry.base} yd, Good or Pured, the same as Common. The cost: a sweet spot ${Math.round(RARITY[rarity].sweet * 100)} percent of Common's and harsher mishits.` }) : null);
   };
 
   // ---------- the bag ----------
@@ -107,7 +118,7 @@ export function installGear(app, ui) {
             h('div', {}, h('h3', { class: 'h small' }, tierChip(inBag.rarity), ' In the bag'), statBlock(clubId, inBag.rarity)),
             h('div', {}, h('h3', { class: 'h small' }, tierChip(cmp.rarity), ' Compared'), statBlock(clubId, cmp.rarity, inBag.rarity)))
           : h('div', {}, h('h3', { class: 'h small' }, tierChip(inBag.rarity), ` ${TIER_INFO[inBag.rarity].model}, in the bag`), statBlock(clubId, inBag.rarity)),
-        h('p', { class: 'muted small', text: 'Every tier carries the same distance: a Pured strike lands on the power guide with any club. Higher tiers have a smaller sweet spot and mishits cost more, and in return the spin dot reaches further for more draw, fade, backspin and topspin. Common is the most forgiving.' }),
+        h('p', { class: 'muted small', text: 'Every tier carries the same distance: a Pured strike lands on the power guide with any club. Higher tiers have a smaller sweet spot and mishits cost more. In return a crosswind moves the ball less, rough, sand and bad lies cost less, and the spin dot reaches further. Common is the most forgiving.' }),
         h('div', { class: 'list' }, ...rows),
         h('p', { class: 'muted small', text: `Upgrades use shards. Duplicates from drops become shards (${TIERS.map((t) => `${TIER_INFO[t].name} ${SHARDS_FOR_DUPLICATE[t]}`).join(', ')}).` }),
         h('div', { class: 'grid2' }, back(), btn('Bag', () => { tab = 'bag'; screens.registry.gear(); })));

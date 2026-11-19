@@ -45,9 +45,15 @@ for (const task of workerData.tasks) {
   for (let k = 0; k < 9; k++) {
     const hi = nine * 9 + k;
     const t = terrainFor(course.id, hi);
-    const wind = createWind(rollWind(createRng((seed * 31 + hi * 977) >>> 0), course.wind));
-    const windAt = (tt, hh, o) => wind.sample(tt, hh, o);
-    const r = playHoleGolfer(t, { ...golfer, skill: cell.skill ?? 0.6, rng, strikeRng, windAt });
+    // Conditions: 'normal' the course's own wind and the real lies; 'calm-fairway' no wind and
+    // every lie through the green played as fairway; 'wind-rough' a 10 to 20 mph gusty wind
+    // and every fairway lie played as rough.
+    const cond = cell.conditions || 'normal';
+    const windProfile = cond === 'wind-rough' ? { min: 10, max: 20, gustiness: 0.35 } : course.wind;
+    const wind = createWind(rollWind(createRng((seed * 31 + hi * 977) >>> 0), windProfile));
+    const windAt = cond === 'calm-fairway' ? null : (tt, hh, o) => wind.sample(tt, hh, o);
+    const lies = cond === 'calm-fairway' ? 'fairway' : cond === 'wind-rough' ? 'rough' : null;
+    const r = playHoleGolfer(t, { ...golfer, skill: cell.skill ?? 0.6, rng, strikeRng, windAt, lies });
     strokes += r.strokes; par += course.pars[hi]; putts += r.putts; penalties += r.penalties; if (r.pickedUp) picked++;
     for (const [s, n] of Object.entries(r.strikes)) strikes[s] = (strikes[s] || 0) + n;
   }

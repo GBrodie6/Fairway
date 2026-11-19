@@ -263,7 +263,9 @@ table.card-t .over { color: var(--warm); }
 .gear .small { font-size: 12.5px; }
 .gear h3.h.small { font-size: 14px; display: flex; align-items: center; gap: 6px; margin: 8px 0 6px; }
 .stats { display: flex; flex-direction: column; gap: 6px; }
-.statrow { display: grid; grid-template-columns: 92px 1fr 64px; align-items: center; gap: 8px; font-size: 13px; }
+.statrow { display: grid; grid-template-columns: 84px 1fr minmax(64px, auto); align-items: center; gap: 8px; font-size: 13px; }
+.statrow b { white-space: nowrap; }
+.benefits { margin: 4px 0 0; padding-left: 18px; color: var(--ink-dim); line-height: 1.45; }
 .statrow b { text-align: right; font-variant-numeric: tabular-nums; }
 .statrow b.up { color: var(--accent); }
 .statrow b.down { color: #ffb37a; }

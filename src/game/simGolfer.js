@@ -8,14 +8,28 @@ import { computeLaunch } from '../physics/shot.js';
 import { simulateShot } from '../physics/ball.js';
 import { SURFACES } from '../physics/surfaces.js';
 import { strikeResult, applyStrike } from './strike.js';
-import { clamp, DEG } from '../core/math.js';
+import { clamp, DEG, headingTo } from '../core/math.js';
 import { createRng } from '../core/rng.js';
 import { BASE_PROFILE } from '../physics/shot.js';
+import { tierBenefits, tierWind, tierProfile } from '../data/tierBenefits.js';
+
+// Lie modes for the balance runs: 'fairway' plays every lie through the green as a fairway lie
+// (calm fairway play), 'rough' plays every fairway and first-cut lie as rough (a golfer with
+// bad lies; bunkers, deep rough and the rest stay as they are). The ball's position and the
+// bounce and roll are always the real terrain's.
+const THROUGH_THE_GREEN = new Set([SURFACES.ROUGH, SURFACES.DEEP_ROUGH, SURFACES.FIRST_CUT, SURFACES.BUNKER, SURFACES.DIRT, SURFACES.PATH, SURFACES.WETLAND, SURFACES.WASTE, SURFACES.ROCK, SURFACES.FRINGE]);
+export function playedLie(lie, mode) {
+  if (mode === 'fairway' && THROUGH_THE_GREEN.has(lie)) return SURFACES.FAIRWAY;
+  if (mode === 'rough' && (lie === SURFACES.FAIRWAY || lie === SURFACES.FIRST_CUT)) return SURFACES.ROUGH;
+  return lie;
+}
 
 /**
  * Play one hole. opts: { profile, gearFor(clubId) -> { rarity, glove, ball }, perks(kind) ->
  * { forgiveness }, setting, skill (planning and swing spread, 0.6 = average),
- * rng, windAt }. Returns { strokes, putts, penalties, strikes: { kind: n }, pickedUp }.
+ * rng, windAt, lies ('fairway' | 'rough' | null, see playedLie) }. The golfer's clubs share one
+ * tier in these runs (gearFor ignores the club), so planning uses that tier's wind and lie.
+ * Returns { strokes, putts, penalties, strikes: { kind: n }, pickedUp }.
  */
 export function playHoleGolfer(terrain, opts) {
   const { profile = BASE_PROFILE, gearFor = () => ({}), perks = () => ({}), setting = 'standard', skill = 0.6, rng, windAt } = opts;
@@ -41,21 +55,28 @@ export function playHoleGolfer(terrain, opts) {
     } else {
       // A golfer who knows the club plans for its usual extra carry (planBoost, a speed
       // factor); the shot itself flies with the real profile and strike.
-      const planProfile = opts.planBoost ? { ...profile, power: profile.power * (1 + opts.planBoost) } : profile;
-      const plan = aiPlan(terrain, pos, lie, { skill, rng, windAt, t0, profile: planProfile, prefs: opts.prefs || null });
+      // The tier's benefits (data/tierBenefits.js): the guide shows them, so the plan uses them.
+      const tier = (gearFor(null) || {}).rarity || 'common';
+      const shotLie = playedLie(lie, opts.lies);
+      const planProfile = tierProfile(opts.planBoost ? { ...profile, power: profile.power * (1 + opts.planBoost) } : profile, tier);
+      const plan = aiPlan(terrain, pos, shotLie, { skill, rng, windAt: tierWind(windAt, tier, headingTo(pos.x, pos.z, terrain.pin.x, terrain.pin.z)), t0, profile: planProfile, prefs: opts.prefs || null });
       // A person's tempo: a ratio of backswing to downswing around 3, sometimes rushed.
       const ratio = 3 + g() * 0.45;
       const swing = { ...plan.swing, tempoRatio: ratio, tempoGrade: ratio < 2.2 ? 'rushed' : ratio > 3.9 ? 'slow' : 'good', downMs: 250 };
-      launch = computeLaunch(swing, { club: plan.club, shotType: plan.shotType, lie, aim: plan.aim, x: pos.x, z: pos.z, profile, lieRoll: rng.range(-1, 1) });
+      const gear = gearFor(plan.club.id) || {};
+      const rarity = gear.rarity || 'common';
+      launch = computeLaunch(swing, { club: plan.club, shotType: plan.shotType, lie: shotLie, aim: plan.aim, x: pos.x, z: pos.z, profile: tierProfile(profile, rarity), lieRoll: rng.range(-1, 1) });
       const n = {};
       terrain.normalAt(pos.x, pos.z, n);
-      const gear = gearFor(plan.club.id) || {};
-      const ctx = { aim: plan.aim, clubId: plan.club.id, lie, slope: Math.hypot(n.x, n.z) / Math.max(0.2, n.y), setting, rarity: gear.rarity || 'common', glove: gear.glove || 0, ball: gear.ball || null, ...(perks(plan.club.kind) || {}) };
+      // Calm fairway play is flat too: no slope term under the ball.
+      const slope = opts.lies === 'fairway' ? 0 : Math.hypot(n.x, n.z) / Math.max(0.2, n.y);
+      const ctx = { aim: plan.aim, clubId: plan.club.id, lie: shotLie, slope, setting, rarity, lieRelief: tierBenefits(rarity).lie, glove: gear.glove || 0, ball: gear.ball || null, ...(perks(plan.club.kind) || {}) };
       const st = strikeResult(swing, ctx, createRng(Math.floor(srng.next() * 2147483647) + 1));
       strikes[st.kind] = (strikes[st.kind] || 0) + 1;
       launch = applyStrike(launch, st, ctx);
     }
-    r = simulateShot(launch, terrain.env(windAt ? { windAt, t0 } : {}));
+    const shotWind = lie === SURFACES.GREEN ? windAt : tierWind(windAt, (gearFor(null) || {}).rarity || 'common', launch.heading);
+    r = simulateShot(launch, terrain.env(shotWind ? { windAt: shotWind, t0 } : {}));
     strokes++;
     t0 += r.duration + 20;
     if (r.nan) return { strokes: cap, putts, penalties, strikes, pickedUp: true, error: 'nan' };

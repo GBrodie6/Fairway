@@ -14,7 +14,9 @@ describe('gear: tiers and caps', () => {
     expect(names).toEqual(['Meadow', 'Harrow', 'Kingfisher', 'Ember', 'Solstice']);
   });
   it('the strike table matches the brief and no tier adds carry', () => {
-    const want = { common: [1, 1], uncommon: [1.25, 0.92], rare: [1.5, 0.84], epic: [1.8, 0.76], legendary: [2.2, 0.68] };
+    // The cost of a tier (difficulty: mishit severity; sweet: sweet spot size), tuned with the
+    // balance runs against the tier benefits in data/tierBenefits.js (qa/balance.md).
+    const want = { common: [1, 1], uncommon: [1.5, 0.95], rare: [2, 0.9], epic: [2.6, 0.85], legendary: [3.2, 0.8] };
     for (const t of TIERS) {
       expect(RARITY[t].difficulty).toBeCloseTo(want[t][0], 6);
       expect(RARITY[t].sweet).toBeCloseTo(want[t][1], 6);
@@ -26,6 +28,9 @@ describe('gear: tiers and caps', () => {
     for (let i = 1; i < TIERS.length; i++) {
       const a = clubStats(TIERS[i - 1]), b = clubStats(TIERS[i]);
       expect(b.control).toBeGreaterThan(a.control);
+      // The three benefits (data/tierBenefits.js) all rise with the tier.
+      expect(b.wind).toBeGreaterThan(a.wind);
+      expect(b.lie).toBeGreaterThan(a.lie);
       expect(b.forgiveness).toBeLessThan(a.forgiveness);
       expect(b.difficulty).toBeGreaterThan(a.difficulty);
     }

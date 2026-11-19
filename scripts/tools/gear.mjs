@@ -83,12 +83,19 @@ try {
   await shot('compare');
   out.screens.compare = await measure('compare');
   out.compare = await page.evaluate(() => [...document.querySelectorAll('.compare .statrow')].map((e) => e.innerText.replace(/\n/g, ' ')));
+  out.compareLines = await page.evaluate(() => [...document.querySelectorAll('.compare .benefits li')].map((e) => e.textContent));
   await tapText('Equip');
   out.equippedI7 = await page.evaluate(() => window.__fw.app.gearFor('I7'));
   await tapText('Bag');
   await tapStarts('DR');
   await tapStarts('Equip');
   out.equippedDR = await page.evaluate(() => window.__fw.app.gearFor('DR'));
+  // The Legendary driver's card: the three benefits and the two costs.
+  await page.evaluate(() => { const e = document.querySelector('.stats'); if (e) e.scrollIntoView({ block: 'start' }); });
+  await page.waitForTimeout(200);
+  await shot('card-legendary');
+  out.screens.cardLegendary = await measure('card-legendary');
+  out.cardLegendary = await page.evaluate(() => ({ stats: [...document.querySelectorAll('.stats .statrow')].map((e) => e.innerText.replace(/\n/g, ' ')), lines: [...document.querySelectorAll('.stats .benefits li, .stats p')].map((e) => e.textContent) }));
   await tapText('Bag');
   await tapText('Balls');
   await shot('balls');
