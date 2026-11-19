@@ -182,6 +182,8 @@ export function createFakeSupabase({ now = () => Date.now(), tokenTtl = 3600, di
       if (method === 'POST') {
         const rows = Array.isArray(b) ? b : [b];
         if (rows.some((r) => r[owner] !== who.userId)) return json(403, { code: '42501', message: 'new row violates row-level security policy' });
+        // The real project limits board names to 40 characters (measured against it).
+        if (t === TABLES.scores && rows.some((r) => typeof r.board !== 'string' || !r.board.length || r.board.length > 40)) return json(400, { code: '23514', message: `new row for relation "${t}" violates check constraint "${t}_board_check"` });
         const key = KEYS[t];
         const out = [];
         for (const r of rows) {

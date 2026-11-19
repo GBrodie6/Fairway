@@ -1,0 +1,108 @@
+{
+ "project": "htyeqsnydoksmdwjxmqj.supabase.co",
+ "steps": {
+  "signUp1": {
+   "ok": true,
+   "gameAccount": true
+  },
+  "publicNew": {
+   "rows": 0
+  },
+  "publish": {
+   "id": "9515e449-9a9d-43c4-94bb-a508c8eb933b",
+   "name": "API check 992",
+   "par": 3
+  },
+  "inNew": {
+   "found": true,
+   "first": "API check 992"
+  },
+  "getPublic": {
+   "name": "API check 992",
+   "author": "fwlvapi739254",
+   "likes": 0,
+   "plays": 0
+  },
+  "like": {
+   "data": true
+  },
+  "likesAfterLike": 1,
+  "unlike": {
+   "data": false
+  },
+  "likesAfterUnlike": 0,
+  "likeAgain": {
+   "data": true
+  },
+  "inTop": true,
+  "inMine": [
+   "API check 992"
+  ],
+  "played": {
+   "data": null,
+   "status": 204
+  },
+  "playsAfter": 1,
+  "report": {
+   "data": null,
+   "status": 204
+  },
+  "reportAgain": {
+   "data": null,
+   "status": 204
+  },
+  "stillVisible": true,
+  "score": {
+   "data": [
+    {
+     "id": 22,
+     "user_id": "f93e7030-6005-4097-8c17-cea25aa44929",
+     "display_name": "fwlvapi739254",
+     "board": "lvl:9515e449-9a9d-43c4-94bb-a508c8eb933b",
+     "value": 3,
+     "meta": {
+      "period": "all"
+     },
+     "created_at": "2026-11-19T04:22:30.287413+00:00"
+    }
+   ],
+   "status": 201
+  },
+  "best": {
+   "data": {
+    "best": {
+     "name": "fwlvapi739254",
+     "value": 3
+    },
+    "mine": 3
+   }
+  },
+  "anonDelete": {
+   "error": "session-expired",
+   "status": 401,
+   "detail": {
+    "code": "42501",
+    "details": null,
+    "hint": "Grant the required privileges to the current role with: GRANT DELETE ON public.fairway_levels TO anon;",
+    "message": "permission denied for table fairway_levels"
+   }
+  },
+  "stillThere": true,
+  "delete": {
+   "data": null,
+   "status": 204
+  },
+  "goneAfterDelete": true,
+  "deleteMyData": {
+   "fairway_scores": "ok",
+   "fairway_saves": "ok",
+   "fairway_profiles": "ok",
+   "fairway_levels": "ok",
+   "rpc": "ok"
+  },
+  "signInAfterDelete": {
+   "error": "bad-credentials"
+  }
+ },
+ "username": "fwlvapi739254"
+}

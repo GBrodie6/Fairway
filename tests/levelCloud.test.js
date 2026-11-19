@@ -8,7 +8,7 @@ import { createFakeSupabase } from '../src/net/fakeSupabase.js';
 import { createSync } from '../src/net/sync.js';
 import { RPCS, LEVEL_TABLES, LEVEL_RPCS } from '../src/net/tables.js';
 import { signUpPayload, authEmail } from '../src/net/account.js';
-import { listLevels, getLevel, publishLevel, updateLevel, deleteLevel, likeLevel, reportLevel, playedLevel, submitLevelScore, levelBest, rowToLevel } from '../src/net/levels.js';
+import { listLevels, getLevel, publishLevel, updateLevel, deleteLevel, likeLevel, reportLevel, playedLevel, submitLevelScore, levelBest, levelBoard, rowToLevel } from '../src/net/levels.js';
 import { TEMPLATES } from '../src/game/level.js';
 import { defaultSave } from '../src/game/save.js';
 
@@ -47,8 +47,10 @@ describe('community holes in the cloud', () => {
     await updateLevel(e.client, id, { ...TEMPLATES[0].make(), name: 'Renamed Carry' });
     expect((await getLevel(e.client, id)).data.name).toBe('Renamed Carry');
     // Best scores per hole through the scores table.
-    await submitLevelScore(e.client, id, 3, 'Ana');
-    await submitLevelScore(e.client, id, 2, 'Ana');
+    // The real project allows board names up to 40 characters; "lvl:" and a uuid is 40.
+    expect(levelBoard('6f1c2a9e-1b2c-4d3e-8f40-123456789abc')).toHaveLength(40);
+    expect((await submitLevelScore(e.client, id, 3, 'Ana')).error).toBeUndefined();
+    expect((await submitLevelScore(e.client, id, 2, 'Ana')).error).toBeUndefined();
     expect((await levelBest(e.client, id)).data).toEqual({ best: { name: 'Ana', value: 2 }, mine: 2 });
     expect((await submitLevelScore(e.client, id, 40, 'Ana')).error).toBe('out-of-range');
     // A guest reads the board but cannot write.

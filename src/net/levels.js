@@ -70,8 +70,9 @@ export async function likeLevel(client, id) {
 export const reportLevel = (client, id, reason) => (client.user ? client.rpc(LEVEL_RPCS.report, { p_level: id, p_reason: String(reason || 'other').slice(0, 80) }) : Promise.resolve({ error: 'signin' }));
 export const playedLevel = (client, id) => (client.user ? client.rpc(LEVEL_RPCS.played, { p_level: id }) : Promise.resolve({ error: 'signin' }));
 
-// Best scores per hole, through the scores table: board "level:<id>", value = strokes.
-export const levelBoard = (id) => `level:${id}`;
+// Best scores per hole, through the scores table: board "lvl:<id>", value = strokes. The
+// server allows board names of up to 40 characters, and "lvl:" plus a uuid is exactly 40.
+export const levelBoard = (id) => `lvl:${id}`;
 export async function submitLevelScore(client, id, strokes, displayName) {
   if (!client.configured || !client.user) return { error: 'session-expired' };
   const v = Math.round(Number(strokes));

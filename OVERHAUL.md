@@ -570,7 +570,8 @@ and counting plays need a signed-in game account (the server checks it and limit
 - Community holes: New, Top and Mine, with a drawn thumbnail, name, author, par, length, likes
   and plays. Play, Like, Report (three plain reasons), Share (a `#level=<id>` link that opens a
   preview) and Delete for your own. Play random. Finishing a community hole posts your strokes
-  to the scores table on the board `level:<id>` and shows the best and your best.
+  to the scores table on the board `lvl:<id>` (the server allows board names up to 40
+  characters; this is exactly 40) and shows the best and your best.
 - Drafts are kept on the device (20). A publish made offline waits and goes out when the
   connection is back. Delete my data also removes your holes.
 - Ease: from the Create tile to a published hole, from a template, signed in: Create, the
