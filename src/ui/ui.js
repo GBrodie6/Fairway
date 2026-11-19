@@ -15,6 +15,7 @@ import { clubAverageCarry } from '../game/range.js';
 import { SURFACES } from '../physics/surfaces.js';
 import { emptyStreaks, updateStreaks, hotStreak } from '../game/streaks.js';
 import { cosmeticById } from '../game/cosmetics.js';
+import { applyDesktop, toggleFullscreen, fullscreenAvailable } from './desktop.js';
 
 const COSMETIC_COLOR = (id) => (cosmeticById(id) || {}).color || null;
 
@@ -28,6 +29,10 @@ export function createUI(app) {
     if (ui.input) ui.input.rumble(Array.isArray(pattern) ? 0.6 : 0.35, Array.isArray(pattern) ? 90 : 40);
   };
   const ui = { root, modal: null };
+  // Desktop sizing (ui/desktop.js): before the HUD lays out, and again on every resize.
+  ui.desk = applyDesktop(root, settings);
+  window.addEventListener('resize', () => { ui.desk = applyDesktop(root, settings); });
+  app.toggleFullscreen = () => (fullscreenAvailable() ? toggleFullscreen() : Promise.resolve(false));
   // Reduced motion follows the setting or the operating system preference.
   const mq = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
   app.motionReduced = () => !!settings.reducedMotion || !!(mq && mq.matches);
@@ -36,6 +41,7 @@ export function createUI(app) {
     map: () => { if (game.state.round && game.state.round.mode === 'range' && app.rangeMap) app.rangeMap(); else if (game.state.round) ui.map.toggle(); },
     rangeHud: () => (app.rangeHud ? app.rangeHud() : null),
     pause: () => { if (game.state.round && !ui.modal) ui.screens.pause(); },
+    fullscreen: () => app.toggleFullscreen(),
     replay: () => { if (game.replay('follow')) ui.hud.toast('Replay', 'Half speed. Tap the course to return', 1600); },
     resetAim: () => {
       const st = game.state;
@@ -202,6 +208,7 @@ export function createUI(app) {
     if (ui.map.open) ui.map.draw();
   };
   ui.applySettings = () => {
+    ui.desk = applyDesktop(root, settings);
     ui.hud.setLayout();
     if (app.world && app.world.rig) app.world.rig.lefty = settings.handedness === 'left';
     if (app.world && app.world.overlays) app.world.overlays.setPalette(settings.colorblind);

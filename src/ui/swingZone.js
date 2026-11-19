@@ -80,7 +80,9 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     const box = zone.box;
     if (!box || !box.h) return;
     const vw = window.innerWidth || 390;
-    const edge = 12, lefty = settings.handedness === 'left';
+    // On an ultrawide desktop the HUD corners sit in from the far edges (ui/desktop.js, --ex).
+    const ex = parseFloat(getComputedStyle(parent).getPropertyValue('--ex')) || 0;
+    const edge = 12 + ex, lefty = settings.handedness === 'left';
     let left = lefty ? edge : vw - edge - 10;
     // Step inward past any control on that edge within the track's height (the look and aim
     // buttons sit on the right edge in landscape), so the track never covers a button.

@@ -2,23 +2,25 @@
 // a screenshot each, and measurements: elements past the viewport edge, buttons under 40 px,
 // text clipped inside its box, and controls that overlap each other. Then the first-minute
 // tutorial in a real round (the three prompts, with a real swing).
-//   node scripts/tools/screens.mjs qa/tmp/screens/s [390x844] [tutorial=1]
+//   node scripts/tools/screens.mjs qa/tmp/screens/s [390x844] [tutorial=1] [mouse]
+// mouse: a desktop mouse (no touch) and the in-memory cloud, plus the level creator screens.
 import path from 'node:path';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { launchBrowser, trackErrors } from '../lib/browser.mjs';
 import { serveStatic } from '../lib/serve.mjs';
 import { createPointer, waitPhase, swing } from '../lib/drive.mjs';
 
-const [prefix = 'qa/tmp/screens/s', size = '390x844', tut = '1'] = process.argv.slice(2);
+const [prefix = 'qa/tmp/screens/s', size = '390x844', tut = '1', input = 'touch'] = process.argv.slice(2);
+const mouse = input === 'mouse';
 const [W, H] = size.split('x').map(Number);
 mkdirSync(path.dirname(prefix), { recursive: true });
 const server = await serveStatic(path.resolve(process.env.DIST || 'dist'));
 const { browser } = await launchBrowser();
-const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, hasTouch: true, isMobile: W < H });
+const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: Number(process.env.DSF || 1), hasTouch: !mouse, isMobile: !mouse && W < H });
 ctx.setDefaultTimeout(240000);
 const page = await ctx.newPage();
 const errors = trackErrors(page);
-const pointer = await createPointer(page, { touch: true });
+const pointer = await createPointer(page, { touch: !mouse });
 const out = { size, screens: [], tutorial: null };
 const tap = async (text, startsWith = true) => {
   const r = await page.evaluate(([t, sw]) => {
@@ -60,7 +62,7 @@ const visit = async (name) => {
   out.screens.push({ name, ...m });
 };
 try {
-  await page.goto(`${server.url}/?tier=low&scale=0.5`, { waitUntil: 'load' });
+  await page.goto(`${server.url}/?tier=low&scale=0.5${mouse ? '&cloud=demo' : ''}`, { waitUntil: 'load' });
   await page.waitForFunction(() => window.__fw && window.__fw.ready, null);
   await page.waitForTimeout(700);
   await visit('menu');
@@ -88,6 +90,11 @@ try {
   await tap('Account (optional)'); await visit('account'); await tap('Back');
   await tap('Back');
   await tap('Settings'); await visit('settings'); await tap('Back');
+  if (mouse) {
+    await tap('Create'); await visit('create');
+    await tap('Short par 3 over water'); await page.waitForTimeout(400); await visit('editor');
+    await tap('Back'); await tap('Browse holes'); await page.waitForTimeout(800); await visit('levels'); await tap('Back');
+  }
   if (tut === '1') {
     // The tutorial: a 3-hole quick round on a fresh profile.
     await page.evaluate(() => { const a = window.__fw.app; a.settings.tutorialDone = false; a.saveSettings(); });

@@ -1,0 +1,231 @@
+{
+ "steps": [
+  {
+   "name": "size-1920x1080",
+   "size": "1920x1080",
+   "overlaps": [],
+   "offscreen": [],
+   "desk": true,
+   "hs": "1.2",
+   "ex": "0px",
+   "minHudFontPx": 14,
+   "vw": 1920,
+   "vh": 1080,
+   "dpr": 1,
+   "canvasPx": [
+    960,
+    540
+   ]
+  },
+  {
+   "name": "resize-1366x768",
+   "size": "1366x768",
+   "overlaps": [],
+   "offscreen": [],
+   "desk": true,
+   "hs": "1",
+   "ex": "0px",
+   "minHudFontPx": 11.7,
+   "vw": 1366,
+   "vh": 768,
+   "dpr": 1,
+   "canvasPx": [
+    683,
+    384
+   ]
+  },
+  {
+   "name": "resize-2560x1440",
+   "size": "2560x1440",
+   "overlaps": [],
+   "offscreen": [],
+   "desk": true,
+   "hs": "1.6",
+   "ex": "0px",
+   "minHudFontPx": 18.7,
+   "vw": 2560,
+   "vh": 1440,
+   "dpr": 1,
+   "canvasPx": [
+    1280,
+    720
+   ]
+  },
+  {
+   "name": "resize-3440x1440",
+   "size": "3440x1440",
+   "overlaps": [],
+   "offscreen": [],
+   "desk": true,
+   "hs": "1.6",
+   "ex": "352px",
+   "minHudFontPx": 18.7,
+   "vw": 3440,
+   "vh": 1440,
+   "dpr": 1,
+   "canvasPx": [
+    1720,
+    720
+   ]
+  },
+  {
+   "name": "resize-1280x720",
+   "size": "1280x720",
+   "overlaps": [],
+   "offscreen": [],
+   "desk": true,
+   "hs": "1",
+   "ex": "0px",
+   "minHudFontPx": 11.7,
+   "vw": 1280,
+   "vh": 720,
+   "dpr": 1,
+   "canvasPx": [
+    640,
+    360
+   ]
+  },
+  {
+   "name": "resize-1920x1080",
+   "size": "1920x1080",
+   "overlaps": [],
+   "offscreen": [],
+   "desk": true,
+   "hs": "1.2",
+   "ex": "0px",
+   "minHudFontPx": 14,
+   "vw": 1920,
+   "vh": 1080,
+   "dpr": 1,
+   "canvasPx": [
+    960,
+    540
+   ]
+  },
+  {
+   "name": "screensize-small",
+   "size": "1920x1080",
+   "overlaps": [],
+   "offscreen": [],
+   "desk": true,
+   "hs": "1.02",
+   "ex": "0px",
+   "minHudFontPx": 11.9,
+   "vw": 1920,
+   "vh": 1080,
+   "dpr": 1,
+   "canvasPx": [
+    960,
+    540
+   ]
+  },
+  {
+   "name": "screensize-large",
+   "size": "1920x1080",
+   "overlaps": [],
+   "offscreen": [],
+   "desk": true,
+   "hs": "1.44",
+   "ex": "0px",
+   "minHudFontPx": 16.8,
+   "vw": 1920,
+   "vh": 1080,
+   "dpr": 1,
+   "canvasPx": [
+    960,
+    540
+   ]
+  },
+  {
+   "name": "screensize-normal",
+   "size": "1920x1080",
+   "overlaps": [],
+   "offscreen": [],
+   "desk": true,
+   "hs": "1.2",
+   "ex": "0px",
+   "minHudFontPx": 14,
+   "vw": 1920,
+   "vh": 1080,
+   "dpr": 1,
+   "canvasPx": [
+    960,
+    540
+   ]
+  },
+  {
+   "name": "zoom75-1366x768",
+   "size": "1821x1024",
+   "overlaps": [],
+   "offscreen": [],
+   "desk": true,
+   "hs": "1.138",
+   "ex": "0px",
+   "minHudFontPx": 13.3,
+   "vw": 1821,
+   "vh": 1024,
+   "dpr": 0.75,
+   "canvasPx": [
+    683,
+    384
+   ]
+  },
+  {
+   "name": "zoom150-1366x768",
+   "size": "911x512",
+   "overlaps": [],
+   "offscreen": [],
+   "desk": false,
+   "hs": "1",
+   "ex": "0px",
+   "minHudFontPx": 11.7,
+   "vw": 911,
+   "vh": 512,
+   "dpr": 1.5,
+   "canvasPx": [
+    456,
+    256
+   ]
+  },
+  {
+   "name": "zoom75-1920x1080",
+   "size": "2560x1440",
+   "overlaps": [],
+   "offscreen": [],
+   "desk": true,
+   "hs": "1.6",
+   "ex": "0px",
+   "minHudFontPx": 18.7,
+   "vw": 2560,
+   "vh": 1440,
+   "dpr": 0.75,
+   "canvasPx": [
+    960,
+    540
+   ]
+  },
+  {
+   "name": "zoom150-1920x1080",
+   "size": "1280x720",
+   "overlaps": [],
+   "offscreen": [],
+   "desk": true,
+   "hs": "1",
+   "ex": "0px",
+   "minHudFontPx": 11.7,
+   "vw": 1280,
+   "vh": 720,
+   "dpr": 1.5,
+   "canvasPx": [
+    640,
+    360
+   ]
+  }
+ ],
+ "consoleErrors": [],
+ "fullscreen": {
+  "afterButton": true,
+  "afterF": false,
+  "afterSecondF": true
+ }
+}

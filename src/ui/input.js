@@ -44,6 +44,8 @@ export function createInput({ view, game, getWorld, settings, hud, actions, hapt
     const ph = game.state.phase;
     const k = e.code;
     if (k === 'Escape') { e.preventDefault(); actions.escape(); return; }
+    // F: fullscreen, anywhere (menus too), never with a modifier (Ctrl+F is the browser's find).
+    if (k === 'KeyF' && !e.ctrlKey && !e.metaKey && !e.altKey && actions.fullscreen) { e.preventDefault(); actions.fullscreen(); return; }
     if (actions.modalOpen()) return;
     if (ph === 'intro' && (k === 'Space' || k === 'Enter')) { e.preventDefault(); game.skipIntro(); return; }
     if (ph === 'summary' && (k === 'Enter' || k === 'Space')) { e.preventDefault(); actions.continue(); return; }

@@ -40,6 +40,9 @@ const ICONS = {
   right: '<svg viewBox="0 0 24 24"><path d="m9.5 5 7 7-7 7"/></svg>',
   aim: '<svg viewBox="0 0 24 24"><path d="M12 21V6"/><path d="m7 10.5 5-5.5 5 5.5"/><circle cx="12" cy="21" r="1.3"/></svg>',
   chevron: '<svg viewBox="0 0 24 24"><path d="m5 8 7 6 7-6"/><path d="m5 13 7 6 7-6" opacity="0.5"/></svg>',
+  expand: '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
+  shrink: '<svg viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>',
+  keys: '<svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h1M10 10h1M14 10h1M18 10h0M7 14h10"/></svg>',
 };
 export function icon(name) {
   const span = document.createElement('span');

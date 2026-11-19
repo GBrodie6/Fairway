@@ -82,7 +82,13 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   const badge = h('div', { class: 'posbadge glass' });
   const mapBtn = iconButton('map', 'Hole map and rangefinder', () => actions.map(), 'roundbtn glass');
   const replayBtn = iconButton('replay', 'Replay the last shot', () => actions.replay(), 'roundbtn glass');
-  const tr = h('div', { class: 'topright' }, h('div', { class: 'trrow' }, holebox, scorebox), badge, mapBtn, replayBtn);
+  // Fullscreen (desktop only; the phone layout has no room and phones go fullscreen on their own).
+  const fsBtn = iconButton('expand', 'Fullscreen (F)', () => actions.fullscreen && actions.fullscreen(), 'roundbtn glass fsbtn');
+  const syncFs = () => { const on = !!(document.fullscreenElement || document.webkitFullscreenElement); fsBtn.textContent = ''; fsBtn.appendChild(icon(on ? 'shrink' : 'expand')); fsBtn.setAttribute('aria-label', on ? 'Leave fullscreen (F)' : 'Fullscreen (F)'); fsBtn.title = fsBtn.getAttribute('aria-label'); fsBtn.setAttribute('aria-pressed', on ? 'true' : 'false'); };
+  document.addEventListener('fullscreenchange', syncFs);
+  document.addEventListener('webkitfullscreenchange', syncFs);
+  if (!(document.fullscreenEnabled || document.webkitFullscreenEnabled)) fsBtn.classList.add('nofs');
+  const tr = h('div', { class: 'topright' }, h('div', { class: 'trrow' }, holebox, scorebox), badge, mapBtn, replayBtn, fsBtn);
   el.appendChild(tr);
 
   // --- right side: hold to look around ---
@@ -95,12 +101,12 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   el.appendChild(lookBtn);
 
   // --- bottom row ---
-  const settingsBtn = iconButton('gear', 'Settings and pause', () => actions.pause(), 'roundbtn glass');
+  const settingsBtn = iconButton('gear', 'Settings and pause', () => actions.pause(), 'roundbtn glass b-settings');
   const arrowL = h('button', { class: 'arrow glass', type: 'button' }, icon('left'));
   const arrowR = h('button', { class: 'arrow glass', type: 'button' }, icon('right'));
   const clubL = h('span', { class: 'cl' }), clubC = h('span', { class: 'cc' });
   const clubBtn = h('button', { class: 'clubbtn', type: 'button', 'aria-haspopup': 'dialog' }, clubL, clubC);
-  const resetBtn = iconButton('aim', 'Aim back at the target', () => actions.resetAim(), 'roundbtn glass');
+  const resetBtn = iconButton('aim', 'Aim back at the target', () => actions.resetAim(), 'roundbtn glass b-reset');
   const clubgroup = h('div', { class: 'clubgroup' }, arrowL, clubBtn, arrowR);
   const bottombar = h('div', { class: 'bottombar' }, settingsBtn, clubgroup, resetBtn);
   el.appendChild(bottombar);
@@ -289,7 +295,10 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     arrowR.setAttribute('aria-label', settings.leftHandLayout ? 'Longer club' : 'Shorter club');
     const W = window.innerWidth || 800, H = window.innerHeight || 600;
     const bb = bottombar.getBoundingClientRect();
-    const barTop = bb.height ? bb.top : H - 90;
+    // The top of the bottom row as drawn: on a desktop its buttons are scaled from the bottom
+    // edge, so they reach above the row's own box (on a phone this is the row's top).
+    const kidTops = [...bottombar.children].map((c) => c.getBoundingClientRect()).filter((r) => r.height > 0).map((r) => r.top);
+    const barTop = kidTops.length ? Math.min(...kidTops) : bb.height ? bb.top : H - 90;
     const landscape = W > H;
     const want = Math.round(clamp(H * 0.27, 96, 190) * clamp(settings.stickScale || 1, 0.7, 1.5));
     // Zone height: the start line, full travel, and a margin above the bottom row; in portrait
@@ -313,7 +322,7 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     const rightBottom = trR.bottom + (replayBtn.classList.contains('hidden') ? 54 : 0);
     const leftBottom = tabTop(tbR) + 80;
     const top = Math.max(settings.leftHandLayout ? leftBottom : rightBottom, landscape ? 0 : H * 0.36) + 10;
-    lookBtn.style.top = `${Math.round(Math.min(top, barTop - 66))}px`;
+    lookBtn.style.top = `${Math.round(Math.min(top, barTop - 10 - (lookBtn.getBoundingClientRect().height || 56)))}px`;
     // The HUD corner on the player's side (tabs for a right-hander, the top-right panel for a
     // left-hander): the camera keeps the club's swing clear of it.
     const cr = settings.handedness === 'left' ? tr.getBoundingClientRect() : tabWind.getBoundingClientRect();

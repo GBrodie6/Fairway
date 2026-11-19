@@ -30,6 +30,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   showFps: false,
   spinMemory: 'reset', // the ball-contact dot after each shot: reset to the middle, or remember
   allShotsQuickPlay: true, // every shot type in Quick Play (Campaign unlocks them on the skill tree)
+  screenSize: 'normal', // desktop HUD and menu size: small | normal | large (ui/desktop.js)
 });
 
 const ENUMS = {
@@ -39,6 +40,7 @@ const ENUMS = {
   colorblind: ['off', 'deuteranopia', 'protanopia', 'tritanopia'],
   difficulty: ['relaxed', 'standard', 'pro'],
   spinMemory: ['reset', 'remember'],
+  screenSize: ['small', 'normal', 'large'],
 };
 
 // Validate and normalize any object into a well-formed settings object.
