@@ -20,6 +20,7 @@ import { installFun } from './ui/funUi.js';
 import { installBroadcast } from './ui/broadcastUi.js';
 import { installPros } from './ui/prosUi.js';
 import { installProfile } from './ui/profileUi.js';
+import { installLevels } from './ui/levelsUi.js';
 import { createAudio } from './audio/audio.js';
 import { saveSettings } from './core/settings.js';
 
@@ -77,6 +78,7 @@ async function boot() {
   installBroadcast(app, app.ui);
   installPros(app, app.ui);
   installProfile(app, app.ui);
+  installLevels(app, app.ui);
   app.audio.attach(app.game, () => app.world);
   // Browsers only allow audio after a user gesture.
   for (const ev of ['pointerdown', 'keydown']) window.addEventListener(ev, () => app.audio.unlock(), { passive: true });
@@ -105,16 +107,22 @@ async function boot() {
   // A round can start straight from the URL (used by the QA bot and for shared links),
   // otherwise the main menu shows over the course.
   if (params.mode) await app.ui.screens.startQuick({ courseId, mode: params.mode, holes: params.holes || 9, startHole: params.hole || 1, tod: todId, seed: params.seed });
-  else if (!app.openChallengeFromHash()) app.ui.screens.menu();
+  else if (!app.openChallengeFromHash()) { app.ui.screens.menu(); openLevelFromHash(app); }
   // Offline support: the service worker precaches the app shell and caches assets as they are
   // used. Not in QA runs, so every run measures a cold network load.
   if ('serviceWorker' in navigator && import.meta.env.PROD && !params.smoke && !params.bot && location.protocol !== 'file:') {
     navigator.serviceWorker.register('./sw.js').catch((e) => console.warn('[fairway] service worker not registered:', e && e.message));
   }
   // A challenge link pasted into an open tab only changes the hash.
-  window.addEventListener('hashchange', () => { if (!app.game.state.round) app.openChallengeFromHash(); });
+  window.addEventListener('hashchange', () => { if (!app.game.state.round && !app.openChallengeFromHash()) openLevelFromHash(app); });
   // The heavy assets arrive after first paint.
   app.world.whenSettled().then(() => { fw.settled = true; });
+}
+
+// A shared community hole: #level=<id>.
+function openLevelFromHash(app) {
+  const m = /(?:^#|&)level=([0-9a-fA-F-]{36})/.exec(location.hash || '');
+  if (m && app.openLevelLink) app.openLevelLink(m[1].toLowerCase());
 }
 
 boot().catch((err) => {

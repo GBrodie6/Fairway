@@ -134,19 +134,26 @@ const lengthRange = { 3: [136, 212], 4: [332, 452], 5: [492, 578] };
 export function generateHole(course, index) {
   const th = course.theme;
   const par = course.pars[index];
-  const rng = createRng(((course.seed * 7919) ^ ((index + 1) * 104729)) >>> 0);
+  // A community level (game/level.js) gives the routing, green and hazards itself; the rest of
+  // the hole (fairway, rough, tees, path, markers) comes from the same code as every hole.
+  const lv = course.level || null;
+  const rng = createRng(lv ? lv.seed >>> 0 || 1 : ((course.seed * 7919) ^ ((index + 1) * 104729)) >>> 0);
   const [lo, hi] = lengthRange[par];
   // A real course (course/realCourses.js) has a card yardage and a spec per hole; the random
   // draws still happen in the same order, so invented courses are unchanged.
   const spec = (course.holes && course.holes[index]) || null;
   const drawnYards = Math.round(rng.range(lo, hi));
-  const yards = course.yards ? course.yards[index] : drawnYards;
+  let yards = course.yards ? course.yards[index] : drawnYards;
   const L = yards * YARD;
 
   // --- routing: control points, then rotate so tee to green runs straight down -Z ---
-  const ctrl = [{ x: 0, z: 0 }];
+  let ctrl = [{ x: 0, z: 0 }];
   let bends = [];
-  if (par === 3) {
+  if (lv) {
+    // The level's route from its tee, through its bend handles, to its pin.
+    ctrl = [lv.tee, ...lv.bend, lv.pin].map((p) => ({ x: p[0] - lv.tee[0], z: p[1] - lv.tee[1] }));
+    for (let i = 1; i < ctrl.length - 1; i++) bends.push(Math.atan2(ctrl[i + 1].x - ctrl[i].x, -(ctrl[i + 1].z - ctrl[i].z)) - Math.atan2(ctrl[i].x - ctrl[i - 1].x, -(ctrl[i].z - ctrl[i - 1].z)));
+  } else if (par === 3) {
     ctrl.push({ x: 0, z: -L });
   } else if (par === 4) {
     const f1 = rng.range(0.52, 0.64);
@@ -174,6 +181,8 @@ export function generateHole(course, index) {
     const x = p.x * cr + p.z * sr, z = -p.x * sr + p.z * cr;
     p.x = x; p.z = z;
   }
+  // A level's own pieces, moved into the same frame (tee at the origin, green down -Z).
+  const xf = lv ? (q) => { const x = q[0] - lv.tee[0], z = q[1] - lv.tee[1]; return { x: x * cr + z * sr, z: -x * sr + z * cr }; } : null;
   // Insert midpoints so the rounding only softens the corners, then round and resample.
   const dense = [ctrl[0]];
   for (let i = 0; i < ctrl.length - 1; i++) {
@@ -182,6 +191,7 @@ export function generateHole(course, index) {
   }
   const line = resample(chaikin(dense, 3), LINE_STEP);
   const total = line[line.length - 1].s;
+  if (lv) yards = Math.round(total / YARD);
   const P = {}, Q = {};
 
   // --- green ---
@@ -190,6 +200,7 @@ export function generateHole(course, index) {
   let aspect = rng.range(0.82, 1.28);
   // A double green (the Old Course): half as large again and long across the line.
   if (spec && spec.double) { greenR *= 1.45; aspect = 0.62; }
+  if (lv) { greenR = lv.green; aspect = 1; }
   const green = {
     x: P.x, z: P.z, ax: P.tx, az: P.tz, // approach direction (unit)
     ra: greenR * aspect, rc: greenR / Math.sqrt(aspect), rot: rng.range(-0.6, 0.6),
@@ -239,7 +250,7 @@ export function generateHole(course, index) {
 
   // --- sea (coastal holes): one side of the hole falls away to a beach and the water ---
   let sea = null;
-  const seaHere = spec && 'sea' in spec ? !!spec.sea && th.seaLevel !== null : th.seaLevel !== null && rng.chance(th.water.sea);
+  const seaHere = lv ? false : spec && 'sea' in spec ? !!spec.sea && th.seaLevel !== null : th.seaLevel !== null && rng.chance(th.water.sea);
   if (seaHere) {
     sea = { side: spec && spec.sea ? Math.sign(spec.sea) : rng.sign(), offset: baseHalf + roughBand + rng.range(34, 58), wobble: rng.range(6, 14), phase: rng.range(0, 6.28), level: th.seaLevel };
   }
@@ -249,7 +260,7 @@ export function generateHole(course, index) {
   const water = [];
   const dogSide = bends.length ? Math.sign(bends[0]) || 1 : rng.sign();
   const pondChance = par === 3 ? th.water.frontPond : th.water.pond;
-  const pondHere = spec && spec.water ? spec.water !== 'none' : !sea && rng.chance(pondChance);
+  const pondHere = lv ? false : spec && spec.water ? spec.water !== 'none' : !sea && rng.chance(pondChance);
   if (pondHere) {
     const pr = rng.range(15, 27);
     let cx, cz, role;
@@ -289,7 +300,9 @@ export function generateHole(course, index) {
     }
     water.push({ type: 'pond', role, blobs, depth: rng.range(1.2, 2.2) });
   }
-  const streamHere = spec && spec.stream != null ? true : rng.chance(th.water.stream) && total > 150;
+  const streamHere = lv ? false : spec && spec.stream != null ? true : rng.chance(th.water.stream) && total > 150;
+  // A level's ponds, as placed.
+  if (lv) for (const w of lv.water) { const c = xf(w); water.push({ type: 'pond', role: 'level', blobs: [{ x: c.x, z: c.z, r: w[2] }], depth: 1.6 }); }
   if (streamHere) {
     let s = par === 3 ? total - greenR - rng.range(16, 30) : clamp(total * rng.range(0.42, 0.7), 110, total - 70);
     if (spec && spec.stream === 'front') s = total - greenR * (spec.double ? 1.3 : 1) - rng.range(12, 18);
@@ -342,7 +355,7 @@ export function generateHole(course, index) {
     return true;
   };
   const drawnGreen = rng.int(th.bunkers.green[0], th.bunkers.green[1]);
-  const nGreen = spec && spec.bunkers && spec.bunkers.green != null ? spec.bunkers.green : drawnGreen;
+  const nGreen = lv ? 0 : spec && spec.bunkers && spec.bunkers.green != null ? spec.bunkers.green : drawnGreen;
   const usedAng = [];
   for (let i = 0, tries = 0; i < nGreen && tries < 40; tries++) {
     // Angle around the green: 0 faces back down the fairway. Keep the front open.
@@ -374,7 +387,7 @@ export function generateHole(course, index) {
   }
   if (par > 3) {
     const drawnFw = rng.int(th.bunkers.fairway[0], th.bunkers.fairway[1]);
-    const nFw = spec && spec.bunkers && spec.bunkers.fairway != null ? spec.bunkers.fairway : drawnFw;
+    const nFw = lv ? 0 : spec && spec.bunkers && spec.bunkers.fairway != null ? spec.bunkers.fairway : drawnFw;
     for (let i = 0, tries = 0; i < nFw && tries < 30; tries++) {
       const zone = par === 5 && rng.chance(0.45) ? [total - 150, total - 75] : [198, 252];
       const s = clamp(rng.range(zone[0], zone[1]), fwStart + 20, fwEnd - 25);
@@ -403,8 +416,18 @@ export function generateHole(course, index) {
     if (clear(P.x, P.z, bb.r)) bunkers.push({ kind: s > total - greenR * 2 ? 'green' : 'fairway', blobs: [{ x: P.x, z: P.z, r: bb.r }], depth: th.bunkers.depth[1] * 1.15, lip: 0.55, faceX: P.tx, faceZ: P.tz, named: true });
   }
 
+  // A level's bunkers, as placed (the player chose them; only the green and tee are kept clear).
+  if (lv) for (const b of lv.bunkers) {
+    const c = xf(b), r = b[2];
+    if (greenSdf(green, c.x, c.z) < r * 0.6 + 0.6) continue;
+    if (tees.some((t) => Math.hypot(c.x - t.x, c.z - t.z) < r + 5)) continue;
+    pointAt(line, clamp(-c.z, 0, total), P);
+    bunkers.push({ kind: Math.hypot(c.x - green.x, c.z - green.z) < greenR + r + 12 ? 'green' : 'fairway', blobs: [{ x: c.x, z: c.z, r }], depth: (th.bunkers.depth[0] + th.bunkers.depth[1]) / 2, lip: 0.45, faceX: P.tx, faceZ: P.tz });
+  }
+
   // --- pin positions: four candidates well inside the green ---
   const pins = [];
+  if (lv) pins.push({ x: green.x, z: green.z });
   for (let i = 0; i < 4; i++) {
     for (let tries = 0; tries < 30; tries++) {
       const a = (i / 4) * Math.PI * 2 + rng.range(-0.5, 0.5), d = greenR * rng.range(0.25, 0.62);
@@ -428,6 +451,14 @@ export function generateHole(course, index) {
     minX: Math.floor(minX - lateral - (sea && sea.side < 0 ? 70 : 0)), maxX: Math.ceil(maxX + lateral + (sea && sea.side > 0 ? 70 : 0)),
     minZ: Math.floor(minZ - 150), maxZ: Math.ceil(maxZ + 112),
   };
+  // A level's trees, rough patches and hills, in the hole's frame, for the terrain builder.
+  const levelTrees = lv ? lv.trees.map(xf) : null;
+  const levelRough = lv ? lv.rough.map((c) => ({ ...xf(c), r: c[2] })) : null;
+  const levelHills = lv ? lv.hills.map((c) => ({ ...xf(c), r: c[2], h: c[3] })) : null;
+  if (lv) for (const q of [...levelRough, ...levelHills, ...levelTrees.map((t) => ({ ...t, r: 6 })), ...water.flatMap((w) => w.blobs), ...bunkers.flatMap((b) => b.blobs)]) {
+    bounds.minX = Math.min(bounds.minX, Math.floor(q.x - q.r - 30)); bounds.maxX = Math.max(bounds.maxX, Math.ceil(q.x + q.r + 30));
+    bounds.minZ = Math.min(bounds.minZ, Math.floor(q.z - q.r - 30)); bounds.maxZ = Math.max(bounds.maxZ, Math.ceil(q.z + q.r + 30));
+  }
 
   // --- prop anchors ---
   const markers = [];
@@ -448,6 +479,7 @@ export function generateHole(course, index) {
     green, pins, pinIndex: index % pins.length,
     tees, teeHeading: Math.atan2(teeDir.tx, -teeDir.tz),
     bunkers, water, sea, path, markers, bounds, bends, dogSide, tournament,
+    ...(lv ? { levelTrees, levelRough, levelHills } : {}),
     mowing: ['stripes', 'checker', 'diagonal'][rng.int(0, 2)],
     greenMowing: rng.chance(0.5) ? 'checker' : 'stripes',
   };

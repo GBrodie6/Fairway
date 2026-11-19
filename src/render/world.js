@@ -135,7 +135,8 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
     world.buildMs = performance.now() - t0;
     if (world.terrainView) { scene.remove(world.terrainView.group); world.terrainView.dispose(); }
     for (const s of world.systems) if (s.unloadHole) s.unloadHole();
-    world.course = course; world.courseId = course.id; world.hole = index + 1;
+    // A community level looks like the theme it was built on (course.look).
+    world.course = course; world.courseId = course.look || course.id; world.hole = index + 1;
     world.holeData = holeData; world.terrain = terrain;
     world.terrainView = createTerrainView({ terrain, course, lighting, tier: engine.tier, assets, manifest: MANIFEST, engine });
     scene.add(world.terrainView.group);

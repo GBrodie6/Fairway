@@ -1,6 +1,6 @@
 // Round state and the rules of play, as plain data and pure functions. The controller feeds
 // it shot outcomes; the UI, saves, share links, and tests all read the same structure.
-import { COURSES, courseById } from '../course/courses.js';
+import { COURSES, courseById, isLevelCourse } from '../course/courses.js';
 import { SURFACES } from '../physics/surfaces.js';
 import { maxStrokes, isGir, matchPlayStatus, skinsResult, strokeTotals, closestToPin } from './scoring.js';
 import { clamp } from '../core/math.js';
@@ -184,7 +184,7 @@ export function validateRound(r) {
   const fail = (m) => { errs.push(m); return false; };
   if (!r || typeof r !== 'object') return { ok: false, errors: ['not an object'] };
   if (r.v !== ROUND_VERSION) fail('unsupported round version');
-  if (!COURSES.some((c) => c.id === r.courseId)) fail('unknown course');
+  if (!COURSES.some((c) => c.id === r.courseId) && !(isLevelCourse(r.courseId) && courseById(r.courseId).id === r.courseId)) fail('unknown course');
   if (!MODES[r.mode]) fail('unknown mode');
   if (!Array.isArray(r.holes) || r.holes.length < 1 || r.holes.length > 18 || !r.holes.every((h) => Number.isInteger(h) && h >= 0 && h < 18)) fail('bad hole list');
   if (!Array.isArray(r.players) || r.players.length < 1 || r.players.length > 4) fail('bad player count');

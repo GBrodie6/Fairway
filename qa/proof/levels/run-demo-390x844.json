@@ -1,0 +1,421 @@
+{
+ "mode": "demo",
+ "size": "390x844",
+ "url": "http://127.0.0.1:42119",
+ "parts": [
+  "count",
+  "browse",
+  "editor",
+  "offline",
+  "delete"
+ ],
+ "signUp": {
+  "attempt": 1,
+  "user": "fwlv918790"
+ },
+ "username": "fwlv918790",
+ "template": {
+  "level": {
+   "v": 1,
+   "name": "Island Carry",
+   "theme": "parkland",
+   "seed": 11,
+   "tee": [
+    0,
+    0
+   ],
+   "pin": [
+    4,
+    -142
+   ],
+   "bend": [],
+   "green": 12,
+   "bunkers": [
+    [
+     17,
+     -150,
+     4
+    ]
+   ],
+   "water": [
+    [
+     2,
+     -96,
+     18
+    ],
+    [
+     -14,
+     -110,
+     11
+    ]
+   ],
+   "rough": [],
+   "hills": [],
+   "trees": []
+  },
+  "status": "Test play the hole once to publish it."
+ },
+ "testPlay": {
+  "log": [
+   "I6 142.1m -> 3.6",
+   "PT 3.6m -> 3.6"
+  ],
+  "result": "Holed in 2"
+ },
+ "afterTest": "Tested. Ready to publish.",
+ "published": "Published \"Island Carry\". Find it under New.",
+ "publishedId": "00000005-1111-4222-8333-000000000006",
+ "tapCount": {
+  "total": 11,
+  "menu": 5,
+  "swings": 2,
+  "aim": 2,
+  "skips": 1,
+  "firstRunOnly": 1,
+  "withoutGolf": 7,
+  "menuOnly": 5
+ },
+ "newTab": [
+  "Island Carry / by fwlv918790 / Par 3, 155 yd. 0 likes, 0 plays."
+ ],
+ "foundInNew": true,
+ "afterLike": "Island Carry / by fwlv918790 / Par 3, 155 yd. 1 like, 0 plays.",
+ "likeButton": "Play, Liked (1), Share, Delete",
+ "shareStatus": "Link copied.",
+ "topTab": [
+  "Island Carry / by fwlv918790 / Par 3, 155 yd. 1 like, 0 plays."
+ ],
+ "mineTab": [
+  "Island Carry / by fwlv918790 / Par 3, 155 yd. 1 like, 0 plays."
+ ],
+ "sharePreview": [
+  "Island Carry",
+  "By fwlv918790. Par 3, 155 yd. 1 like, 0 plays.",
+  "Back",
+  "Play"
+ ],
+ "publishedPlay": {
+  "log": [
+   "I7 142.1m -> 2.0",
+   "PT 2.0m -> 2.0"
+  ],
+  "result": "Holed in 2"
+ },
+ "publishedEnd": [
+  "Holed in 2",
+  "Island Carry, par 3.",
+  "Best: 2 by fwlv918790. Your best: 2.",
+  "Back to the holes"
+ ],
+ "afterPlay": "Island Carry / by fwlv918790 / Par 3, 155 yd. 1 like, 1 play.",
+ "deleteStatus": "Deleted.",
+ "mineAfterDelete": [],
+ "newAfterDelete": [],
+ "editor": {
+  "start": {
+   "v": 1,
+   "name": "Corner Bend",
+   "theme": "parkland",
+   "seed": 23,
+   "tee": [
+    0,
+    0
+   ],
+   "pin": [
+    -92,
+    -350
+   ],
+   "bend": [
+    [
+     0,
+     -230
+    ]
+   ],
+   "green": 13,
+   "bunkers": [
+    [
+     22,
+     -232,
+     5
+    ],
+    [
+     -82,
+     -318,
+     4
+    ]
+   ],
+   "water": [
+    [
+     -34,
+     -262,
+     12
+    ]
+   ],
+   "rough": [],
+   "hills": [],
+   "trees": []
+  },
+  "teeMoved": {
+   "from": [
+    0,
+    0
+   ],
+   "to": [
+    40.3,
+    0
+   ]
+  },
+  "pinMoved": {
+   "from": [
+    -92,
+    -350
+   ],
+   "to": [
+    -145.8,
+    -309.7
+   ],
+   "par": "Par 4, 437 yd"
+  },
+  "bendMoved": {
+   "from": [
+    0,
+    -230
+   ],
+   "to": [
+    55.7,
+    -230
+   ]
+  },
+  "palette": {
+   "Bunker": {
+    "before": {
+     "bunkers": 2,
+     "water": 1,
+     "trees": 0,
+     "rough": 0,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    },
+    "after": {
+     "bunkers": 3,
+     "water": 1,
+     "trees": 0,
+     "rough": 0,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    }
+   },
+   "Water": {
+    "before": {
+     "bunkers": 3,
+     "water": 1,
+     "trees": 0,
+     "rough": 0,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    },
+    "after": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 0,
+     "rough": 0,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    }
+   },
+   "Trees": {
+    "before": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 0,
+     "rough": 0,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    },
+    "after": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 0,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    }
+   },
+   "Rough": {
+    "before": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 0,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    },
+    "after": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 1,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    }
+   },
+   "Hills": {
+    "before": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 1,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    },
+    "after": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 1,
+     "hills": 1,
+     "green": 13,
+     "bends": 1
+    }
+   },
+   "Green size": {
+    "before": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 1,
+     "hills": 1,
+     "green": 13,
+     "bends": 1
+    },
+    "after": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 1,
+     "hills": 1,
+     "green": 17,
+     "bends": 1
+    }
+   },
+   "Add bend": {
+    "before": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 1,
+     "hills": 1,
+     "green": 17,
+     "bends": 1
+    },
+    "after": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 1,
+     "hills": 1,
+     "green": 17,
+     "bends": 2
+    }
+   }
+  },
+  "bunker": {
+   "placed": [
+    28.9,
+    -189.1,
+    5
+   ],
+   "dragged": [
+    62.5,
+    -212.4,
+    5
+   ],
+   "pinched": [
+    62.5,
+    -212.4,
+    9
+   ],
+   "grew": true
+  },
+  "binUndoRedo": {
+   "before": 4,
+   "afterDelete": 3,
+   "afterUndo": 4,
+   "afterRedo": 3
+  },
+  "decorate": {
+   "before": {
+    "bunkers": 3,
+    "water": 2,
+    "trees": 6,
+    "rough": 1,
+    "hills": 1,
+    "green": 17,
+    "bends": 2
+   },
+   "after": {
+    "bunkers": 3,
+    "water": 2,
+    "trees": 76,
+    "rough": 4,
+    "hills": 1,
+    "green": 17,
+    "bends": 2
+   }
+  },
+  "pinInWater": {
+   "status": "The pin is in the water.",
+   "testDisabled": true,
+   "publishDisabled": true
+  },
+  "afterUndo": {
+   "status": "Test play the hole once to publish it.",
+   "testDisabled": false
+  },
+  "badName": {
+   "status": "Links are not allowed in names.",
+   "publishDisabled": true
+  },
+  "bytes": 1408
+ },
+ "offlineTest": {
+  "log": [
+   "I6 142.1m -> 2.9",
+   "PT 2.9m -> 2.9"
+  ],
+  "result": "Holed in 2"
+ },
+ "offline": {
+  "status": "You are offline. The hole is saved here and will be published when you are back online.",
+  "draft": {
+   "id": "dmwn175hd",
+   "publishedId": null,
+   "pendingPublish": true
+  },
+  "afterOnline": [
+   {
+    "name": "Quiet Pond 60",
+    "publishedId": "00000008-1111-4222-8333-000000000009",
+    "pending": false
+   }
+  ],
+  "inNew": [
+   "Quiet Pond 60"
+  ]
+ },
+ "afterDelete": {
+  "user": false,
+  "account": null,
+  "myHolesInNew": 0
+ },
+ "consoleErrors": []
+}

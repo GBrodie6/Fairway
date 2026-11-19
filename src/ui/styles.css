@@ -492,3 +492,31 @@ p.comm { font-style: italic; color: #f4ecd2; }
 .procard { border: 1px solid var(--line); border-left-width: 4px; border-radius: 14px; padding: 10px; background: rgba(255, 255, 255, 0.04); display: flex; flex-direction: column; gap: 6px; }
 .prohead { display: flex; gap: 10px; align-items: center; }
 .prostats { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+
+/* ---------- level creator and community holes ---------- */
+.lvtemplates { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.lvtemplate { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 14px; background: rgba(255, 255, 255, 0.07); border: 1px solid var(--line) !important; min-height: 48px; }
+.lvtemplate b { font-size: 13px; font-weight: 600; }
+.lvthumb { border-radius: 10px; display: block; flex: none; }
+.sheet.editor { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.lvtop { display: flex; gap: 8px; align-items: center; }
+.lvtop input { flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--line); color: var(--ink); font-size: 16px; }
+.lvpar { white-space: nowrap; font-size: 14px; }
+.lvcanvas { width: 100%; height: min(42vh, 440px); border-radius: 14px; touch-action: none; display: block; background: #3f6b33; }
+.lvstatus { min-height: 18px; margin: 0; }
+.lvtools { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.btn.lvtool { min-height: 48px; padding: 0 4px; font-size: 13.5px; }
+.lvactions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.lvactions .btn.small { width: 100%; }
+.lvlist { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.lvcard { display: flex; gap: 10px; padding: 8px; border-radius: 14px; background: rgba(255, 255, 255, 0.06); align-items: flex-start; }
+.lvmeta { flex: 1; min-width: 0; gap: 3px; }
+.lvmeta .row .btn.small { padding: 0 10px; }
+@media (orientation: landscape) and (max-height: 520px) {
+  .sheet.editor { width: min(840px, 100%); display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); grid-template-rows: repeat(6, auto); column-gap: 12px; row-gap: 6px; padding: 10px; }
+  .sheet.editor .lvcanvas { grid-column: 1; grid-row: 1 / 7; height: calc(100vh - 52px - var(--safe-t) - var(--safe-b)); }
+  .sheet.editor > :not(.lvcanvas) { grid-column: 2; }
+  .sheet.editor .btn { min-height: 44px; }
+  .sheet.editor .lvtop input { min-height: 40px; }
+  .lvtemplates { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}

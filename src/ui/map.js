@@ -88,7 +88,7 @@ export function createHoleMap(parent, { getWorld, game, settings, onClose }) {
     base.width = bw; base.height = bh;
     base.getContext('2d').putImageData(img, 0, 0);
     map.base = base; map.frame = frame; map.res = res;
-    map.key = `${w.courseId}:${w.hole}`;
+    map.key = `${w.course ? w.course.id : w.courseId}:${w.hole}`;
   }
 
   function size() {
@@ -207,7 +207,7 @@ export function createHoleMap(parent, { getWorld, game, settings, onClose }) {
   map.show = () => {
     const w = getWorld();
     if (!w.terrain) return;
-    if (map.key !== `${w.courseId}:${w.hole}` || !map.base) buildBase();
+    if (map.key !== `${w.course ? w.course.id : w.courseId}:${w.hole}` || !map.base) buildBase();
     map.heading = headingTo(w.terrain.tee.x, w.terrain.tee.z, w.terrain.hole.green.x, w.terrain.hole.green.z);
     map.tap = null;
     wrap.classList.remove('hidden');

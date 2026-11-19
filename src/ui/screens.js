@@ -70,6 +70,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
         big('Quick Play', 'A round on any course, 3 to 18 holes', () => screens.setup(), !resume),
         screens.registry.campaign ? big('Campaign', 'Six chapters, bosses, your golfer', () => screens.registry.campaign()) : null,
         big('Range', 'Practice ground and drills', () => (app.openRange ? app.openRange() : startRange())),
+        screens.registry.create ? big('Create', 'Make a hole, test it, share it', () => screens.registry.create()) : null,
         screens.registry.daily ? big('Daily', claim ? `Today's challenge. ${claim} quest${claim === 1 ? '' : 's'} to claim` : 'Challenge, quests, this week', () => screens.registry.daily()) : null,
         screens.registry.profile ? big('Profile', pts ? `${pts} skill point${pts === 1 ? '' : 's'} to spend` : 'Golfer, gear, achievements', () => screens.registry.profile()) : null,
         h('div', { class: 'grid2' },
@@ -199,6 +200,8 @@ export function createScreens(root, { app, game, settings, ui, save }) {
   // --- hole summary ---
   screens.holeSummary = (s) => {
     if (!s || game.state.fast) return;
+    // A community or test hole goes straight to its own end screen.
+    if (app.levelPlay && game.state.round && game.state.round.courseId === app.levelPlay.courseId) { hide(); game.continue(); return; }
     const r = game.state.round;
     show('summary', () => {
       const rows = r.players.map((p, i) => {
@@ -230,6 +233,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
   }
   screens.roundEnd = (r) => {
     if (!r) return;
+    if (app.levelPlay && r.courseId === app.levelPlay.courseId) { app.levelPlay.end(r); return; }
     const stand = standings(r);
     if (screens.onRoundEnd) screens.onRoundEnd(r, stand);
     show('done', () => sheet('wide',

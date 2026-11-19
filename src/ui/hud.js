@@ -245,7 +245,7 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   hud.lowerThird = (title, sub, line, ms = 3200) => {
     shotcard.textContent = '';
     shotcard.className = 'shotcard glass lt';
-    shotcard.append(h('b', { class: 'ltt', text: title }), h('span', { class: 'lts', text: sub }), line ? h('span', { class: 'ltl', text: line }) : null);
+    shotcard.append(...[h('b', { class: 'ltt', text: title }), h('span', { class: 'lts', text: sub }), line ? h('span', { class: 'ltl', text: line }) : null].filter(Boolean));
     placeCard();
     shotcard.classList.remove('hidden');
     clearTimeout(cardTimer);

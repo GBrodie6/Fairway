@@ -71,10 +71,11 @@ export function installBroadcast(app, ui) {
     const meLead = b && b.some((x) => x.me && x.pos === 1);
     const leader = !b || !b[0] ? null : tied > 1 ? `${meLead ? 'You share' : `${tied} players share`} the lead at ${fmtToPar(b[0].toPar)}` : b[0].me ? `You lead at ${fmtToPar(b[0].toPar)}` : `${b[0].name} leads at ${fmtToPar(b[0].toPar)}`;
     intro.textContent = '';
-    intro.append(h('span', { class: 'kicker', text: course.name }),
+    // Element.append writes a null as the text "null", so the empty leader line is dropped first.
+    intro.append(...[h('span', { class: 'kicker', text: course.name }),
       h('b', { class: 'ititle', text: `Hole ${hd.number}  ·  Par ${hd.par}  ·  ${fmtDist(hd.yards * 0.9144, u())}` }),
       h('span', { class: 'line', text: holeIntro(hd) }),
-      leader ? h('span', { class: 'lead', text: leader }) : null);
+      leader ? h('span', { class: 'lead', text: leader }) : null].filter(Boolean));
     intro.classList.remove('hidden');
   }
   let pendingLT = false;

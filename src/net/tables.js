@@ -12,3 +12,14 @@ export const RPCS = Object.freeze({
   newChallenge: 'fairway_new_challenge',
   deleteMyAccount: 'fairway_delete_my_account',
 });
+// Community holes (the level creator).
+export const LEVEL_TABLES = Object.freeze({
+  levels: 'fairway_levels',
+  likes: 'fairway_level_likes',
+  reports: 'fairway_level_reports',
+});
+export const LEVEL_RPCS = Object.freeze({
+  like: 'fairway_level_like', // (p_level uuid) returns boolean: liked now
+  report: 'fairway_level_report', // (p_level uuid, p_reason text)
+  played: 'fairway_level_played', // (p_level uuid)
+});

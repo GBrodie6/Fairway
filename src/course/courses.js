@@ -88,5 +88,9 @@ theme: {
 
 export const COURSE_IDS = COURSES.map((c) => c.id);
 // The practice ground (course/range.js) is found by id but is not one of the playable courses.
-export const courseById = (id) => (id === RANGE_COURSE.id ? RANGE_COURSE : COURSES.find((c) => c.id === id) || COURSES[0]);
+// Community levels (game/level.js) register a course of their own while they are played.
+const RUNTIME = new Map();
+export const registerCourse = (c) => { if (c && typeof c.id === 'string' && c.id.startsWith('lvl:')) { RUNTIME.set(c.id, c); if (RUNTIME.size > 40) RUNTIME.delete(RUNTIME.keys().next().value); } return c; };
+export const courseById = (id) => (id === RANGE_COURSE.id ? RANGE_COURSE : RUNTIME.get(id) || COURSES.find((c) => c.id === id) || COURSES[0]);
+export const isLevelCourse = (id) => typeof id === 'string' && id.startsWith('lvl:');
 export const coursePar = (c) => c.pars.reduce((a, b) => a + b, 0);

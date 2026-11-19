@@ -534,6 +534,51 @@ ones (`src/course/realCourses.js`; names in `REAL_COURSE_NAMES`, sources in ASSE
   Fixing it for them is a one-line change, left for a human decision because it adds hazards to
   existing holes.
 
+- Golden hour and dusk: the first verify of this part failed its smoke because Augusta clipped
+  2.6 percent of the frame (the limit is 2): the pines cast long low-sun shadows over the
+  fairway and the meter raised the exposure until the sky blew out. The pines now stand a
+  little further back and a little shorter, and the turf is a touch lighter (golden 1.1
+  percent, dusk 1.6 percent). Look only.
+
+## Community holes (the level creator)
+
+Anyone can make a hole, test it and share it. Reading is public; publishing, liking, reporting
+and counting plays need a signed-in game account (the server checks it and limits publishing to
+10 a day and 100 in all, and hides a hole at 5 reports).
+
+- Format (`src/game/level.js`): compact JSON with a version field: `{ v, name, theme, seed,
+  tee, pin, bend (0 to 2 points), green, bunkers, water, rough, hills, trees }`, positions in
+  meters with the tee near the origin. `parseLevel` is strict and never throws: unknown fields
+  or a wrong version are refused, numbers are clamped to the play area and the size limits,
+  lists are capped (40 hazards, 400 trees), names go through the profanity filter, and the whole
+  hole must fit in 20 KB. A fuzz test throws 4,000 random and broken inputs at it.
+- Par comes from the distance along the tee, the bends and the pin (up to 250 yards par 3, up to
+  470 par 4, else par 5). Plain problems block a test: "The pin is in the water.", a bunker on
+  the green, a tee in the water, too short, too long.
+- The same hole builder: a level becomes a one-hole course on its theme's look; the hole
+  generator (`course/layout.js`) follows the level's route and places its hazards, the terrain
+  adds its hills, rough and trees, and the physics, renderer and map read it like any hole.
+- Create (main menu): six templates (a short par 3 over water, a dogleg par 4, a long par 5,
+  links, desert, alpine), a random hole and a blank one, plus your drafts.
+- Editor: a top-down map. Drag the tee, the pin and the bend handles. Big buttons place a
+  bunker, water, trees, rough or a hill beside the fairway; drag a piece to move it, pinch with
+  two fingers to resize the selected one, and Delete removes it. Green size cycles small,
+  medium and large; Add bend adds a second corner; Decorate lines the hole with trees and rough.
+  Undo and redo, the name box, par and length, and the first problem under the map.
+- Test play starts the hole at once and comes back to the editor. Publishing needs one finished
+  test (holed, not picked up) of the hole exactly as it is now; any change needs a new test.
+- Community holes: New, Top and Mine, with a drawn thumbnail, name, author, par, length, likes
+  and plays. Play, Like, Report (three plain reasons), Share (a `#level=<id>` link that opens a
+  preview) and Delete for your own. Play random. Finishing a community hole posts your strokes
+  to the scores table on the board `level:<id>` and shows the best and your best.
+- Drafts are kept on the device (20). A publish made offline waits and goes out when the
+  connection is back. Delete my data also removes your holes.
+- Ease: from the Create tile to a published hole, from a template, signed in: Create, the
+  template, Test play, Skip flyover, the swings and any putt read, Back to the editor, Publish.
+  Measured with real taps at both phone sizes (`scripts/tools/levels.mjs`): 11 taps at 390x844
+  and 10 at 844x390, counting every swing and aim nudge, the flyover skip and the first-run tip;
+  5 of them are menu taps. The target was 25.
+
 ## Stage 10: proof and deploy
 
 Screenshots of every new screen at 360x640, 390x844, 844x390, and 1024x768 with the layout

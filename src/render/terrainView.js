@@ -449,7 +449,7 @@ export function createTerrainView({ terrain, course, lighting, tier, assets, man
   group.name = 'terrain';
   const { nx, nz, x0, z0, height } = terrain;
   const tex = buildTerrainTextures(terrain);
-  const { surfaces, sets } = layersFor(course.id, manifest);
+  const { surfaces, sets } = layersFor(course.look || course.id, manifest);
 
   // 1x1 placeholder arrays so the samplers are always bound to something valid.
   const mkArray = (size, layers, srgb) => {

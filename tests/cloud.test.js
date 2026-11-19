@@ -220,7 +220,7 @@ describe('delete', () => {
     // The order: scores, saves, profiles, then the procedure, then sign out.
     const seq = env.fake.calls.map((c) => `${c.method} ${c.path}${c.method === 'DELETE' ? c.search : ''}`);
     expect(seq).toEqual([
-      `DELETE /rest/v1/${T.scores}?user_id=eq.${id}`, `DELETE /rest/v1/${T.saves}?user_id=eq.${id}`, `DELETE /rest/v1/${T.profiles}?id=eq.${id}`,
+      `DELETE /rest/v1/${T.scores}?user_id=eq.${id}`, `DELETE /rest/v1/${T.saves}?user_id=eq.${id}`, `DELETE /rest/v1/${T.profiles}?id=eq.${id}`, `DELETE /rest/v1/fairway_levels?user_id=eq.${id}`,
       `POST /rest/v1/rpc/${RPCS.deleteMyAccount}`,
     ]);
     for (const t of Object.values(T)) expect(env.fake.tables[t].some((x) => x.user_id === id || x.id === id)).toBe(false);

@@ -182,6 +182,10 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
   const teeH = hole.tees.map((t) => profAt(t.s) + 0.5);
   const targets = hole.targets && hole.targets.length > 1 ? hole.targets.filter((tg) => tg !== green) : null;
   const clearings = hole.clearings || [];
+  // A community level's own hills, rough patches and trees (absent on every built-in hole).
+  const levelHills = hole.levelHills && hole.levelHills.length ? hole.levelHills : null;
+  const levelRough = hole.levelRough && hole.levelRough.length ? hole.levelRough : null;
+  const levelTrees = hole.levelTrees && hole.levelTrees.length ? hole.levelTrees : null;
   const sea = hole.sea;
   const seaD = new Float32Array(sea ? n : 0);
 
@@ -215,6 +219,8 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
       const edgeFade = 1 - smoothstep(40, 80, out);
       h += fbm2(x / th.undulationWave, z / th.undulationWave, seed + 3, 3) * th.undulation * (0.45 + 0.55 * (1 - wild)) * edgeFade;
       h += fbm2(x / 9, z / 9, seed + 5, 2) * 0.06 * (0.3 + wild) * edgeFade;
+      // A community level's hills (game/level.js): smooth bumps and hollows where placed.
+      if (levelHills) for (const hl of levelHills) { const d2 = ((x - hl.x) ** 2 + (z - hl.z) ** 2) / (hl.r * hl.r); if (d2 < 4) h += hl.h * Math.exp(-d2 * 1.6); }
       // Green complex.
       if (dGreen < gR * 1.4 + 26) {
         const gs = greenSdf(green, x, z);
@@ -411,7 +417,10 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
       const s = sField[k], at = Math.abs(tField[k]);
       const hw = halfAt(s);
       const out = outside[k];
-      const fwSdf = hw > 0.4 ? at - hw : 60;
+      let fwSdf = hw > 0.4 ? at - hw : 60;
+      // A level's rough patches push the fairway and first cut out (a tree clump plays as rough).
+      if (levelRough) for (const rp of levelRough) { const d = Math.hypot(x - rp.x, z - rp.z); if (d < rp.r + 4) fwSdf = Math.max(fwSdf, rp.r - d + 3.2); }
+      if (levelTrees) for (const tp of levelTrees) { const d = Math.hypot(x - tp.x, z - tp.z); if (d < 9) fwSdf = Math.max(fwSdf, 5 - d + 3.2); }
       const dG = Math.hypot(x - green.x, z - green.z);
       let gs = dG < gR * 1.4 + 12 ? greenSdf(green, x, z) : 60;
       if (targets) for (const tg of targets) if (Math.abs(x - tg.x) < tg.radius + 6 && Math.abs(z - tg.z) < tg.radius + 6) gs = Math.min(gs, greenSdf(tg, x, z));
@@ -458,6 +467,8 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
       for (const c of clearings) if (Math.hypot(x - c.x, z - c.z) < c.r) td = 0;
       if (masks.rock[k] > 100) td *= 0.2;
       if (sea && seaD[k] > -30) td = 0;
+      // A level's trees: a dense clump where each was placed (not on the green or in water).
+      if (levelTrees && gs > 2 && !(wl > NO_WATER + 1 && height[k] - wl < 1.2)) for (const tp of levelTrees) { const d = Math.hypot(x - tp.x, z - tp.z); if (d < 6) td = Math.max(td, 0.95 * (1 - d / 6) ** 0.5); }
       trees[k] = Math.round(clamp(td, 0, 1) * 255);
     }
   }

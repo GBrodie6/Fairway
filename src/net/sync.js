@@ -8,7 +8,7 @@
 //   queue     every push is queued in local storage first and flushed with a debounce; when
 //             offline it stays queued and is retried later, so offline play never blocks
 import { messageFor } from './supabase.js';
-import { TABLES, RPCS } from './tables.js';
+import { TABLES, RPCS, LEVEL_TABLES } from './tables.js';
 
 export const BACKUP_KEY = 'fairway-next.backups';
 export const QUEUE_KEY = 'fairway-next.syncqueue';
@@ -223,13 +223,13 @@ export function createSync({ client, getSave, applySave, storage, now = () => Da
     set(client.configured ? 'guest' : 'off', '');
   };
 
-  // Delete my data: the player's rows in every table (scores, save, profile), then the account
+  // Delete my data: the player's rows in every table (scores, save, profile, published holes), then the account
   // itself (fairway_delete_my_account), then sign out and clear this device's sync state and
   // progress. A guest delete wipes this device only.
   sync.deleteEverything = async (freshSave) => {
     if (client.configured && client.user) {
       const id = encodeURIComponent(client.user.id);
-      for (const [table, q] of [[TABLES.scores, `user_id=eq.${id}`], [TABLES.saves, `user_id=eq.${id}`], [TABLES.profiles, `id=eq.${id}`]]) {
+      for (const [table, q] of [[TABLES.scores, `user_id=eq.${id}`], [TABLES.saves, `user_id=eq.${id}`], [TABLES.profiles, `id=eq.${id}`], [LEVEL_TABLES.levels, `user_id=eq.${id}`]]) {
         const d = await client.remove(table, q);
         if (d.error) return { error: d.error, message: messageFor(d.error) };
       }

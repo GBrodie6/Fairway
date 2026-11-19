@@ -7,7 +7,7 @@
 // everyone), the robot check (a game sign-up needs a picture answer that is right, unused, at
 // least 2 seconds and at most 10 minutes old), the app_metadata.fairway flag that every write
 // needs, email confirmation off, tokens that expire, and fairway_delete_my_account.
-import { TABLES, RPCS } from './tables.js';
+import { TABLES, RPCS, LEVEL_TABLES, LEVEL_RPCS } from './tables.js';
 
 const KEYS = { [TABLES.profiles]: 'id', [TABLES.saves]: 'user_id', [TABLES.scores]: null };
 const OWNER = { [TABLES.profiles]: 'id', [TABLES.saves]: 'user_id', [TABLES.scores]: 'user_id' };
@@ -24,7 +24,9 @@ export function createFakeSupabase({ now = () => Date.now(), tokenTtl = 3600, di
   const tokens = new Map(); // access token -> { userId, exp }
   const refreshTokens = new Map(); // refresh token -> userId
   const challenges = new Map(); // id -> { answer, at, used }
-  const tables = { [TABLES.profiles]: [], [TABLES.saves]: [], [TABLES.scores]: [] };
+  const tables = { [TABLES.profiles]: [], [TABLES.saves]: [], [TABLES.scores]: [], [LEVEL_TABLES.levels]: [] };
+  const likes = new Set(), reports = new Set(); // `${user}:${level}`
+  const uuid = () => `${(seq++).toString(16).padStart(8, '0')}-1111-4222-8333-${(seq++).toString(16).padStart(12, '0')}`;
   const extra = { rpc: {}, tables: {} }; // later parts register their own tables and procedures here
   let seq = 1, offline = false, failNext = null, rateLimit = 0, lastChallenge = null;
   const calls = [];
@@ -132,11 +134,43 @@ export function createFakeSupabase({ now = () => Date.now(), tokenTtl = 3600, di
       for (const [t, rec] of tokens) if (rec.userId === who.userId) tokens.delete(t);
       return json(200, null);
     }
+    // --- community holes: like (toggle), report (once each; hidden at 5), played ---
+    const lvRpc = Object.entries(LEVEL_RPCS).find(([, n]) => path === `/rest/v1/rpc/${n}`);
+    if (lvRpc) {
+      if (!who.userId || !who.verified) return json(403, { code: '42501', message: 'permission denied' });
+      const row = tables[LEVEL_TABLES.levels].find((r) => r.id === b.p_level);
+      if (!row) return json(400, { message: 'no such level' });
+      const k = `${who.userId}:${row.id}`;
+      if (lvRpc[0] === 'like') { if (likes.has(k)) { likes.delete(k); row.likes--; return json(200, false); } likes.add(k); row.likes++; return json(200, true); }
+      if (lvRpc[0] === 'report') { if (!reports.has(k)) { reports.add(k); row.reports++; if (row.reports >= 5) row.hidden = true; } return json(200, null); }
+      row.plays++; return json(200, null);
+    }
     const rp = /^\/rest\/v1\/rpc\/(\w+)$/.exec(path);
     if (rp && extra.rpc[rp[1]]) return extra.rpc[rp[1]](b, who, json);
     // --- tables, with row level security ---
     const m = /^\/rest\/v1\/(\w+)$/.exec(path);
     if (m && extra.tables[m[1]]) return extra.tables[m[1]]({ method, search: u.search, body: b, who, json, query, filter });
+    if (m && m[1] === LEVEL_TABLES.levels) {
+      const t = m[1];
+      if (method === 'GET') return json(200, query(tables[t].filter((r) => !r.hidden || r.user_id === who.userId), u.search));
+      if (!who.userId || !who.verified) return json(403, { code: '42501', message: 'new row violates row-level security policy' });
+      if (method === 'POST') {
+        const rows = Array.isArray(b) ? b : [b];
+        const mine = tables[t].filter((r) => r.user_id === who.userId);
+        const today = mine.filter((r) => now() - Date.parse(r.created_at) < 86400000).length;
+        if (today + rows.length > 10 || mine.length + rows.length > 100) return json(400, { code: 'P0001', message: 'Publishing limit reached' });
+        const out = [];
+        for (const r of rows) {
+          if (r.user_id !== who.userId || JSON.stringify(r.data || {}).length > 20000) return json(400, { message: 'bad level' });
+          const row = { id: uuid(), user_id: r.user_id, author: r.author, name: r.name, par: r.par, data: r.data, plays: 0, likes: 0, reports: 0, hidden: false, created_at: new Date(now() + seq).toISOString() };
+          tables[t].push(row); out.push(row);
+        }
+        return json(201, out);
+      }
+      const hit = filter(tables[t], u.search).filter((r) => r.user_id === who.userId);
+      if (method === 'DELETE') { tables[t] = tables[t].filter((r) => !hit.includes(r)); return json(204); }
+      if (method === 'PATCH') { for (const r of hit) for (const k of ['name', 'par', 'data']) if (k in b) r[k] = b[k]; return json(200, hit); }
+    }
     if (m && tables[m[1]]) {
       const t = m[1], owner = OWNER[t];
       if (method === 'GET') {
