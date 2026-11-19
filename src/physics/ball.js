@@ -204,7 +204,7 @@ export function simulateShot(launch, env, opts = {}) {
           finish('water');
           break;
         }
-        const sp = surfaceProps(surf);
+        const sp = env.props ? env.props(surf) : surfaceProps(surf);
         env.normalAt(s.x, s.z, _n);
         const vn = s.vx * _n.x + s.vy * _n.y + s.vz * _n.z;
         let tx = s.vx - vn * _n.x, ty = s.vy - vn * _n.y, tz = s.vz - vn * _n.z;
@@ -250,7 +250,7 @@ export function simulateShot(launch, env, opts = {}) {
         finish('water');
         break;
       }
-      const sp = surfaceProps(surf);
+      const sp = env.props ? env.props(surf) : surfaceProps(surf);
       env.normalAt(s.x, s.z, _n);
       // Tangential gravity for a heightfield normal (nx, ny, nz): g * (nx*ny, nz*ny) horizontally.
       const gxs = GRAVITY * _n.x * _n.y;

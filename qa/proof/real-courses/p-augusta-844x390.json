@@ -1,0 +1,23 @@
+{
+ "course": "augusta",
+ "size": "844x390",
+ "holes": [
+  {
+   "hole": 16,
+   "yards": 170,
+   "par": 3,
+   "name": "Augusta National",
+   "conditions": {
+    "greenSpeed": 1.28,
+    "firmness": 1.08
+   },
+   "water": [
+    "pond:along"
+   ],
+   "sea": false,
+   "double": false,
+   "bunkers": 2,
+   "errors": []
+  }
+ ]
+}

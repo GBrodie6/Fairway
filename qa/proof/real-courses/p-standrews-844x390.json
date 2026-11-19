@@ -1,0 +1,21 @@
+{
+ "course": "standrews",
+ "size": "844x390",
+ "holes": [
+  {
+   "hole": 11,
+   "yards": 174,
+   "par": 3,
+   "name": "St Andrews (Old Course)",
+   "conditions": {
+    "greenSpeed": 1.05,
+    "firmness": 1.35
+   },
+   "water": [],
+   "sea": true,
+   "double": true,
+   "bunkers": 4,
+   "errors": []
+  }
+ ]
+}

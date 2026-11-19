@@ -15,7 +15,7 @@ const COLORS = {
   [SURFACES.WASTE]: [201, 180, 138], [SURFACES.ROCK]: [138, 131, 120],
 };
 // Per-course tint of the rough so desert and links maps read like the courses.
-const ROUGH_TINT = { desert: [176, 150, 104], links: [118, 132, 70], alpine: [84, 120, 62], tropical: [76, 128, 58] };
+const ROUGH_TINT = { desert: [176, 150, 104], links: [118, 132, 70], alpine: [84, 120, 62], tropical: [76, 128, 58], augusta: [70, 118, 52], standrews: [132, 136, 76] };
 
 // Pure transform helpers (exported for tests): rotate world space so `heading` points up.
 export function makeFrame(cx, cz, heading, scale, w, hgt) {

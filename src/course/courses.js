@@ -1,7 +1,9 @@
-// Course registry. Names are invented for this game. Each theme drives the layout generator,
+// Course registry. The first five courses' names are invented for this game; the two real
+// courses take their names from course/realCourses.js. Each theme drives the layout generator,
 // the terrain shaper, the vegetation mix, the backdrop, and the wind profile.
 // par sequences each total 72 over 18 holes.
 import { RANGE_COURSE } from './range.js';
+import { AUGUSTA, ST_ANDREWS } from './realCourses.js';
 
 export const COURSES = Object.freeze([
   {
@@ -79,6 +81,9 @@ theme: {
     backdrop: { amp: 340, wave: 800, ridged: true, power: 2.1, canopy: [0.02, 0.08, 0.02] },
     wind: { min: 4, max: 17, gustiness: 0.4 },
   },
+  // Two real courses as procedural approximations (course/realCourses.js).
+  AUGUSTA,
+  ST_ANDREWS,
 ]);
 
 export const COURSE_IDS = COURSES.map((c) => c.id);

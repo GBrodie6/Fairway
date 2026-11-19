@@ -109,3 +109,47 @@ Shipped size: **41.89 MB** (textures 19.06 MB, models 12.53 MB, HDRIs 10.30 MB).
 - Poly Haven API terms (https://github.com/Poly-Haven/Public-API/blob/master/ToS.md): the API is free for any use; requests carry the user agent `fairway-next-asset-pipeline`. The API is used at build time only, never from the running game.
 
 The old project's four baked HDRIs and its Mixamo golfer were not available in the build environment and are not used.
+
+
+## Real courses: pars, yardages and features (facts, with sources)
+
+Two courses are procedural approximations of real ones (`src/course/realCourses.js`). Only
+facts were used: hole pars, card yardages and the best-known features of each hole, written in
+my own words. No maps, aerial photos, course guides or other text were copied, and no logo or
+artwork is used. The names are trademarks of their clubs; they live in one constants file
+(`REAL_COURSE_NAMES`) so they can be renamed in one place. Traditional hole names are not used
+(two of the Old Course's honor real golfers).
+
+Augusta National, the 2026 Masters card (the most recent official figures): 445, 585, 350, 240,
+495, 180, 450, 570, 460 (out 3,775, par 36); 495, 520, 155, 545, 440, 550, 170, 450, 465 (in
+3,790, par 36); 7,565 yards, par 72.
+- GolfNewsNet, "Augusta National Golf Club: Scorecard and course breakdown for 2026 Masters",
+  https://thegolfnewsnet.com/golfnewsnetteam/2026/04/06/augusta-national-golf-club-scorecard-and-course-breakdown-for-2026-masters-augusta-national-womens-amateur-host-141778/
+  (total 7,565; the 17th lengthened by 10 yards from 2025). The page prints the back nine as
+  3,780, but its own holes add to 3,790 and its total of 7,565 matches the holes, so the holes
+  were used.
+- Cross-checks: National Club Golfer's scorecard (an older card with the 2nd at 575 and the 17th
+  at 440, total 7,545), https://www.nationalclubgolfer.com/tour/masters-scorecard-augusta-national-holes ;
+  GolfNewsNet's 2025 breakdown (7,555),
+  https://thegolfnewsnet.com/golfnewsnetteam/2025/03/30/augusta-national-golf-club-scorecard-and-course-breakdown-for-2025-masters-augusta-national-womens-amateur-host-135838/ ;
+  the DP World Tour course card for the 2025 Masters, https://app.europeantour.com/dpworld-tour/the-masters-2025/course .
+- Features modeled (approximate): rolling ground among tall pines, azaleas in bloom, water only
+  through the middle of the back nine (a pond left of the 11th green, the creek in front of the
+  12th and 13th greens, a pond in front of the 15th green, and a pond along the 16th), no
+  bunkers on the 14th, doglegs by hole, and very fast, steeply tilted greens.
+
+St Andrews, the Old Course, the 150th Open (2022) card from The Open's own course guide (the
+most recent Open there): 375, 452, 398, 480, 570, 414, 371, 187, 352 (out 3,599, par 36); 386,
+174, 351, 465, 614, 455, 418, 495, 356 (in 3,714, par 36); 7,313 yards, par 72.
+- The Open, "St Andrews course guide: 150th Open", https://www.theopen.com/st-andrews-course-guide-150th-open
+- Cross-checks that differ slightly: golf.com's 2022 scorecard headings list the 6th at 416 and
+  the 18th at 365 (total 7,324),
+  https://golf.com/travel/st-andrews-course-yardage-book-map-scorecard/?amp=1 ; the DP World
+  Tour course card for the 2022 Open, https://app.europeantour.com/dpworld-tour/the-150th-open-2022/course ,
+  served no hole data to a text reader. The Open's figures were used; they add to 7,313.
+- Features modeled (approximate): treeless links with gorse and fescue, a sea shore along the
+  1st and 18th and by the far loop, double greens on every hole but the 1st, 9th, 17th and 18th,
+  the burn in front of the 1st green and across the 18th near the tee, pot bunkers, a big
+  bunker in the middle of the 14th, a pot guarding the front of the 17th green, firm and fast
+  ground, and strong wind. Not modeled: the swale in front of the 18th green, the road and wall
+  behind the 17th, and shared fairways and greens between holes (each hole is built on its own).

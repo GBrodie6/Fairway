@@ -177,7 +177,7 @@ export function installBroadcast(app, ui) {
           h('h3', { class: 'h small', text: 'Play as' }),
           proChooser({ selected: tourAs, onPick: (id) => { tourAs = id; tournamentScreen(); } }),
           h('h3', { class: 'h small', text: 'Choose a course' }),
-          h('div', { class: 'cards' }, ...['parkland', 'links', 'desert', 'alpine', 'tropical'].map((id) => btn(courseById(id).name, () => newTournament(id), 'card'))),
+          h('div', { class: 'cards' }, ...['parkland', 'links', 'desert', 'alpine', 'tropical', 'augusta', 'standrews'].map((id) => btn(courseById(id).name, () => newTournament(id), 'card'))),
           cabinet.length ? h('div', {}, h('h3', { class: 'h small', text: 'Trophy cabinet' }), h('div', { class: 'list' }, ...cabinet.slice(-8).reverse().map((x) => h('div', { class: 'item' }, h('span', { text: `${x.name}, ${courseById(x.courseId).name}` }), h('b', { text: fmtToPar(x.toPar) }))))) : null,
           h('div', { class: 'stack', style: { marginTop: '10px' } }, btn('Back', () => screens.back())));
       }

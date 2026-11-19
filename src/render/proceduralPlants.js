@@ -310,4 +310,45 @@ export function buildReeds() {
   return { id: 'reeds', info, lod1: [{ geometry: merge(blades), material: leaf, name: 'reeds' }, { geometry: merge(heads), material: brown, name: 'cattail' }], lod0: null };
 }
 
-export const PROCEDURAL_BUILDERS = { palm: buildPalm, palm2: buildPalm2, saguaro: buildSaguaro, saguaro2: buildSaguaro2, saguaro3: buildSaguaro3, reeds: buildReeds };
+// Flowering shrubs for the real-course looks: a rounded azalea mound in bloom (pink and
+// white) and a spiky gorse bush with yellow flowers. A few squashed spheres merged into one
+// mound, wearing a painted texture of leaves and blossoms.
+function blossomTexture(seed, leaf, blossoms, density) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const g = c.getContext('2d');
+  const r = rand(seed);
+  g.fillStyle = `rgb(${leaf.join(',')})`; g.fillRect(0, 0, 128, 128);
+  for (let i = 0; i < 220; i++) { const v = 0.75 + r() * 0.4; g.fillStyle = `rgb(${leaf.map((x) => Math.round(x * v)).join(',')})`; g.fillRect(r() * 128, r() * 128, 3, 2); }
+  for (let i = 0; i < density; i++) {
+    const col = blossoms[Math.floor(r() * blossoms.length)], rad = 1.4 + r() * 2.4;
+    g.fillStyle = `rgb(${col.join(',')})`;
+    g.beginPath(); g.arc(r() * 128, r() * 128, rad, 0, Math.PI * 2); g.fill();
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  return tex;
+}
+function flowerBush(id, seed, { leaf, blossoms, density, height, radius, lobes, spiky }) {
+  const r = rand(seed);
+  const parts = [];
+  for (let i = 0; i < lobes; i++) {
+    const a = r() * 6.28, d = i === 0 ? 0 : radius * (0.25 + r() * 0.45);
+    const rx = radius * (0.5 + r() * 0.35), ry = height * (0.45 + r() * 0.3);
+    const geo = new THREE.SphereGeometry(1, spiky ? 9 : 8, spiky ? 6 : 5);
+    if (spiky) { const pos = geo.attributes.position; for (let k = 0; k < pos.count; k++) { const f = 0.82 + r() * 0.36; pos.setXYZ(k, pos.getX(k) * f, pos.getY(k) * f, pos.getZ(k) * f); } geo.computeVertexNormals(); }
+    geo.scale(rx, ry, rx);
+    geo.translate(Math.cos(a) * d, ry * 0.82, Math.sin(a) * d);
+    parts.push(geo);
+  }
+  const avg = leaf.map((x, k) => (x * 0.7 + blossoms[0][k] * 0.3) / 255);
+  const info = { height: height * 1.6, radius, kind: 'plant', materials: [{ name: id, foliage: false, avg }], procedural: true };
+  const mat = new THREE.MeshStandardMaterial({ map: blossomTexture(seed, leaf, blossoms, density), roughness: 0.85, name: id });
+  return { id, info, lod1: [{ geometry: merge(parts), material: mat, name: id }], lod0: null };
+}
+export function buildAzalea() { return flowerBush('azalea', 41, { leaf: [38, 72, 34], blossoms: [[236, 92, 156], [248, 176, 206], [250, 244, 246], [214, 58, 120]], density: 520, height: 0.9, radius: 1.1, lobes: 5, spiky: false }); }
+export function buildAzalea2() { return flowerBush('azalea2', 43, { leaf: [40, 76, 36], blossoms: [[250, 246, 248], [246, 210, 226], [236, 120, 170]], density: 460, height: 0.75, radius: 0.95, lobes: 4, spiky: false }); }
+export function buildGorse() { return flowerBush('gorse', 47, { leaf: [48, 66, 30], blossoms: [[246, 204, 40], [252, 222, 70], [230, 180, 30]], density: 300, height: 0.85, radius: 1.0, lobes: 5, spiky: true }); }
+
+export const PROCEDURAL_BUILDERS = { palm: buildPalm, palm2: buildPalm2, saguaro: buildSaguaro, saguaro2: buildSaguaro2, saguaro3: buildSaguaro3, reeds: buildReeds, azalea: buildAzalea, azalea2: buildAzalea2, gorse: buildGorse };

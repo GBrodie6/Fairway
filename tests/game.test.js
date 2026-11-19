@@ -24,10 +24,10 @@ describe('round rules', () => {
     expect(createRound({ holeCount: 99 }).holes.length).toBe(18);
     expect(createRound({ players: [{ name: 'x'.repeat(60) }] }).players[0].name.length).toBe(18);
   });
-  it('closest to the pin plays exactly the four par 3s', () => {
+  it('closest to the pin plays exactly the par 3s (four, or two on the Old Course)', () => {
     for (const c of COURSES) {
       const hs = holesFor(c.id, 'ctp');
-      expect(hs.length).toBe(4);
+      expect(hs.length).toBe(c.pars.filter((p) => p === 3).length);
       for (const h of hs) expect(c.pars[h]).toBe(3);
     }
   });
@@ -132,7 +132,7 @@ describe('round validation (saves and share links)', () => {
   it('rejects tampering', () => {
     const cases = [
       (r) => { r.scores[0][0] = 0; }, (r) => { r.scores[0][0] = -3; }, (r) => { r.scores[0][0] = 99; }, (r) => { r.scores[0][0] = 2.5; },
-      (r) => { r.scores[0] = [4, 5, 3, 3, 3]; }, (r) => { r.hole = 7; }, (r) => { r.courseId = 'augusta'; }, (r) => { r.mode = 'cheat'; },
+      (r) => { r.scores[0] = [4, 5, 3, 3, 3]; }, (r) => { r.hole = 7; }, (r) => { r.courseId = 'nowhere'; }, (r) => { r.mode = 'cheat'; },
       (r) => { r.holes = [0, 1, 44]; }, (r) => { r.players = []; }, (r) => { r.players[0].name = ''; }, (r) => { r.v = 99; },
       (r) => { r.scores = [[4, 5], [3, 3]]; }, (r) => { r.scores[0] = [4]; }, (r) => { r.players[0].kind = 'god'; }, (r) => { r.scores[0] = 'x'; },
     ];

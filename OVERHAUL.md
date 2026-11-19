@@ -499,6 +499,41 @@ a real person.
 - The round keeps a pro player's id, archetype and club preferences (bounded and checked) so
   saved rounds resume with them.
 
+## Augusta National and St Andrews
+
+Two real courses built as procedural approximations in the same hole format as the invented
+ones (`src/course/realCourses.js`; names in `REAL_COURSE_NAMES`, sources in ASSETS.md).
+
+- Cards: each hole plays its official yardage and par (Augusta National at the 2026 Masters,
+  7,565 yards; the Old Course at the 150th Open, 7,313 yards; both par 72). The Old Course has
+  two par 3s and two par 5s; Closest to the Pin plays both par 3s there.
+- Hole specs: the generator (`course/layout.js`) reads an optional spec per hole: dogleg
+  direction and size, water ('front', 'greenside', 'along'), a burn or creek across the hole,
+  the sea side, a double green (half as large again, long across the line), bunker counts and a
+  named big bunker. Courses without specs take the same random draws in the same order, so the
+  five invented courses are unchanged (the course tests pin them).
+- Looks: Augusta has tall pines over pink and white azaleas in bloom (two new procedural
+  flowering shrubs), lush green turf, pine straw, dark still ponds, and big, steeply tilted
+  greens. St Andrews has no trees: gorse with yellow flowers (a third procedural shrub) in
+  clumps, browned fescue, pot bunkers, a sea shore on several holes, wide fairways, and a
+  stronger, gustier wind.
+- Conditions (`course/conditions.js`, bounded): green speed 0.8 to 1.35 (green roll
+  deceleration divided by it) and firmness 0.8 to 1.4 (fairway, first cut and tee roll
+  deceleration divided by it, a livelier and less soft bounce; rough gets half). Augusta: green
+  speed 1.28, firmness 1.08. St Andrews: green speed 1.05, firmness 1.35. The five invented
+  courses have no conditions, and the ball then reads the base surface table exactly as before;
+  only a course that sets conditions passes a surface lookup to the simulation (`env.props`).
+- Everywhere courses appear: Quick Play, the Daily challenge's pick, Tournaments, the map, the
+  time-of-day presets, quality tiers (they follow the same tier settings), the smoke test gate
+  (`qa/gate.json`) and the course invariant tests (18 holes, par 72, the official card, cups on
+  greens, physics and renderer agreement, and the signature features above).
+- A latent bug found on the way: the terrain sets a stream's water level from its outline, and
+  for any stream wider than 2 m every outline point was skipped, so the stream was never carved.
+  It silently removes most streams on the invented courses. The real courses' burns use a
+  corrected rule; the invented courses keep the old one so they stay exactly as they were.
+  Fixing it for them is a one-line change, left for a human decision because it adds hazards to
+  existing holes.
+
 ## Stage 10: proof and deploy
 
 Screenshots of every new screen at 360x640, 390x844, 844x390, and 1024x768 with the layout

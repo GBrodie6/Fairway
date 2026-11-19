@@ -20,9 +20,14 @@ describe('hole layouts', () => {
         const h = generateHole(course, i);
         par += h.par; yards += h.yards;
         expect(h.par).toBe(course.pars[i]);
-        const range = { 3: [130, 215], 4: [330, 455], 5: [490, 580] }[h.par];
-        expect(h.yards).toBeGreaterThanOrEqual(range[0]);
-        expect(h.yards).toBeLessThanOrEqual(range[1]);
+        if (course.real) {
+          // A real course plays its official card (course/realCourses.js, ASSETS.md).
+          expect(h.yards).toBe(course.yards[i]);
+        } else {
+          const range = { 3: [130, 215], 4: [330, 455], 5: [490, 580] }[h.par];
+          expect(h.yards).toBeGreaterThanOrEqual(range[0]);
+          expect(h.yards).toBeLessThanOrEqual(range[1]);
+        }
         // The centerline length matches the card yardage.
         expect(Math.abs(h.length / YARD - h.yards)).toBeLessThan(6);
         // Tee at the origin, green down -Z.
@@ -46,7 +51,8 @@ describe('hole layouts', () => {
       }
       expect(par).toBe(72);
       expect(yards).toBeGreaterThan(5900);
-      expect(yards).toBeLessThan(7400);
+      if (course.real) expect(yards).toBe(course.yards.reduce((a, b) => a + b, 0));
+      else expect(yards).toBeLessThan(7400);
     });
   }
   it('is deterministic', () => {
@@ -58,7 +64,7 @@ describe('hole layouts', () => {
     const sig = (h) => `${h.yards}:${h.bunkers.length}:${h.green.radius.toFixed(2)}`;
     const all = new Set();
     for (const c of COURSES) for (let i = 0; i < 18; i++) all.add(c.id + sig(generateHole(c, i)));
-    expect(all.size).toBe(90);
+    expect(all.size).toBe(COURSES.length * 18);
   });
   it('each course theme shows up in its hazards', () => {
     const count = (c, f) => { let n = 0; for (let i = 0; i < 18; i++) n += f(generateHole(c, i)); return n; };
@@ -71,6 +77,36 @@ describe('hole layouts', () => {
     const avgR = (c) => { let s = 0, n = 0; for (let i = 0; i < 18; i++) for (const b of generateHole(c, i).bunkers) { s += b.blobs[0].r; n++; } return s / n; };
     expect(avgR(courseById('links'))).toBeLessThan(avgR(courseById('parkland')) - 1);
     expect(count(courseById('links'), (h) => h.bunkers.length)).toBeGreaterThan(count(courseById('parkland'), (h) => h.bunkers.length));
+  });
+  it('the real courses: official cards, their signature features, and their conditions', async () => {
+    const { REAL_COURSE_NAMES } = await import('../src/course/realCourses.js');
+    const { courseConditions, conditionedProps, CONDITION_LIMITS } = await import('../src/course/conditions.js');
+    const { surfaceProps, SURFACES: S } = await import('../src/physics/surfaces.js');
+    const aug = courseById('augusta'), sa = courseById('standrews');
+    expect([aug.name, sa.name]).toEqual([REAL_COURSE_NAMES.augusta, REAL_COURSE_NAMES.standrews]);
+    const total = (c) => c.yards.reduce((a, b) => a + b, 0);
+    expect(total(aug)).toBe(7565); expect(total(sa)).toBe(7313);
+    const holes = (c) => Array.from({ length: 18 }, (_, i) => generateHole(c, i));
+    const A = holes(aug), B = holes(sa);
+    // Augusta: water through the middle of the back nine (11, 12, 13, 15, 16) and nowhere else.
+    expect(A.map((h, i) => (h.water.length ? i + 1 : 0)).filter(Boolean)).toEqual([11, 12, 13, 15, 16]);
+    expect(A[13].bunkers.length).toBe(0); // the 14th has none
+    // St Andrews: double greens everywhere but 1, 9, 17 and 18; the burn on 1 and 18; the sea.
+    expect(B.map((h, i) => (h.double ? 0 : i + 1)).filter(Boolean)).toEqual([1, 9, 17, 18]);
+    expect(B[0].water.some((w) => w.type === 'stream')).toBe(true);
+    expect(B[17].water.some((w) => w.type === 'stream')).toBe(true);
+    expect(B.filter((h) => h.sea).length).toBeGreaterThanOrEqual(4);
+    expect(B[13].bunkers.some((b) => b.named && b.blobs[0].r > 7)).toBe(true); // the big bunker on the 14th
+    for (const h of B) for (const b of h.bunkers) expect(b.blobs[0].r).toBeLessThanOrEqual(7.5); // pots
+    expect(Math.max(...B.map((h) => h.green.radius))).toBeGreaterThan(Math.max(...A.map((h) => h.green.radius)));
+    // Conditions: bounded, faster greens at Augusta, firmer turf at St Andrews; invented courses untouched.
+    for (const c of COURSES.filter((x) => !x.real)) expect(conditionedProps(courseConditions(c))).toBe(null);
+    const ca = conditionedProps(courseConditions(aug)), cs = conditionedProps(courseConditions(sa));
+    expect(ca(S.GREEN).rollDecel).toBeLessThan(surfaceProps(S.GREEN).rollDecel);
+    expect(cs(S.FAIRWAY).rollDecel).toBeLessThan(surfaceProps(S.FAIRWAY).rollDecel);
+    expect(ca(S.GREEN).rollDecel).toBeLessThan(cs(S.GREEN).rollDecel);
+    expect(courseConditions({ conditions: { greenSpeed: 9, firmness: -3 } })).toEqual({ greenSpeed: CONDITION_LIMITS.greenSpeed[1], firmness: CONDITION_LIMITS.firmness[0] });
+    expect(ca(S.WATER)).toBe(surfaceProps(S.WATER));
   });
   it('pointAt extrapolates past both ends and resample keeps spacing', () => {
     const h = generateHole(COURSES[0], 0);

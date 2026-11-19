@@ -170,15 +170,20 @@ describe('math', () => {
 
 describe('course and preset registries', () => {
   it('every course is 18 holes, par 72, with a unique id and name', () => {
-    expect(COURSES.length).toBe(5);
+    // Five invented courses and two real ones (course/realCourses.js).
+    expect(COURSES.length).toBe(7);
+    expect(COURSES.filter((c) => c.real).map((c) => c.id)).toEqual(['augusta', 'standrews']);
     for (const c of COURSES) {
       expect(c.pars.length).toBe(18);
       expect(coursePar(c)).toBe(72);
-      expect(c.pars.filter((p) => p === 3).length).toBe(4);
-      expect(c.pars.filter((p) => p === 5).length).toBe(4);
+      // Invented courses have four par 3s and four par 5s; a real course keeps its card (the
+      // Old Course has two of each).
+      const want = c.id === 'standrews' ? 2 : 4;
+      expect(c.pars.filter((p) => p === 3).length).toBe(want);
+      expect(c.pars.filter((p) => p === 5).length).toBe(want);
     }
-    expect(new Set(COURSES.map((c) => c.id)).size).toBe(5);
-    expect(new Set(COURSES.map((c) => c.name)).size).toBe(5);
+    expect(new Set(COURSES.map((c) => c.id)).size).toBe(7);
+    expect(new Set(COURSES.map((c) => c.name)).size).toBe(7);
     expect(COURSES.filter((c) => c.flagship).map((c) => c.id)).toEqual(['parkland', 'links', 'desert']);
     expect(courseById('nope').id).toBe('parkland');
   });

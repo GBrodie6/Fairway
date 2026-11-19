@@ -20,6 +20,8 @@ const HEIGHTS = {
   desert: { rough: 0.06, deep: 0.1, waste: 0.0 },
   alpine: { rough: 0.08, deep: 0.22, waste: 0.03 },
   tropical: { rough: 0.085, deep: 0.2, waste: 0.07 },
+  augusta: { rough: 0.05, deep: 0.1, waste: 0.03 },
+  standrews: { rough: 0.075, deep: 0.32, waste: 0.0 },
 };
 
 export function createGrass(world, engine) {

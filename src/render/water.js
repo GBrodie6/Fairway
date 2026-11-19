@@ -132,6 +132,8 @@ const LOOKS = {
   desert: { deep: [0.01, 0.05, 0.06], shallow: [0.12, 0.13, 0.09], clarity: 1.3, chop: 0.45 },
   alpine: { deep: [0.008, 0.045, 0.062], shallow: [0.07, 0.11, 0.1], clarity: 1.0, chop: 0.5 },
   tropical: { deep: [0.006, 0.05, 0.07], shallow: [0.09, 0.18, 0.15], clarity: 1.25, chop: 0.8 },
+  augusta: { deep: [0.01, 0.035, 0.04], shallow: [0.06, 0.09, 0.06], clarity: 1.8, chop: 0.35 },
+  standrews: { deep: [0.012, 0.04, 0.058], shallow: [0.1, 0.12, 0.11], clarity: 1.0, chop: 1.1 },
 };
 
 export function createWater(world, engine) {

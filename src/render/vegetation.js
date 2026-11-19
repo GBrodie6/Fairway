@@ -45,6 +45,22 @@ export const MIX = {
     rocks: [['mossrocks', 2], ['rock2', 1], ['boulder3', 0.8], ['log', 0.7], ['stump', 0.6]],
     water: [['reeds', 1]], rockChance: 0.03, groundChance: 0.26, treeScale: [0.85, 1.45],
   },
+  // Tall pines over azaleas in bloom.
+  augusta: {
+    trees: [['pine', 6], ['fir', 1.4], ['oak', 0.7], ['maple', 0.4], ['jacaranda', 0.25]],
+    under: [['azalea', 3.2], ['azalea2', 2.2], ['shrub2', 0.8], ['fern', 0.5]],
+    ground: [['tallgrass', 1.2], ['celandine', 0.4]],
+    rocks: [['rock1', 0.5], ['stump', 0.5]],
+    water: [['reeds', 0.4]], rockChance: 0.004, groundChance: 0.12, treeScale: [1.0, 1.55],
+  },
+  // No trees: gorse in clumps on the links, fescue around it.
+  standrews: {
+    trees: [['gorse', 5], ['thorn', 0.4]],
+    under: [['gorse', 2], ['rooibos', 0.6]],
+    ground: [['tallgrass2', 6], ['tallgrass', 2], ['celandine', 0.5]],
+    rocks: [['stone', 1]],
+    water: [['reeds', 0.6]], rockChance: 0.002, groundChance: 0.45, treeScale: [0.8, 1.5],
+  },
   tropical: {
     trees: [['palm', 3], ['palm2', 2.4], ['jacaranda', 1.4], ['bushtree', 1], ['oak', 0.4]],
     under: [['fern', 3], ['shrub4', 1], ['bushtree', 1], ['shrub3', 0.8]],

@@ -5,6 +5,7 @@
 // Grid: 1 m cells, tier independent, so the ball behaves identically on every device.
 // Masks are signed-distance ramps stored in bytes: 0.5 (127.5) is the exact edge, which keeps
 // edges sub-texel accurate under bilinear filtering for both the shader and surfaceAt.
+import { courseConditions, conditionedProps } from './conditions.js';
 import { fbm2, valueNoise2 } from '../core/rng.js';
 import { clamp, lerp, smoothstep } from '../core/math.js';
 import { SURFACES } from '../physics/surfaces.js';
@@ -319,7 +320,9 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
     let lowest = 1e9;
     for (const [ox, oz] of outline) {
       if (ox < x0 || oz < z0 || ox > x0 + (nx - 1) * CELL || oz > z0 + (nz - 1) * CELL) continue;
-      if (sdfOf(ox, oz) < -2) continue;
+      // (A stream's outline is its own centerline; a real course's burn reads its level there.
+      // Invented courses keep the old rule, under which wider streams are skipped.)
+      if (sdfOf(ox, oz) < -2 && !(w.type === 'stream' && w.spec)) continue;
       lowest = Math.min(lowest, sampleH(ox, oz));
     }
     if (lowest > 1e8) continue;
@@ -571,9 +574,13 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
     sAt: (x, z) => bilinear(sField, x, z),
   };
   // Physics environment for simulateShot. wind and cup are filled in by the caller.
+  // Course conditions (green speed, firmness): only courses that set them pass a surface
+  // lookup to the ball; every other course uses the base table untouched.
+  const props = conditionedProps(courseConditions(course));
+  terrain.conditions = courseConditions(course);
   terrain.env = (extra = {}) => ({
     heightAt, normalAt, surfaceAt, isOutOfBounds, bounds: terrain.bounds,
-    waterLevel: -Infinity, cup: terrain.pin, ...extra,
+    waterLevel: -Infinity, cup: terrain.pin, ...(props ? { props } : {}), ...extra,
   });
   return terrain;
 }

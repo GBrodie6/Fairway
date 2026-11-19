@@ -43,6 +43,27 @@ const OVERRIDES = {
     waste: { set: 'needles', tint: [1, 1, 1] },
     rock: { set: 'rock', tint: [0.95, 0.97, 1.0] },
   },
+  // Deep, lush green turf; pine straw under the trees (the waste slot).
+  augusta: {
+    rough: { set: 'rough', tint: [0.9, 1.08, 0.86] },
+    fairway: { set: 'fairway', tint: [0.9, 1.1, 0.88] },
+    firstCut: { set: 'fairway', tint: [0.86, 1.02, 0.82] },
+    green: { set: 'green', tint: [0.94, 1.06, 0.92] },
+    waste: { set: 'needles', tint: [1.15, 0.95, 0.8] },
+    bunker: { set: 'bunker', tint: [1.3, 1.28, 1.22] },
+  },
+  // Firm, browned links turf and fescue (the links look, a touch drier).
+  standrews: {
+    rough: { set: 'rough', tint: [1.14, 1.06, 0.78] },
+    deep: { set: 'fescue', tint: [0.74, 0.82, 0.5] },
+    waste: { set: 'beach', tint: [1.25, 1.2, 1.08] },
+    fairway: { set: 'fairway', tint: [1.12, 1.05, 0.8] },
+    firstCut: { set: 'fairway', tint: [0.96, 0.92, 0.7] },
+    green: { set: 'green', tint: [1.06, 1.02, 0.86] },
+    fringe: { set: 'green', tint: [0.94, 0.94, 0.76] },
+    bunker: { set: 'bunker', tint: [1.16, 1.1, 0.98] },
+    dirt: { set: 'beach', tint: [1.0, 0.95, 0.85] },
+  },
   tropical: {
     rough: { set: 'rough', tint: [0.95, 1.08, 0.9] },
     waste: { set: 'forest', tint: [0.9, 1.0, 0.85] },

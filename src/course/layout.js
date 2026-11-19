@@ -136,7 +136,11 @@ export function generateHole(course, index) {
   const par = course.pars[index];
   const rng = createRng(((course.seed * 7919) ^ ((index + 1) * 104729)) >>> 0);
   const [lo, hi] = lengthRange[par];
-  const yards = Math.round(rng.range(lo, hi));
+  // A real course (course/realCourses.js) has a card yardage and a spec per hole; the random
+  // draws still happen in the same order, so invented courses are unchanged.
+  const spec = (course.holes && course.holes[index]) || null;
+  const drawnYards = Math.round(rng.range(lo, hi));
+  const yards = course.yards ? course.yards[index] : drawnYards;
   const L = yards * YARD;
 
   // --- routing: control points, then rotate so tee to green runs straight down -Z ---
@@ -146,14 +150,16 @@ export function generateHole(course, index) {
     ctrl.push({ x: 0, z: -L });
   } else if (par === 4) {
     const f1 = rng.range(0.52, 0.64);
-    const b = rng.chance(0.72) ? rng.sign() * rng.range(9, 30) * DEG : rng.range(-4, 4) * DEG;
+    let b = rng.chance(0.72) ? rng.sign() * rng.range(9, 30) * DEG : rng.range(-4, 4) * DEG;
+    if (spec && typeof spec.bend === 'number') b = spec.bend * DEG;
     bends = [b];
     ctrl.push({ x: 0, z: -L * f1 });
     ctrl.push({ x: Math.sin(b) * L * (1 - f1), z: -L * f1 - Math.cos(b) * L * (1 - f1) });
   } else {
     const f1 = rng.range(0.4, 0.46), f2 = rng.range(0.74, 0.8);
-    const b1 = rng.chance(0.7) ? rng.sign() * rng.range(8, 24) * DEG : rng.range(-4, 4) * DEG;
-    const b2 = b1 + (rng.chance(0.55) ? rng.sign() * rng.range(8, 22) * DEG : rng.range(-4, 4) * DEG);
+    let b1 = rng.chance(0.7) ? rng.sign() * rng.range(8, 24) * DEG : rng.range(-4, 4) * DEG;
+    let b2 = b1 + (rng.chance(0.55) ? rng.sign() * rng.range(8, 22) * DEG : rng.range(-4, 4) * DEG);
+    if (spec && spec.bend != null) { const bb = Array.isArray(spec.bend) ? spec.bend : [spec.bend, 0]; b1 = bb[0] * DEG; b2 = b1 + bb[1] * DEG; }
     bends = [b1, b2 - b1];
     const p1 = { x: 0, z: -L * f1 };
     const p2 = { x: p1.x + Math.sin(b1) * L * (f2 - f1), z: p1.z - Math.cos(b1) * L * (f2 - f1) };
@@ -180,8 +186,10 @@ export function generateHole(course, index) {
 
   // --- green ---
   pointAt(line, total, P);
-  const greenR = rng.range(th.greenRadius[0], th.greenRadius[1]);
-  const aspect = rng.range(0.82, 1.28);
+  let greenR = rng.range(th.greenRadius[0], th.greenRadius[1]);
+  let aspect = rng.range(0.82, 1.28);
+  // A double green (the Old Course): half as large again and long across the line.
+  if (spec && spec.double) { greenR *= 1.45; aspect = 0.62; }
   const green = {
     x: P.x, z: P.z, ax: P.tx, az: P.tz, // approach direction (unit)
     ra: greenR * aspect, rc: greenR / Math.sqrt(aspect), rot: rng.range(-0.6, 0.6),
@@ -189,8 +197,8 @@ export function generateHole(course, index) {
     radius: greenR,
     raise: rng.range(0.5, 1.5),
     tiltDir: rng.range(-0.9, 0.9), // radians off "back to front"
-    tilt: rng.range(0.008, 0.022),
-    tier: rng.chance(0.3) ? { h: rng.range(0.22, 0.38), ang: rng.range(-0.8, 0.8), off: rng.range(-0.25, 0.25) } : null,
+    tilt: rng.range(...(th.greenTilt || [0.008, 0.022])),
+    tier: rng.chance(th.tierChance ?? 0.3) ? { h: rng.range(0.22, 0.38), ang: rng.range(-0.8, 0.8), off: rng.range(-0.25, 0.25) } : null,
     contourSeed: rng.int(1, 1e6),
   };
   green.maxR = Math.max(green.ra, green.rc) * 1.3;
@@ -231,8 +239,9 @@ export function generateHole(course, index) {
 
   // --- sea (coastal holes): one side of the hole falls away to a beach and the water ---
   let sea = null;
-  if (th.seaLevel !== null && rng.chance(th.water.sea)) {
-    sea = { side: rng.sign(), offset: baseHalf + roughBand + rng.range(34, 58), wobble: rng.range(6, 14), phase: rng.range(0, 6.28), level: th.seaLevel };
+  const seaHere = spec && 'sea' in spec ? !!spec.sea && th.seaLevel !== null : th.seaLevel !== null && rng.chance(th.water.sea);
+  if (seaHere) {
+    sea = { side: spec && spec.sea ? Math.sign(spec.sea) : rng.sign(), offset: baseHalf + roughBand + rng.range(34, 58), wobble: rng.range(6, 14), phase: rng.range(0, 6.28), level: th.seaLevel };
   }
   const waterSide = sea ? sea.side : rng.sign();
 
@@ -240,10 +249,23 @@ export function generateHole(course, index) {
   const water = [];
   const dogSide = bends.length ? Math.sign(bends[0]) || 1 : rng.sign();
   const pondChance = par === 3 ? th.water.frontPond : th.water.pond;
-  if (!sea && rng.chance(pondChance)) {
+  const pondHere = spec && spec.water ? spec.water !== 'none' : !sea && rng.chance(pondChance);
+  if (pondHere) {
     const pr = rng.range(15, 27);
     let cx, cz, role;
-    if (par === 3 && rng.chance(0.65)) {
+    if (spec && spec.water === 'front') {
+      // Just short of the green, across the line: the shot must carry it.
+      offsetPoint(line, total - greenR - pr - rng.range(5, 9), rng.range(-0.3, 0.3) * pr, P);
+      role = 'carry';
+    } else if (spec && spec.water === 'greenside') {
+      const side = spec.waterSide || rng.sign();
+      offsetPoint(line, total - rng.range(-4, 10), side * (greenR + pr * 0.82 + rng.range(4, 8)), P);
+      role = 'greenside';
+    } else if (spec && spec.water === 'along') {
+      // Beside the line from tee to green, most of the way.
+      offsetPoint(line, total * 0.5, (spec.waterSide || rng.sign()) * (pr * 0.75 + 9), P);
+      role = 'along';
+    } else if (par === 3 && rng.chance(0.65)) {
       // Forced carry: the pond sits between the tee and the green, a little to one side.
       offsetPoint(line, total - greenR - pr - rng.range(7, 14), rng.range(-0.5, 0.5) * pr, P);
       role = 'carry';
@@ -267,8 +289,11 @@ export function generateHole(course, index) {
     }
     water.push({ type: 'pond', role, blobs, depth: rng.range(1.2, 2.2) });
   }
-  if (rng.chance(th.water.stream) && total > 150) {
-    const s = par === 3 ? total - greenR - rng.range(16, 30) : clamp(total * rng.range(0.42, 0.7), 110, total - 70);
+  const streamHere = spec && spec.stream != null ? true : rng.chance(th.water.stream) && total > 150;
+  if (streamHere) {
+    let s = par === 3 ? total - greenR - rng.range(16, 30) : clamp(total * rng.range(0.42, 0.7), 110, total - 70);
+    if (spec && spec.stream === 'front') s = total - greenR * (spec.double ? 1.3 : 1) - rng.range(12, 18);
+    else if (spec && Number.isFinite(spec.stream)) s = spec.stream;
     pointAt(line, s, P);
     const ang = rng.range(-0.4, 0.4);
     const dx = P.nx * Math.cos(ang) - P.nz * Math.sin(ang), dz = P.nx * Math.sin(ang) + P.nz * Math.cos(ang);
@@ -278,7 +303,7 @@ export function generateHole(course, index) {
       const wv = Math.sin(u / 34 + ph) * amp;
       pts.push({ x: P.x + dx * u - dz * wv, z: P.z + dz * u + dx * wv });
     }
-    water.push({ type: 'stream', role: 'crossing', pts, half: rng.range(1.8, 3.2), s, depth: rng.range(0.6, 1.0) });
+    water.push({ type: 'stream', role: 'crossing', pts, half: rng.range(1.8, 3.2), s, depth: rng.range(0.6, 1.0), ...(spec && spec.stream != null ? { spec: true } : {}) });
   }
 
   // --- cart path: on the side away from the sea or main water, clear of the dogleg corner ---
@@ -316,7 +341,8 @@ export function generateHole(course, index) {
     }
     return true;
   };
-  const nGreen = rng.int(th.bunkers.green[0], th.bunkers.green[1]);
+  const drawnGreen = rng.int(th.bunkers.green[0], th.bunkers.green[1]);
+  const nGreen = spec && spec.bunkers && spec.bunkers.green != null ? spec.bunkers.green : drawnGreen;
   const usedAng = [];
   for (let i = 0, tries = 0; i < nGreen && tries < 40; tries++) {
     // Angle around the green: 0 faces back down the fairway. Keep the front open.
@@ -347,7 +373,8 @@ export function generateHole(course, index) {
     i++;
   }
   if (par > 3) {
-    const nFw = rng.int(th.bunkers.fairway[0], th.bunkers.fairway[1]);
+    const drawnFw = rng.int(th.bunkers.fairway[0], th.bunkers.fairway[1]);
+    const nFw = spec && spec.bunkers && spec.bunkers.fairway != null ? spec.bunkers.fairway : drawnFw;
     for (let i = 0, tries = 0; i < nFw && tries < 30; tries++) {
       const zone = par === 5 && rng.chance(0.45) ? [total - 150, total - 75] : [198, 252];
       const s = clamp(rng.range(zone[0], zone[1]), fwStart + 20, fwEnd - 25);
@@ -365,6 +392,15 @@ export function generateHole(course, index) {
       bunkers.push({ kind: 'fairway', blobs, depth: rng.range(th.bunkers.depth[0], th.bunkers.depth[1]) * 0.85, lip: rng.range(0.28, 0.48), faceX: P.tx, faceZ: P.tz });
       i++;
     }
+  }
+
+  // A named big bunker from the spec (a deep one in the middle of the fairway, or a pot
+  // guarding a green), placed if it is clear of everything else.
+  if (spec && spec.bigBunker) {
+    const bb = spec.bigBunker, s = clamp(total * bb.at, 30, total - 4);
+    const hw = Math.max(halfAt(s), greenR * 0.8);
+    offsetPoint(line, s, (bb.side || 0) * hw, P);
+    if (clear(P.x, P.z, bb.r)) bunkers.push({ kind: s > total - greenR * 2 ? 'green' : 'fairway', blobs: [{ x: P.x, z: P.z, r: bb.r }], depth: th.bunkers.depth[1] * 1.15, lip: 0.55, faceX: P.tx, faceZ: P.tz, named: true });
   }
 
   // --- pin positions: four candidates well inside the green ---
@@ -405,7 +441,7 @@ export function generateHole(course, index) {
   const tournament = index === 17 || index === 0 || index === 8;
 
   return {
-    courseId: course.id, index, number: index + 1, par, yards, length: total,
+    courseId: course.id, index, number: index + 1, par, yards, length: total, double: !!(spec && spec.double),
     bearing: ((course.seed % 360) + index * 97.3) % 360,
     seed: rng.int(1, 2 ** 30),
     line, lineStep: LINE_STEP, half, baseHalf, roughBand, corridorExtra, fwStart, fwEnd, hasFairway,

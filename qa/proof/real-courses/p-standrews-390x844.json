@@ -1,0 +1,53 @@
+{
+ "course": "standrews",
+ "size": "390x844",
+ "holes": [
+  {
+   "hole": 1,
+   "yards": 375,
+   "par": 4,
+   "name": "St Andrews (Old Course)",
+   "conditions": {
+    "greenSpeed": 1.05,
+    "firmness": 1.35
+   },
+   "water": [
+    "stream:crossing"
+   ],
+   "sea": true,
+   "double": false,
+   "bunkers": 6,
+   "errors": []
+  },
+  {
+   "hole": 14,
+   "yards": 614,
+   "par": 5,
+   "name": "St Andrews (Old Course)",
+   "conditions": {
+    "greenSpeed": 1.05,
+    "firmness": 1.35
+   },
+   "water": [],
+   "sea": false,
+   "double": true,
+   "bunkers": 6,
+   "errors": []
+  },
+  {
+   "hole": 17,
+   "yards": 495,
+   "par": 4,
+   "name": "St Andrews (Old Course)",
+   "conditions": {
+    "greenSpeed": 1.05,
+    "firmness": 1.35
+   },
+   "water": [],
+   "sea": false,
+   "double": false,
+   "bunkers": 4,
+   "errors": []
+  }
+ ]
+}
