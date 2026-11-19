@@ -36,7 +36,7 @@ export const AUGUSTA = {
     roughBand: [6, 9], deepBand: 8, fairwayHalf: [18, 24], greenRadius: [12, 15.5],
     bunkers: { green: [1, 3], fairway: [0, 2], pot: false, depth: [0.95, 1.4], radius: [3.4, 5.4] },
     water: { pond: 0, frontPond: 0, stream: 0, sea: 0 },
-    trees: { density: 1.25, margin: 7, forest: 1.3 }, corridorFlat: 0.8, stimp: 13,
+    trees: { density: 1.2, margin: 11, forest: 1.25 }, corridorFlat: 0.8, stimp: 13,
     greenTilt: [0.016, 0.03], tierChance: 0.5,
   },
   // Very fast greens, a little firm (course/conditions.js has the bounds).

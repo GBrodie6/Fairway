@@ -51,7 +51,7 @@ export const MIX = {
     under: [['azalea', 3.2], ['azalea2', 2.2], ['shrub2', 0.8], ['fern', 0.5]],
     ground: [['tallgrass', 1.2], ['celandine', 0.4]],
     rocks: [['rock1', 0.5], ['stump', 0.5]],
-    water: [['reeds', 0.4]], rockChance: 0.004, groundChance: 0.12, treeScale: [1.0, 1.55],
+    water: [['reeds', 0.4]], rockChance: 0.004, groundChance: 0.12, treeScale: [0.95, 1.4],
   },
   // No trees: gorse in clumps on the links, fescue around it.
   standrews: {

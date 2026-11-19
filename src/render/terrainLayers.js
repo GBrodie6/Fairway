@@ -45,10 +45,10 @@ const OVERRIDES = {
   },
   // Deep, lush green turf; pine straw under the trees (the waste slot).
   augusta: {
-    rough: { set: 'rough', tint: [0.9, 1.08, 0.86] },
-    fairway: { set: 'fairway', tint: [0.9, 1.1, 0.88] },
-    firstCut: { set: 'fairway', tint: [0.86, 1.02, 0.82] },
-    green: { set: 'green', tint: [0.94, 1.06, 0.92] },
+    rough: { set: 'rough', tint: [1, 1.16, 0.94] },
+    fairway: { set: 'fairway', tint: [0.98, 1.18, 0.94] },
+    firstCut: { set: 'fairway', tint: [0.95, 1.1, 0.9] },
+    green: { set: 'green', tint: [1, 1.12, 0.97] },
     waste: { set: 'needles', tint: [1.15, 0.95, 0.8] },
     bunker: { set: 'bunker', tint: [1.3, 1.28, 1.22] },
   },
