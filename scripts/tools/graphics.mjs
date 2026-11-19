@@ -187,6 +187,22 @@ try {
   errorsAll.push(...s3.errors);
   await s3.ctx.close();
   }
+  // 9. V-Sync Off on its own (a light page): chosen in Settings, kept, and after a reload the
+  // canvas is created as a low-latency one.
+  if (want('vsync')) {
+    const v = await open(`${server.url}/?scale=0.25&tier=low`);
+    await v.page.evaluate(() => window.__fw.app.ui.screens.registry.settings());
+    await screenIn(v.page);
+    await choose(v.page, v.mouse, 's-vsync', 'off');
+    const toast = await v.page.evaluate(() => { const t = document.querySelector('.toast'); return t ? t.textContent : null; });
+    await v.page.reload({ waitUntil: 'load' });
+    await v.page.waitForFunction(() => window.__fw && window.__fw.ready, null);
+    st = await state(v.page);
+    check('V-Sync Off after a reload: a low-latency (desynchronized) canvas', st.lowLatency && st.settings.vsync === 'off', { lowLatency: st.lowLatency, browserGranted: st.desynchronized, toast });
+    errorsAll.push(...v.errors);
+    await v.ctx.close();
+  }
+
   // 8. The overlay on a later visit: the result is kept in the browser and shown at once. The
   // saved result here is the one recorded by part 7 (BENCH_JSON points at its report).
   if (want('overlay') && process.env.BENCH_JSON) {
