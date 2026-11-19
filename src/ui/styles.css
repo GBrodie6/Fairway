@@ -563,3 +563,16 @@ html.desk .sheet.editor .lvcanvas { grid-column: 1; grid-row: 1 / 7; height: min
 html.desk .sheet.editor .lvcanvas:active { cursor: grabbing; }
 html.desk .sheet.editor > :not(.lvcanvas) { grid-column: 2; }
 html.desk .sheet.editor .lvstatus { min-height: 2.6em; }
+/* Mouse swing (ui/swingZone.js): grab cursors, the start point follows the hover and stays at
+   the press, and on a desktop the wide zone under the ball shows faintly on hover. */
+.swingzone.mouse { cursor: grab; }
+.swingzone.mouse.active { cursor: grabbing; }
+.swingzone.mouse.disabled { cursor: default; }
+.swingzone.mouse .chev { left: var(--cx, 50%); top: calc(var(--cy, 26px) - 24px); }
+.swingzone.mouse .startline { left: var(--cx, 50%); top: var(--cy, 26px); }
+.swingzone.mouse.hover .chev { animation: none; opacity: 1; }
+.swingzone.mouse.hover .startline { width: 84px; margin-left: -42px; background: var(--accent); }
+.swingzone.wide { transition: background 0.15s ease, box-shadow 0.15s ease; }
+.swingzone.wide.hover, .swingzone.wide.active { background: rgba(255, 255, 255, 0.045); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16); }
+.mousemode .swingtrack { transition: opacity 0.18s ease, left 0.12s ease, top 0.12s ease; }
+.mousemode .swingtrack.active { transition: opacity 0.18s ease; }

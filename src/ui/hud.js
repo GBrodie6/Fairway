@@ -311,7 +311,15 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     const cg = clubgroup.getBoundingClientRect();
     const clear = cg.width > 0 && (cg.right < x - 8 || cg.left > x + zoneW + 8);
     const y = clear ? Math.min(barTop - 4 - zoneH + bb.height * 0.85, H - zoneH - 6) : barTop - 10 - zoneH;
-    const box = { x, y: Math.round(y), w: zoneW, h: zoneH };
+    let box = { x, y: Math.round(y), w: zoneW, h: zoneH };
+    // A mouse on a desktop: a wide zone just under the ball where a press may start a swing
+    // anywhere; the ball stays where it was (the same top edge), the drag may run below it, and
+    // the zone ends where a full backswing would still fit in the window.
+    if (zone.mouse && root.classList.contains('desk')) {
+      const mw = Math.round(clamp(W * 0.32, 360, 640));
+      const mh = Math.round(clamp(H - 12 - want - box.y, 64, Math.max(64, zoneH)));
+      box = { x: Math.round(W / 2 - mw / 2), y: box.y, w: mw, h: mh, mouseWide: true };
+    }
     zone.layout(box);
     // The ball sits just above the start line.
     hud.ballY = box.y - (landscape ? 18 : 30);
@@ -334,6 +342,23 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   // Bottom of the three tabs (the chips under them are not counted).
   function tabTop(tbR) { const r = tabWind.getBoundingClientRect(); return r.height ? r.bottom : tbR.bottom; }
   hud.setLayout = () => hud.layout();
+  // Mouse or touch: a fine primary pointer starts in mouse mode; the pointer actually used
+  // switches it (a touch laptop moves between the two). Phones never see a mouse.
+  const mq = (q) => (typeof matchMedia === 'function' ? matchMedia(q).matches : false);
+  let mouseMode = mq('(pointer: fine)') && !mq('(pointer: coarse)');
+  const setMouseMode = (on) => {
+    if (on === zone.mouse) return;
+    if (zone.mode) return; // never mid-swing
+    mouseMode = on;
+    zone.setMouse(on);
+    root.classList.toggle('mousemode', on);
+    hud.layout();
+  };
+  zone.setMouse(mouseMode);
+  root.classList.toggle('mousemode', mouseMode);
+  window.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse' && !zone.mouse) setMouseMode(true); }, { passive: true });
+  window.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch' && zone.mouse) setMouseMode(false); else if (e.pointerType === 'mouse' && !zone.mouse) setMouseMode(true); }, { passive: true, capture: true });
+  hud.mouseMode = () => zone.mouse;
   hud.setLook = (on) => lookBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
   window.addEventListener('resize', () => requestAnimationFrame(hud.layout));
   requestAnimationFrame(hud.layout);

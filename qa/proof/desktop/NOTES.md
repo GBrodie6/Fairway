@@ -37,3 +37,31 @@ build, a mouse (no touch) driven through the Chrome DevTools input domain.
   (`p1-phone-layout-before.json`, `p1-phone-layout-after.json`), and the fullscreen button does
   not show there.
 - Console errors: 0.
+
+## Part 2: mouse swing
+
+`node scripts/tools/mouseswing.mjs qa/proof/desktop/p2 1920x1080` (`p2-1920x1080.json`,
+`p2-1920x1080-*.jpg`), real mouse events with planned timestamps.
+
+- Mouse mode: a fine primary pointer starts in it, and the pointer actually used switches it
+  (a touch laptop moves between the two). Phones never see a mouse, so touch is unchanged.
+- On a desktop-sized window the swing zone is a wide band (614x148 at 1920x1080) right under
+  the ball, and a press anywhere in it starts the swing; the drag may run below it (the pointer
+  is captured) and the band ends where a full backswing still fits in the window. The swing
+  track rests beside the ball, away from the club (76 px right of it for a right-hander) and
+  jumps beside the press point when the button goes down (press 1083,760, track 1119,760).
+- Hover: the start line and chevron follow the cursor (the start point preview), the band shows
+  faintly, the cursor is a grab hand; during the swing it is a closed hand (grabbing).
+- The same gesture: drag down for the backswing, back up through the start line for impact. A
+  real mouse swing at the power guide launched the ball.
+- Polling rates: the same swing sent at 60, 144 and 240 Hz: power 0.6 at all three, tempo ratio
+  3.05, 3.19 and 3.14 (all Perfect), path within 0.08 degrees. The swing math is unchanged; a
+  refiner in front of it (`src/ui/mouseRefine.js`) adds two interpolated samples (the dead zone
+  edge and the moment the drag leaves the top), which removes the bias a coarse mouse had (in
+  the unit test the worst 60 Hz tempo error against a 1000 Hz mouse fell from 6.7 to under 5
+  percent; power, face and path are exact). The track's fill follows through the same exact
+  spring as the club, so it is smooth at any frame rate.
+- The pointer leaving the window mid backswing: cancelled, still at address, no stroke taken,
+  "Swing cancelled" shown. The window losing focus or the tab being hidden also cancels.
+- Left-handed: the track sits left of the press point (853 against 899) and the swing works.
+- Console errors: 0.
