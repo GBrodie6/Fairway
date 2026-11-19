@@ -121,6 +121,7 @@ export function installMenus(app, ui) {
       field('Golfer', select('s-hand', settings.handedness, [['right', 'Right-handed'], ['left', 'Left-handed']], (v) => { settings.handedness = v; settings.leftHandLayout = v === 'left'; const c = document.getElementById('s-lh'); if (c) c.checked = settings.leftHandLayout; save2(); }), 's-hand'),
       field('Difficulty', select('s-diff', settings.difficulty, [['relaxed', 'Relaxed: mishits are rare and gentle'], ['standard', 'Standard'], ['pro', 'Pro: mishits bite']], (v) => { settings.difficulty = v; save2(); }), 's-diff'),
       field('Left-handed layout', check('s-lh', settings.leftHandLayout, (v) => { settings.leftHandLayout = v; save2(); }), 's-lh'),
+      field('Swing guide', select('s-guide-style', settings.swingGuide, [['box', 'Box'], ['classic', 'Classic track']], (v) => { settings.swingGuide = v; save2(); }), 's-guide-style'),
       field('Swing drag length', range('s-stick', settings.stickScale, 0.7, 1.5, 0.05, (v) => { settings.stickScale = v; save2(); }), 's-stick'),
       field('Power guide while swinging', check('s-guide', settings.powerGuide, (v) => { settings.powerGuide = v; save2(); }), 's-guide'),
       field('Ball contact dot after each shot', select('s-spinmem', settings.spinMemory, [['reset', 'Back to the middle'], ['remember', 'Remember it']], (v) => { settings.spinMemory = v; save2(); }), 's-spinmem'),

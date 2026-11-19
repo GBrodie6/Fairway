@@ -10,7 +10,18 @@
 // It is a DOM view over the pure gesture logic in game/swingGesture.js, exactly like the old
 // swing stick: same travel rule, same gesture, same three-press meter for keyboard and gamepad.
 // Pointer events cover mouse, touch, and pen; coalesced samples are fed in order.
+//
+// Swing guide (Settings): Box, the default, or Classic track (everything above). The box
+// (ui/swingBox.js for its geometry and states) is a soft translucent rectangle centred under
+// the ball: a press inside it starts the swing (outside does not), a ring marks the start line
+// where the press began (where the thumb crosses going back up for a straight shot), a soft fill
+// shows the backswing depth and a small number the power. There is no line or track to follow.
+// During a swing the box centres on the press point; if the thumb leaves it the outline lights
+// up in the warning colour and pulses once (a short tick on a phone), and more than 1.5 box
+// widths outside cancels the swing with no stroke. The ring also carries a quiet tempo cue: an
+// arc that grows through the backswing and empties three times as fast on the way down.
 import { createSwingGesture, createMeterSwing, PHASE, SWING_DEFAULTS } from '../game/swingGesture.js';
+import { boxGeometry, inBox, liveBox, boxState } from './swingBox.js';
 import { springStep } from '../game/swingMotion.js';
 import { createMouseRefiner } from './mouseRefine.js';
 import { liveFaceAndPath } from '../game/clubPath.js';
@@ -45,6 +56,18 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
   fb.className = 'tempo';
   fb.setAttribute('aria-live', 'polite');
   parent.appendChild(fb);
+  // The swing box's drawing (the zone element itself stays the input area, so the gesture's
+  // coordinates never move under a swing) and its power number.
+  const vis = document.createElement('div');
+  vis.className = 'swingbox off';
+  vis.setAttribute('aria-hidden', 'true');
+  vis.innerHTML = '<div class="bfill"></div><div class="bguide"></div><div class="bring"><i></i></div>';
+  parent.appendChild(vis);
+  const bfill = vis.querySelector('.bfill'), bguide = vis.querySelector('.bguide'), bring = vis.querySelector('.bring');
+  const pct = document.createElement('div');
+  pct.className = 'swingpct';
+  pct.setAttribute('aria-hidden', 'true');
+  parent.appendChild(pct);
 
   const zone = {
     el, enabled: true, travel: 170, gesture: null, meter: createMeterSwing(), pointerId: null, mode: null, lastResult: null,
@@ -55,7 +78,11 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     // point on a desktop-sized window; hover preview, grab cursors and a safe cancel when the
     // pointer leaves the window on any size. Touch is exactly as before.
     mouse: false, wide: false,
+    // The swing box: the guide in use, the box at rest, the box during a swing (centred on the
+    // press point), the press point and the outline state (client pixels).
+    guide: 'box', rest: null, liveRect: null, press: null, hoverX: null, outline: 'inside',
   };
+  zone.boxMode = () => zone.guide === 'box';
   const START = 26; // px from the top of the zone to the start line
   // The drag is mirrored for a left-handed golfer and for the left-handed layout: sideways
   // drift then means the same (open or closed) in the player's own terms.
@@ -75,20 +102,48 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     const same = zone.gesture && travel === zone.travel && zone.hand === hand;
     zone.travel = travel;
     zone.hand = hand;
+    zone.area = box;
+    // Swing guide: the box (default) draws a box centred in the area; the classic track uses
+    // the whole area (and on a desktop the wide mouse area) as before.
+    zone.guide = settings.swingGuide === 'classic' ? 'classic' : 'box';
+    const boxMode = zone.boxMode();
+    el.classList.toggle('boxmode', boxMode);
+    track.classList.toggle('off', boxMode);
+    vis.classList.toggle('off', !boxMode);
+    vis.classList.toggle('lefty', hand === 'left');
+    if (boxMode) { zone.rest = boxGeometry(box, travel, { wide: !!box.mouseWide }); box = zone.rest; } else zone.rest = null;
     zone.box = box;
-    zone.wide = !!box.mouseWide;
+    zone.wide = !boxMode && !!box.mouseWide;
     el.classList.toggle('wide', zone.wide);
+    el.setAttribute('aria-label', boxMode
+      ? 'Swing. Press in the box and pull down to take the club back, then swipe up through the ring to strike. Or hold Space for the backswing, release it at the top, and press it again to strike.'
+      : 'Swing. Drag down from the chevron to take the club back, then push up through the start line to strike. Or hold Space for the backswing, release it at the top, and press it again to strike.');
     Object.assign(el.style, { left: `${box.x}px`, top: `${box.y}px`, width: `${box.w}px`, height: `${box.h}px` });
     Object.assign(fb.style, { left: `${box.x + box.w / 2}px`, top: `${box.y + START + 18}px` });
     zone.placeTrack();
+    placeVis();
     if (!same) zone.gesture = createSwingGesture({ travel: zone.travel, handedness: hand });
   };
+  // Draw the box: at rest, or during a swing centred on the press point; the ring at the press
+  // point (or the start line, following a hovering mouse).
+  function placeVis() {
+    if (!zone.boxMode() || !zone.rest) return;
+    const r = zone.liveRect || zone.rest;
+    Object.assign(vis.style, { left: `${r.x}px`, top: `${r.y}px`, width: `${r.w}px`, height: `${r.h}px` });
+    // A hovering mouse previews the ring under the cursor, kept inside the box.
+    const rx = zone.press ? zone.press.x : zone.hoverX != null ? clamp(zone.hoverX, zone.rest.x + 15, zone.rest.x + zone.rest.w - 15) : r.x + r.w / 2;
+    const ry = zone.press ? zone.press.y : r.y + START;
+    Object.assign(bring.style, { left: `${Math.round(rx - r.x)}px`, top: `${Math.round(ry - r.y)}px` });
+  }
+  zone.placeVis = placeVis;
+  // The ring's centre in client pixels (where a swing should start and end).
+  zone.ringPoint = () => { const r = bring.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; };
   // Dock the track to the screen edge away from the club: the club swings back to the left of
   // the ball for a right-handed golfer and to the right for a left-handed one. Called again by
   // the HUD once its buttons are in place.
   zone.placeTrack = () => {
     const box = zone.box;
-    if (!box || !box.h) return;
+    if (!box || !box.h || zone.boxMode()) return;
     // Mouse on a desktop: the track rests beside the ball, away from the club (right of the
     // ball for a right-handed golfer), and follows the press point during a swing.
     if (zone.wide) {
@@ -141,9 +196,11 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
   }
   function draw(depth) {
     const d = clamp(depth, 0, 1.1);
-    fill.style.height = `${Math.min(1, fillDepth(d)) * zone.travel}px`;
+    const fd = Math.min(1, fillDepth(d));
+    fill.style.height = `${fd * zone.travel}px`;
     const p = Math.round(clamp(d, 0, 1) * 100);
     el.setAttribute('aria-valuenow', String(p));
+    if (zone.boxMode()) drawBox(fd);
     // The top tick and the start marker's pulse, from the live drag.
     const l = zone.live;
     const top = l.phase === 'down' ? l.top : l.phase === 'back' ? l.depth : 0;
@@ -154,6 +211,28 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     startline.style.setProperty('--near', near.toFixed(3));
     track.classList.toggle('close', near > 0.7);
     el.classList.toggle('close', near > 0.7);
+    vis.style.setProperty('--near', near.toFixed(3));
+    vis.classList.toggle('close', near > 0.7);
+  }
+  // The box's fill (from the start line down to the thumb) and the power number beside the box
+  // on the side away from the club, level with the thumb. The number shows the depth on the way
+  // back and the power (the deepest point) on the way down.
+  function drawBox(fd) {
+    const r = zone.liveRect || zone.rest;
+    if (!r) return;
+    const l = zone.live;
+    const startY = (zone.press ? zone.press.y : r.y + START) - r.y;
+    const fillH = clamp(fd * zone.travel, 0, Math.max(0, r.h - startY - 3));
+    Object.assign(bfill.style, { top: `${Math.round(startY)}px`, height: `${Math.round(fillH)}px` });
+    // Only while a swing is under way (not on the frame that completes or cancels it).
+    const swinging = !!zone.mode && (l.phase === 'back' || l.phase === 'down');
+    pct.classList.toggle('on', swinging);
+    if (!swinging) return;
+    const power = l.phase === 'down' ? l.top : l.depth;
+    pct.textContent = `${Math.round(clamp(power, 0, 1) * 100)}%`;
+    const lefty = zone.hand === 'left';
+    const y = clamp(r.y + startY + fillH - 10, r.y, r.y + r.h - 20);
+    Object.assign(pct.style, { top: `${Math.round(y)}px`, left: lefty ? 'auto' : `${Math.round(r.x + r.w + 8)}px`, right: lefty ? `${Math.round((parent.clientWidth || window.innerWidth) - r.x + 8)}px` : 'auto' });
   }
   // The tempo ring, per frame: fills over the backswing, empties three times as fast after the
   // top, so a 3 to 1 swing reaches the line as it empties.
@@ -171,11 +250,21 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     tempo.phase = l.phase;
     tempoRing.style.setProperty('--tempo', tempo.level.toFixed(3));
     track.classList.toggle('tempo-on', l.phase === 'back' || l.phase === 'down');
+    bring.style.setProperty('--tempo', tempo.level.toFixed(3));
+    vis.classList.toggle('tempo-on', l.phase === 'back' || l.phase === 'down');
   }
+  // The power guide: a warm mark on the track, or a small notch on the box's edge at the
+  // suggested depth (never a line across the box).
   zone.setIdeal = (power) => {
-    if (!Number.isFinite(power) || power <= 0) { ideal.style.display = 'none'; return; }
+    if (!Number.isFinite(power) || power <= 0) { ideal.style.display = 'none'; bguide.style.display = 'none'; return; }
     ideal.style.display = '';
     ideal.style.top = `${clamp(power, 0, 1) * zone.travel - 1.5}px`;
+    const r = zone.liveRect || zone.rest;
+    if (!r) { bguide.style.display = 'none'; return; }
+    const startY = (zone.press ? zone.press.y : r.y + START) - r.y;
+    const top = startY + clamp(power, 0, 1) * zone.travel;
+    bguide.style.display = top < r.h - 2 ? '' : 'none';
+    bguide.style.top = `${Math.round(top - 1.5)}px`;
   };
   zone.track = track;
   zone.setMouse = (on) => { zone.mouse = !!on; el.classList.toggle('mouse', zone.mouse); track.classList.toggle('mouse', zone.mouse); };
@@ -183,6 +272,7 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     zone.enabled = !!on;
     el.classList.toggle('disabled', !on);
     track.classList.toggle('disabled', !on);
+    vis.classList.toggle('disabled', !on);
     if (!on && zone.mode) zone.cancel();
   };
   zone.feedback = (text) => {
@@ -191,11 +281,37 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     clearTimeout(zone._fbT);
     if (text) zone._fbT = setTimeout(() => fb.classList.remove('on'), 1400);
   };
-  const setLive = (phase, depth, top, face = 0, path = 0) => { const l = zone.live; l.phase = phase; l.depth = depth; l.top = top; l.face = face; l.path = path; };
+  const setLive = (phase, depth, top, face = 0, path = 0) => {
+    const l = zone.live, was = l.phase;
+    l.phase = phase; l.depth = depth; l.top = top; l.face = face; l.path = path;
+    // The first-run tutorial follows the swing's phase (ui/screens.js).
+    if (phase !== was && zone.onPhase) zone.onPhase(phase);
+  };
   // The press point marker (mouse): the chevron and the start line follow the hover point and
   // stay where the press was until the swing ends.
   const setMark = (x, y) => { if (x == null) { el.style.removeProperty('--cx'); el.style.removeProperty('--cy'); return; } el.style.setProperty('--cx', `${Math.round(x)}px`); el.style.setProperty('--cy', `${Math.round(y)}px`); };
-  const restAfterSwing = () => { el.classList.remove('hover'); setMark(null); if (zone.wide) zone.placeTrack(); };
+  // The box's outline: quiet inside, lit (and one pulse, and a short tick on a touch screen)
+  // when the pointer leaves the box during a swing, quiet again when it comes back.
+  const setOutline = (state, pointerType) => {
+    if (state === zone.outline) return;
+    zone.outline = state;
+    const out = state === 'outside';
+    vis.classList.toggle('outside', out);
+    if (out) {
+      vis.classList.remove('pulse');
+      void vis.offsetWidth; // restart the one pulse
+      vis.classList.add('pulse');
+      if (haptic && pointerType !== 'mouse') haptic(10);
+    }
+  };
+  const restAfterSwing = () => {
+    el.classList.remove('hover'); setMark(null); if (zone.wide) zone.placeTrack();
+    zone.press = null; zone.liveRect = null; zone.hoverX = null;
+    setOutline('inside');
+    vis.classList.remove('active', 'pulse', 'hover');
+    pct.classList.remove('on');
+    placeVis();
+  };
   zone.cancel = () => {
     restAfterSwing();
     if (zone.gesture) zone.gesture.cancel();
@@ -240,6 +356,9 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
   const local = (e) => { const r = el.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
   el.addEventListener('pointerdown', (e) => {
     if (!zone.enabled || zone.mode) return;
+    // The box: a press inside starts the swing, a press outside does not (the zone element is
+    // the box, so this is a guard for its rounded corners and for synthetic events).
+    if (zone.boxMode() && !inBox(zone.rest, e.clientX, e.clientY)) return;
     if (zone.onPointerType) zone.onPointerType(e.pointerType);
     e.preventDefault();
     e.stopPropagation();
@@ -256,6 +375,14 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     try { el.setPointerCapture(e.pointerId); } catch { /* capture is a nicety */ }
     zone.mode = 'pointer';
     el.classList.add('active'); track.classList.add('active');
+    if (zone.boxMode()) {
+      // The box centres on the press point; the ring sits where the press began.
+      zone.press = { x: e.clientX, y: e.clientY };
+      zone.liveRect = liveBox(zone.rest, e.clientX);
+      zone.outline = 'inside';
+      vis.classList.add('active');
+      placeVis();
+    }
     if (zone.onStart) zone.onStart();
     const p = local(e);
     zone.gesture.down(p.x, p.y, e.timeStamp);
@@ -268,11 +395,21 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
   });
   el.addEventListener('pointermove', (e) => {
     // Hover (mouse, no button): preview the start point under the cursor.
-    if (!zone.mode && e.pointerType === 'mouse' && zone.enabled) { const q = local(e); el.classList.add('hover'); setMark(q.x, q.y); return; }
+    if (!zone.mode && e.pointerType === 'mouse' && zone.enabled) {
+      const q = local(e); el.classList.add('hover'); setMark(q.x, q.y);
+      if (zone.boxMode()) { zone.hoverX = e.clientX; vis.classList.add('hover'); placeVis(); }
+      return;
+    }
     if (zone.mode !== 'pointer' || e.pointerId !== zone.pointerId) return;
     e.preventDefault();
     // The pointer left the window during the swing: cancel safely, nothing is hit.
     if (e.pointerType === 'mouse' && outside(e)) { leaveCancel(); return; }
+    // The box's outline, and the cancel when the pointer is far outside it.
+    if (zone.boxMode() && zone.liveRect) {
+      const s = boxState(zone.liveRect, e.clientX, e.clientY);
+      if (s.state === 'cancel') { leaveCancel(); return; }
+      setOutline(s.state, e.pointerType);
+    }
     const list = typeof e.getCoalescedEvents === 'function' ? e.getCoalescedEvents() : null;
     const samples = list && list.length ? list : [e];
     let st = zone.gesture.state;
@@ -296,7 +433,9 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     const st = e.type === 'pointercancel' ? zone.gesture.cancel() : zone.gesture.up(p.x, p.y, e.timeStamp);
     if (st.phase === PHASE.DONE) complete(st.result); else cancelled();
   };
-  el.addEventListener('pointerleave', (e) => { if (!zone.mode && e.pointerType === 'mouse') { el.classList.remove('hover'); setMark(null); } });
+  el.addEventListener('pointerleave', (e) => {
+    if (!zone.mode && e.pointerType === 'mouse') { el.classList.remove('hover'); setMark(null); zone.hoverX = null; vis.classList.remove('hover'); placeVis(); }
+  });
   const outside = (e) => e.clientX < 0 || e.clientY < 0 || e.clientX >= (window.innerWidth || 1) || e.clientY >= (window.innerHeight || 1);
   function leaveCancel() {
     if (zone.mode !== 'pointer') return;
@@ -353,10 +492,13 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     drawTempo(performance.now());
     if (zone.mode === 'pointer') draw(zone.live.depth);
   };
-  zone.relayout = () => { if (zone.box.h) zone.layout(zone.box); };
+  zone.relayout = () => { const a = zone.area || zone.box; if (a && a.h) zone.layout(a); };
   zone.flushLayout = flushLayout;
   zone.fbEl = fb;
   zone.onStart = null;
+  zone.onPhase = null;
+  zone.vis = vis;
+  zone.pctEl = pct;
   draw(0);
   return zone;
 }

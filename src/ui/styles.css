@@ -622,3 +622,31 @@ html.desk.padbar-on .sheet.editor .lvcanvas { height: min(calc((100vh - 90px - 6
 .desk .holebox .k { font-size: 11.5px; }
 .desk .spinbtn { width: 62px; }
 .desk .spintype { font-size: 11.5px; max-width: 58px; }
+
+/* The swing box (Settings, Swing guide: Box; ui/swingZone.js and ui/swingBox.js). The zone
+   element stays the transparent input area; .swingbox draws the box, .swingpct the power. */
+.swingzone.boxmode { border-radius: 16px; }
+.swingzone.boxmode .chev, .swingzone.boxmode .startline { display: none; }
+.swingtrack.off { display: none; }
+.swingbox { position: absolute; pointer-events: none; box-sizing: border-box; border-radius: 16px; background: linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.05)); border: 1.5px solid rgba(255, 255, 255, 0.26); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16); transition: opacity 0.22s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, left 0.08s ease-out; }
+.swingbox.off { display: none; }
+.swingbox.disabled { opacity: 0; }
+.swingbox.hover, .swingbox.active { background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.07)); border-color: rgba(255, 255, 255, 0.36); }
+.swingbox.outside { border-color: var(--warn); box-shadow: 0 0 0 1.5px rgba(255, 179, 71, 0.45), 0 0 16px rgba(255, 179, 71, 0.4); }
+.swingbox.pulse { animation: boxpulse 0.42s ease-out 1; }
+@keyframes boxpulse { 0% { box-shadow: 0 0 0 0 rgba(255, 179, 71, 0.75), 0 0 16px rgba(255, 179, 71, 0.4); } 100% { box-shadow: 0 0 0 12px rgba(255, 179, 71, 0), 0 0 16px rgba(255, 179, 71, 0.4); } }
+.swingbox .bfill { position: absolute; left: 3px; right: 3px; top: 26px; height: 0; border-radius: 11px; background: linear-gradient(180deg, rgba(194, 229, 138, 0.08), rgba(194, 229, 138, 0.4)); }
+.swingbox .bguide { position: absolute; right: -5px; width: 9px; height: 3px; border-radius: 2px; background: var(--warm); box-shadow: 0 0 5px rgba(245, 214, 142, 0.7); }
+.swingbox.lefty .bguide { right: auto; left: -5px; }
+.swingbox .bring { position: absolute; left: 50%; top: 26px; width: 30px; height: 30px; margin: -15px 0 0 -15px; box-sizing: border-box; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.22), 0 0 calc(var(--near, 0) * 14px) rgba(194, 229, 138, calc(var(--near, 0) * 0.9)); transition: border-color 0.12s ease; }
+.swingbox.close .bring { border-color: var(--accent); }
+.swingbox .bring i { position: absolute; inset: -6px; border-radius: 50%; background: conic-gradient(rgba(194, 229, 138, 0.6) calc(var(--tempo, 0) * 360deg), transparent 0); -webkit-mask: radial-gradient(circle, transparent 18px, #000 18.5px, #000 20px, transparent 20.5px); mask: radial-gradient(circle, transparent 18px, #000 18.5px, #000 20px, transparent 20.5px); opacity: 0; transition: opacity 0.15s ease; }
+.swingbox.tempo-on .bring i { opacity: 1; }
+.swingpct { position: absolute; font-size: 13px; font-weight: 700; line-height: 20px; color: var(--ink); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75); font-variant-numeric: tabular-nums; pointer-events: none; opacity: 0; transition: opacity 0.12s ease; }
+.swingpct.on { opacity: 1; }
+.desk .swingpct { font-size: calc(13px * var(--hs, 1)); line-height: calc(20px * var(--hs, 1)); }
+@media (prefers-reduced-motion: reduce) { .swingbox.pulse { animation: none; } .swingbox { transition: none; } }
+.reduced-motion .swingbox.pulse { animation: none; }
+/* The controller's swing hint sits beside the narrow box (not over it). */
+.padmode .swingzone.boxmode .padzonehint { left: calc(100% + 10px); right: auto; top: 30px; bottom: auto; transform: none; white-space: normal; width: 150px; text-align: left; }
+.padmode.lefty .swingzone.boxmode .padzonehint { left: auto; right: calc(100% + 10px); text-align: right; }

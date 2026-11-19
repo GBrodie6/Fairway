@@ -67,6 +67,12 @@ export function installHooks(app) {
       for (const [k, s] of Object.entries(sel)) { const el = document.querySelector(s); if (visible(el)) out.hud[k] = box(el); }
       const z = document.querySelector('.swingzone');
       if (visible(z)) out.zone = box(z);
+      // The swing box as drawn (during a swing it centres on the press point) counts as the
+      // zone too; the power number beside it is checked like a HUD box.
+      const sb = document.querySelector('.swingbox');
+      if (visible(sb)) { const a = box(sb), c = out.zone; out.zone = c ? { x: Math.min(a.x, c.x), y: Math.min(a.y, c.y), w: Math.max(a.x + a.w, c.x + c.w) - Math.min(a.x, c.x), h: Math.max(a.y + a.h, c.y + c.h) - Math.min(a.y, c.y) } : a; }
+      const sp = document.querySelector('.swingpct.on');
+      if (visible(sp)) out.hud.swingPct = box(sp);
       // The docked swing track with its tempo ring (not a tap target, but it must clear
       // every control, the ball, and the club).
       const tr = document.querySelector('.swingtrack');

@@ -260,11 +260,15 @@ export function createScreens(root, { app, game, settings, ui, save }) {
     { title: 'Strike result', text: 'The card shows how cleanly you struck it. Pured is the sweet spot. Rushing the downswing or drifting sideways can catch it thin, fat, or off the heel or toe.' },
     { title: 'Club choice', text: 'Tap the club button to pick another club, or swipe across it. The number under it is how far that club carries.' },
   ];
+  // With the swing box (the default guide) the swing prompt follows the swing: the first line
+  // until the backswing starts, the second during it, the first again if the swing is cancelled.
+  const SWING_BOX = ['Press in the box and pull down', 'Swipe up through the ring'];
+  const boxGuide = () => settings.swingGuide !== 'classic';
   let step = -1, unsub = null, waiting = null;
   function showStep() {
     const s = STEPS[step];
     tip.textContent = '';
-    tip.append(h('div', { class: 'step', text: `${step + 1} of ${STEPS.length}  ${s.title}` }), h('div', { text: s.text }),
+    tip.append(h('div', { class: 'step', text: `${step + 1} of ${STEPS.length}  ${s.title}` }), h('div', { class: 'tiptext', text: step === 0 && boxGuide() ? SWING_BOX[0] : s.text }),
       h('div', { class: 'row', style: { justifyContent: 'center' } },
         step === 0 ? null : h('button', { class: 'btn small', type: 'button', onclick: () => advance() }, step < STEPS.length - 1 ? 'Next' : 'Got it'),
         step === STEPS.length - 1 ? null : h('button', { class: 'btn small', type: 'button', onclick: () => finish() }, 'Skip')));
@@ -280,13 +284,20 @@ export function createScreens(root, { app, game, settings, ui, save }) {
     // Already at the next address (the usual case after reading the strike card): show it now.
     if (waiting === 'aim' && game.state.phase === 'aim') { waiting = null; showStep(); }
   }
-  function finish() { tip.classList.add('hidden'); settings.tutorialDone = true; save(); if (unsub) unsub(); unsub = null; step = -1; waiting = null; }
+  function finish() { tip.classList.add('hidden'); settings.tutorialDone = true; save(); if (unsub) unsub(); unsub = null; step = -1; waiting = null; if (ui.hud && ui.hud.zone) ui.hud.zone.onPhase = null; }
   app.tutorialStep = () => step;
   screens.maybeTutorial = () => {
     if (settings.tutorialDone || step >= 0 || app.params.bot || app.params.smoke) return;
     const r = game.state.round;
     if (!r || r.players[game.state.turn].kind !== 'human') return;
     step = 0; waiting = null; showStep();
+    if (ui.hud && ui.hud.zone) {
+      ui.hud.zone.onPhase = (phase) => {
+        if (step !== 0 || !boxGuide() || tip.classList.contains('hidden')) return;
+        const t = tip.querySelector('.tiptext');
+        if (t) t.textContent = SWING_BOX[phase === 'back' || phase === 'down' ? 1 : 0];
+      };
+    }
     unsub = game.on((type, d) => {
       if (step < 0) return;
       if (type === 'swing' && step === 0) advance();

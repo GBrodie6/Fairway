@@ -27,6 +27,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   accountPromptSeen: false, // the optional account card after the first round
   difficulty: 'standard', // strike quality: relaxed, standard, pro
   stickScale: 1,
+  swingGuide: 'box', // box (a box to press in, a ring at the start line) | classic (the docked track)
   showFps: false,
   spinMemory: 'reset', // the ball-contact dot after each shot: reset to the middle, or remember
   allShotsQuickPlay: true, // every shot type in Quick Play (Campaign unlocks them on the skill tree)
@@ -45,6 +46,7 @@ const ENUMS = {
   difficulty: ['relaxed', 'standard', 'pro'],
   spinMemory: ['reset', 'remember'],
   screenSize: ['small', 'normal', 'large'],
+  swingGuide: ['box', 'classic'],
   fpsCap: FPS_CAPS,
   shadowQuality: SHADOW_LEVELS,
   vsync: ['on', 'off'],

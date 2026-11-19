@@ -10,6 +10,7 @@
 import { h, iconButton, icon } from './dom.js';
 import { fmtDist, fmtShort, fmtBreak, fmtToPar, fmtMph, ordinal } from './format.js';
 import { createSwingZone } from './swingZone.js';
+import { zoneRect } from './swingBox.js';
 import { createShotPanel } from './spinPad.js';
 import { DEG, clamp, YARD } from '../core/math.js';
 import { STRIKE_NAMES } from '../game/strike.js';
@@ -307,26 +308,14 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     const kidTops = [...bottombar.children].map((c) => c.getBoundingClientRect()).filter((r) => r.height > 0).map((r) => r.top);
     const barTop = kidTops.length ? Math.min(...kidTops) : bb.height ? bb.top : H - 90;
     const landscape = W > H;
-    const want = Math.round(clamp(H * 0.27, 96, 190) * clamp(settings.stickScale || 1, 0.7, 1.5));
-    // Zone height: the start line, full travel, and a margin above the bottom row; in portrait
-    // at most half of the space under the top panels.
-    const zoneH = Math.round(clamp(want + 46, 130, landscape ? H * 0.46 : H < 700 ? H * 0.31 : H * 0.36));
-    const zoneW = Math.round(clamp(W * (landscape ? 0.2 : 0.42), 150, 220));
-    const x = Math.round(W / 2 - zoneW / 2);
-    // When the club buttons keep to a corner (landscape phones), the zone may come down beside
-    // them; when they are centered under it, it stays above the bottom row.
+    // The swing area (ui/swingBox.js zoneRect, pure): the start line, full travel, and a margin
+    // above the bottom row, centred under the ball; in portrait at most half of the space under
+    // the top panels. When the club buttons keep to a corner (landscape phones) it may come down
+    // beside them. A mouse on a desktop: a wide area just under the ball; the ball stays where
+    // it was (the same top edge) and a full backswing still fits in the window. The swing box
+    // (the default guide) is drawn centred in this area; the classic track uses all of it.
     const cg = clubgroup.getBoundingClientRect();
-    const clear = cg.width > 0 && (cg.right < x - 8 || cg.left > x + zoneW + 8);
-    const y = clear ? Math.min(barTop - 4 - zoneH + bb.height * 0.85, H - zoneH - 6) : barTop - 10 - zoneH;
-    let box = { x, y: Math.round(y), w: zoneW, h: zoneH };
-    // A mouse on a desktop: a wide zone just under the ball where a press may start a swing
-    // anywhere; the ball stays where it was (the same top edge), the drag may run below it, and
-    // the zone ends where a full backswing would still fit in the window.
-    if (zone.mouse && root.classList.contains('desk')) {
-      const mw = Math.round(clamp(W * 0.32, 360, 640));
-      const mh = Math.round(clamp(H - 12 - want - box.y, 64, Math.max(64, zoneH)));
-      box = { x: Math.round(W / 2 - mw / 2), y: box.y, w: mw, h: mh, mouseWide: true };
-    }
+    const { zone: box } = zoneRect({ W, H, barTop, barH: bb.height, clubGroup: cg.width > 0 ? { left: cg.left, right: cg.right } : null, stickScale: settings.stickScale, deskMouse: zone.mouse && root.classList.contains('desk') });
     zone.layout(box);
     // The ball sits just above the start line. On a desktop window the gap grows with the HUD
     // scale: the ball is drawn larger there (at 2560x1440 it is about 32 px), and with the fixed

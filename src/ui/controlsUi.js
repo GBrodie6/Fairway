@@ -5,7 +5,7 @@ import { h } from './dom.js';
 
 export const SHORTCUTS = Object.freeze([
   { group: 'Swing', rows: [
-    ['Drag down, then up through the line', 'Swing with the mouse or a finger: anywhere in the zone under the ball'],
+    ['Press in the box, pull down, swipe up through the ring', 'Swing with the mouse or a finger in the box under the ball (Settings, Swing guide: Classic track brings back the old stick)'],
     ['Space', 'Hold for the backswing, release at the top, press again for impact'],
     ['A and D', 'Aim left and right (with Shift: fine)'],
     ['Left and right arrows', 'Aim left and right'],
