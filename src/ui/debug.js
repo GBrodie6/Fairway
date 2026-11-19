@@ -1,6 +1,7 @@
 // ?debug overlay: frame time, draw calls, triangles, texture memory, active tier, exposure, the
 // display's refresh rate and the frame rate cap, and the frame time by tier at 1080p and 1440p
-// (render/bench.js: the button runs it, ?debug&bench runs it on load).
+// (render/bench.js: the button runs it, ?debug&bench runs it on load). The smoke test reads the
+// first four lines: the tier, the frame time, the draw calls and the texture memory.
 import { BENCH_SIZES } from '../render/bench.js';
 import { TIER_ORDER } from '../core/quality.js';
 
@@ -62,9 +63,9 @@ export function createDebugOverlay(root, { engine, loop, app, getExtra }) {
       el.textContent =
         `tier ${engine.tier.id}  shadows ${engine.tier.shadowLevel || 'auto'}  ${engine.width}x${engine.height} @${engine.pixelRatio.toFixed(2)}  ${engine.orientation}\n` +
         `frame ${fs.avg.toFixed(1)} ms avg  ${fs.p95.toFixed(1)} slowest 5%  ${fs.p99.toFixed(1)} slowest 1%  ${ls.fps.toFixed(0)} fps  cpu ${ls.cpuAvg.toFixed(1)} ms\n` +
-        `display ${(ls.refreshHz || 60).toFixed(0)} Hz  cap ${ls.cap ? ls.cap + ' fps' : 'none'}  vsync ${engine.lowLatency ? 'off (low-latency hint)' : 'on'}  scale ${Math.round((engine.renderScale || 1) * 100)}%\n` +
         `draws ${s.calls}  tris ${(s.triangles / 1000).toFixed(0)}k  geo ${s.geometries}  tex ${s.textures}  prog ${s.programs}\n` +
         `texture mem ${fmtBytes(mem.textures)}  targets ${fmtBytes(mem.renderTargets)}\n` +
+        `display ${(ls.refreshHz || 60).toFixed(0)} Hz  cap ${ls.cap ? ls.cap + ' fps' : 'none'}  vsync ${engine.lowLatency ? 'off (low-latency hint)' : 'on'}  scale ${Math.round((engine.renderScale || 1) * 100)}%\n` +
         `exposure ${engine.exposure.value.toFixed(3)}  luma ${engine.post.state.measured.luma.toFixed(0)} / ${engine.exposure.target}\n` +
         `budget draws ${engine.tier.budget.drawCalls}  tris ${(engine.tier.budget.triangles / 1000).toFixed(0)}k\n` +
         (sys ? `ms: ${sys}\n` : '') + (extra ? extra + '\n' : '') +

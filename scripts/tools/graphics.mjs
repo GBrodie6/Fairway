@@ -62,10 +62,15 @@ async function choose(page, mouse, id, value) {
 }
 async function waitTier(page) { await page.waitForFunction(() => !window.__fw.app.benchRunning, null).catch(() => {}); await page.waitForTimeout(800); }
 
+// PARTS=settings,fps,gpu,bench picks the parts to run (all by default).
+const parts = (process.env.PARTS || 'settings,fps,gpu,bench').split(',');
+const want = (k) => parts.includes(k);
+let st = null;
 try {
+  if (want('settings')) {
   // 1. This machine: SwiftShader, so Automatic is Low; the Graphics section and its fields.
-  let s1 = await open(`${server.url}/`);
-  let st = await state(s1.page);
+  const s1 = await open(`${server.url}/`);
+  st = await state(s1.page);
   out.steps.machine = st;
   check('Software GPU: Automatic picks Low', st.autoTier === 'low' && st.tier === 'low', { gpu: st.gpu, autoTier: st.autoTier });
   check('The loop measures the display refresh rate', st.refreshHz > 20 && st.refreshHz < 400, { refreshHz: st.refreshHz });
@@ -103,16 +108,32 @@ try {
   st = await state(s1.page);
   check('Back to 100 percent', st.renderScale === 1 && st.width === w100, { width: st.width });
 
+  // 5. V-Sync Off: saved, and after a reload the canvas is a low-latency one.
+  await choose(s1.page, s1.mouse, 's-vsync', 'off');
+  await s1.page.reload({ waitUntil: 'load' });
+  await s1.page.waitForFunction(() => window.__fw && window.__fw.ready, null);
+  st = await state(s1.page);
+  check('V-Sync Off after a reload: a low-latency (desynchronized) canvas', st.lowLatency && st.settings.vsync === 'off', { lowLatency: st.lowLatency, contextReports: st.desynchronized });
+  await s1.page.evaluate(() => { const a = window.__fw.app; a.settings.vsync = 'on'; a.saveSettings(); });
+  errorsAll.push(...s1.errors);
+  await s1.ctx.close();
+  }
+
   // 4. Frame rate cap, through the Settings select: uncapped, 60 and 30, each measured over 4 s
-  // in a light page (a small window at a quarter scale, so software rendering keeps up with the
-  // display; at full size here a frame takes longer than any cap).
-  {
+  // in a small window, with the drawing switched off (see below).
+  if (want('fps')) {
     const ctx = await browser.newContext({ viewport: { width: 640, height: 360 }, deviceScaleFactor: 1 });
+    ctx.setDefaultTimeout(240000);
     const page = await ctx.newPage();
     const errs = trackErrors(page);
-    await page.goto(`${server.url}/?tier=low&scale=0.25&noassets=1`, { waitUntil: 'load' });
+    await page.goto(`${server.url}/?tier=low&scale=0.25&noassets=1`, { waitUntil: 'load', timeout: 240000 });
     await page.waitForFunction(() => window.__fw && window.__fw.ready, null, { timeout: 240000 });
     await page.waitForTimeout(1500);
+    // Software rendering draws this scene at about 7 frames a second even this small, slower
+    // than any cap, so for this measurement the 3D drawing and the world animation are switched
+    // off: what is measured is the real frame loop paced by the browser's own frame callbacks.
+    out.steps.fpsSoftware = await (async () => { const a = await page.evaluate(() => [window.__fw.app.loop.stats.frame, performance.now()]); await page.waitForTimeout(3000); const b = await page.evaluate(() => [window.__fw.app.loop.stats.frame, performance.now()]); return +((b[0] - a[0]) / ((b[1] - a[1]) / 1000)).toFixed(1); })();
+    await page.evaluate(() => { const a = window.__fw.app; a.engine.render = () => {}; a.world.update = () => {}; });
     const rate = async (ms = 4000) => { const a = await page.evaluate(() => [window.__fw.app.loop.stats.frame, performance.now()]); await page.waitForTimeout(ms); const b = await page.evaluate(() => [window.__fw.app.loop.stats.frame, performance.now()]); return +((b[0] - a[0]) / ((b[1] - a[1]) / 1000)).toFixed(1); };
     const setCap = async (v) => { await page.evaluate((x) => { const a = window.__fw.app; a.ui.screens.registry.settings(); const s = document.getElementById('s-fps'); s.value = x; s.dispatchEvent(new Event('change', { bubbles: true })); a.ui.screens.back(); }, v); await page.waitForTimeout(600); };
     const r = { uncapped: await rate() };
@@ -128,17 +149,8 @@ try {
     await ctx.close();
   }
 
-  // 5. V-Sync Off: saved, and after a reload the canvas is a low-latency one.
-  await choose(s1.page, s1.mouse, 's-vsync', 'off');
-  await s1.page.reload({ waitUntil: 'load' });
-  await s1.page.waitForFunction(() => window.__fw && window.__fw.ready, null);
-  st = await state(s1.page);
-  check('V-Sync Off after a reload: a low-latency (desynchronized) canvas', st.lowLatency && st.settings.vsync === 'off', { lowLatency: st.lowLatency, contextReports: st.desynchronized });
-  await s1.page.evaluate(() => { const a = window.__fw.app; a.settings.vsync = 'on'; a.saveSettings(); });
-  errorsAll.push(...s1.errors);
-  await s1.ctx.close();
-
   // 6. A desktop GPU's name: Automatic picks Ultra, and the Settings label says so.
+  if (want('gpu')) {
   const s2 = await open(`${server.url}/?scale=0.25`, { gpuName: 'ANGLE (NVIDIA, NVIDIA GeForce RTX 3070 Direct3D11 vs_5_0 ps_5_0, D3D11)' });
   st = await state(s2.page);
   out.steps.desktopGpu = st;
@@ -153,8 +165,10 @@ try {
   await shot(s2.page, '3-desktop-gpu-settings');
   errorsAll.push(...s2.errors);
   await s2.ctx.close();
+  }
 
   // 7. The ?debug overlay and benchmark in a round (fewer frames than a real run: software rendering).
+  if (want('bench')) {
   const s3 = await open(`${server.url}/?mode=stroke&course=parkland&hole=1&holes=1&debug=1&bot=1&seed=4`);
   await s3.page.waitForFunction(() => ['intro', 'aim'].includes(window.__fw.phase()), null);
   if (await s3.page.evaluate(() => window.__fw.phase() === 'intro')) { await clickSel(s3.page, s3.mouse, '.intro-skip'); }
@@ -172,6 +186,7 @@ try {
   await shot(s3.page, '4-debug-bench');
   errorsAll.push(...s3.errors);
   await s3.ctx.close();
+  }
 } catch (e) { out.failed = e.message.split('\n')[0]; console.log('FAILED', out.failed); }
 out.consoleErrors = errorsAll.map((e) => e.text.slice(0, 200));
 out.passed = out.checks.filter((c) => c.pass).length; out.total = out.checks.length;
