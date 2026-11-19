@@ -1,0 +1,56 @@
+{
+ "size": "1920x1080",
+ "checks": [
+  {
+   "name": "Desktop GPU (RTX 3070 reported): Automatic picks Ultra",
+   "pass": true,
+   "detail": {
+    "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3070 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "autoTier": "ultra",
+    "tier": "ultra"
+   }
+  },
+  {
+   "name": "The tier override is in Settings and shows the automatic choice",
+   "pass": true,
+   "detail": "Automatic (Ultra)"
+  },
+  {
+   "name": "Overriding the tier to High rebuilds the world on High",
+   "pass": true,
+   "detail": {
+    "tier": "high"
+   }
+  }
+ ],
+ "steps": {
+  "desktopGpu": {
+   "tier": "ultra",
+   "shadowLevel": "auto",
+   "shadowsOn": true,
+   "cascades": 4,
+   "shadowSize": 2048,
+   "width": 480,
+   "height": 270,
+   "renderScale": 0.25,
+   "cap": 0,
+   "refreshHz": 60,
+   "lowLatency": false,
+   "desynchronized": false,
+   "autoTier": "ultra",
+   "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3070 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+   "desktopGpu": true,
+   "settings": {
+    "tier": "auto",
+    "shadowQuality": "auto",
+    "renderScale": 1,
+    "fpsCap": "uncapped",
+    "vsync": "on"
+   }
+  }
+ },
+ "failed": "page.evaluate: Target page, context or browser has been closed",
+ "consoleErrors": [],
+ "passed": 3,
+ "total": 3
+}

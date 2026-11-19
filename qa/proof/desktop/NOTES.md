@@ -97,3 +97,62 @@ build, a mouse (no touch) driven through the Chrome DevTools input domain.
   - After quitting a round to the menu, the HUD could stay drawn behind the menus (this was in
     the deployed build too). The HUD now hides whenever the game is in its menu phase.
 - Console errors: 0.
+
+## Part 4: desktop graphics and performance
+
+`scripts/tools/graphics.mjs` in parts (PARTS=settings, fps, gpu, bench, overlay, vsync), on the
+production build at 1920x1080, with real mouse and keyboard events on the Settings screen.
+Headless Chrome here renders with SwiftShader (on the CPU), so its frame times are not a real
+GPU's; see the benchmark below.
+
+- Automatic tier: a desktop GPU (a dedicated card, Apple silicon, Intel Arc, a recent strong AMD
+  integrated GPU, or Safari on a Mac, which only says "Apple GPU") starts on High or Ultra:
+  with "NVIDIA GeForce RTX 3070" reported to the page, Automatic picked Ultra and the Settings
+  label read "Automatic (Ultra)"; choosing High rebuilt the world on High
+  (`p4-gpu-1920x1080.json`, `p4-gpu-1920x1080-3-desktop-gpu-settings.jpg`). This machine's
+  software GPU still gets Low. Older integrated GPUs (Intel UHD and HD) keep Medium or Low.
+- New Settings, Graphics section (`p4-1920x1080-1-settings-graphics.jpg`): the GPU name and the
+  measured refresh rate, Graphics quality, Shadow quality (Match the graphics quality, Off, Low,
+  Medium, High, Ultra), Resolution scale (50 to 100 percent), Frame rate cap (Uncapped, 144,
+  120, 60, 30) and V-Sync (On, Off).
+  - Shadow quality Off turned the shadow maps off; Ultra on the Low tier gave 4 cascades and
+    left the rest Low.
+  - Resolution scale with the keyboard: Home gave 50 percent and a 960 px wide drawing buffer
+    in a 1920 window (`p4-1920x1080-2-scale-50.jpg`), End gave 100 percent and 1920 again.
+  - V-Sync Off: kept, a toast says it applies after a reload, and after the reload the canvas is
+    created with the low-latency (desynchronized) hint. Headless Chrome did not grant the hint
+    (`getContextAttributes` reports false), so whether it lowers latency on a real monitor is
+    unverified. Browsers draw at most once per display refresh either way, which the setting
+    says.
+- The frame loop and the display refresh rate: the loop runs on the browser's frame callbacks
+  (once per refresh) and now measures the refresh rate (the median interval). The cap draws on
+  the refresh nearest each due time, so a 60 cap on a 144 Hz display averages 60 (unit tests:
+  every cap on 60, 120, 144, 165 and 240 Hz within 2 percent). In the browser, with drawing
+  switched off for the measurement (software rendering draws this scene at about 7 frames a
+  second, slower than any cap): uncapped 55 to 60, cap 60 gave 60.2, cap 30 gave 30.2, display
+  59.9 Hz (`p4-fps-1920x1080.json`). The game advances by the real time between frames; the
+  ball flight is computed in advance with its own fixed step and played back by time, and the
+  swing reads the input events' timestamps, so neither changes with the refresh rate (unit
+  tests: 10 s of play at 60 to 240 Hz with and without caps adds up to 10 s; a driver's flight
+  at 30, 60, 144 and 240 Hz has the same events and the same rest point).
+- Fixed: the ball tracer kept at most 420 points spaced 0.35 m or more, and the game offers one
+  every frame, so above about 100 Hz a long drive's tracer stopped before the ball landed. It
+  now keeps up to 1000 points at 0.5 m; a 10 percent longer than table drive reaches the landing
+  at 30 to 360 Hz (unit test).
+- ?debug overlay (`p4-overlay-1920x1080-5-debug-overlay.jpg`): frame time average, slowest 5 and
+  1 percent, the measured refresh rate, the cap, V-Sync and scale, and a Run benchmark button.
+  The benchmark (`?debug&bench` runs it on load) rebuilds the world on each tier, draws at
+  1920x1080 and 2560x1440 whatever the window, times whole frames in batches each ending with a
+  one-pixel read (so the GPU has finished), and keeps the result in the browser.
+  Result on this machine (`p4-bench-1920x1080.json`, software rendering on 4 CPU cores, so
+  seconds per frame; the order is right, the size is not a GPU's):
+
+  | tier | 1080p ms per frame | 1440p ms per frame | triangles |
+  | --- | --- | --- | --- |
+  | Low | 7278 | 12300 | 244k |
+  | Medium | 11672 | 18693 | 450k |
+  | High | 17663 | 27855 | 957k |
+  | Ultra | 21550 | 49664 | 1610k |
+
+  Real GPU numbers need the button pressed on a real machine.
+- Console errors: 0 in every part.

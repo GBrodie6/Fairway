@@ -1,0 +1,51 @@
+{
+ "size": "1920x1080",
+ "checks": [
+  {
+   "name": "Uncapped runs at the display refresh rate (headless Chrome: 60 Hz)",
+   "pass": true,
+   "detail": {
+    "uncapped": 54.7,
+    "cap60": 60.2,
+    "cap30": 30.2,
+    "refreshHz": 59.9,
+    "cap": 30
+   }
+  },
+  {
+   "name": "A 60 cap draws about 60 times a second",
+   "pass": true,
+   "detail": {
+    "uncapped": 54.7,
+    "cap60": 60.2,
+    "cap30": 30.2,
+    "refreshHz": 59.9,
+    "cap": 30
+   }
+  },
+  {
+   "name": "A 30 cap draws about 30 times a second",
+   "pass": true,
+   "detail": {
+    "uncapped": 54.7,
+    "cap60": 60.2,
+    "cap30": 30.2,
+    "refreshHz": 59.9,
+    "cap": 30
+   }
+  }
+ ],
+ "steps": {
+  "fpsSoftware": 7,
+  "fps": {
+   "uncapped": 54.7,
+   "cap60": 60.2,
+   "cap30": 30.2,
+   "refreshHz": 59.9,
+   "cap": 30
+  }
+ },
+ "consoleErrors": [],
+ "passed": 3,
+ "total": 3
+}

@@ -1,0 +1,18 @@
+{
+ "size": "1920x1080",
+ "checks": [
+  {
+   "name": "V-Sync Off after a reload: a low-latency (desynchronized) canvas",
+   "pass": true,
+   "detail": {
+    "lowLatency": true,
+    "browserGranted": false,
+    "toast": "V-Sync applies after a reloadA browser draws at most once per display refresh either way"
+   }
+  }
+ ],
+ "steps": {},
+ "consoleErrors": [],
+ "passed": 1,
+ "total": 1
+}

@@ -1,0 +1,121 @@
+{
+ "size": "1920x1080",
+ "checks": [
+  {
+   "name": "The ?debug overlay reports frame time by tier at 1080p and 1440p",
+   "pass": false,
+   "detail": [
+    "budget draws 420  tris 2000k",
+    "ms: render 2524.8  world 0.7  ui 0.1  camera 0.1",
+    "terrain build 310 ms  terrain tris 123k",
+    "trees 13530 (lod0 16 lod1 103 impostor 5814)  plants 165/3647  veg tris 957k",
+    "  assets 26.8 MB in 104 req",
+    "bench: not run (press Run benchmark, or open with ?debug&bench)"
+   ]
+  },
+  {
+   "name": "The overlay shows the refresh rate and the cap",
+   "pass": true
+  },
+  {
+   "name": "After the benchmark the tier and the drawing size are back",
+   "pass": true,
+   "detail": {
+    "tier": "low",
+    "width": 1920
+   }
+  }
+ ],
+ "steps": {
+  "bench": {
+   "at": "2026-11-19T18:55:47.762Z",
+   "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+   "window": "1920x1080",
+   "method": "median of 2 batches of 3 frames, synced",
+   "rows": {
+    "low": {
+     "1080p": {
+      "ms": 7277.7,
+      "worst": 7277.7,
+      "fps": 0.1,
+      "draws": 108,
+      "tris": 244054
+     },
+     "1440p": {
+      "ms": 12300.27,
+      "worst": 12300.27,
+      "fps": 0.1,
+      "draws": 112,
+      "tris": 240666
+     }
+    },
+    "medium": {
+     "1080p": {
+      "ms": 11671.9,
+      "worst": 11671.9,
+      "fps": 0.1,
+      "draws": 103,
+      "tris": 449643
+     },
+     "1440p": {
+      "ms": 18692.5,
+      "worst": 18692.5,
+      "fps": 0.1,
+      "draws": 103,
+      "tris": 449643
+     }
+    },
+    "high": {
+     "1080p": {
+      "ms": 17662.67,
+      "worst": 17662.67,
+      "fps": 0.1,
+      "draws": 136,
+      "tris": 956885
+     },
+     "1440p": {
+      "ms": 27855.27,
+      "worst": 27855.27,
+      "fps": 0,
+      "draws": 136,
+      "tris": 956885
+     }
+    },
+    "ultra": {
+     "1080p": {
+      "ms": 21549.6,
+      "worst": 21549.6,
+      "fps": 0,
+      "draws": 145,
+      "tris": 1610385
+     },
+     "1440p": {
+      "ms": 49663.5,
+      "worst": 49663.5,
+      "fps": 0,
+      "draws": 145,
+      "tris": 1610385
+     }
+    }
+   },
+   "seconds": 1314
+  },
+  "overlay": [
+   "tier ultra  shadows auto  2560x1440 @1.33  landscape",
+   "frame 5.9 ms avg  16.6 slowest 5%  16.7 slowest 1%  0 fps  cpu 2855.0 ms",
+   "draws 144  tris 1610k  geo 162  tex 119  prog 76",
+   "texture mem 113.6 MB  targets 217.3 MB",
+   "display 60 Hz  cap none  vsync on  scale 100%",
+   "exposure 1.399  luma 86 / 150",
+   "budget draws 420  tris 2000k",
+   "ms: render 2524.8  world 0.7  ui 0.1  camera 0.1",
+   "terrain build 310 ms  terrain tris 123k",
+   "trees 13530 (lod0 16 lod1 103 impostor 5814)  plants 165/3647  veg tris 957k",
+   "  assets 26.8 MB in 104 req",
+   "bench: not run (press Run benchmark, or open with ?debug&bench)"
+  ]
+ },
+ "consoleErrors": [],
+ "passed": 2,
+ "total": 3
+}
