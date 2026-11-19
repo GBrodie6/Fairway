@@ -18,21 +18,27 @@ import { courseById } from '../course/courses.js';
 import { fin } from '../core/guards.js';
 import { strikeResult, applyStrike, ballFactors } from './strike.js';
 import { bayBall, targetFor } from '../course/range.js';
-import { EXTRA_SHOTS } from './shots.js';
+import { SHOT_DATA, shotData, shotFitsData, shotPower, SPLASH_RANGE } from '../data/shotTypes.js';
+import { clampOffset, offsetSize, spinRange, SPIN_FX, curveAndRoll, applySpin, isNeutral } from './spin.js';
+import { archetypeRange } from '../data/spinControl.js';
 
-const ALL_SHOTS = [...Object.values(SHOT_TYPES), ...EXTRA_SHOTS];
-const shotById = (id) => ALL_SHOTS.find((s) => s.id === id) || SHOT_TYPES.FULL;
-const shotFits = (s, club) => (!s.wedgeOnly || club.kind === 'wedge') && (!s.noWoods || club.kind !== 'wood');
+// Shot types (data/shotTypes.js): Normal is the physics module's Full shot, unchanged.
+const ALL_SHOTS = SHOT_DATA;
+const shotById = (id) => (id === 'putt' ? SHOT_TYPES.PUTT : shotData(id));
+const NORMAL = shotData('full'), CHIP = shotData('chip'), SPLASH = shotData('splash');
 
 export function createGame(app) {
   const listeners = new Set();
   const emit = (type, data) => { for (const fn of listeners) { try { fn(type, data); } catch (e) { console.error('[fairway] listener for', type, e); } } };
   const W = () => app.world;
   const state = {
-    phase: 'menu', round: null, turn: 0, ball: { x: 0, z: 0 }, lie: SURFACES.TEE, club: CLUBS[0], shotType: SHOT_TYPES.FULL,
+    phase: 'menu', round: null, turn: 0, ball: { x: 0, z: 0 }, lie: SURFACES.TEE, club: CLUBS[0], shotType: shotData('full'),
     aim: 0, aimRef: 0, target: null, prediction: null, putt: null, distToPin: 0, message: '', hazard: null,
     wind: null, windInfo: { speedMph: 0, dir: 0 }, clock: 0, shot: null, lastShot: null, profile: BASE_PROFILE, replaying: false,
     busy: false, holeSummary: null, fast: false,
+    // The ball-contact dot (game/spin.js): x curves the ball (+ right), y adds (+) or takes off
+    // (-) backspin. Neutral is { 0, 0 } and changes nothing.
+    spin: { x: 0, y: 0 },
   };
   const game = { state, on: (fn) => { listeners.add(fn); return () => listeners.delete(fn); } };
   const tmp = { x: 0, y: 0, z: 0 }, wv = { x: 0, z: 0 };
@@ -150,7 +156,8 @@ export function createGame(app) {
     w.ball.spin.rate = 0;
     const want = rg.forceClub || rg.clubId;
     state.club = CLUBS.find((c) => c.id === want && !c.putter) || CLUBS.find((c) => c.id === 'I7');
-    if (state.shotType.id === 'putt' || state.shotType.id === 'chip') state.shotType = SHOT_TYPES.FULL;
+    if (state.shotType.id === 'putt' || !shotFits(state.shotType, state.club)) state.shotType = NORMAL;
+    newShotSpin();
     rangeAim();
     w.grassCenter = null;
     w.rig.resetLook();
@@ -182,12 +189,16 @@ export function createGame(app) {
     if (onGreen) { state.club = PUTTER; state.shotType = SHOT_TYPES.PUTT; }
     else {
       const chip = !state.target.layup && dTarget < 30 && st.lie !== SURFACES.BUNKER;
-      state.shotType = chip ? SHOT_TYPES.CHIP : SHOT_TYPES.FULL;
-      state.club = chip ? CLUBS.find((c) => c.id === (dTarget < 14 ? 'SW' : 'PW')) : suggestClub(dTarget + (t.heightAt(state.target.x, state.target.z) - t.heightAt(st.x, st.z)) * 0.9, { lie: st.lie, profile: state.profile }).club;
+      // A greenside bunker: the sand wedge and the splash, chosen automatically.
+      const splash = st.lie === SURFACES.BUNKER && !state.target.layup && dTarget < SPLASH_RANGE;
+      state.shotType = splash ? SPLASH : chip ? CHIP : NORMAL;
+      state.club = splash ? CLUBS.find((c) => c.id === 'SW') : chip ? CLUBS.find((c) => c.id === (dTarget < 14 ? 'SW' : 'PW')) : suggestClub(dTarget + (t.heightAt(state.target.x, state.target.z) - t.heightAt(st.x, st.z)) * 0.9, { lie: st.lie, profile: state.profile }).club;
+      if (!shotFits(state.shotType, state.club) || !shotAllowed(state.shotType.id)) state.shotType = NORMAL;
     }
     state.aimRef = headingTo(st.x, st.z, state.target.x, state.target.z);
     state.aim = state.aimRef;
     state.putt = null;
+    newShotSpin();
     computeIdeal();
     // Default to a club that reaches with some margin: step up while the shot needs more
     // than about 92 percent of a full swing.
@@ -230,7 +241,7 @@ export function createGame(app) {
       w.overlays.showPutt({ path: r.points });
     } else {
       const power = game.suggestedPower();
-      const r = predictShot(t, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aim, power, profile: guideProfile(state.club) }, windAt, state.clock);
+      const r = predictShot(t, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aim, power, profile: guideProfile(state.club), spin: mySpin() }, windAt, state.clock);
       state.prediction = r; state.putt = null;
       const wRel = windRelative(state.wind, state.aim, state.clock);
       const disp = dispersion(state.club, state.lie, { windMps: Math.hypot(wRel.along, wRel.cross), profile: state.profile, shotType: state.shotType });
@@ -245,12 +256,48 @@ export function createGame(app) {
     if (state.club.putter || !state.target) { state.idealPower = 0.5; return; }
     // Solve for where the ball stops, not where it lands: with only part of the roll allowed
     // for, approaches to firm or downhill greens ran 20 yards past the pin in play tests.
-    state.idealPower = solvePower(W().terrain, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aimRef, profile: guideProfile(state.club) }, windAt, state.clock, state.target, 'end');
+    state.idealPower = solvePower(W().terrain, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aimRef, profile: guideProfile(state.club), spin: mySpin() }, windAt, state.clock, state.target, 'end');
   }
   game.suggestedPower = () => {
     if (state.club.putter) return state.putt ? state.putt.idealPower : 0.5;
     return state.idealPower ?? 0.8;
   };
+
+  // --- the ball-contact dot ---
+  // The usable range: the club tier's reach, plus the golfer's archetype perk (campaign) or the
+  // pro's (data/pros.json), inside the caps in data/spinControl.js. Computer players and putts
+  // have none.
+  game.spinRange = () => {
+    if (!state.club || state.club.putter || !isHuman()) return 0;
+    const tier = app.gearFor ? (app.gearFor(state.club.id) || {}).rarity : 'common';
+    const arch = (state.round && state.round.players[state.turn] && state.round.players[state.turn].archetype) || (state.golfer && app.golferArchetype ? app.golferArchetype() : null);
+    return spinRange(tier || 'common', archetypeRange(arch));
+  };
+  const mySpin = () => (isHuman() && !state.club.putter && !isNeutral(state.spin) ? clampOffset(state.spin, game.spinRange()) : null);
+  game.spin = () => ({ ...state.spin });
+  // While the dot is being dragged (live) only the prediction follows; the power guide is
+  // solved again when the drag ends.
+  game.setSpin = (x, y, { live = false } = {}) => {
+    if (state.phase !== 'aim' || state.club.putter) return;
+    const next = clampOffset({ x, y }, game.spinRange());
+    const moved = Math.abs(next.x - state.spin.x) > 1e-4 || Math.abs(next.y - state.spin.y) > 1e-4;
+    if (!moved && live) return;
+    state.spin = next;
+    if (!live) computeIdeal();
+    refresh();
+    emit('spin', { ...state.spin });
+  };
+  // Curve (meters, + right of the start line), roll, and carry for the shot as aimed.
+  game.spinReadout = () => {
+    if (!state.prediction || state.club.putter) return null;
+    const cr = curveAndRoll(state.prediction, state.ball, state.aim);
+    return { curve: cr.curve, roll: cr.roll, carry: state.prediction.carry };
+  };
+  // A new shot starts with the dot in the middle unless the setting keeps it.
+  function newShotSpin() {
+    if (app.settings.spinMemory !== 'remember') state.spin = { x: 0, y: 0 };
+    state.spin = clampOffset(state.spin, game.spinRange());
+  }
 
   // --- player input (all guarded: ignored outside the aim phase) ---
   game.setAim = (heading) => {
@@ -284,8 +331,11 @@ export function createGame(app) {
   };
   function pickClub(club) {
     state.club = club;
-    if (state.club.putter) state.shotType = SHOT_TYPES.PUTT; else if (state.shotType.id === 'putt') state.shotType = SHOT_TYPES.FULL;
-    if (!shotFits(state.shotType, state.club) || !shotAllowed(state.shotType.id)) state.shotType = SHOT_TYPES.FULL;
+    state.spin = clampOffset(state.spin, game.spinRange());
+    if (state.club.putter) state.shotType = SHOT_TYPES.PUTT; else if (state.shotType.id === 'putt') state.shotType = NORMAL;
+    if (!state.club.putter && (!shotFits(state.shotType, state.club) || !shotAllowed(state.shotType.id))) state.shotType = NORMAL;
+    // In a greenside bunker a wedge splashes on its own.
+    if (!state.club.putter && state.shotType.id === 'full' && state.lie === SURFACES.BUNKER && state.distToPin < SPLASH_RANGE && shotFits(SPLASH, state.club)) state.shotType = SPLASH;
     W().rig.ctx = addressCtx();
     computeIdeal();
     refresh();
@@ -302,8 +352,13 @@ export function createGame(app) {
     emit('club', state.club);
   };
   // Campaign events offer the shots the golfer has unlocked; everywhere else offers them all.
+  // Quick Play offers every shot unless the setting says to use the Campaign's unlocks.
   const shotAllowed = (id) => !(app.shotAllowed && state.round) || app.shotAllowed(id, state.round);
-  game.shotTypes = () => (state.club.putter ? [] : ALL_SHOTS.filter((s) => s.id !== 'putt' && shotFits(s, state.club) && shotAllowed(s.id)));
+  // A shot fits the club in hand and the lie the ball sits on (data/shotTypes.js).
+  function shotFits(s, club) { if (!s || !club || club.putter) return false; const d = shotData(s.id); return d.id === s.id && shotFitsData(d, club.id, state.lie); }
+  game.shotTypes = () => (state.club.putter ? [] : ALL_SHOTS.filter((s) => shotFits(s, state.club) && shotAllowed(s.id)));
+  // Carry (meters, flat and calm) for the club in hand with a shot type, at the shot's top power.
+  game.shotCarry = (id) => { const d = shotData(id); return state.club.putter ? 0 : nominalCarry(state.club, guideProfile(state.club), d, d.power[1]); };
 
   // --- the shot ---
   game.swing = (swing) => {
@@ -314,7 +369,7 @@ export function createGame(app) {
 
   function playAi() {
     const r = state.round, p = r.players[state.turn], t = W().terrain;
-    const plan = aiPlan(t, state.ball, state.lie, { skill: p.skill, rng, windAt, t0: state.clock });
+    const plan = aiPlan(t, state.ball, state.lie, { skill: p.skill, rng, windAt, t0: state.clock, shots: true });
     state.club = plan.club; state.shotType = plan.shotType; state.aim = plan.aim;
     if (plan.club.putter) state.putt = { ceiling: plan.puttCeiling };
     emit('club', state.club);
@@ -333,6 +388,8 @@ export function createGame(app) {
       launch = { x: from.x, z: from.z, putt: true, speed: clamp(swing.power, 0, 1) * ceil * (0.97 + 0.03 * tq), heading: aim + (swing.face || 0) * 0.45 * DEG * state.profile.putting, vAngle: 0, spin: 0, axisTilt: 0 };
     } else {
       lieRoll = rng.range(-1, 1);
+      // The shot type's power range (a knockdown is three-quarter at most).
+      if (shotType && shotType.id !== 'full') swing = { ...swing, power: shotPower(shotData(shotType.id), swing.power) };
       launch = computeLaunch(swing, { club, shotType, lie: from.lie, aim, x: from.x, z: from.z, profile: state.profile, lieRoll });
     }
     // The range's club test lane replays the same swing with a second club version, so both
@@ -341,9 +398,12 @@ export function createGame(app) {
     const k = testLane ? rng.int(1, 2 ** 30) : 0;
     // Strike quality: a bounded change to the launch from how cleanly the club met the ball.
     // The simulation that follows is unchanged.
-    const sctx = { ...strikeContext(club, from), aim };
+    const spin = isHuman() && !club.putter ? clampOffset(state.spin, game.spinRange()) : null;
+    const sctx = { ...strikeContext(club, from), aim, shapeError: spin ? SPIN_FX.mishit * offsetSize(spin) ** 2 : 0, shotMishit: club.putter ? 1 : shotData(shotType.id).mishit };
     const strike = strikeResult(swing, sctx, testLane ? createRng(k) : rng);
     launch = applyStrike(launch, strike, sctx);
+    // The ball-contact dot: bounded changes to curve, spin and launch, never more carry.
+    if (spin && !isNeutral(spin)) launch = applySpin(launch, spin, { club, shotType, profile: state.profile });
     result = simulateShot(launch, t.env({ windAt, t0: state.clock }));
     state.compareShot = testLane ? compareSwing(swing, aim, shotType, from, lieRoll, k) : null;
     state.shotRarity = sctx.rarity;
@@ -628,7 +688,7 @@ export function createGame(app) {
       carry: state.club.putter ? 0 : nominalCarry(state.club, guideProfile(state.club), state.shotType),
       predicted: state.prediction ? { carry: state.prediction.carry, total: state.prediction.total, lie: state.prediction.lie } : null,
       suggestedPower: state.phase === 'aim' ? game.suggestedPower() : 0,
-      hazard: state.hazard, putt: state.putt, message: state.message, aim: state.aim,
+      hazard: state.hazard, putt: state.putt, message: state.message, aim: state.aim, spin: { ...state.spin },
       canReplay: !!(state.lastShot && !state.lastShot.club.putter && state.phase === 'aim'), replayAngle: state.replayAngle || 'follow',
       range: r.mode === 'range' && state.range ? { bay: state.range.bay, surface: state.range.surface, target: state.rangeTarget ? state.rangeTarget.yards : null } : null,
     };

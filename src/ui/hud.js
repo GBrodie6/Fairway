@@ -10,6 +10,7 @@
 import { h, iconButton, icon } from './dom.js';
 import { fmtDist, fmtShort, fmtBreak, fmtToPar, fmtMph, ordinal } from './format.js';
 import { createSwingZone } from './swingZone.js';
+import { createShotPanel } from './spinPad.js';
 import { DEG, clamp, YARD } from '../core/math.js';
 import { STRIKE_NAMES } from '../game/strike.js';
 
@@ -103,6 +104,11 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   const clubgroup = h('div', { class: 'clubgroup' }, arrowL, clubBtn, arrowR);
   const bottombar = h('div', { class: 'bottombar' }, settingsBtn, clubgroup, resetBtn);
   el.appendChild(bottombar);
+  // The shot panel: the ball-contact dot and the shot type, from a small button beside the
+  // bottom row (ui/spinPad.js). While it is open the swing zone rests.
+  let panelOpen = false;
+  const shotPanel = createShotPanel(el, { game, settings, haptic, onOpen: (on) => { panelOpen = on; if (on && !clubList.classList.contains('hidden')) toggleClubList(false); } });
+
   // The arrows are mirrored with the layout: the outer arrow on the settings side is always
   // "longer club", so a left-handed layout reads as a true mirror image.
   const longer = () => game.selectClub(-1), shorter = () => game.selectClub(1);
@@ -133,11 +139,15 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
         actions.rangeAverage && actions.rangeAverage(c.id) ? h('small', { class: 'ravg', text: `range ${fmtDist(actions.rangeAverage(c.id), u)}` }) : null));
     }
     clubList.appendChild(grid);
+    // The shot types this club can play from this lie, each with its carry (scrolls sideways).
     const types = game.shotTypes();
-    if (types.length) {
-      const seg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Shot type' });
-      for (const t of types) seg.appendChild(h('button', { type: 'button', 'aria-pressed': t.id === game.state.shotType.id ? 'true' : 'false', onclick: () => { game.setShotType(t.id); buildClubList(); } }, t.name));
-      clubList.appendChild(seg);
+    if (types.length > 1) {
+      const row = h('div', { class: 'shottypes', role: 'radiogroup', 'aria-label': 'Shot type' });
+      for (const t of types) {
+        const on = t.id === game.state.shotType.id, carry = game.shotCarry ? game.shotCarry(t.id) : 0;
+        row.appendChild(h('button', { type: 'button', role: 'radio', 'aria-checked': on ? 'true' : 'false', class: `shottype${on ? ' on' : ''}`, onclick: () => { game.setShotType(t.id); buildClubList(); } }, h('b', { text: t.name }), carry ? h('span', { text: fmtDist(carry, u) }) : null));
+      }
+      clubList.appendChild(row);
     }
   }
   hud_closeListOnOutside();
@@ -170,7 +180,7 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   let cardTimer = 0;
 
   let toastTimer = 0;
-  const hud = { el, stick: zone, zone, toastEl: toast, layoutBox: null };
+  const hud = { el, stick: zone, zone, toastEl: toast, layoutBox: null, shotPanel };
   hud.strikeLabel = (tempoLabel, strike) => {
     zone.feedback(tempoLabel);
     if (strike && zone.fbEl) {
@@ -382,7 +392,11 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     clubBtn.setAttribute('aria-label', `${v.club.name}${putt ? '' : `, carry ${fmtDist(v.carry, u)}`}. Tap for the club list, swipe to change`);
     for (const b of [arrowL, arrowR, clubBtn, resetBtn]) b.disabled = !aiming;
     if (!aiming && !clubList.classList.contains('hidden')) toggleClubList(false);
-    zone.setEnabled(aiming && v.human);
+    zone.setEnabled(aiming && v.human && !panelOpen);
+    // The shot panel's button: full shots by a person, at address.
+    shotPanel.setVisible(aiming && v.human && !putt && !(w && w.rig && w.rig.mode === 'peek'));
+    const spinKey = `${v.spin ? `${v.spin.x.toFixed(3)},${v.spin.y.toFixed(3)}` : ''}|${v.club.id}|${v.shotType.id}|${panelOpen ? v.aim.toFixed(4) : ''}|${v.predicted ? v.predicted.carry.toFixed(1) : ''}`;
+    if (cache.get('spinKey') !== spinKey) { cache.set('spinKey', spinKey); shotPanel.refresh(); }
     const replaying = v.phase === 'replay';
     replaybar.classList.toggle('hidden', !replaying);
     if (replaying) for (const b of angleBtns) b.setAttribute('aria-pressed', b.dataset.angle === v.replayAngle ? 'true' : 'false');
@@ -390,6 +404,7 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     bottombar.style.visibility = showControls ? 'visible' : 'hidden';
     const peeking = !!(w && w.rig && w.rig.mode === 'peek');
     zone.el.style.visibility = aiming && v.human && !peeking ? 'visible' : 'hidden';
+    zone.track.style.visibility = zone.el.style.visibility;
     lookBtn.style.visibility = aiming && v.human ? 'visible' : 'hidden';
     skip.classList.toggle('hidden', v.phase !== 'intro');
     const showHud = v.phase !== 'intro' && v.phase !== 'loading' && v.phase !== 'summary' && v.phase !== 'done';

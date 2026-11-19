@@ -436,3 +436,47 @@ p.comm { font-style: italic; color: #f4ecd2; }
 .robotrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .robotpic { width: min(100%, 300px); height: auto; aspect-ratio: 220 / 80; border-radius: 10px; background: #f4efe0; border: 1px solid var(--line); }
 #a-code { letter-spacing: 0.3em; font-variant-numeric: tabular-nums; }
+/* The shot panel: the ball-contact pad and the shot type row. */
+.spinbtn { position: absolute; left: calc(14px + var(--safe-l)); bottom: calc(86px + var(--safe-b)); width: 52px; height: 58px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 4px; color: var(--ink); border: 1px solid var(--line); }
+.lefty .spinbtn { left: auto; right: calc(14px + var(--safe-r)); }
+.spinbtn.shaped { border-color: var(--accent); }
+.spinmini { position: relative; width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ffffff, #dfe3dd 60%, #b9bfb7); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45); }
+.spinmini i { position: absolute; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%; background: #d8452f; left: 50%; top: 50%; }
+.spintype { font-size: 10px; line-height: 1; color: var(--ink-dim); max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.shotpanel { position: absolute; left: calc(10px + var(--safe-l)); right: calc(10px + var(--safe-r)); bottom: calc(10px + var(--safe-b)); max-width: 560px; margin: 0 auto; padding: 12px; border-radius: 20px; z-index: 6; display: flex; flex-direction: column; gap: 10px; box-sizing: border-box; overflow: hidden; }
+.shotpanel > * { min-width: 0; }
+.shotgrid { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; }
+.padwrap { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 0 0 auto; }
+.padrow { display: flex; align-items: center; gap: 6px; }
+.padlab { font-size: 12px; color: var(--ink-dim); }
+.padlab.l, .padlab.r { width: 34px; text-align: center; }
+.padball { position: relative; width: 132px; height: 132px; border-radius: 50%; background: radial-gradient(circle at 36% 30%, #ffffff, #e4e8e2 55%, #b3b9b1); box-shadow: inset -8px -10px 18px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.45); touch-action: none; cursor: grab; }
+.padball:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.padcross { position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(90deg, transparent calc(50% - 0.5px), rgba(0, 0, 0, 0.18) calc(50% - 0.5px), rgba(0, 0, 0, 0.18) calc(50% + 0.5px), transparent calc(50% + 0.5px)), linear-gradient(0deg, transparent calc(50% - 0.5px), rgba(0, 0, 0, 0.18) calc(50% - 0.5px), rgba(0, 0, 0, 0.18) calc(50% + 0.5px), transparent calc(50% + 0.5px)); pointer-events: none; }
+.padrange { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 2px dashed rgba(18, 32, 15, 0.45); pointer-events: none; }
+.paddot { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: #d8452f; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); pointer-events: none; }
+.padside { flex: 1 1 auto; min-width: 0; }
+.padread { font-size: 14px; line-height: 1.35; }
+.quick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.quick .btn { min-height: 44px; min-width: 0; padding: 0 6px; }
+.shottypes { display: flex; gap: 6px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
+.shottype { flex: 0 0 auto; scroll-snap-align: start; min-width: 76px; min-height: 48px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.06); color: var(--ink); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 4px 8px; font: inherit; }
+.shottype b { font-size: 13px; }
+.shottype span { font-size: 11px; color: var(--ink-dim); }
+.shottype.on { border-color: var(--accent); background: rgba(194, 229, 138, 0.18); }
+.padfoot { display: flex; justify-content: flex-end; }
+@media (max-width: 380px) { .padball { width: 112px; height: 112px; } .padlab.l, .padlab.r { width: 30px; font-size: 11px; } }
+@media (orientation: landscape) and (max-height: 500px) {
+  .shotpanel { left: calc(10px + var(--safe-l)); right: auto; margin: 0; width: min(340px, 42vw); max-height: calc(100vh - 160px); padding: 8px 10px; gap: 6px; }
+  .lefty .shotpanel { left: auto; right: calc(10px + var(--safe-r)); }
+  .padball { width: 88px; height: 88px; }
+  .padlab { font-size: 11px; }
+  .padlab.l, .padlab.r { width: 30px; }
+  .padread { font-size: 12px; padding-right: 54px; }
+  .quick .btn { min-height: 40px; font-size: 14px; }
+  .shottype { min-height: 44px; min-width: 70px; }
+  .padfoot { position: absolute; top: 8px; right: 8px; }
+  .padfoot .btn { min-height: 36px; padding: 0 10px; width: auto; }
+  .spinbtn { bottom: calc(76px + var(--safe-b)); left: calc(12px + var(--safe-l)); }
+  .lefty .spinbtn { right: calc(12px + var(--safe-r)); left: auto; }
+}

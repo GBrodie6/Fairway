@@ -6,6 +6,7 @@
 // Golfer: save.profile = { xp, archetype, nodes: [ids], respecs }. Every effect is a bounded
 // modifier: a level 1 golfer of any archetype has the base physics profile and no carry bonus,
 // so a perfect strike with a Common club still lands on the calibrated carry ladder.
+import { shotData } from '../data/shotTypes.js';
 import { createRng, hashString } from '../core/rng.js';
 import { clamp } from '../core/math.js';
 import { BASE_PROFILE } from '../physics/shot.js';
@@ -257,12 +258,17 @@ export function golferPerks(g) {
   for (const k of Object.keys(out)) out[k] = clamp(out[k], 0, PERK_LIMITS[k]);
   return out;
 }
+// A shot type is unlocked by the skill tree node it names in data/shotTypes.js ('base' shots
+// are always there; the Stinger and Knockdown come with the Punch node, for example).
 export function shotUnlocked(g, shotId) {
-  if (shotId === 'full' || shotId === 'chip' || shotId === 'putt') return true;
+  if (shotId === 'putt') return true;
+  const d = shotData(shotId);
+  const via = d.id === shotId ? d.unlock : shotId;
+  if (via === 'base') return true;
   if (!g || !g.archetype) return false;
-  if ((ARCHETYPES[g.archetype].startShots || []).includes(shotId)) return true;
+  if ((ARCHETYPES[g.archetype].startShots || []).includes(via)) return true;
   const tree = treeFor(g.archetype);
-  return g.nodes.some((id) => { const n = tree.find((x) => x.id === id); return n && n.kind === 'shot' && n.shot === shotId; });
+  return g.nodes.some((id) => { const n = tree.find((x) => x.id === id); return n && n.kind === 'shot' && n.shot === via; });
 }
 
 // The physics profile for the golfer: the same mapping and bounds as the career's profileFor,

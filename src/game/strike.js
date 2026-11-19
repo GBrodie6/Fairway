@@ -61,14 +61,17 @@ export function strikeFactors(swing, ctx = {}) {
   const timing = (swing && swing.auto ? 0.2 : 0) + (num(swing && swing.downMs, 250) > 650 ? 0.12 : 0);
   const lie = LIE_TERM(ctx.lie);
   const slope = Math.min(0.12, Math.max(0, num(ctx.slope)) * 0.6);
-  const error = 0.55 * tempo + 0.35 * faceT + 0.25 * pathT + 0.35 * over + timing + lie + slope;
-  return { tempo, face: faceT, path: pathT, over, timing, lie, slope, error, rushed: grade === 'rushed' || over > 0 };
+  // Asking for shape (the ball-contact dot off center, game/spin.js) adds a little: 0 neutral.
+  const shape = clamp(num(ctx.shapeError), 0, 0.2);
+  const error = 0.55 * tempo + 0.35 * faceT + 0.25 * pathT + 0.35 * over + timing + lie + slope + shape;
+  return { tempo, face: faceT, path: pathT, over, timing, lie, slope, shape, error, rushed: grade === 'rushed' || over > 0 };
 }
 
 /**
  * strikeResult(swing, ctx, rng)
  *   swing  the gesture result (power, face, path, tempoQuality, tempoGrade, tempoRatio, auto, downMs)
- *   ctx    { clubId, lie, slope, rarity, setting, glove (sweet spot bonus 0..0.08), forgiveness (stat, 0.85..1.15), lefty }
+ *   ctx    { clubId, lie, slope, rarity, setting, glove (sweet spot bonus 0..0.08), forgiveness (stat, 0.85..1.15), lefty,
+ *            shapeError (from the spin dot, 0..0.2), shotMishit (the shot type's risk, 0.5..2) }
  *   rng    a seeded rng with next() in [0, 1)
  * Returns { kind, severity, cause, chance, x }.
  */
@@ -83,7 +86,8 @@ export function strikeResult(swing, ctx = {}, rng) {
   // Weighted error: how far from the middle of the face this swing is likely to land. The
   // sweet spot sets how often a swing misses the middle; the club's rarity difficulty sets how
   // much a miss costs (severity, below). A great swing is Pured with any club.
-  const e = f.error * setting * clubD;
+  // A shot type's own risk (data/shotTypes.js: a flop is harder, a chip easier); 1 for Normal.
+  const e = f.error * setting * clubD * clamp(num(ctx.shotMishit, 1), 0.5, 2);
   const x = e / sweet;
   const chance = clamp((x - TUNING.FREE) * TUNING.SLOPE, 0, TUNING.MAX);
   if (r() >= chance) {

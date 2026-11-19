@@ -396,6 +396,79 @@ unchanged; the same recorded drag gives the same power, tempo ratio and strike b
   at the crossing, then the strike pattern). Reduced motion turns off the punch, the hit-stop
   and the pulsing animations.
 
+## Ball contact (spin and shape)
+
+A golf ball diagram with a draggable dot (`src/ui/spinPad.js`), opened from a small ball
+button beside the bottom row (above the settings button in landscape; mirrored for the
+left-handed layout). The center is neutral. Left and right curve the ball (labelled Draw and
+Fade for the golfer's hand), up adds backspin and launch (More backspin), down takes spin off
+and launches lower for more roll (Topspin). Quick buttons set Draw, Straight and Fade (80
+percent of the club's reach). A setting chooses whether the dot goes back to the middle after
+each shot (default) or is remembered.
+
+- Physics (`src/game/spin.js`): bounded modifiers on the launch after the strike and before
+  the unchanged simulation: spin axis tilt up to 16 degrees at the edge, the start line 1.4
+  degrees the other way so the ball bends back toward the aim, backspin +30 to -50 percent,
+  launch +10 to -16 percent. Neutral returns the launch object untouched, so the carry ladder
+  is exact (tested). `SPIN_SIGN` is the one place the curve direction is fixed (a positive tilt
+  curves right, checked against the real simulation in tests/spin.test.js); the dot's x is in
+  world terms and only the labels follow the hand.
+- Carry: never more than neutral. A carry guard sets the ball speed so the flat, calm carry is
+  exactly (1 - 0.06 r^2) of neutral, r being the distance from the center (about 6 percent less
+  at the edge), found by bisection on the real simulation per club, shot type and dot position
+  and cached. Roll is free to change: that is the point of topspin and backspin.
+- Risk: the strike model's error grows by 0.14 r^2, so a big shape raises the mishit chance a
+  little; neutral is unchanged.
+- Reach (`src/data/spinControl.js`, every multiplier and cap in one file): a Common club
+  reaches half way to the edge; Uncommon 60, Rare 70, Epic 80, Legendary 100 percent (the
+  reward for the tier's smaller sweet spot); a golfer perk by archetype adds up to 25 percent
+  (Links Player most, Power Hitter and Putting Specialist least), never past the edge.
+- Shown: the aim fan bends along the predicted flight (its sideways offset read off the
+  prediction's points) and the landing marker moves with it; the panel reads "Curves 8 yd
+  left. Rolls about 8 yd. Carry 181 yd." and updates while the dot moves (the prediction once
+  per frame, the power guide when the finger lifts). The power guide includes the dot.
+- Checked through real touch on the range with a Common 5 iron (qa/proof/spin-shots): the
+  Draw quick button moved the planned landing 7 yd left of neutral, the Fade 7 yd right; a real
+  swing with each (pured) carried 179.5 and 181.9 yd against a neutral 183, finishing 0.7 and
+  16 yd right of the aim in a crosswind that pushed the neutral shot 9 yd right. Backspin cut
+  the roll from 8.6 to 8.0 yd, topspin raised it to 11.7 yd.
+
+## Shot types
+
+`src/data/shotTypes.js` holds every type as data: launch, spin and speed multipliers, the power
+range, the clubs, the lies, a mishit multiplier for the strike model, the roll it promises
+against Normal, and how Campaign unlocks it. Normal is the physics module's Full shot,
+unchanged (tested against the carry ladder).
+
+| Type | Clubs | Lies | Speed, launch, spin | Power | Mishit | Roll | Campaign |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Normal | all | all but green and water | 1, 1, 1 | 0 to 1 | 1 | normal | always |
+| Stinger | DR, 3W, 5W, 4i, 5i | tee, fairway, first cut | 0.98, 0.72, 0.65 | 0.6 to 1 | 1.25 | more | Punch node |
+| Knockdown | 4i to GW | tee, fairway, first cut, rough | 1, 0.82, 0.82 | 0 to 0.85 | 0.9 | more | Punch node |
+| Punch | 5W, irons, wedges | all but sand | 0.9, 0.58, 0.75 | 0 to 1 | 1 | more | Punch node |
+| High | 5W, irons, wedges | tee, fairway, first cut, rough | 0.97, 1.2, 1.1 | 0 to 1 | 1.15 | less | High node |
+| Flop | SW, LW | fairway, first cut, fringe, rough | 0.72, 1.4, 1.05 | 0 to 1 | 1.8 | less | Flop node |
+| Pitch | PW, GW, SW, LW | all but sand | 0.6, 1.15, 1.2 | 0 to 1 | 1.05 | normal | always |
+| Chip | 7i to LW | fairway, cuts, fringe, rough | 0.42, 0.85, 0.8 | 0 to 1 | 0.8 | more | always |
+| Bump and run | 5i to PW | fairway, first cut, fringe | 0.46, 0.5, 0.4 | 0 to 1 | 0.85 | more | Bump node |
+| Bunker splash | GW, SW, LW | sand only | 0.55, 1.3, 0.7 | 0 to 1 | 1 | less | always, automatic |
+
+- Flat, calm, from a pure strike (yards): Driver Normal carries 250 and rolls 12 with a 33 yd
+  apex, the Stinger 216, 23 and 16; a 7 iron Normal 163 (apex 26), Knockdown 131 (13), High 155
+  (29), Punch 127 (9); a sand wedge Flop carries 56 with an 18 yd apex and 2 yd of roll.
+- The shot row (in the shot panel and the club list) shows only what the club in hand can play
+  from this lie, each with its carry, and scrolls sideways. In a greenside bunker (within 55 m
+  of the pin) a wedge splashes automatically.
+- Quick Play offers every type by default; a setting ("Every shot type in Quick Play") switches
+  Quick Play to the Campaign's unlocks. Campaign unlocks through the existing skill tree, with
+  no new nodes: the Stinger and Knockdown come with the Punch node, Pitch, Chip and the splash
+  are always there.
+- The computer players use them (in rounds; the balance simulator keeps its plain plan so its
+  numbers compare across builds): a splash from a greenside bunker, a pitch from 30 to 70 m, a
+  stinger off the tee and a knockdown approach into a headwind stronger than 5.5 m/s.
+- The old extra shot list (`src/game/shots.js`) is folded into the data file; the ids stay the
+  same, so saves and skill trees are unaffected.
+
 ## Stage 10: proof and deploy
 
 Screenshots of every new screen at 360x640, 390x844, 844x390, and 1024x768 with the layout

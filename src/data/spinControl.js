@@ -8,8 +8,11 @@
 export const BASE_RANGE = 0.5; // a Common club reaches half way to the edge
 export const MAX_RANGE = 1; // the edge of the pad, never more
 export const TIER_RANGE = { common: 1, uncommon: 1.2, rare: 1.4, epic: 1.6, legendary: 2 };
-// Archetype and tree perks (campaign.js perk 'shape') add at most this share.
+// Golfer perks add at most this share. An archetype's own perk (by campaign archetype id;
+// the pros in data/pros.json use the same ids):
 export const PERK_RANGE_CAP = 0.25;
+export const ARCHETYPE_RANGE = { power: 0.05, sharp: 0.2, short: 0.15, putt: 0.05, links: 0.25, all: 0.1 };
+export const archetypeRange = (id) => Math.min(PERK_RANGE_CAP, ARCHETYPE_RANGE[id] || 0);
 export function controlRange(rarity, perk = 0) {
   const t = TIER_RANGE[rarity] || TIER_RANGE.common;
   const p = Math.max(0, Math.min(PERK_RANGE_CAP, Number.isFinite(perk) ? perk : 0));

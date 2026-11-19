@@ -1,0 +1,171 @@
+{
+ "size": "844x390",
+ "panel": {
+  "open": {
+   "spin": {
+    "x": 0,
+    "y": 0
+   },
+   "range": 0.5,
+   "shot": "full",
+   "club": "I5",
+   "readout": "Curves 5 yd left. Rolls about 11 yd. Carry 187 yd.",
+   "carryYd": 186.6,
+   "curveYd": -4.7,
+   "rollYd": 10.7
+  },
+  "draw": {
+   "spin": {
+    "x": -0.4,
+    "y": 0
+   },
+   "range": 0.5,
+   "shot": "full",
+   "club": "I5",
+   "readout": "Curves 11 yd left. Rolls about 11 yd. Carry 185 yd.",
+   "carryYd": 185.5,
+   "curveYd": -11.3,
+   "rollYd": 11.2
+  },
+  "fade": {
+   "spin": {
+    "x": 0.4,
+    "y": 0
+   },
+   "range": 0.5,
+   "shot": "full",
+   "club": "I5",
+   "readout": "Curves 2 yd right. Rolls about 11 yd. Carry 184 yd.",
+   "carryYd": 184.3,
+   "curveYd": 1.8,
+   "rollYd": 11
+  },
+  "straight": {
+   "spin": {
+    "x": 0,
+    "y": 0
+   },
+   "range": 0.5,
+   "shot": "full",
+   "club": "I5",
+   "readout": "Curves 5 yd left. Rolls about 11 yd. Carry 187 yd.",
+   "carryYd": 186.8,
+   "curveYd": -4.9,
+   "rollYd": 10.8
+  },
+  "backspin": {
+   "spin": {
+    "x": 0,
+    "y": 0.5
+   },
+   "range": 0.5,
+   "shot": "full",
+   "club": "I5",
+   "readout": "Curves 5 yd left. Rolls about 10 yd. Carry 184 yd.",
+   "carryYd": 184.5,
+   "curveYd": -5.3,
+   "rollYd": 9.9
+  },
+  "topspin": {
+   "spin": {
+    "x": 0,
+    "y": -0.5
+   },
+   "range": 0.5,
+   "shot": "full",
+   "club": "I5",
+   "readout": "Curves 4 yd left. Rolls about 14 yd. Carry 183 yd.",
+   "carryYd": 183.2,
+   "curveYd": -4.3,
+   "rollYd": 14.1
+  },
+  "stinger": {
+   "spin": {
+    "x": 0,
+    "y": 0
+   },
+   "range": 0.5,
+   "shot": "stinger",
+   "club": "I5",
+   "readout": "Curves 3 yd left. Rolls about 21 yd. Carry 170 yd.",
+   "carryYd": 169.8,
+   "curveYd": -3.3,
+   "rollYd": 21
+  }
+ },
+ "range": [
+  {
+   "kind": "draw",
+   "planned": {
+    "spin": {
+     "x": -0.4,
+     "y": 0
+    },
+    "range": 0.5,
+    "shot": "full",
+    "club": "I5",
+    "readout": "Curves 11 yd left. Rolls about 11 yd. Carry 186 yd.",
+    "carryYd": 185.7,
+    "curveYd": -11.5,
+    "rollYd": 11.3
+   },
+   "club": "I5",
+   "shot": "full",
+   "strike": "pured",
+   "carryYd": 184.8,
+   "totalYd": 196.2,
+   "rightOfAimYd": -11.3,
+   "apexYd": 22.8,
+   "power": 1
+  },
+  {
+   "kind": "fade",
+   "planned": {
+    "spin": {
+     "x": 0.4,
+     "y": 0
+    },
+    "range": 0.5,
+    "shot": "full",
+    "club": "I5",
+    "readout": "Curves 2 yd right. Rolls about 11 yd. Carry 184 yd.",
+    "carryYd": 184.3,
+    "curveYd": 2.1,
+    "rollYd": 11
+   },
+   "club": "I5",
+   "shot": "full",
+   "strike": "pured",
+   "carryYd": 183.5,
+   "totalYd": 194.6,
+   "rightOfAimYd": 2.1,
+   "apexYd": 22.8,
+   "power": 1
+  },
+  {
+   "kind": "stinger",
+   "planned": {
+    "spin": {
+     "x": 0,
+     "y": 0
+    },
+    "range": 0.5,
+    "shot": "stinger",
+    "club": "I5",
+    "readout": "Curves 3 yd left. Rolls about 21 yd. Carry 170 yd.",
+    "carryYd": 169.8,
+    "curveYd": -3.2,
+    "rollYd": 20.9
+   },
+   "club": "I5",
+   "shot": "stinger",
+   "strike": "pured",
+   "carryYd": 168.9,
+   "totalYd": 187.3,
+   "rightOfAimYd": -3.3,
+   "apexYd": 13.2,
+   "power": 1
+  }
+ ],
+ "consoleErrors": []
+}

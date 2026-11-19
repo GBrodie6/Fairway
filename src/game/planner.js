@@ -8,12 +8,16 @@ import { CLUBS, PUTTER } from '../physics/clubs.js';
 import { SURFACES } from '../physics/surfaces.js';
 import { clamp, headingTo, wrapAngle, DEG } from '../core/math.js';
 import { pointAt } from '../course/layout.js';
+import { applySpin } from './spin.js';
+import { shotData, shotFitsData, shotPower, SPLASH_RANGE } from '../data/shotTypes.js';
 
 const CLEAN = { face: 0, path: 0, tempoQuality: 1 };
 
 // Simulate a shot from a swing and context on this terrain. windAt may be omitted.
+// ctx.spin is the ball-contact dot (game/spin.js); without it the launch is the plain one.
 export function simulateFrom(terrain, swing, ctx, windAt, t0 = 0) {
-  const launch = computeLaunch(swing, ctx);
+  let launch = computeLaunch(swing, ctx);
+  if (ctx.spin) launch = applySpin(launch, ctx.spin, ctx);
   const env = terrain.env(windAt ? { windAt, t0 } : {});
   const r = simulateShot(launch, env);
   r.launch = launch;
@@ -21,8 +25,8 @@ export function simulateFrom(terrain, swing, ctx, windAt, t0 = 0) {
 }
 
 // The nominal (error-free) result for the current aim, club, and power.
-export function predictShot(terrain, { x, z, lie, club, shotType, aim, power = 1, profile = BASE_PROFILE }, windAt, t0 = 0) {
-  return simulateFrom(terrain, { ...CLEAN, power }, { club, shotType, lie, aim, x, z, profile, lieRoll: 0 }, windAt, t0);
+export function predictShot(terrain, { x, z, lie, club, shotType, aim, power = 1, profile = BASE_PROFILE, spin = null }, windAt, t0 = 0) {
+  return simulateFrom(terrain, { ...CLEAN, power }, { club, shotType, lie, aim, x, z, profile, lieRoll: 0, spin }, windAt, t0);
 }
 
 // Putting uses a speed ceiling scaled to the putt at hand, so the stick has useful resolution
@@ -156,7 +160,10 @@ export function chooseTarget(terrain, from, lie, profile = BASE_PROFILE) {
  * The AI's plan for one shot. skill 0..1. rng supplies the human-like error.
  * Returns { club, shotType, aim, swing, target }.
  */
-export function aiPlan(terrain, from, lie, { skill = 0.6, rng, windAt, t0 = 0, profile = BASE_PROFILE } = {}) {
+// shots: true lets the plan use the shot types (data/shotTypes.js): a splash from a greenside
+// bunker, a pitch from 30 to 70 meters, a stinger off the tee and a knockdown approach into a
+// strong wind. The balance runs leave it off, so their numbers compare across builds.
+export function aiPlan(terrain, from, lie, { skill = 0.6, rng, windAt, t0 = 0, profile = BASE_PROFILE, shots = false } = {}) {
   const pin = terrain.pin;
   const g = () => (rng ? rng.gauss() : 0);
   const sk = clamp(skill, 0, 1);
@@ -170,10 +177,14 @@ export function aiPlan(terrain, from, lie, { skill = 0.6, rng, windAt, t0 = 0, p
   }
   const target = chooseTarget(terrain, from, lie, profile);
   const dist = Math.hypot(target.x - from.x, target.z - from.z);
-  const nearGreen = !target.layup && dist < 32 && lie !== SURFACES.BUNKER;
-  const shotType = nearGreen ? SHOT_TYPES.CHIP : SHOT_TYPES.FULL;
+  let nearGreen = !target.layup && dist < 32 && lie !== SURFACES.BUNKER;
+  let shotType = nearGreen ? SHOT_TYPES.CHIP : SHOT_TYPES.FULL;
   let pick;
-  if (nearGreen) {
+  const special = shots ? aiShot(terrain, from, lie, target, dist, { windAt, t0, profile }) : null;
+  if (special) {
+    shotType = special.shotType; pick = { club: special.club, power: special.power };
+    if (special.toEnd) nearGreen = true;
+  } else if (nearGreen) {
     // Chip: choose the club and power whose predicted total distance matches.
     const club = CLUBS.find((c) => c.id === (dist < 14 ? 'SW' : 'PW'));
     pick = { club, power: clamp(dist / 34 + 0.12, 0.12, 1) };
@@ -193,6 +204,7 @@ export function aiPlan(terrain, from, lie, { skill = 0.6, rng, windAt, t0 = 0, p
     aim = wrapAngle(aim - wrapAngle(gotH - headingTo(from.x, from.z, target.x, target.z)) * 0.9);
     const want = nearGreen ? dist : dist - (target.layup ? 0 : Math.min(6, (r.total - r.carry) * 0.5));
     if (got > 1) power = clamp(power * Math.pow(want / got, 0.8), 0.08, 1);
+    if (shotType.id !== 'full' && shotType.id !== 'chip') power = shotPower(shotData(shotType.id), power);
   }
   const d = dispersion(pick.club, lie, { profile, shotType });
   const err = 0.7 + (1 - sk) * 1.6;
@@ -203,6 +215,39 @@ export function aiPlan(terrain, from, lie, { skill = 0.6, rng, windAt, t0 = 0, p
     tempoQuality: clamp(1 - Math.abs(g()) * (1 - sk) * 0.5, 0.3, 1),
   };
   return { club: pick.club, shotType, aim, swing, target };
+}
+
+// The AI's shot type, when one fits better than a full swing or a chip. Returns null for the
+// default plan, or { shotType, club, power, toEnd }.
+function aiShot(terrain, from, lie, target, dist, { windAt, t0, profile }) {
+  const club = (id) => CLUBS.find((c) => c.id === id);
+  const fits = (id, clubId) => shotFitsData(shotData(id), clubId, lie);
+  // A greenside bunker: splash it out with the sand wedge.
+  if (lie === SURFACES.BUNKER && !target.layup && dist < SPLASH_RANGE && fits('splash', 'SW')) return { shotType: shotData('splash'), club: club('SW'), power: clamp(dist / 48 + 0.18, 0.15, 1), toEnd: true };
+  // A pitch from 30 to 70 meters: a wedge that carries most of the way and checks.
+  if (!target.layup && dist >= 30 && dist < 70) {
+    const id = dist < 45 ? 'SW' : dist < 58 ? 'GW' : 'PW';
+    if (fits('pitch', id)) return { shotType: shotData('pitch'), club: club(id), power: clamp(dist / 80 + 0.2, 0.2, 1), toEnd: false };
+  }
+  // Into a strong wind: a stinger off the tee with a long club, or a knockdown approach.
+  if (windAt) {
+    const w = { x: 0, y: 0, z: 0 };
+    windAt(t0, 10, w);
+    const a = headingTo(from.x, from.z, target.x, target.z), fx = Math.sin(a), fz = -Math.cos(a);
+    const along = (w.x || 0) * fx + (w.z || 0) * fz;
+    if (along < -5.5) {
+      if (lie === SURFACES.TEE && dist > 170) {
+        const pick = suggestClub(dist, { lie, profile });
+        if (pick.club && fits('stinger', pick.club.id)) return { shotType: shotData('stinger'), club: pick.club, power: 1, toEnd: false };
+      }
+      if (dist > 90 && dist < 175) {
+        // One more club, swung three-quarter.
+        const pick = suggestClub(dist / 0.8, { lie, profile });
+        if (pick.club && fits('knockdown', pick.club.id)) return { shotType: shotData('knockdown'), club: pick.club, power: 0.8, toEnd: false };
+      }
+    }
+  }
+  return null;
 }
 
 // Play one hole start to finish with the AI, with no rendering. Used by tests (it proves a

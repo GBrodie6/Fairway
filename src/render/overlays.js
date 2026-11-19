@@ -47,6 +47,30 @@ function ribbon(maxPts, color, opacity) {
   return mesh;
 }
 
+// The sideways offset of a predicted flight from the chord to its landing point, as a function
+// of the distance along that chord (meters). Straight flights give about 0 everywhere.
+const BEND_A = new Float32Array(64), BEND_L = new Float32Array(64);
+function bendFrom(points, from, ux, uz, px, pz, dist) {
+  if (!points || points.length < 8 || dist < 1) return () => 0;
+  let n = 0, last = -1;
+  const step = Math.max(1, Math.floor(points.length / 4 / 60));
+  for (let i = 0; i < points.length && n < 64; i += 4 * step) {
+    const dx = points[i + 1] - from.x, dz = points[i + 3] - from.z;
+    const a = dx * ux + dz * uz;
+    if (a <= last) continue;
+    if (a > dist) break;
+    BEND_A[n] = a; BEND_L[n] = dx * px + dz * pz; n++; last = a;
+  }
+  if (n < 2) return () => 0;
+  return (d) => {
+    if (d <= BEND_A[0]) return BEND_L[0] * (d / Math.max(BEND_A[0], 1e-3));
+    for (let k = 1; k < n; k++) if (d <= BEND_A[k]) { const f = (d - BEND_A[k - 1]) / Math.max(1e-6, BEND_A[k] - BEND_A[k - 1]); return BEND_L[k - 1] + (BEND_L[k] - BEND_L[k - 1]) * f; }
+    // Past the last sample: ease back to 0 at the landing point.
+    const f = (d - BEND_A[n - 1]) / Math.max(1e-3, dist - BEND_A[n - 1]);
+    return BEND_L[n - 1] * (1 - Math.min(1, f));
+  };
+}
+
 export function createOverlays(world) {
   const group = new THREE.Group();
   group.name = 'overlays';
@@ -200,6 +224,9 @@ export function createOverlays(world) {
       {
         const ux = (land.x - from.x) / Math.max(dist, 1e-3), uz = (land.z - from.z) / Math.max(dist, 1e-3);
         const px = -uz, pz = ux;
+        // The fan bends with the flight: the predicted path's sideways offset from the straight
+        // line to the landing point (a draw, a fade, or the wind), read off its points.
+        const latAt = bendFrom(prediction.points, from, ux, uz, px, pz, dist);
         // Two standard deviations of the lateral spread: the shots that land inside.
         const tanL = Math.tan((2 * disp.lateralDeg * Math.PI) / 180);
         const d0 = Math.min(0.35, dist * 0.1);
@@ -208,7 +235,7 @@ export function createOverlays(world) {
           const f = r / (FAN_ROWS - 1), d = d0 + (dist - d0) * f * f;
           const half = Math.max(0.06 + d * 0.02, tanL * d);
           for (let c = 0; c < FAN_COLS; c++) {
-            const k = r * FAN_COLS + c, o = ((c / (FAN_COLS - 1)) * 2 - 1) * half;
+            const k = r * FAN_COLS + c, o = ((c / (FAN_COLS - 1)) * 2 - 1) * half + latAt(d);
             const x = from.x + ux * d + px * o, z = from.z + uz * d + pz * o;
             const inb = t.inBounds(x, z, 1);
             fanPos[k * 3] = x; fanPos[k * 3 + 1] = (inb ? t.heightAt(x, z) : 0) + 0.025 + d * 0.0006; fanPos[k * 3 + 2] = z;

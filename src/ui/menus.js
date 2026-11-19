@@ -84,8 +84,14 @@ export function installMenus(app, ui) {
   };
   app.golferProfile = () => golferProfile(save.profile);
   app.golferStrike = (clubKind) => golferStrike(save.profile, clubKind);
+  app.golferArchetype = () => (save.profile && save.profile.archetype) || null;
   // Campaign events allow only the shots the golfer has unlocked.
-  app.shotAllowed = (id, round) => !(round && round.eventId && eventById(round.eventId)) || shotUnlocked(save.profile, id);
+  // Campaign events use the golfer's unlocks; everywhere else has every shot unless the
+  // setting asks for the Campaign's unlocks there too.
+  app.shotAllowed = (id, round) => {
+    const campaign = !!(round && round.eventId && eventById(round.eventId));
+    return campaign || !app.settings.allShotsQuickPlay ? shotUnlocked(save.profile, id) : true;
+  };
   app.spendMulligan = () => { save = { ...save, wallet: { ...save.wallet, mulligans: Math.max(0, (save.wallet.mulligans || 0) - 1) } }; persist(); };
   const sheet = (cls, ...kids) => h('div', { class: `sheet glass ${cls || ''}` }, ...kids);
   const btn = (label, onclick, cls = 'btn') => h('button', { class: cls, type: 'button', onclick }, label);
@@ -114,6 +120,8 @@ export function installMenus(app, ui) {
       field('Left-handed layout', check('s-lh', settings.leftHandLayout, (v) => { settings.leftHandLayout = v; save2(); }), 's-lh'),
       field('Swing drag length', range('s-stick', settings.stickScale, 0.7, 1.5, 0.05, (v) => { settings.stickScale = v; save2(); }), 's-stick'),
       field('Power guide while swinging', check('s-guide', settings.powerGuide, (v) => { settings.powerGuide = v; save2(); }), 's-guide'),
+      field('Ball contact dot after each shot', select('s-spinmem', settings.spinMemory, [['reset', 'Back to the middle'], ['remember', 'Remember it']], (v) => { settings.spinMemory = v; save2(); }), 's-spinmem'),
+      field('Every shot type in Quick Play', check('s-allshots', settings.allShotsQuickPlay, (v) => { settings.allShotsQuickPlay = v; save2(); }), 's-allshots'),
       field('Aim sensitivity', range('s-aim', settings.aimSensitivity, 0.25, 3, 0.05, (v) => { settings.aimSensitivity = v; save2(); }), 's-aim'),
       field('Units', select('s-units', settings.units, [['yards', 'Yards and feet'], ['meters', 'Meters']], (v) => { settings.units = v; save2(); }), 's-units'),
       h('h3', { class: 'h', text: 'Display' }),
