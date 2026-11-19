@@ -21,6 +21,7 @@ import { bayBall, targetFor } from '../course/range.js';
 import { SHOT_DATA, shotData, shotFitsData, shotPower, SPLASH_RANGE } from '../data/shotTypes.js';
 import { clampOffset, offsetSize, spinRange, SPIN_FX, curveAndRoll, applySpin, isNeutral } from './spin.js';
 import { archetypeRange } from '../data/spinControl.js';
+import { proById, proProfile, proStrike } from './pros.js';
 
 // Shot types (data/shotTypes.js): Normal is the physics module's Full shot, unchanged.
 const ALL_SHOTS = SHOT_DATA;
@@ -369,7 +370,8 @@ export function createGame(app) {
 
   function playAi() {
     const r = state.round, p = r.players[state.turn], t = W().terrain;
-    const plan = aiPlan(t, state.ball, state.lie, { skill: p.skill, rng, windAt, t0: state.clock, shots: true });
+    const pro = p.pro ? proById(p.pro) : null;
+    const plan = aiPlan(t, state.ball, state.lie, { skill: p.skill, rng, windAt, t0: state.clock, shots: true, profile: pro ? proProfile(pro) : BASE_PROFILE, prefs: p.prefs || null });
     state.club = plan.club; state.shotType = plan.shotType; state.aim = plan.aim;
     if (plan.club.putter) state.putt = { ceiling: plan.puttCeiling };
     emit('club', state.club);
@@ -390,7 +392,7 @@ export function createGame(app) {
       lieRoll = rng.range(-1, 1);
       // The shot type's power range (a knockdown is three-quarter at most).
       if (shotType && shotType.id !== 'full') swing = { ...swing, power: shotPower(shotData(shotType.id), swing.power) };
-      launch = computeLaunch(swing, { club, shotType, lie: from.lie, aim, x: from.x, z: from.z, profile: state.profile, lieRoll });
+      launch = computeLaunch(swing, { club, shotType, lie: from.lie, aim, x: from.x, z: from.z, profile: shooterProfile(), lieRoll });
     }
     // The range's club test lane replays the same swing with a second club version, so both
     // strikes use the same random draw.
@@ -463,12 +465,18 @@ export function createGame(app) {
     return b.speed === 1 && b.spin === 1 ? state.profile : { ...state.profile, power: state.profile.power * b.speed, spin: state.profile.spin * b.spin };
   }
 
+  // The pro behind the current player, if any, and the profile that player's shots fly with:
+  // a computer pro flies with the pro's profile; everyone else with the round's profile.
+  const currentPro = () => { const p = state.round && state.round.players[state.turn]; return p && p.pro ? proById(p.pro) : null; };
+  const shooterProfile = () => { const pro = currentPro(); return pro && !isHuman() ? proProfile(pro) : state.profile; };
   function strikeContext(club, from) {
     const t = W().terrain, n = {};
     t.normalAt(from.x, from.z, n);
     // Your gear and golfer perks apply to your shots only; computer players use Common clubs.
     const mine = isHuman();
-    const gear = { ...((mine && app.gearFor && app.gearFor(club.id)) || {}), ...(mine && state.golfer && app.golferStrike ? app.golferStrike(club.kind) : {}) };
+    // A pro (human or computer) brings the pro's own perks (game/pros.js).
+    const pro = currentPro();
+    const gear = { ...((mine && app.gearFor && app.gearFor(club.id)) || {}), ...(pro ? proStrike(pro, club.kind) : mine && state.golfer && app.golferStrike ? app.golferStrike(club.kind) : {}) };
     return { clubId: club.id, lie: from.lie, slope: Math.hypot(n.x, n.z) / Math.max(0.2, n.y), setting: app.settings.difficulty || 'standard', rarity: gear.rarity || 'common', glove: gear.glove || 0, ball: gear.ball || null, forgiveness: gear.forgiveness || 1, lefty: app.settings.handedness === 'left' };
   }
 

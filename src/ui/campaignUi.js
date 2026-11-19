@@ -17,6 +17,9 @@ import { addTokens } from '../game/rewards.js';
 import { grantClub, TIER_INFO, clubName } from '../game/gear.js';
 import { simulateRivalRound } from '../game/career.js';
 import { eventBoard } from '../game/tournament.js';
+import { SHOT_DATA, shotData } from '../data/shotTypes.js';
+import { PROS, proById } from '../game/pros.js';
+import { proChooser, proCard, emblemImg } from './prosUi.js';
 
 const initials = (name) => name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 export const badge = (name, color) => h('span', { class: 'badge', style: { background: color || '#3a4a40' }, 'aria-hidden': 'true', text: initials(name) });
@@ -125,7 +128,7 @@ export function installCampaign(app, ui) {
         h('div', { class: 'list objectives' }, ...ev.objectives.map((o) => h('div', { class: `item${met.has(o.id) ? ' done' : ''}` }, h('span', { text: `${o.main ? 'Main: ' : ''}${o.text}` }), h('span', { text: met.has(o.id) ? 'Done' : o.main ? 'Clears the event' : 'Star' })))),
         h('p', { class: 'muted small', text: `Rewards: XP for holes, scoring, birdies, objectives and your finish; a gear token on the first clear${ev.bossEvent ? ' (two for a boss event) and the chapter club' : ''}. Each objective met is a star.` }),
         ev.mode !== 'match' ? h('p', { class: 'muted small', text: `In the field: ${field.slice(0, 4).map((r) => r.name).join(', ')}${field.length > 4 ? ` and ${field.length - 4} more` : ''}.` }) : null,
-        h('p', { class: 'muted small', text: `Your shots: Full, Chip${['punch', 'high', 'flop', 'bump'].filter((s) => shotUnlocked(g, s)).map((s) => `, ${SHOTS[s]}`).join('')}. Unlock more in the skill tree.` }),
+        h('p', { class: 'muted small', text: `Your shots: ${shotList(g)}. Unlock more in the skill tree, or from a mentor.` }),
         h('div', { class: 'grid2', style: { marginTop: '10px' } }, back(() => chapter(ev.chapter)), btn(p && p.plays ? 'Play again' : 'Tee off', () => start(ev), 'btn primary')));
     });
   }
@@ -235,11 +238,31 @@ export function installCampaign(app, ui) {
         h('h3', { class: 'h small', text: 'Perks' }),
         h('div', { class: 'list' }, ...Object.entries(pk).filter(([, v]) => v > 0).map(([k, v]) => h('div', { class: 'item' }, h('span', { text: PERK_INFO[k].name }), h('span', { class: 'small', text: `${PERK_INFO[k].fmt(v)} ${PERK_INFO[k].unit}` }))),
           Object.values(pk).every((v) => !v) ? h('p', { class: 'muted small', text: 'No perks yet.' }) : null),
-        h('p', { class: 'muted small', text: `Shots: Full, Chip${['punch', 'high', 'flop', 'bump'].filter((s) => shotUnlocked(g, s)).map((s) => `, ${SHOTS[s]}`).join('')}.` }),
-        h('div', { class: 'grid2' }, back(), btn('Skill tree', () => skillTree(), 'btn primary')));
+        h('p', { class: 'muted small', text: `Shots: ${shotList(g)}.` }),
+        h('h3', { class: 'h small', text: 'Mentor' }),
+        g.mentor && proById(g.mentor) ? h('div', { class: 'item mentor' }, emblemImg(proById(g.mentor), 32), h('span', { class: 'small', text: `${proById(g.mentor).name} teaches you the ${shotData(proById(g.mentor).signature).name}.` })) : h('p', { class: 'muted small', text: 'Pick one of the tour pros as your mentor and learn their signature shot.' }),
+        h('div', { class: 'grid2' }, back(), btn('Skill tree', () => skillTree(), 'btn primary')),
+        h('div', { class: 'stack', style: { marginTop: '8px' } }, btn(g.mentor ? 'Change mentor' : 'Choose a mentor', () => mentorScreen())));
     });
   }
+  // The shot types this golfer can play (skill tree, archetype, mentor).
+  const shotList = (g) => SHOT_DATA.filter((t) => shotUnlocked(g, t.id)).map((t) => t.name).join(', ');
 
+  // ---------- mentor ----------
+  let mentorPick = null;
+  function mentorScreen() {
+    screens.show('mentor', () => {
+      const g = golfer();
+      if (mentorPick === null) mentorPick = g.mentor || PROS[0].id;
+      const p = proById(mentorPick);
+      return sheet('wide campaign',
+        h('h2', { class: 'h', text: 'Choose a mentor' }),
+        h('p', { class: 'muted small', text: 'Your golfer stays your own. A mentor teaches one signature shot, ready to use in every event. You can change mentor at any time; the shot changes with them.' }),
+        proChooser({ selected: mentorPick, noneLabel: null, label: 'Mentor', onPick: (id) => { mentorPick = id; mentorScreen(); } }),
+        p ? proCard(p) : null,
+        h('div', { class: 'grid2', style: { marginTop: '10px' } }, back(() => { mentorPick = null; characterSheet(); }), btn(g.mentor === mentorPick ? 'Your mentor' : `Learn the ${shotData(p.signature).name}`, () => { setGolfer({ ...golfer(), mentor: mentorPick }, 'golfer'); mentorPick = null; characterSheet(); }, 'btn primary')));
+    });
+  }
   // ---------- skill tree ----------
   let picked = null;
   function skillTree() {

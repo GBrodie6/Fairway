@@ -1,6 +1,8 @@
 // Menu screens beyond the basics: settings, stats and history, achievements, the daily
 // challenge, the career hub, pass and play, and challenge links. Also the glue that records
 // finished rounds into the save. Registered into ui.screens.
+import { proChooser } from './prosUi.js';
+import { proById, proPlayer, proProfile } from '../game/pros.js';
 import { h } from './dom.js';
 import { fmtDist, fmtToPar, ordinal } from './format.js';
 import { COURSES, courseById } from '../course/courses.js';
@@ -164,6 +166,7 @@ export function installMenus(app, ui) {
   }));
 
   // ---------- daily challenge ----------
+  let dailyAs = null; // play the daily as one of the pros (null: as yourself)
   // Three holes chosen from the date, the same for everyone on that day.
   function dailySetup(now = Date.now()) {
     const key = dayKey(now);
@@ -183,7 +186,13 @@ export function installMenus(app, ui) {
       h('p', { class: 'muted', text: `Today: ${c.name}, holes ${d.holes[0] + 1} to ${d.holes[2] + 1} (par ${par}), ${TOD_NAMES[d.tod]}. The same three holes and the same wind for everyone today.` }),
       h('div', { class: 'big', text: best ? `${best.strokes}  (${fmtToPar(best.toPar)})` : 'Not played yet' }),
       h('p', { class: 'muted center', text: best ? `Your best today, ${best.attempts} ${best.attempts === 1 ? 'attempt' : 'attempts'}` : 'Your best score today is kept.' }),
-      h('div', { class: 'grid2' }, back(), btn(best ? 'Try again' : 'Play', () => { context = { kind: 'daily', key: d.key }; screens.hide(); game.startRound({ courseId: d.courseId, mode: 'daily', holes: d.holes, tod: d.tod, seed: d.seed, players: [me()] }); }, 'btn primary')),
+      h('h3', { class: 'h small', text: 'Play as' }),
+      proChooser({ selected: dailyAs, onPick: (id) => { dailyAs = id; screens.registry.daily(); } }),
+      h('div', { class: 'grid2' }, back(), btn(best ? 'Try again' : 'Play', () => {
+        context = { kind: 'daily', key: d.key }; screens.hide();
+        const pro = dailyAs ? proById(dailyAs) : null;
+        game.startRound({ courseId: d.courseId, mode: 'daily', holes: d.holes, tod: d.tod, seed: d.seed, players: [pro ? proPlayer(pro, { handed: settings.handedness }) : me()], profile: pro ? proProfile(pro) : undefined });
+      }, 'btn primary')),
       app.thisWeekCard ? app.thisWeekCard() : null,
       screens.registry.quests ? h('div', { class: 'grid2', style: { marginTop: '10px' } }, btn(app.questBadge && app.questBadge() ? `Quests (${app.questBadge()} to claim)` : 'Quests', () => screens.registry.quests()), btn('Season track', () => screens.registry.season())) : null,
     );

@@ -2,6 +2,8 @@
 // starts, a live leaderboard (campaign events and tournaments) with movement arrows, original
 // commentary on notable shots, replay controls (angle and speed), the round recap, and the
 // tournament screens (four rounds, a cut, a purse in coins, a trophy).
+import { proChooser } from './prosUi.js';
+import { proById, proPlayer, proProfile } from '../game/pros.js';
 import { h } from './dom.js';
 import { fmtDist, fmtToPar, ordinal } from './format.js';
 import { courseById } from '../course/courses.js';
@@ -161,6 +163,7 @@ export function installBroadcast(app, ui) {
 
   // ---------- tournaments ----------
   const tState = () => app.save().tournament;
+  let tourAs = null; // enter as one of the pros (null: as yourself)
   function tournamentScreen() {
     screens.show('tournament', () => {
       const t = tState();
@@ -171,6 +174,8 @@ export function installBroadcast(app, ui) {
           h('h2', { class: 'h', text: 'Tournament' }),
           last ? h('div', { class: `tresult${last.trophy ? ' win' : ''}` }, h('b', { text: last.trophy ? `You won the ${t.name}!` : last.madeCut ? `${t.name}: you finished ${last.tie ? 'T' : ''}${last.position}` : `${t.name}: missed the cut` }), h('span', { text: `${fmtToPar(last.toPar)}. ${last.coins} coins.` })) : null,
           h('p', { class: 'muted', text: `Four rounds of ${T_HOLES} holes against a field of ${T_FIELD}. After round two, the top ${T_CUT_TOP} and ties make the cut. The purse is paid in coins (winner ${PURSE[0]}), and a win puts a trophy in your cabinet.` }),
+          h('h3', { class: 'h small', text: 'Play as' }),
+          proChooser({ selected: tourAs, onPick: (id) => { tourAs = id; tournamentScreen(); } }),
           h('h3', { class: 'h small', text: 'Choose a course' }),
           h('div', { class: 'cards' }, ...['parkland', 'links', 'desert', 'alpine', 'tropical'].map((id) => btn(courseById(id).name, () => newTournament(id), 'card'))),
           cabinet.length ? h('div', {}, h('h3', { class: 'h small', text: 'Trophy cabinet' }), h('div', { class: 'list' }, ...cabinet.slice(-8).reverse().map((x) => h('div', { class: 'item' }, h('span', { text: `${x.name}, ${courseById(x.courseId).name}` }), h('b', { text: fmtToPar(x.toPar) }))))) : null,
@@ -187,14 +192,15 @@ export function installBroadcast(app, ui) {
   }
   function newTournament(courseId) {
     const s = app.save();
-    const t = createTournament({ courseId, seed: (Date.now() ^ hashString(courseId)) >>> 0, level: levelForXp(s.profile.xp) });
+    const t = { ...createTournament({ courseId, seed: (Date.now() ^ hashString(courseId)) >>> 0, level: levelForXp(s.profile.xp), as: tourAs }), as: tourAs };
     app.updateSave((x) => ({ ...x, tournament: t }), 'tournament');
     tournamentScreen();
   }
   async function playRound() {
     const t = tState(), s = app.save();
     screens.hide();
-    await game.startRound({ courseId: t.courseId, mode: 'stroke', holes: roundHoles(t.round), tod: t.tods[t.round], seed: (t.seed + t.round * 7919) >>> 0, eventId: `tour:${t.id}:${t.round}`, profile: app.golferProfile ? app.golferProfile() : undefined, golfer: true, players: [{ id: 'p1', name: s.player.name || 'You', kind: 'human', handed: s.player.handed, ball: s.player.ball }] });
+    const pro = t.as ? proById(t.as) : null;
+    await game.startRound({ courseId: t.courseId, mode: 'stroke', holes: roundHoles(t.round), tod: t.tods[t.round], seed: (t.seed + t.round * 7919) >>> 0, eventId: `tour:${t.id}:${t.round}`, profile: pro ? proProfile(pro) : app.golferProfile ? app.golferProfile() : undefined, golfer: !pro, players: [pro ? proPlayer(pro, { handed: s.player.handed }) : { id: 'p1', name: s.player.name || 'You', kind: 'human', handed: s.player.handed, ball: s.player.ball }] });
   }
   app.openTournament = tournamentScreen;
   app.isTournamentRound = (r) => !!(r && typeof r.eventId === 'string' && r.eventId.startsWith('tour:'));

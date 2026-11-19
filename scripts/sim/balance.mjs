@@ -12,7 +12,8 @@
 // Criteria: no archetype more than 1.5 strokes per 18 holes from its level's average, and the
 // carry rule's target: no tier beats Common for an average swing.
 // Output: qa/balance.json and qa/balance.md for "all" (or qa/tmp/balance-<tag>.* when tagged).
-import { Worker } from 'node:worker_threads';
+import { runCells } from './run.mjs';
+import { PROS, PRO_LEVEL } from '../../src/game/pros.js';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { ARCHETYPE_IDS, ARCHETYPES } from '../../src/game/campaign.js';
 import { TIERS } from '../../src/game/gear.js';
@@ -25,21 +26,7 @@ const guideBoost = (tier, pureRate) => (strike.tierCarryFactor && strike.guideSh
 const hasGuide = TIERS.some((t) => guideBoost(t, 0.5) > 0);
 const t0 = Date.now();
 
-function run(cells) {
-  const tasks = [];
-  cells.forEach((c, ci) => { for (let i = 0; i < N; i++) tasks.push({ cell: ci, round: i }); });
-  const parts = Array.from({ length: W }, () => []);
-  tasks.forEach((t, i) => parts[i % W].push(t));
-  let doneN = 0;
-  return Promise.all(parts.map((p) => new Promise((res, rej) => {
-    const w = new Worker(new URL('./worker.mjs', import.meta.url), { workerData: { tasks: p, cells } });
-    w.on('message', (m) => {
-      if (m.progress) { doneN += 10; if (doneN % 500 === 0) process.stdout.write(`  ${doneN} / ${tasks.length} rounds, ${((Date.now() - t0) / 1000).toFixed(0)} s\n`); }
-      if (m.done) res(m.done);
-    });
-    w.on('error', rej);
-  }))).then((r) => { const flat = r.flat(); return cells.map((c, ci) => flat.filter((x) => x.cell === ci).sort((a, b) => a.round - b.round)); });
-}
+const run = (cells) => runCells(cells, N, W, (done, total) => { if (done % 500 === 0) process.stdout.write(`  ${done} / ${total} rounds, ${((Date.now() - t0) / 1000).toFixed(0)} s\n`); });
 
 const mean = (a) => a.reduce((x, y) => x + y, 0) / a.length;
 const sd = (a) => { const m = mean(a); return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / Math.max(1, a.length - 1)); };
@@ -64,6 +51,9 @@ const cells = [];
 if (ONLY === 'all' || ONLY === 'arch') for (const level of [5, 15, 30]) for (const a of ARCHETYPE_IDS) cells.push({ kind: 'arch', archetype: a, level });
 if (ONLY === 'all' || ONLY === 'tier') for (const [name, skill] of SKILLS) for (const tier of TIERS) cells.push({ kind: 'tier', tier, skill, skillName: name, plan: 'none' });
 if (ONLY === 'all' || ONLY === 'setting') for (const setting of ['relaxed', 'standard', 'pro']) cells.push({ kind: 'setting', setting });
+// The pros (data/pros.json) at their matched level, with a tour swing and an average one.
+const PRO_SKILLS = [['tour', 0.85], ['average', 0.6]];
+if (ONLY === 'all' || ONLY === 'pros') for (const [, skill] of PRO_SKILLS) for (const p of PROS) cells.push({ kind: 'pro', pro: p.id, skill });
 const rows1 = await run(cells);
 const find = (f) => { const i = cells.findIndex(f); return i < 0 ? null : rows1[i]; };
 
@@ -93,6 +83,13 @@ if (ONLY === 'all' || ONLY === 'arch') for (const level of [5, 15, 30]) {
 }
 const tiers = {};
 if (ONLY === 'all' || ONLY === 'tier') for (const [name, skill] of SKILLS) tiers[name] = { skill, none: tierRows(skill, 'none'), guide: hasGuide ? tierRows(skill, 'guide') : tierRows(skill, 'none') };
+const pros = {};
+if (ONLY === 'all' || ONLY === 'pros') for (const [name, skill] of PRO_SKILLS) {
+  const rows = PROS.map((p) => ({ pro: p.id, name: p.name, archetype: p.archetype, ...summary(find((c) => c.kind === 'pro' && c.pro === p.id && c.skill === skill)) }));
+  const avg = mean(rows.map((r) => r.per18));
+  for (const r of rows) { r.vsAvg18 = +(r.per18 - avg).toFixed(2); r.pass = Math.abs(r.vsAvg18) <= 1.5; }
+  pros[name] = { skill, average18: +avg.toFixed(2), rows };
+}
 const settings = (ONLY === 'all' || ONLY === 'setting') ? ['relaxed', 'standard', 'pro'].map((s) => ({ setting: s, ...summary(find((c) => c.kind === 'setting' && c.setting === s)) })) : [];
 const leg = (name, plan) => (tiers[name] && tiers[name][plan] ? tiers[name][plan].find((t) => t.tier === 'legendary').diff18 : null);
 const legOf = (name) => leg(name, 'guide');
@@ -105,7 +102,8 @@ const targets = tiers.average ? {
 const report = {
   method: `Simulated golfer: plans like the AI and swings with a fixed human-like error model (skill 0.35 poor, 0.6 average, 0.9 skilled). 9-hole rounds across all five courses (front and back nines alternate); paired random draws per round index (strike dice on their own stream); ${N} rounds per cell; per-18 values are twice the 9-hole means. Tier differences are paired against Common with the same swing and planning.${hasGuide ? ' "Plans for the tier\'s carry" uses the carry the game shows: the tier\'s Good-strike bonus plus the rest in proportion to the golfer\'s own Pured rate among clean strikes (strike.tierCarryFactor).' : ' Every tier carries the table carry in this build and the guide shows it, so the golfer plans the same way with every tier.'}`,
   carryRule: !hasGuide, seconds: Math.round((Date.now() - t0) / 1000), archetypes: arch, tiers, settings, targets,
-  pass: { archetypes: Object.values(arch).every((l) => l.rows.every((r) => r.pass)) },
+  pros, proLevel: PRO_LEVEL,
+  pass: { archetypes: Object.values(arch).every((l) => l.rows.every((r) => r.pass)), pros: Object.values(pros).every((l) => l.rows.every((r) => r.pass)) },
 };
 
 // ---- output ----
@@ -126,6 +124,11 @@ for (const [name, t] of Object.entries(tiers)) {
   }
   md.push('', `Common plays ${t.none[0].per18} over par per 18 for this swing.`, '');
 }
+for (const [name, l] of Object.entries(pros)) {
+  md.push(`## Pros, ${name} swing (skill ${l.skill}), matched level (average ${l.average18} over par per 18)`, '', '| Pro | Archetype | Over par per 18 | vs average | Pured % | Mishit % | Putts per 9 | Within 1.5 |', '| --- | --- | --- | --- | --- | --- | --- | --- |');
+  for (const r of l.rows) md.push(`| ${r.name} | ${r.archetype} | ${r.per18} | ${r.vsAvg18 >= 0 ? '+' : ''}${r.vsAvg18} | ${r.pured} | ${r.mishit} | ${r.putts9} | ${r.pass ? 'yes' : 'NO'} |`);
+  md.push('');
+}
 if (settings.length) {
   md.push('## Difficulty settings (Common clubs, level 1, average swing)', '', '| Setting | Over par per 18 | Pured % | Mishit % | Shank % |', '| --- | --- | --- | --- | --- |');
   for (const x of settings) md.push(`| ${x.setting} | ${x.per18} | ${x.pured} | ${x.mishit} | ${x.shank} |`);
@@ -133,6 +136,7 @@ if (settings.length) {
 }
 if (targets) md.push(`Legendary against Common: poor ${sgn(targets.legendary.poor)}, average ${sgn(targets.legendary.average)}, skilled ${sgn(targets.legendary.skilled)} strokes per 18. Target, no tier measurably better than Common for an average swing (every 95 percent interval reaches 0 or above): ${targets.averageNoTierBetter ? 'met' : 'NOT met'} (${Object.entries(targets.averageByTier).slice(1).map(([k, v]) => `${k} ${sgn(v)}`).join(', ')}).`);
 if (Object.keys(arch).length) md.push(`Archetypes within 1.5 strokes of their level's average: ${report.pass.archetypes ? 'yes' : 'no'}.`);
+if (Object.keys(pros).length) md.push(`Pros within 1.5 strokes of the pros' average: ${report.pass.pros ? 'yes' : 'no'}.`);
 md.push(`Run time ${report.seconds} s.`);
 mkdirSync('qa/tmp', { recursive: true });
 const base = ONLY === 'all' && !TAG ? 'qa/balance' : `qa/tmp/balance-${TAG || ONLY}`;

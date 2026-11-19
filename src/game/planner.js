@@ -163,7 +163,9 @@ export function chooseTarget(terrain, from, lie, profile = BASE_PROFILE) {
 // shots: true lets the plan use the shot types (data/shotTypes.js): a splash from a greenside
 // bunker, a pitch from 30 to 70 meters, a stinger off the tee and a knockdown approach into a
 // strong wind. The balance runs leave it off, so their numbers compare across builds.
-export function aiPlan(terrain, from, lie, { skill = 0.6, rng, windAt, t0 = 0, profile = BASE_PROFILE, shots = false } = {}) {
+// prefs (a pro's club preferences, data/pros.json): { tee, wedge } choose the tee club on
+// long holes (a 3 wood instead of the driver) and the wedge for pitches and splashes.
+export function aiPlan(terrain, from, lie, { skill = 0.6, rng, windAt, t0 = 0, profile = BASE_PROFILE, shots = false, prefs = null } = {}) {
   const pin = terrain.pin;
   const g = () => (rng ? rng.gauss() : 0);
   const sk = clamp(skill, 0, 1);
@@ -180,7 +182,7 @@ export function aiPlan(terrain, from, lie, { skill = 0.6, rng, windAt, t0 = 0, p
   let nearGreen = !target.layup && dist < 32 && lie !== SURFACES.BUNKER;
   let shotType = nearGreen ? SHOT_TYPES.CHIP : SHOT_TYPES.FULL;
   let pick;
-  const special = shots ? aiShot(terrain, from, lie, target, dist, { windAt, t0, profile }) : null;
+  const special = shots ? aiShot(terrain, from, lie, target, dist, { windAt, t0, profile, prefs }) : null;
   if (special) {
     shotType = special.shotType; pick = { club: special.club, power: special.power };
     if (special.toEnd) nearGreen = true;
@@ -191,6 +193,8 @@ export function aiPlan(terrain, from, lie, { skill = 0.6, rng, windAt, t0 = 0, p
   } else {
     const elev = terrain.heightAt(target.x, target.z) - terrain.heightAt(from.x, from.z);
     pick = suggestClub(Math.max(8, dist + elev * 0.9), { lie, profile });
+    // A pro who prefers the 3 wood off the tee takes it where the driver was the pick.
+    if (prefs && prefs.tee === 'W3' && lie === SURFACES.TEE && pick.club.id === 'DR') pick = { club: CLUBS.find((c) => c.id === 'W3'), power: 1 };
   }
   let aim = headingTo(from.x, from.z, target.x, target.z);
   let power = pick.power;
@@ -219,14 +223,16 @@ export function aiPlan(terrain, from, lie, { skill = 0.6, rng, windAt, t0 = 0, p
 
 // The AI's shot type, when one fits better than a full swing or a chip. Returns null for the
 // default plan, or { shotType, club, power, toEnd }.
-function aiShot(terrain, from, lie, target, dist, { windAt, t0, profile }) {
+function aiShot(terrain, from, lie, target, dist, { windAt, t0, profile, prefs }) {
+  const wedge = prefs && ['GW', 'SW', 'LW'].includes(prefs.wedge) ? prefs.wedge : null;
   const club = (id) => CLUBS.find((c) => c.id === id);
   const fits = (id, clubId) => shotFitsData(shotData(id), clubId, lie);
   // A greenside bunker: splash it out with the sand wedge.
-  if (lie === SURFACES.BUNKER && !target.layup && dist < SPLASH_RANGE && fits('splash', 'SW')) return { shotType: shotData('splash'), club: club('SW'), power: clamp(dist / 48 + 0.18, 0.15, 1), toEnd: true };
+  const sand = wedge && fits('splash', wedge) ? wedge : 'SW';
+  if (lie === SURFACES.BUNKER && !target.layup && dist < SPLASH_RANGE && fits('splash', sand)) return { shotType: shotData('splash'), club: club(sand), power: clamp(dist / 48 + 0.18, 0.15, 1), toEnd: true };
   // A pitch from 30 to 70 meters: a wedge that carries most of the way and checks.
   if (!target.layup && dist >= 30 && dist < 70) {
-    const id = dist < 45 ? 'SW' : dist < 58 ? 'GW' : 'PW';
+    const id = wedge && dist < 50 ? wedge : dist < 45 ? 'SW' : dist < 58 ? 'GW' : 'PW';
     if (fits('pitch', id)) return { shotType: shotData('pitch'), club: club(id), power: clamp(dist / 80 + 0.2, 0.2, 1), toEnd: false };
   }
   // Into a strong wind: a stinger off the tee with a long club, or a knockdown approach.

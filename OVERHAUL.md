@@ -469,6 +469,36 @@ unchanged (tested against the carry ladder).
 - The old extra shot list (`src/game/shots.js`) is folded into the data file; the ids stay the
   same, so saves and skill trees are unaffected.
 
+## The pros
+
+Twelve invented tour pros in `src/data/pros.json`, two for each archetype, each with a color
+and an emblem (a plain geometric mark; no faces or figures), a signature shot, five stats on
+the campaign scale, club preferences and a short bio. The names, bios and colors can be edited
+in that file (its note says so); ids are what saves refer to and stay fixed. None is based on
+a real person.
+
+- Matched level: every pro's five stats add up to 340, inside the archetype's caps, and the
+  innate perks grow as for a level 30 golfer. The profile comes from the campaign golfer's own
+  mapping and caps (`profileFromStats`, factored out of `golferProfile` with identical
+  results), so no pro can exceed what a campaign golfer can reach.
+- Playable: Quick Play, the Daily challenge and Tournaments have a "Play as" row (you, or any
+  pro): the round then uses the pro's profile, perks, spin reach and name. Your own golfer and
+  gear progress are untouched.
+- Opponents and rivals: Quick Play's rival can be any pro (or the adaptive rival as before);
+  a computer pro flies with its own profile and perks, uses the shot types, and follows its club
+  preferences (a 3 wood off the tee where it prefers one, its own wedge for pitches and
+  splashes). All twelve play every tournament, except the one you play as.
+- Campaign: your golfer stays your own; one pro can be your mentor (Character, Choose a
+  mentor), which unlocks that pro's signature shot in every event. You can change mentor at
+  any time and the shot changes with them.
+- Balance (`node scripts/sim/balance.mjs 200 4 pros`, qa/balance-pros.md; and
+  tests/pros.test.js, which plays 200 rounds per pro on every verify): with a tour swing (skill
+  0.85) the pros average 2.85 under par per 18 and every one is within 0.71 of that average;
+  with an average swing (0.6) they average 4.13 over and every one is within 0.84. The rule is
+  1.5.
+- The round keeps a pro player's id, archetype and club preferences (bounded and checked) so
+  saved rounds resume with them.
+
 ## Stage 10: proof and deploy
 
 Screenshots of every new screen at 360x640, 390x844, 844x390, and 1024x768 with the layout

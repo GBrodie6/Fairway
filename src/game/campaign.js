@@ -7,6 +7,10 @@
 // modifier: a level 1 golfer of any archetype has the base physics profile and no carry bonus,
 // so a perfect strike with a Common club still lands on the calibrated carry ladder.
 import { shotData } from '../data/shotTypes.js';
+import prosData from '../data/pros.json' with { type: 'json' };
+// A mentor (one of the pros, data/pros.json) unlocks their signature shot.
+const MENTOR_SHOT = Object.fromEntries(prosData.pros.map((p) => [p.id, p.signature]));
+export const mentorShot = (id) => MENTOR_SHOT[id] || null;
 import { createRng, hashString } from '../core/rng.js';
 import { clamp } from '../core/math.js';
 import { BASE_PROFILE } from '../physics/shot.js';
@@ -195,6 +199,7 @@ export function sanitizeGolfer(g) {
   }
   out.nodes = [...owned];
   out.respecs = Math.max(0, Math.floor(Number(g.respecs) || 0));
+  if (typeof g.mentor === 'string' && MENTOR_SHOT[g.mentor]) out.mentor = g.mentor;
   return out;
 }
 export const golferLevel = (g) => levelForXp((g && g.xp) || 0);
@@ -262,6 +267,7 @@ export function golferPerks(g) {
 // are always there; the Stinger and Knockdown come with the Punch node, for example).
 export function shotUnlocked(g, shotId) {
   if (shotId === 'putt') return true;
+  if (g && g.mentor && MENTOR_SHOT[g.mentor] === shotId) return true;
   const d = shotData(shotId);
   const via = d.id === shotId ? d.unlock : shotId;
   if (via === 'base') return true;
@@ -274,7 +280,11 @@ export function shotUnlocked(g, shotId) {
 // The physics profile for the golfer: the same mapping and bounds as the career's profileFor,
 // with the five campaign stats, then perks. All stats at 50 and no perks is the base profile.
 export function golferProfile(g) {
-  const st = golferStats(g), pk = golferPerks(g);
+  return profileFromStats(golferStats(g), golferPerks(g));
+}
+// The same mapping from five stats and the perks to a physics profile, for anyone with stats
+// (the campaign golfer above, and the pros in data/pros.json through game/pros.js).
+export function profileFromStats(st, pk) {
   const v = (k) => (clamp(st[k], 30, STAT_MAX) - 50) / 50;
   const p = { ...BASE_PROFILE };
   p.power = (1 + v('driving') * 0.07) * (1 + pk.pureCarry * 0.5);

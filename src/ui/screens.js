@@ -1,6 +1,8 @@
 // Screens: main menu, round setup, pause, hole summary, round end, and the first-run tutorial.
 // Career, daily challenge, stats, and settings screens are added by their own modules and
 // registered here through ui.screens.register(name, fn).
+import { proChooser } from './prosUi.js';
+import { proById, proPlayer, proProfile } from '../game/pros.js';
 import { h } from './dom.js';
 import { COURSES, courseById } from '../course/courses.js';
 import { TOD_ORDER, TOD } from '../render/timeOfDay.js';
@@ -77,7 +79,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
   }, { modal: true });
 
   // --- quick round setup ---
-  const setupState = { courseId: COURSES[0].id, holes: 9, mode: 'stroke', tod: 'morning', rival: false, players: 1 };
+  const setupState = { courseId: COURSES[0].id, holes: 9, mode: 'stroke', tod: 'morning', rival: false, players: 1, as: null, rivalPro: null };
   screens.setup = (opts = {}) => {
     if (opts.players) setupState.players = opts.players;
     show('setup', () => {
@@ -102,6 +104,11 @@ export function createScreens(root, { app, game, settings, ui, save }) {
         h('p', { class: 'muted', text: info.text }),
         h('div', { class: 'field' }, h('label', { text: 'Time of day' }), tod),
         setupState.players < 2 ? h('div', { class: 'field' }, h('label', { for: 'rival', text: `Play against a computer rival (adapts to your form: ${rivalLabel(adaptiveRivalSkill(app.save ? app.save().history : []))} right now)` }), rival) : h('p', { class: 'muted', text: `${setupState.players} players share this device and pass it between shots.` }),
+        setupState.players < 2 ? h('h3', { class: 'h small', text: 'Play as' }) : null,
+        setupState.players < 2 ? proChooser({ selected: setupState.as, onPick: (id) => { setupState.as = id; screens.setup(); } }) : null,
+        setupState.players < 2 && (setupState.rival || needsRival) ? h('h3', { class: 'h small', text: 'Rival' }) : null,
+        setupState.players < 2 && (setupState.rival || needsRival) ? proChooser({ selected: setupState.rivalPro, noneLabel: 'Adaptive', label: 'Rival', exclude: setupState.as, onPick: (id) => { setupState.rivalPro = id; screens.setup(); } }) : null,
+        screens.registry.pros ? h('button', { class: 'btn small', type: 'button', onclick: () => screens.registry.pros(), style: { marginTop: '6px' } }, 'Meet the pros') : null,
         h('div', { class: 'grid2', style: { marginTop: '14px' } }, btn('Back', () => screens.back()), btn('Tee off', () => startQuick(), 'btn primary')),
         h('h3', { class: 'h small', style: { marginTop: '14px' }, text: 'Other formats' }),
         h('div', { class: 'grid2' },
@@ -114,13 +121,16 @@ export function createScreens(root, { app, game, settings, ui, save }) {
 
   function playerList() {
     const sv = app.save ? app.save().player : { name: 'You', ball: '#ffffff' };
-    const me = { id: 'p1', name: sv.name || 'You', kind: 'human', handed: settings.handedness, ball: sv.ball || '#ffffff' };
+    const asPro = setupState.players < 2 && setupState.as ? proById(setupState.as) : null;
+    const me = asPro ? proPlayer(asPro, { handed: settings.handedness }) : { id: 'p1', name: sv.name || 'You', kind: 'human', handed: settings.handedness, ball: sv.ball || '#ffffff' };
     const needsRival = setupState.mode === 'match' || setupState.mode === 'skins';
     if (setupState.players > 1) {
       const cols = ['#ffffff', '#ffd23f', '#7fd1ff', '#ff9e7a'];
       return Array.from({ length: setupState.players }, (_, i) => ({ id: 'p' + (i + 1), name: i === 0 ? me.name : `Player ${i + 1}`, kind: 'human', ball: cols[i] }));
     }
     // The rival adapts to your recent rounds and leans a little toward winning.
+    const rp = setupState.rivalPro && setupState.rivalPro !== setupState.as ? proById(setupState.rivalPro) : null;
+    if (rp && (setupState.rival || needsRival)) return [me, proPlayer(rp, { id: 'ai1', kind: 'ai' })];
     if (setupState.rival || needsRival) return [me, { id: 'ai1', name: 'Rowan Vale', kind: 'ai', skill: adaptiveRivalSkill(app.save ? app.save().history : []), ball: '#ffd23f' }];
     return [me];
   }
@@ -129,7 +139,9 @@ export function createScreens(root, { app, game, settings, ui, save }) {
     const seed = setupState.seed != null ? hashString(String(setupState.seed)) : (Date.now() ^ hashString(setupState.courseId)) >>> 0;
     // Your golfer's stats and perks apply when you play alone; shared and multiplayer rounds are level.
     const solo = playerList().filter((p) => p.kind === 'human').length === 1 && app.golferProfile;
-    await game.startRound({ courseId: setupState.courseId, mode: setupState.mode, holeCount: setupState.holes, startHole: setupState.startHole || 1, tod: setupState.tod, players: playerList(), seed, profile: solo ? app.golferProfile() : undefined, golfer: !!solo });
+    // Playing as a pro: the pro's profile and perks instead of your golfer's.
+    const asPro = setupState.players < 2 && setupState.as ? proById(setupState.as) : null;
+    await game.startRound({ courseId: setupState.courseId, mode: setupState.mode, holeCount: setupState.holes, startHole: setupState.startHole || 1, tod: setupState.tod, players: playerList(), seed, profile: asPro ? proProfile(asPro) : solo ? app.golferProfile() : undefined, golfer: !asPro && !!solo });
   }
   async function startRange() {
     hide();

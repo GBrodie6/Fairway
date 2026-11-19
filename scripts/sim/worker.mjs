@@ -8,6 +8,7 @@ import { createRng, hashString } from '../../src/core/rng.js';
 import { createWind, rollWind } from '../../src/physics/wind.js';
 import { playHoleGolfer } from '../../src/game/simGolfer.js';
 import { autoBuild, golferProfile, golferStrike, newGolfer } from '../../src/game/campaign.js';
+import { proById, proProfile, proStrike } from '../../src/game/pros.js';
 
 const terrains = new Map();
 const terrainFor = (courseId, i) => {
@@ -17,6 +18,10 @@ const terrainFor = (courseId, i) => {
 };
 
 function golferFor(cell) {
+  if (cell.kind === 'pro') {
+    const p = proById(cell.pro);
+    return { profile: proProfile(p), perks: (kind) => proStrike(p, kind), gearFor: () => ({ rarity: 'common' }), setting: 'standard', prefs: { ...p.clubs } };
+  }
   if (cell.kind === 'arch') {
     const g = autoBuild(cell.archetype, cell.level);
     return { profile: golferProfile(g), perks: (kind) => golferStrike(g, kind), gearFor: () => ({ rarity: 'common' }), setting: 'standard' };

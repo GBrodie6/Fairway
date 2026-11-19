@@ -27,6 +27,16 @@ export function holesFor(courseId, mode, count = 18, startHole = 1) {
   return out;
 }
 
+// A pro player (game/pros.js) keeps its id, archetype and club preferences (plain, bounded).
+const CLUB = /^(DR|W3|W5|I[4-9]|PW|GW|SW|LW)$/;
+function proFields(p) {
+  if (!p || typeof p.pro !== 'string' || !/^[a-z]{2,24}$/.test(p.pro)) return {};
+  const out = { pro: p.pro };
+  if (typeof p.archetype === 'string' && /^[a-z]{2,12}$/.test(p.archetype)) out.archetype = p.archetype;
+  if (p.prefs && typeof p.prefs === 'object') out.prefs = Object.fromEntries(['tee', 'wedge', 'favorite'].filter((k) => CLUB.test(p.prefs[k])).map((k) => [k, p.prefs[k]]));
+  return out;
+}
+
 export function createRound({ courseId = COURSES[0].id, mode = 'stroke', holeCount = 18, startHole = 1, holes, players, seed = 1, tod = 'morning', pinSet = 0, eventId = null } = {}) {
   const m = modeById(mode);
   const course = courseById(courseId);
@@ -35,7 +45,7 @@ export function createRound({ courseId = COURSES[0].id, mode = 'stroke', holeCou
   const n = list.length;
   return {
     v: ROUND_VERSION, courseId: course.id, mode: m.id, holes: holeList, seed: seed >>> 0, tod, pinSet, eventId,
-    players: list.map((p, i) => ({ id: p.id || 'p' + (i + 1), name: String(p.name || 'Player ' + (i + 1)).slice(0, 18), kind: p.kind === 'ai' ? 'ai' : 'human', skill: clamp(Number(p.skill) || 0.6, 0, 1), handed: p.handed === 'left' ? 'left' : 'right', ball: p.ball || '#ffffff' })),
+    players: list.map((p, i) => ({ id: p.id || 'p' + (i + 1), name: String(p.name || 'Player ' + (i + 1)).slice(0, 18), kind: p.kind === 'ai' ? 'ai' : 'human', skill: clamp(Number(p.skill) || 0.6, 0, 1), handed: p.handed === 'left' ? 'left' : 'right', ball: p.ball || '#ffffff', ...proFields(p) })),
     hole: 0, turn: 0,
     scores: Array.from({ length: n }, () => []),
     logs: Array.from({ length: n }, () => []),

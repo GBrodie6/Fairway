@@ -42,7 +42,7 @@ export function playHoleGolfer(terrain, opts) {
       // A golfer who knows the club plans for its usual extra carry (planBoost, a speed
       // factor); the shot itself flies with the real profile and strike.
       const planProfile = opts.planBoost ? { ...profile, power: profile.power * (1 + opts.planBoost) } : profile;
-      const plan = aiPlan(terrain, pos, lie, { skill, rng, windAt, t0, profile: planProfile });
+      const plan = aiPlan(terrain, pos, lie, { skill, rng, windAt, t0, profile: planProfile, prefs: opts.prefs || null });
       // A person's tempo: a ratio of backswing to downswing around 3, sometimes rushed.
       const ratio = 3 + g() * 0.45;
       const swing = { ...plan.swing, tempoRatio: ratio, tempoGrade: ratio < 2.2 ? 'rushed' : ratio > 3.9 ? 'slow' : 'good', downMs: 250 };

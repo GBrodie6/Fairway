@@ -1,6 +1,7 @@
 // Tournament mode: four rounds of six holes on one course against a field of 29, a cut to the
 // top 15 and ties after two rounds, a purse in coins (earned, never bought), and a trophy for
 // a win. Plus the live leaderboard (with movement) that campaign events use too. Pure.
+import { PROS } from './pros.js';
 import { createRng, hashString } from '../core/rng.js';
 import { clamp } from '../core/math.js';
 import { courseById } from '../course/courses.js';
@@ -14,12 +15,15 @@ const NAMES = ['Lakeside Invitational', 'Harvest Classic', 'Coastal Championship
 
 export const roundHoles = (r) => Array.from({ length: T_HOLES }, (_, i) => (r * T_HOLES + i) % 18);
 
-export function createTournament({ courseId = 'parkland', seed = 1, level = 1 } = {}) {
+export function createTournament({ courseId = 'parkland', seed = 1, level = 1, as = null } = {}) {
   const s = seed >>> 0;
   const rng = createRng(s ^ 0x7a11);
   // The field strengthens a little with the player's level, inside the rivals' usual range.
   const lift = clamp((level - 1) * 0.004, 0, 0.12);
-  const field = makeRivals(s, T_FIELD - 1).map((r) => ({ ...r, skill: +clamp(r.skill - 0.06 + lift, 0.3, 0.86).toFixed(3) }));
+  // The tour pros (data/pros.json) play every tournament, except the one you play as; the rest
+  // of the field are generated rivals.
+  const pros = PROS.filter((p) => p.id !== as).map((p) => ({ id: `pro:${p.id}`, name: p.name, skill: p.skill, form: 0, wins: 0 }));
+  const field = [...pros, ...makeRivals(s, T_FIELD - 1 - pros.length)].map((r) => ({ ...r, skill: +clamp(r.skill - 0.06 + lift, 0.3, 0.86).toFixed(3) }));
   return {
     v: 1, id: `t${s}`, name: NAMES[s % NAMES.length], courseId, seed: s, field,
     tods: Array.from({ length: T_ROUNDS }, () => rng.pick(['morning', 'midday', 'golden', 'dawn'])),

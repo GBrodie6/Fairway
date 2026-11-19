@@ -1,0 +1,61 @@
+{
+ "size": "390x844",
+ "setup": [
+  [
+   "QuellwoodSharpshooter"
+  ],
+  [
+   "KellbrookPower"
+  ]
+ ],
+ "round": {
+  "players": [
+   {
+    "name": "Amara Quellwood",
+    "kind": "human",
+    "pro": "quellwood",
+    "archetype": "sharp"
+   },
+   {
+    "name": "Teodor Kellbrook",
+    "kind": "ai",
+    "pro": "kellbrook",
+    "archetype": "power"
+   }
+  ],
+  "profile": {
+   "power": 1.0196,
+   "accuracy": 0.8623999999999999,
+   "spin": 1.0256,
+   "touch": 0.904,
+   "putting": 0.888,
+   "recovery": 0.888,
+   "forgiveness": 0.9264
+  },
+  "spinRange": 0.6
+ },
+ "afterAi": [
+  {
+   "player": "Amara Quellwood",
+   "strokes": 1,
+   "lie": 3
+  },
+  {
+   "player": "Teodor Kellbrook",
+   "strokes": 1,
+   "lie": 3
+  }
+ ],
+ "roster": 12,
+ "daily": [
+  "DuncairnLinks"
+ ],
+ "tournamentChip": [
+  "SolvaneShort"
+ ],
+ "mentor": {
+  "mentor": "solvane",
+  "text": "Shots: Normal, Flop, Pitch, Chip, Bunker splash."
+ },
+ "consoleErrors": []
+}
