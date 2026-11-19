@@ -6,7 +6,7 @@
 // SwiftShader renders on the CPU: the benchmark's numbers here are not a real GPU's.
 //   node scripts/tools/graphics.mjs qa/proof/desktop/p4 [1920x1080]
 import path from 'node:path';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { launchBrowser, trackErrors } from '../lib/browser.mjs';
 import { serveStatic } from '../lib/serve.mjs';
 import { createPointer, clickSel } from '../lib/drive.mjs';
@@ -63,7 +63,7 @@ async function choose(page, mouse, id, value) {
 async function waitTier(page) { await page.waitForFunction(() => !window.__fw.app.benchRunning, null).catch(() => {}); await page.waitForTimeout(800); }
 
 // PARTS=settings,fps,gpu,bench picks the parts to run (all by default).
-const parts = (process.env.PARTS || 'settings,fps,gpu,bench').split(',');
+const parts = (process.env.PARTS || 'settings,fps,gpu,bench,overlay').split(',');
 const want = (k) => parts.includes(k);
 let st = null;
 try {
@@ -176,7 +176,7 @@ try {
   const t0 = Date.now();
   const bench = await s3.page.evaluate(() => window.__fw.app.bench({ warm: 2, frames: 3, batches: 2 }));
   out.steps.bench = { ...bench, seconds: Math.round((Date.now() - t0) / 1000) };
-  await s3.page.waitForTimeout(1200);
+  await s3.page.waitForFunction(() => /1440p/.test(document.getElementById('fw-debug').textContent), null, { timeout: 300000 }).catch(() => {});
   const overlay = await s3.page.evaluate(() => document.getElementById('fw-debug').textContent);
   out.steps.overlay = overlay.split('\n');
   check('The ?debug overlay reports frame time by tier at 1080p and 1440p', /1080p/.test(overlay) && /1440p/.test(overlay) && ['low', 'medium', 'high', 'ultra'].every((t) => new RegExp(`\\n  ${t} `).test(overlay)), out.steps.overlay.slice(-6));
@@ -186,6 +186,28 @@ try {
   await shot(s3.page, '4-debug-bench');
   errorsAll.push(...s3.errors);
   await s3.ctx.close();
+  }
+  // 8. The overlay on a later visit: the result is kept in the browser and shown at once. The
+  // saved result here is the one recorded by part 7 (BENCH_JSON points at its report).
+  if (want('overlay') && process.env.BENCH_JSON) {
+    const saved = JSON.parse(readFileSync(process.env.BENCH_JSON, 'utf8')).steps.bench;
+    const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
+    ctx.setDefaultTimeout(240000);
+    await ctx.addInitScript((r) => { try { localStorage.setItem('fairway-next.bench', JSON.stringify(r)); } catch { /* fine */ } }, saved);
+    const page = await ctx.newPage();
+    const errs = trackErrors(page);
+    await page.goto(`${server.url}/?debug=1&tier=low&scale=0.5`, { waitUntil: 'load' });
+    await page.waitForFunction(() => window.__fw && window.__fw.ready, null);
+    await page.waitForFunction(() => { const e = document.getElementById('fw-debug'); return e && /1440p/.test(e.textContent); }, null, { timeout: 120000 }).catch(() => {});
+    const text = await page.evaluate(() => document.getElementById('fw-debug').textContent);
+    out.steps.overlayText = text.split('\n');
+    check('The ?debug overlay shows frame time by tier at 1080p and 1440p', /1080p/.test(text) && /1440p/.test(text) && ['low', 'medium', 'high', 'ultra'].every((t) => new RegExp(`\\n  ${t} `).test(text)), out.steps.overlayText.slice(-6));
+    check('The overlay shows the refresh rate and the cap', /display \d+ Hz\s+cap/.test(text));
+    const btn = await page.evaluate(() => { const b = document.querySelector('.fw-debug-bench'); return b && b.getBoundingClientRect().width > 0 ? b.textContent : null; });
+    check('The overlay has a Run benchmark button', btn === 'Run benchmark', btn);
+    await page.screenshot({ path: `${prefix}-${size}-5-debug-overlay.jpg`, type: 'jpeg', quality: 85, clip: { x: 0, y: 0, width: Math.min(W, 900), height: Math.min(H, 420) } });
+    errorsAll.push(...errs);
+    await ctx.close();
   }
 } catch (e) { out.failed = e.message.split('\n')[0]; console.log('FAILED', out.failed); }
 out.consoleErrors = errorsAll.map((e) => e.text.slice(0, 200));

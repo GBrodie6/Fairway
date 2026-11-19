@@ -82,7 +82,7 @@ export function createLoop({ timescale = 1 } = {}) {
     stats.cpuMs = performance.now() - t0;
     stats.cpuAvg = stats.cpuAvg ? stats.cpuAvg * 0.92 + stats.cpuMs * 0.08 : stats.cpuMs;
     stats.dt = realDt;
-    if (rawDt > 0 && rawDt < 1) { stats.frameMs[stats.frame % stats.frameMs.length] = rawDt * 1000; }
+    if (rawDt > 0 && rawDt < 30) { stats.frameMs[stats.frame % stats.frameMs.length] = rawDt * 1000; }
     stats.frame++;
     fpsAcc += rawDt; fpsFrames++;
     if (fpsAcc >= 0.5) { stats.fps = fpsFrames / fpsAcc; fpsAcc = 0; fpsFrames = 0; }

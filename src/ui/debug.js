@@ -20,8 +20,8 @@ export function benchTable(r) {
   if (!r || !r.rows) return 'bench: not run (press Run benchmark, or open with ?debug&bench)';
   const pad = (x, n) => String(x).padEnd(n);
   const head = `bench ms per frame (fps)  ${BENCH_SIZES.map((s) => pad(s.id, 15)).join('')}`;
-  const rows = TIER_ORDER.filter((t) => r.rows[t]).map((t) => `  ${pad(t, 23)}${BENCH_SIZES.map((s) => { const c = r.rows[t][s.id]; return pad(c ? `${c.ms.toFixed(1)} (${c.fps.toFixed(0)})` : '--', 15); }).join('')}`);
-  return [head, ...rows, `  ${r.method}; ${String(r.gpu || 'GPU not reported').slice(0, 60)}; ${String(r.at).slice(0, 16).replace('T', ' ')}`].join('\n');
+  const rows = TIER_ORDER.filter((t) => r.rows[t]).map((t) => `  ${pad(t, 23)}${BENCH_SIZES.map((s) => { const c = r.rows[t][s.id]; return pad(c ? `${c.ms.toFixed(1)} (${c.fps < 10 ? c.fps.toFixed(1) : c.fps.toFixed(0)})` : '--', 15); }).join('')}`);
+  return [head, ...rows, `  ${r.method}; ${String(r.at).slice(0, 16).replace('T', ' ')}`, `  ${String(r.gpu || 'GPU not reported').slice(0, 64)}`].join('\n');
 }
 
 export function createDebugOverlay(root, { engine, loop, app, getExtra }) {
