@@ -1,0 +1,267 @@
+{
+ "size": "1920x1080",
+ "checks": [
+  {
+   "name": "? opens the Controls list",
+   "pass": true
+  },
+  {
+   "name": "? closes it",
+   "pass": true
+  },
+  {
+   "name": "A and D aim (0.5 degrees, Shift 0.1)",
+   "pass": true,
+   "detail": {
+    "a0": 0.004081632220289255,
+    "a1": -0.013371660299653865,
+    "a2": -0.004645014039682316,
+    "a3": -0.006390343291676537
+   }
+  },
+  {
+   "name": "Left arrow aims",
+   "pass": true
+  },
+  {
+   "name": "R resets aim to the target",
+   "pass": true,
+   "detail": {
+    "aim": 0.004081632220289233,
+    "target": 0.004081632220289255
+   }
+  },
+  {
+   "name": "W and S, up and down arrows change club",
+   "pass": true,
+   "detail": {
+    "c0": "DR",
+    "c1": "W3",
+    "c2": "DR",
+    "c3": "W3",
+    "c4": "DR"
+   }
+  },
+  {
+   "name": "Q and E change shot type",
+   "pass": true,
+   "detail": {
+    "t0": "full",
+    "t1": "stinger",
+    "t2": "full"
+   }
+  },
+  {
+   "name": "Shift and arrows move the spin dot; Shift+R centres it",
+   "pass": true,
+   "detail": {
+    "sp": {
+     "x": 0.1,
+     "y": 0.1
+    },
+    "sp0": {
+     "x": 0,
+     "y": 0
+    }
+   }
+  },
+  {
+   "name": "Tab opens the scorecard",
+   "pass": true
+  },
+  {
+   "name": "Tab closes it",
+   "pass": true
+  },
+  {
+   "name": "M opens the map",
+   "pass": true
+  },
+  {
+   "name": "M closes the map",
+   "pass": true
+  },
+  {
+   "name": "C looks around",
+   "pass": true,
+   "detail": "peek"
+  },
+  {
+   "name": "C comes back",
+   "pass": true,
+   "detail": "address"
+  },
+  {
+   "name": "Esc pauses",
+   "pass": true
+  },
+  {
+   "name": "Esc closes the pause menu",
+   "pass": true
+  },
+  {
+   "name": "No shortcut fires while typing",
+   "pass": true,
+   "detail": {
+    "value": "Wade Q?f"
+   }
+  },
+  {
+   "name": "Space hold, release, press swings",
+   "pass": true,
+   "detail": {
+    "phase": "flight",
+    "power": 0.901,
+    "tempo": "Perfect"
+   }
+  },
+  {
+   "name": "Z replays the last shot",
+   "pass": true,
+   "detail": "replay"
+  },
+  {
+   "name": "C changes the replay angle",
+   "pass": true,
+   "detail": {
+    "from": "follow",
+    "to": "landing"
+   }
+  },
+  {
+   "name": "Z ends the replay",
+   "pass": true,
+   "detail": "aim"
+  },
+  {
+   "name": "Every icon button has a tooltip",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "1 places a bunker, Delete removes it, Ctrl+Z and Ctrl+Y undo and redo",
+   "pass": true,
+   "detail": {
+    "n0": 2,
+    "n1": 3,
+    "n2": 2,
+    "n3": 3,
+    "n4": 2,
+    "n5": 2
+   }
+  },
+  {
+   "name": "2 places water",
+   "pass": true,
+   "detail": {
+    "w0": 1,
+    "w1": 2
+   }
+  },
+  {
+   "name": "The wheel zooms the map",
+   "pass": true,
+   "detail": {
+    "before": {
+     "x": 534.8044181034483,
+     "y": 138.27586206896547
+    },
+    "after": {
+     "x": 391.43416843304124,
+     "y": -285.31541048280303
+    }
+   }
+  },
+  {
+   "name": "The middle button pans",
+   "pass": true,
+   "detail": {
+    "tee0": {
+     "x": 825.3142699440004,
+     "y": 1365.3154104828027
+    },
+    "tee1": {
+     "x": 905.3142699440004,
+     "y": 1405.3154104828027
+    }
+   }
+  },
+  {
+   "name": "Space and drag pans and moves nothing",
+   "pass": true,
+   "detail": {
+    "tee1": {
+     "x": 905.3142699440004,
+     "y": 1405.3154104828027
+    },
+    "tee2": {
+     "x": 845.3142699440004,
+     "y": 1405.3154104828027
+    }
+   }
+  },
+  {
+   "name": "0 fits the hole again",
+   "pass": true,
+   "detail": {
+    "teeFit": {
+     "x": 745.9965363300493,
+     "y": 941.7241379310344
+    },
+    "tee3": {
+     "x": 745.9965363300493,
+     "y": 941.7241379310344
+    }
+   }
+  },
+  {
+   "name": "Number keys in the name field type, they place nothing",
+   "pass": true
+  }
+ ],
+ "tooltips": [
+  {
+   "cls": "roundbtn glass",
+   "title": "Hole map and rangefinder (M)"
+  },
+  {
+   "cls": "roundbtn glass hidden",
+   "title": "Replay the last shot (Z)"
+  },
+  {
+   "cls": "roundbtn glass fsbtn",
+   "title": "Fullscreen (F)"
+  },
+  {
+   "cls": "roundbtn glass lookbtn",
+   "title": "Look around: hold (C toggles)"
+  },
+  {
+   "cls": "roundbtn glass b-settings",
+   "title": "Settings and pause (Esc)"
+  },
+  {
+   "cls": "arrow glass",
+   "title": "Longer club (W)"
+  },
+  {
+   "cls": "arrow glass",
+   "title": "Shorter club (S)"
+  },
+  {
+   "cls": "roundbtn glass b-reset",
+   "title": "Aim back at the target (R)"
+  },
+  {
+   "cls": "spinbtn glass hidden",
+   "title": "Shot shape and type. Shift and the arrows move the dot, Q and E change the shot"
+  },
+  {
+   "cls": "iconbtn glass close",
+   "title": "Close map (M or Esc)"
+  }
+ ],
+ "consoleErrors": [],
+ "passed": 29,
+ "total": 29
+}

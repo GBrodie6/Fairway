@@ -13,7 +13,7 @@ export function createShotPanel(root, { game, settings, haptic, onOpen }) {
   // The button: a tiny ball with the dot where the contact is, and the shot type under it.
   const mini = h('span', { class: 'spinmini', 'aria-hidden': 'true' }, h('i'));
   const typeL = h('span', { class: 'spintype' });
-  const btn = h('button', { class: 'spinbtn glass', type: 'button', 'aria-haspopup': 'dialog', 'aria-label': 'Shot shape and type' }, mini, typeL);
+  const btn = h('button', { class: 'spinbtn glass', type: 'button', 'aria-haspopup': 'dialog', 'aria-label': 'Shot shape and type', title: 'Shot shape and type. Shift and the arrows move the dot, Q and E change the shot' }, mini, typeL);
   root.appendChild(btn);
 
   // The panel.

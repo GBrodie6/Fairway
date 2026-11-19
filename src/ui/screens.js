@@ -162,6 +162,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
           app.rangeMap ? btn('Dispersion and averages', () => app.rangeMap()) : null,
           app.endRangeSession ? btn('End session and see the summary', () => app.endRangeSession()) : null,
           screens.registry.settings ? btn('Settings', () => screens.registry.settings()) : null,
+          screens.registry.controls ? btn('Controls and shortcuts', () => screens.registry.controls()) : null,
           btn('Leave the range', () => { hide(); game.quit(); })));
     }
     return sheet('',
@@ -171,6 +172,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
       btn('Resume', () => hide(), 'btn primary'),
       btn('Scorecard', () => screens.scorecard()),
       screens.registry.settings ? btn('Settings', () => screens.registry.settings()) : null,
+      screens.registry.controls ? btn('Controls and shortcuts', () => screens.registry.controls()) : null,
       screens.registry.share && game.state.round ? btn('Share this round', () => screens.registry.share()) : null,
       btn('Quit round', () => { hide(); game.quit(); })),
     );

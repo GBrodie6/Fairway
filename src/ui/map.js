@@ -41,7 +41,7 @@ export function createHoleMap(parent, { getWorld, game, settings, onClose }) {
   const canvas = h('canvas', { 'aria-hidden': 'true' });
   const readout = h('div', { class: 'glass chip', style: { position: 'absolute', left: '50%', bottom: 'calc(18px + var(--safe-b))', transform: 'translateX(-50%)', fontSize: '14px', padding: '9px 14px' }, 'aria-live': 'polite' });
   const aimHere = h('button', { class: 'btn small primary hidden', type: 'button', style: { position: 'absolute', left: '50%', bottom: 'calc(64px + var(--safe-b))', transform: 'translateX(-50%)' } }, 'Aim here');
-  wrap.append(canvas, readout, aimHere, iconButton('close', 'Close map', () => map.close(), 'iconbtn glass close'));
+  wrap.append(canvas, readout, aimHere, iconButton('close', 'Close map (M or Esc)', () => map.close(), 'iconbtn glass close'));
   parent.appendChild(wrap);
   const ctx = canvas.getContext('2d');
   const map = { open: false, base: null, frame: null, key: '', tap: null, el: wrap };

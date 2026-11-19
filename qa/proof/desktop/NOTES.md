@@ -65,3 +65,35 @@ build, a mouse (no touch) driven through the Chrome DevTools input domain.
   "Swing cancelled" shown. The window losing focus or the tab being hidden also cancels.
 - Left-handed: the track sits left of the press point (853 against 899) and the swing works.
 - Console errors: 0.
+
+## Part 3: keyboard and shortcuts
+
+`node scripts/tools/keys.mjs qa/proof/desktop/p3 1920x1080` (`p3-1920x1080.json`,
+`p3-1920x1080-*.jpg`), real key and mouse events through the browser: 29 of 29 checks pass.
+
+- The Controls screen (Settings, the pause menu, or the ? key from anywhere) lists every
+  shortcut in five groups: swing, club and shot, views and menus, the level editor, and a
+  controller. ? opens it and closes it again.
+- In a round: A and D aim (Shift for fine steps), the left and right arrows aim, W and S or the
+  up and down arrows change club, Q and E change shot type (1 to 4 pick one), Shift and the
+  arrows move the ball contact dot on the spin pad, Shift and R centre it, R aims back at the
+  target, B opens the club list, Tab opens and closes the scorecard, M opens and closes the
+  map, C looks around (and in a replay changes the angle), Z replays the last shot and ends the
+  replay, Esc pauses, F is fullscreen.
+- Space swings without the mouse: hold for the backswing, release at the top, press again for
+  impact (the existing three-press meter). A Space swing at the guide launched with power 0.90,
+  tempo Perfect.
+- The level editor: the mouse wheel zooms about the cursor, the middle button or Space and drag
+  pans (Space and drag moves no piece), 0 fits the hole again, Ctrl+Z and Ctrl+Y (or
+  Ctrl+Shift+Z) undo and redo, Delete or Backspace removes the selected piece, 1 to 8 pick the
+  palette tools (1 placed a bunker, 2 placed water).
+- No shortcut fires while typing: letters, digits and ? typed into the editor's name field
+  stayed in the field and changed nothing else.
+- Tooltips: every icon button in the HUD and the map has a title naming its shortcut, and the
+  editor tools show their number keys.
+- Fixed along the way:
+  - The editor's name field took focus when the editor opened, so number keys typed into it.
+    On a desktop the map canvas now takes focus instead (phones keep the old behaviour).
+  - After quitting a round to the menu, the HUD could stay drawn behind the menus (this was in
+    the deployed build too). The HUD now hides whenever the game is in its menu phase.
+- Console errors: 0.

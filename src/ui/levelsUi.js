@@ -98,7 +98,7 @@ export function installLevels(app, ui) {
   const saveDraft = (d) => { const list = readDrafts().filter((x) => x.id !== d.id); writeDrafts([{ ...d, savedAt: Date.now() }, ...list]); };
 
   // ---------- the editor's state ----------
-  const ed = { draft: null, lv: null, undo: [], redo: [], selected: null, tested: {}, view: null, publishing: false };
+  const ed = { draft: null, lv: null, undo: [], redo: [], selected: null, tested: {}, view: null, publishing: false, zoom: 1, pan: { x: 0, y: 0 } };
   const commit = (next, keepRedo = false) => {
     const p = parseLevel(next);
     if (!p.ok) return;
@@ -113,7 +113,7 @@ export function installLevels(app, ui) {
     ed.lv = parseLevel(level).level;
     ed.draft = draft || { id: `d${Date.now().toString(36)}`, level: ed.lv, tested: null, publishedId: null };
     ed.tested = draft && draft.tested ? { [draft.tested]: true } : {};
-    ed.undo = []; ed.redo = []; ed.selected = null; ed.view = null;
+    ed.undo = []; ed.redo = []; ed.selected = null; ed.view = null; ed.zoom = 1; ed.pan = { x: 0, y: 0 };
     saveDraft(ed.draft);
     editorScreen();
   }
@@ -140,7 +140,7 @@ export function installLevels(app, ui) {
   }));
 
   // ---------- Editor ----------
-  const canvas = h('canvas', { class: 'lvcanvas', 'aria-label': 'The hole from above. Drag the tee, the pin, the bend handles and anything you placed.' });
+  const canvas = h('canvas', { class: 'lvcanvas', tabindex: '0', 'aria-label': 'The hole from above. Drag the tee, the pin, the bend handles and anything you placed. Number keys place pieces, Delete removes the selected one.' });
   const parLabel = h('b', { class: 'lvpar' });
   function refresh() {
     if (!ed.lv) return;
@@ -164,10 +164,34 @@ export function installLevels(app, ui) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (!ed.view || !drag) ed.view = fitView(ed.lv, w, hh);
+    if (!ed.view || !drag) ed.view = zoomView(fitView(ed.lv, w, hh), w, hh);
     drawLevel(ctx, ed.lv, w, hh, { view: ed.view, selected: ed.selected, handles: true });
   }
   // Hit test: the pin, the tee, the bends, then placed things (topmost first).
+  // Zoom and pan (desktop: the wheel, the middle button or Space and drag; 0 fits again): the
+  // fitted view scaled about the canvas centre and moved by the pan, in canvas pixels.
+  function zoomView(base, w, hh) {
+    const z = ed.zoom, cx = w / 2, cy = hh / 2, px0 = ed.pan.x, py0 = ed.pan.y;
+    if (z === 1 && !px0 && !py0) return base;
+    return {
+      s: base.s * z,
+      toPx: (x, zz) => { const [a, b] = base.toPx(x, zz); return [cx + (a - cx) * z + px0, cy + (b - cy) * z + py0]; },
+      toWorld: (a, b) => base.toWorld(cx + (a - cx - px0) / z, cy + (b - cy - py0) / z),
+    };
+  }
+  const resetView = () => { ed.zoom = 1; ed.pan = { x: 0, y: 0 }; ed.view = null; draw(); };
+  canvas.addEventListener('wheel', (e) => {
+    if (!Number.isFinite(e.deltaY)) return;
+    e.preventDefault();
+    const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+    const z0 = ed.zoom, z1 = clamp(z0 * Math.exp(-clamp(e.deltaY, -240, 240) * 0.0015), 1, 6);
+    if (z1 === z0) return;
+    // Keep the point under the cursor still.
+    const cx = r.width / 2, cy = r.height / 2;
+    ed.pan = z1 === 1 ? { x: 0, y: 0 } : { x: mx - cx - (mx - cx - ed.pan.x) * (z1 / z0), y: my - cy - (my - cy - ed.pan.y) * (z1 / z0) };
+    ed.zoom = z1; ed.view = null; draw();
+  }, { passive: false });
+  let panning = null, spaceHeld = false;
   // Hit test: the selected piece first (so a pinch or a nudge keeps it), then the pin, the tee,
   // the bends, then placed things (the nearest one under the finger).
   const RADIUS = { bunkers: LEVEL_LIMITS.bunker, water: LEVEL_LIMITS.water, rough: LEVEL_LIMITS.rough, hills: LEVEL_LIMITS.hill };
@@ -192,6 +216,8 @@ export function installLevels(app, ui) {
   canvas.addEventListener('pointerdown', (e) => {
     e.preventDefault();
     try { canvas.setPointerCapture(e.pointerId); } catch { /* fine */ }
+    // Pan: the middle button, or the left button with Space held.
+    if (e.pointerType === 'mouse' && (e.button === 1 || (e.button === 0 && spaceHeld))) { panning = { id: e.pointerId, x: e.clientX, y: e.clientY }; canvas.classList.add('panning'); return; }
     const r = canvas.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
     pointers.set(e.pointerId, { x: px, y: py });
     if (pointers.size === 2) {
@@ -212,6 +238,9 @@ export function installLevels(app, ui) {
     refresh();
   });
   canvas.addEventListener('pointermove', (e) => {
+    if (panning && e.pointerId === panning.id) { ed.pan = { x: ed.pan.x + e.clientX - panning.x, y: ed.pan.y + e.clientY - panning.y }; panning.x = e.clientX; panning.y = e.clientY; ed.view = null; draw(); return; }
+    // Hovering with a mouse: a move cursor over anything that can be dragged.
+    if (e.pointerType === 'mouse' && !pointers.size && ed.view) { const r = canvas.getBoundingClientRect(); canvas.classList.toggle('over', !!hit(e.clientX - r.left, e.clientY - r.top)); }
     if (!drag || !drag.target || !pointers.has(e.pointerId)) return;
     e.preventDefault();
     const r = canvas.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
@@ -233,6 +262,7 @@ export function installLevels(app, ui) {
     if (parsed.ok) { drag.moved = true; ed.lv = parsed.level; refresh(); }
   });
   const up = (e) => {
+    if (panning && e.pointerId === panning.id) { panning = null; canvas.classList.remove('panning'); return; }
     pointers.delete(e.pointerId);
     if (!drag || pointers.size) return;
     const d = drag; drag = null;
@@ -265,7 +295,8 @@ export function installLevels(app, ui) {
     }
     commit(lv);
   }
-  const big = (label, onclick) => h('button', { type: 'button', class: 'btn lvtool', onclick }, label);
+  const TOOL_KEY = { Bunker: 1, Water: 2, Trees: 3, Rough: 4, Hills: 5, 'Green size': 6, 'Add bend': 7, Decorate: 8 };
+  const big = (label, onclick) => h('button', { type: 'button', class: 'btn lvtool', onclick, title: `${label} (${TOOL_KEY[label]})` }, label);
   let undoBtn, redoBtn, binBtn, testBtn, pubBtn;
   function editorScreen() {
     screens.show('editor', () => {
@@ -278,6 +309,7 @@ export function installLevels(app, ui) {
         if (s.kind === 'bend') lv.bend.splice(s.i, 1); else if (s.kind === 'item') lv[s.list].splice(s.i, 1); else return;
         ed.selected = null; commit(lv);
       }, 'btn small', { 'aria-label': 'Delete the selected piece' });
+      undoBtn.title = 'Undo (Ctrl+Z)'; redoBtn.title = 'Redo (Ctrl+Y)'; binBtn.title = 'Delete the selected piece (Delete)';
       testBtn = btn('Test play', () => testPlay(), 'btn');
       pubBtn = btn('Publish', () => publish(), 'btn primary');
       const greenSizes = [10, 13, 17];
@@ -297,10 +329,31 @@ export function installLevels(app, ui) {
       requestAnimationFrame(refresh);
       return view;
     });
-    // The canvas is in the page now: draw it and set the status at once.
+    // The canvas is in the page now: draw it and set the status at once. With a mouse and a
+    // keyboard the map takes the focus (not the name box), so the editor's keys work at once.
     refresh();
+    if (typeof matchMedia === 'function' && !matchMedia('(pointer: coarse)').matches) canvas.focus({ preventScroll: true });
   }
   window.addEventListener('resize', () => { if (ui.modal === 'editor') { ed.view = null; draw(); } });
+  // Editor shortcuts (listed on the Controls screen). Never while typing the hole's name.
+  const PALETTE_KEYS = ['Bunker', 'Water', 'Trees', 'Rough', 'Hills', 'Green size', 'Add bend', 'Decorate'];
+  const clickTool = (label) => { const b = [...document.querySelectorAll('.sheet.editor .lvtool')].find((x) => x.textContent.trim() === label); if (b && !b.disabled) b.click(); };
+  window.addEventListener('keydown', (e) => {
+    if (ui.modal !== 'editor') return;
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && e.code === 'KeyZ') { e.preventDefault(); (e.shiftKey ? redoBtn : undoBtn).click(); return; }
+    if (mod && e.code === 'KeyY') { e.preventDefault(); redoBtn.click(); return; }
+    if (mod || e.altKey) return;
+    if (e.code === 'Delete' || e.code === 'Backspace') { e.preventDefault(); binBtn.click(); return; }
+    if (e.code === 'Space') { e.preventDefault(); spaceHeld = true; canvas.classList.add('panready'); return; }
+    if (e.code === 'Digit0' || e.code === 'Numpad0') { e.preventDefault(); resetView(); return; }
+    const m = /^(?:Digit|Numpad)([1-8])$/.exec(e.code);
+    if (m) { e.preventDefault(); clickTool(PALETTE_KEYS[Number(m[1]) - 1]); }
+  });
+  window.addEventListener('keyup', (e) => { if (e.code === 'Space') { spaceHeld = false; canvas.classList.remove('panready'); } });
+  window.addEventListener('blur', () => { spaceHeld = false; canvas.classList.remove('panready'); });
 
   // ---------- playing a hole (test or published) ----------
   async function playHole(lv, { test = false, id = null } = {}) {

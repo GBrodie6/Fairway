@@ -21,6 +21,7 @@ import { installBroadcast } from './ui/broadcastUi.js';
 import { installPros } from './ui/prosUi.js';
 import { installProfile } from './ui/profileUi.js';
 import { installLevels } from './ui/levelsUi.js';
+import { installControls } from './ui/controlsUi.js';
 import { createAudio } from './audio/audio.js';
 import { saveSettings } from './core/settings.js';
 
@@ -79,6 +80,7 @@ async function boot() {
   installPros(app, app.ui);
   installProfile(app, app.ui);
   installLevels(app, app.ui);
+  installControls(app, app.ui);
   app.audio.attach(app.game, () => app.world);
   // Browsers only allow audio after a user gesture.
   for (const ev of ['pointerdown', 'keydown']) window.addEventListener(ev, () => app.audio.unlock(), { passive: true });

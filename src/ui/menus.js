@@ -126,6 +126,7 @@ export function installMenus(app, ui) {
       field('Every shot type in Quick Play', check('s-allshots', settings.allShotsQuickPlay, (v) => { settings.allShotsQuickPlay = v; save2(); }), 's-allshots'),
       field('Aim sensitivity', range('s-aim', settings.aimSensitivity, 0.25, 3, 0.05, (v) => { settings.aimSensitivity = v; save2(); }), 's-aim'),
       field('Units', select('s-units', settings.units, [['yards', 'Yards and feet'], ['meters', 'Meters']], (v) => { settings.units = v; save2(); }), 's-units'),
+      h('div', { class: 'stack', style: { marginTop: '8px' } }, btn('Controls and shortcuts (?)', () => screens.registry.controls && screens.registry.controls())),
       h('h3', { class: 'h', text: 'Display' }),
       field('Screen size (desktop)', select('s-size', settings.screenSize, [['small', 'Small'], ['normal', 'Normal'], ['large', 'Large']], (v) => { settings.screenSize = v; save2(); }), 's-size'),
       document.fullscreenEnabled || document.webkitFullscreenEnabled ? field('Fullscreen (F)', btn(document.fullscreenElement ? 'Leave fullscreen' : 'Go fullscreen', (e) => { const b = e.currentTarget; app.toggleFullscreen().then((on) => { b.textContent = on ? 'Leave fullscreen' : 'Go fullscreen'; }); }, 'btn small'), 's-fs') : null,

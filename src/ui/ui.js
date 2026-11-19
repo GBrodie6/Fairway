@@ -42,6 +42,12 @@ export function createUI(app) {
     rangeHud: () => (app.rangeHud ? app.rangeHud() : null),
     pause: () => { if (game.state.round && !ui.modal) ui.screens.pause(); },
     fullscreen: () => app.toggleFullscreen(),
+    shortcuts: () => { if (app.toggleShortcuts) app.toggleShortcuts(); },
+    scorecard: () => { if (ui.modal === 'scorecard') ui.screens.back(); else if (game.state.round && !ui.modal) ui.screens.scorecard(); },
+    scorecardOpen: () => ui.modal === 'scorecard',
+    mapOpen: () => !!ui.map.open,
+    // C in a replay: the next camera angle.
+    replayAngle: () => { const order = ['follow', 'landing', 'side', 'high']; const i = order.indexOf(game.state.replayAngle || 'follow'); game.replay(order[(i + 1) % order.length]); },
     replay: () => { if (game.replay('follow')) ui.hud.toast('Replay', 'Half speed. Tap the course to return', 1600); },
     resetAim: () => {
       const st = game.state;

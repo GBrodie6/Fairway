@@ -21,7 +21,7 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
   const el = document.createElement('div');
   el.className = 'swingzone';
   el.setAttribute('role', 'slider');
-  el.setAttribute('aria-label', 'Swing. Drag down from the chevron to take the club back, then push up through the start line to strike. Or press Space three times.');
+  el.setAttribute('aria-label', 'Swing. Drag down from the chevron to take the club back, then push up through the start line to strike. Or hold Space for the backswing, release it at the top, and press it again to strike.');
   el.setAttribute('aria-valuemin', '0');
   el.setAttribute('aria-valuemax', '100');
   el.tabIndex = 0;
@@ -324,7 +324,18 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     else if (st.phase === PHASE.DONE) complete(st.result);
     else if (st.phase === PHASE.CANCELLED) cancelled();
   };
-  el.addEventListener('keydown', (e) => { if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); e.stopPropagation(); if (!e.repeat) zone.meterPress(e.timeStamp); } });
+  // Space and a controller's A: hold for the backswing, release at the top, press again for
+  // impact (the same meter, the second press on the release).
+  zone.meterDown = (t = performance.now()) => {
+    if (!zone.enabled || zone.mode === 'pointer') return;
+    if (zone.mode === 'meter' && zone.meter.state.phase === PHASE.BACK) return;
+    zone.meterPress(t);
+  };
+  zone.meterUp = (t = performance.now()) => {
+    if (zone.mode === 'meter' && zone.meter.state.phase === PHASE.BACK) zone.meterPress(t);
+  };
+  el.addEventListener('keydown', (e) => { if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); e.stopPropagation(); if (!e.repeat) zone.meterDown(e.timeStamp); } });
+  el.addEventListener('keyup', (e) => { if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); e.stopPropagation(); zone.meterUp(e.timeStamp); } });
 
   // Called every frame: the meter animation and the power guide.
   zone.update = () => {

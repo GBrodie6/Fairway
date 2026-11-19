@@ -81,7 +81,9 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   const scorebox = h('div', { class: 'scorebox glass', role: 'group', 'aria-label': 'Score' }, scoreN, scoreS);
   const badge = h('div', { class: 'posbadge glass' });
   const mapBtn = iconButton('map', 'Hole map and rangefinder', () => actions.map(), 'roundbtn glass');
+  mapBtn.title = 'Hole map and rangefinder (M)';
   const replayBtn = iconButton('replay', 'Replay the last shot', () => actions.replay(), 'roundbtn glass');
+  replayBtn.title = 'Replay the last shot (Z)';
   // Fullscreen (desktop only; the phone layout has no room and phones go fullscreen on their own).
   const fsBtn = iconButton('expand', 'Fullscreen (F)', () => actions.fullscreen && actions.fullscreen(), 'roundbtn glass fsbtn');
   const syncFs = () => { const on = !!(document.fullscreenElement || document.webkitFullscreenElement); fsBtn.textContent = ''; fsBtn.appendChild(icon(on ? 'shrink' : 'expand')); fsBtn.setAttribute('aria-label', on ? 'Leave fullscreen (F)' : 'Fullscreen (F)'); fsBtn.title = fsBtn.getAttribute('aria-label'); fsBtn.setAttribute('aria-pressed', on ? 'true' : 'false'); };
@@ -93,6 +95,7 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
 
   // --- right side: hold to look around ---
   const lookBtn = iconButton('look', 'Look around. Hold to pan over the course', () => {}, 'roundbtn glass lookbtn');
+  lookBtn.title = 'Look around: hold (C toggles)';
   let lookHeld = false;
   const lookEnd = () => { if (lookHeld) { lookHeld = false; actions.lookHold(false); } };
   lookBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); try { lookBtn.setPointerCapture(e.pointerId); } catch { /* fine */ } lookHeld = true; actions.lookHold(true); });
@@ -102,11 +105,13 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
 
   // --- bottom row ---
   const settingsBtn = iconButton('gear', 'Settings and pause', () => actions.pause(), 'roundbtn glass b-settings');
+  settingsBtn.title = 'Settings and pause (Esc)';
   const arrowL = h('button', { class: 'arrow glass', type: 'button' }, icon('left'));
   const arrowR = h('button', { class: 'arrow glass', type: 'button' }, icon('right'));
   const clubL = h('span', { class: 'cl' }), clubC = h('span', { class: 'cc' });
-  const clubBtn = h('button', { class: 'clubbtn', type: 'button', 'aria-haspopup': 'dialog' }, clubL, clubC);
+  const clubBtn = h('button', { class: 'clubbtn', type: 'button', 'aria-haspopup': 'dialog', title: 'Choose a club (B). W and S change it' }, clubL, clubC);
   const resetBtn = iconButton('aim', 'Aim back at the target', () => actions.resetAim(), 'roundbtn glass b-reset');
+  resetBtn.title = 'Aim back at the target (R)';
   const clubgroup = h('div', { class: 'clubgroup' }, arrowL, clubBtn, arrowR);
   const bottombar = h('div', { class: 'bottombar' }, settingsBtn, clubgroup, resetBtn);
   el.appendChild(bottombar);
@@ -293,6 +298,8 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     root.classList.toggle('lefty', !!settings.leftHandLayout);
     arrowL.setAttribute('aria-label', settings.leftHandLayout ? 'Shorter club' : 'Longer club');
     arrowR.setAttribute('aria-label', settings.leftHandLayout ? 'Longer club' : 'Shorter club');
+    arrowL.title = settings.leftHandLayout ? 'Shorter club (S)' : 'Longer club (W)';
+    arrowR.title = settings.leftHandLayout ? 'Longer club (W)' : 'Shorter club (S)';
     const W = window.innerWidth || 800, H = window.innerHeight || 600;
     const bb = bottombar.getBoundingClientRect();
     // The top of the bottom row as drawn: on a desktop its buttons are scaled from the bottom
@@ -372,7 +379,8 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   hud.update = () => {
     zone.update();
     const v = game.view();
-    if (!v) return;
+    // No round (the menus after quitting one): the HUD goes away instead of staying on the last hole.
+    if (!v) { hud.setVisible(false); return; }
     const u = settings.units;
     const aiming = v.phase === 'aim';
     const putt = !!v.club.putter;
@@ -441,7 +449,8 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     zone.track.style.visibility = zone.el.style.visibility;
     lookBtn.style.visibility = aiming && v.human ? 'visible' : 'hidden';
     skip.classList.toggle('hidden', v.phase !== 'intro');
-    const showHud = v.phase !== 'intro' && v.phase !== 'loading' && v.phase !== 'summary' && v.phase !== 'done';
+    // Not in the menus after a round is quit (phase menu): the HUD would sit behind them.
+    const showHud = v.phase !== 'intro' && v.phase !== 'loading' && v.phase !== 'summary' && v.phase !== 'done' && v.phase !== 'menu';
     hud.setVisible(showHud);
     tabs.style.visibility = replaying ? 'hidden' : 'visible';
   };

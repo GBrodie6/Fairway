@@ -39,35 +39,75 @@ export function createInput({ view, game, getWorld, settings, hud, actions, hapt
   view.addEventListener('wheel', (e) => { if (game.state.phase === 'aim' && Number.isFinite(e.deltaY)) { e.preventDefault(); game.nudgeAim(clamp(e.deltaY, -60, 60) * 0.004 * DEG * 10); } }, { passive: false });
 
   // --- keyboard ---
+  // Every shortcut is listed on the Controls screen (? opens it). None fires while typing in a
+  // text field. Space swings like the drag: hold for the backswing, release at the top, press
+  // again for impact.
+  const typing = (t) => !!t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+  const plain = (e) => !e.ctrlKey && !e.metaKey && !e.altKey;
+  const spinStep = (dx, dy) => {
+    const s = game.spin(), R = game.spinRange();
+    if (!R) return;
+    const k = Math.max(0.05, R / 5);
+    game.setSpin(s.x + dx * k, s.y + dy * k);
+  };
+  const cycleShot = (dir) => {
+    const types = game.shotTypes();
+    if (!types.length) return;
+    const i = Math.max(0, types.findIndex((t) => t.id === game.state.shotType.id));
+    game.setShotType(types[(i + dir + types.length) % types.length].id);
+  };
+  input.keys = { held: new Set() };
   window.addEventListener('keydown', (e) => {
-    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA')) return;
+    if (typing(e.target)) return;
     const ph = game.state.phase;
     const k = e.code;
     if (k === 'Escape') { e.preventDefault(); actions.escape(); return; }
     // F: fullscreen, anywhere (menus too), never with a modifier (Ctrl+F is the browser's find).
-    if (k === 'KeyF' && !e.ctrlKey && !e.metaKey && !e.altKey && actions.fullscreen) { e.preventDefault(); actions.fullscreen(); return; }
+    if (k === 'KeyF' && plain(e) && actions.fullscreen) { e.preventDefault(); actions.fullscreen(); return; }
+    // ?: the shortcuts overlay, anywhere.
+    if ((e.key === '?' || (k === 'Slash' && e.shiftKey)) && !e.ctrlKey && !e.metaKey && actions.shortcuts) { e.preventDefault(); actions.shortcuts(); return; }
+    // Tab closes the scorecard it opened.
+    if (k === 'Tab' && plain(e) && !e.shiftKey && actions.scorecardOpen && actions.scorecardOpen()) { e.preventDefault(); actions.scorecard(); return; }
+    // M closes the map it opened.
+    if (k === 'KeyM' && plain(e) && actions.mapOpen && actions.mapOpen()) { e.preventDefault(); actions.map(); return; }
     if (actions.modalOpen()) return;
+    if (k === 'Tab' && plain(e) && !e.shiftKey && game.state.round && ph !== 'menu') { e.preventDefault(); actions.scorecard(); return; }
     if (ph === 'intro' && (k === 'Space' || k === 'Enter')) { e.preventDefault(); game.skipIntro(); return; }
     if (ph === 'summary' && (k === 'Enter' || k === 'Space')) { e.preventDefault(); actions.continue(); return; }
-    if (ph === 'replay' && (k === 'Space' || k === 'Enter' || k === 'KeyR')) { e.preventDefault(); game.endReplay(); return; }
+    if (ph === 'replay') {
+      if (k === 'Space' || k === 'Enter' || k === 'KeyZ') { e.preventDefault(); game.endReplay(); return; }
+      if (k === 'KeyC' && actions.replayAngle) { e.preventDefault(); actions.replayAngle(); return; }
+      return;
+    }
     if (ph !== 'aim') return;
-    const step = e.shiftKey ? 0.1 : e.altKey ? 2 : 0.5;
+    if (!plain(e) && !(e.shiftKey && !e.ctrlKey && !e.metaKey)) return;
+    const fine = e.shiftKey ? 0.1 : 0.5;
     switch (k) {
-      case 'ArrowLeft': case 'KeyA': e.preventDefault(); game.nudgeAim(-step * DEG); break;
-      case 'ArrowRight': case 'KeyD': e.preventDefault(); game.nudgeAim(step * DEG); break;
-      case 'ArrowUp': case 'KeyW': e.preventDefault(); game.selectClub(-1); break;
-      case 'ArrowDown': case 'KeyS': e.preventDefault(); game.selectClub(1); break;
-      case 'Space': e.preventDefault(); if (!e.repeat) hud.stick.meterPress(e.timeStamp); break;
+      case 'KeyA': e.preventDefault(); game.nudgeAim(-fine * DEG); break;
+      case 'KeyD': e.preventDefault(); game.nudgeAim(fine * DEG); break;
+      // Arrows: left and right aim, up and down change club; with Shift they move the spin dot.
+      case 'ArrowLeft': e.preventDefault(); if (e.shiftKey) spinStep(-1, 0); else game.nudgeAim(-0.5 * DEG); break;
+      case 'ArrowRight': e.preventDefault(); if (e.shiftKey) spinStep(1, 0); else game.nudgeAim(0.5 * DEG); break;
+      case 'ArrowUp': e.preventDefault(); if (e.shiftKey) spinStep(0, 1); else game.selectClub(-1); break;
+      case 'ArrowDown': e.preventDefault(); if (e.shiftKey) spinStep(0, -1); else game.selectClub(1); break;
+      case 'KeyW': e.preventDefault(); game.selectClub(-1); break;
+      case 'KeyS': e.preventDefault(); game.selectClub(1); break;
+      case 'KeyQ': e.preventDefault(); cycleShot(-1); break;
+      case 'KeyE': e.preventDefault(); cycleShot(1); break;
+      case 'KeyR': e.preventDefault(); if (e.shiftKey) game.setSpin(0, 0); else actions.resetAim(); break;
+      case 'Space': e.preventDefault(); if (!e.repeat) { input.keys.held.add('Space'); hud.stick.meterDown(e.timeStamp); } break;
       case 'Digit1': case 'Digit2': case 'Digit3': case 'Digit4': {
         const types = game.shotTypes(); const t = types[Number(k.slice(5)) - 1]; if (t) game.setShotType(t.id); break;
       }
       case 'KeyM': actions.map(); break;
       case 'KeyB': actions.clubList(); break;
-      case 'KeyR': actions.replay(); break;
-      case 'KeyL': actions.toggleLook(); break;
-      case 'KeyC': actions.resetAim(); break;
+      case 'KeyZ': actions.replay(); break;
+      case 'KeyC': case 'KeyL': actions.toggleLook(); break;
       default: break;
     }
+  });
+  window.addEventListener('keyup', (e) => {
+    if (e.code === 'Space' && input.keys.held.has('Space')) { input.keys.held.delete('Space'); if (!typing(e.target)) { e.preventDefault(); hud.stick.meterUp(e.timeStamp); } }
   });
 
   // --- gamepad ---
