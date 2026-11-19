@@ -328,8 +328,11 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
       box = { x: Math.round(W / 2 - mw / 2), y: box.y, w: mw, h: mh, mouseWide: true };
     }
     zone.layout(box);
-    // The ball sits just above the start line.
-    hud.ballY = box.y - (landscape ? 18 : 30);
+    // The ball sits just above the start line. On a desktop window the gap grows with the HUD
+    // scale: the ball is drawn larger there (at 2560x1440 it is about 32 px), and with the fixed
+    // gap its lower edge reached into the swing zone.
+    const gapScale = root.classList.contains('desk') ? (parseFloat(root.style.getPropertyValue('--hs')) || 1) : 1;
+    hud.ballY = box.y - (landscape ? 18 : 30) * gapScale;
     hud.layoutBox = box;
     // The look button goes under the top column on its side, with room kept for the replay
     // button (right) or the hazard and putt chips (left), which come and go.

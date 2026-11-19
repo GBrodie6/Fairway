@@ -611,3 +611,8 @@ html.padnav #ui :focus { outline: 3px solid var(--accent); outline-offset: 2px; 
 /* Menus and the level editor keep their foot clear of the bar. */
 html.padbar-on .screen { padding-bottom: calc(16px + 64px * var(--hs, 1) + var(--safe-b)); }
 html.desk.padbar-on .sheet.editor .lvcanvas { height: min(calc((100vh - 90px - 64px * var(--hs, 1)) / var(--ms, 1)), 820px); }
+/* Desktop readability: the smallest HUD labels (the HOLE caption, the shot type under the shot
+   button) are 10 px on phones; on a desktop window they are 11.5 px before the HUD scale. */
+.desk .holebox .k { font-size: 11.5px; }
+.desk .spinbtn { width: 62px; }
+.desk .spintype { font-size: 11.5px; max-width: 58px; }
