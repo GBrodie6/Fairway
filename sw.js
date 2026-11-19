@@ -4,11 +4,11 @@
 //   app shell (HTML, JS, CSS, icons): precached on install, so the game starts offline
 //   game assets (textures, models, HDRIs): cached the first time they are used, so a course
 //     that has been played once can be played again offline
-const VERSION = '9d217670eb28';
+const VERSION = '0199924e145e';
 const STAMP = '16cp2zo';
 const SHELL = `fw-shell-${VERSION}`;
 const ASSETS = 'fw-assets';
-const PRECACHE = ["./","./assets/index-C1If5lg9.js","./assets/index-DWW8Ixi4.css","./assets/three-addons-BVdD_Qhw.js","./assets/three-iVlL6CYX.js","./manifest.webmanifest","./icons/icon-192.png","./icons/icon-512.png","./icons/icon-180.png","./icons/icon-32.png"];
+const PRECACHE = ["./","./assets/index-Cyx0agnN.css","./assets/index-tzNOAmJc.js","./assets/three-addons-BVdD_Qhw.js","./assets/three-iVlL6CYX.js","./manifest.webmanifest","./icons/icon-192.png","./icons/icon-512.png","./icons/icon-180.png","./icons/icon-32.png"];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(SHELL).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
