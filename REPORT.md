@@ -1265,3 +1265,30 @@ the in-memory stand-in); Vercel (no credentials).
     decision because fixing it adds hazards to existing holes.
 
 https://gbrodie6.github.io/Fairway/
+
+## Club tier benefits (fourth brief)
+
+Higher club tiers now have three bounded benefits that never add carry (`src/data/tierBenefits.js`,
+caps documented there): a crosswind moves the ball less (Legendary 20 percent, the cap; head and
+tail winds act in full), rough, sand and bad lies cost less (Legendary 30 percent, the cap: the
+lie's speed loss, its spin loss and the strike model's lie and slope terms), and the existing
+wider spin and shape range (Legendary 2x). The cost stays: a smaller sweet spot and harsher
+mishits, retuned to Legendary 0.80 and 3.2. A Pured strike from a good lie in calm air carries
+the table carry with every tier; the existing carry tests are unchanged. The gear card and the
+compare view show all three. Commit 5ec8117, 431 tests, `npm run verify` passed (56 of 56 smoke
+rows), deployed to GitHub Pages (gh-pages ea5db3d; Vercel unavailable), checked live.
+
+Legendary against Common, strokes per 18, 3,000 paired rounds per cell on all seven courses
+(qa/balance-tiers.md):
+
+| Swing | Calm fairway play | Normal | Wind and rough |
+| --- | --- | --- | --- |
+| Poor | +0.58 | +0.33 | +0.14 |
+| Average | +0.21 | +0.21 | -0.01 |
+| Skilled | +0.02 | -0.17 | -0.81 |
+
+All three targets are met. On the 1,000-round subset in qa/balance.md the skilled wind-and-rough
+value is -1.00, right at the edge of the target, so the true value sits in the upper part of
+the range.
+
+https://gbrodie6.github.io/Fairway/

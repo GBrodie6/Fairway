@@ -2,7 +2,7 @@
 // bars, gear drops with the printed odds (tokens are seeded here as if earned, which the
 // unit tests cover), equip and compare, balls, and then a round with the equipped club's
 // finish. Measures horizontal overflow and button sizes on every screen.
-//   node scripts/tools/gear.mjs qa/tmp/gear/g [390x844]
+//   node scripts/tools/gear.mjs qa/tmp/gear/g [390x844]   (URL=https://... for a deployed copy)
 import path from 'node:path';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { launchBrowser, trackErrors } from '../lib/browser.mjs';
@@ -12,7 +12,7 @@ import { createPointer, waitPhase, clickSel } from '../lib/drive.mjs';
 const [prefix = 'qa/tmp/gear/g', size = '390x844'] = process.argv.slice(2);
 const [W, H] = size.split('x').map(Number);
 mkdirSync(path.dirname(prefix), { recursive: true });
-const server = await serveStatic(path.resolve(process.env.DIST || 'dist'));
+const server = process.env.URL ? { url: process.env.URL.replace(/\/$/, ''), close: async () => {} } : await serveStatic(path.resolve(process.env.DIST || 'dist'));
 const { browser } = await launchBrowser();
 const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, hasTouch: true, isMobile: W < H });
 ctx.setDefaultTimeout(240000);
@@ -88,7 +88,9 @@ try {
   out.equippedI7 = await page.evaluate(() => window.__fw.app.gearFor('I7'));
   await tapText('Bag');
   await tapStarts('DR');
-  await tapStarts('Equip');
+  // Equip the Legendary one (a drop may have added others).
+  const leg = await page.evaluate(() => { const b = [...document.querySelectorAll('.version.t-legendary button')].find((x) => x.textContent.trim() === 'Equip'); if (!b) return null; b.scrollIntoView({ block: 'center' }); const r = b.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+  if (leg) { await pointer.tap(leg.x, leg.y); await page.waitForTimeout(400); } else await tapStarts('Equip');
   out.equippedDR = await page.evaluate(() => window.__fw.app.gearFor('DR'));
   // The Legendary driver's card: the three benefits and the two costs.
   await page.evaluate(() => { const e = document.querySelector('.stats'); if (e) e.scrollIntoView({ block: 'start' }); });

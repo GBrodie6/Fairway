@@ -1,0 +1,182 @@
+{
+ "size": "844x390",
+ "screens": {
+  "bag": {
+   "name": "bag",
+   "sheetW": 760,
+   "vw": 844,
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  },
+  "driver": {
+   "name": "driver",
+   "sheetW": 760,
+   "vw": 844,
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  },
+  "dropsEmpty": {
+   "name": "drops-empty",
+   "sheetW": 760,
+   "vw": 844,
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  },
+  "dropsAfter": {
+   "name": "drops-after",
+   "sheetW": 760,
+   "vw": 844,
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  },
+  "compare": {
+   "name": "compare",
+   "sheetW": 760,
+   "vw": 844,
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  },
+  "cardLegendary": {
+   "name": "card-legendary",
+   "sheetW": 760,
+   "vw": 844,
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  },
+  "balls": {
+   "name": "balls",
+   "sheetW": 760,
+   "vw": 844,
+   "overflow": [],
+   "smallButtons": [],
+   "docScroll": false
+  }
+ },
+ "bag": [
+  "DRMeadow DriverCommon",
+  "3WMeadow 3 WoodCommon",
+  "5WMeadow 5 WoodCommon",
+  "4iMeadow 4 IronCommon",
+  "5iMeadow 5 IronCommon",
+  "6iMeadow 6 IronCommon",
+  "7iMeadow 7 IronCommon",
+  "8iMeadow 8 IronCommon",
+  "9iMeadow 9 IronCommon",
+  "PWMeadow Pitching WedgeCommon",
+  "GWMeadow Gap WedgeCommon",
+  "SWMeadow Sand WedgeCommon",
+  "LWMeadow Lob WedgeCommon",
+  "PTMeadow PutterCommon"
+ ],
+ "oddsText": [
+  "Common50 percent",
+  "Uncommon28 percent",
+  "Rare14 percent",
+  "Epic6 percent",
+  "Legendary2 percent"
+ ],
+ "drops": [
+  "Common / Meadow Driver / Duplicate: +5 shards.",
+  "Common / Meadow ball / Duplicate: +5 shards.",
+  "Uncommon / Harrow 4 Iron / New. It is in your gear.",
+  "Epic / Ember glove / New. It is in your gear.",
+  "Uncommon / Harrow 6 Iron / New. It is in your gear.",
+  "Uncommon / Harrow ball / New. It is in your gear."
+ ],
+ "gearAfter": {
+  "clubs": 16,
+  "balls": 2,
+  "gloves": 2,
+  "pity": 2,
+  "opened": 6,
+  "shards": 10,
+  "tokens": 0
+ },
+ "compare": [
+  "Wind none",
+  "Bad lies none",
+  "Spin range 50",
+  "Forgiveness 100",
+  "Mishit cost 31",
+  "Wind 10% less (+10)",
+  "Bad lies 15% less (+15)",
+  "Spin range 70 (+20)",
+  "Forgiveness 90 (-10)",
+  "Mishit cost 63 (+32)"
+ ],
+ "compareLines": [
+  "Crosswind moves the ball 10 percent less",
+  "Rough, sand and bad lies cost 15 percent less",
+  "Spin and shape range 1.4x: the spin dot reaches 70 percent of the way to the edge (Common 50)"
+ ],
+ "equippedI7": {
+  "rarity": "rare",
+  "model": "Kingfisher",
+  "ball": {
+   "spin": 1,
+   "speed": 1,
+   "text": "Two-piece. Neutral."
+  },
+  "glove": 0
+ },
+ "equippedDR": {
+  "rarity": "legendary",
+  "model": "Solstice",
+  "ball": {
+   "spin": 1,
+   "speed": 1,
+   "text": "Two-piece. Neutral."
+  },
+  "glove": 0
+ },
+ "cardLegendary": {
+  "stats": [
+   "Wind 20% less",
+   "Bad lies 30% less",
+   "Spin range 100",
+   "Forgiveness 80",
+   "Mishit cost 100"
+  ],
+  "lines": [
+   "Crosswind moves the ball 20 percent less",
+   "Rough, sand and bad lies cost 30 percent less",
+   "Spin and shape range 2x: the spin dot reaches 100 percent of the way to the edge (Common 50)",
+   "Carry about 250 yd, Good or Pured, the same as Common. The cost: a sweet spot 80 percent of Common's and harsher mishits."
+  ]
+ },
+ "clubBtnTier": "legendary",
+ "clubBtnTierI7": "rare",
+ "clubMaterial": "rare",
+ "guide": [
+  {
+   "club": "I7",
+   "tier": "rare",
+   "card": "163 yd",
+   "carryM": 149.05,
+   "power": 1
+  },
+  {
+   "club": "I6",
+   "tier": "common",
+   "card": "163 yd",
+   "carryM": 159.11,
+   "power": 1
+  },
+  {
+   "club": "I7",
+   "tier": "common",
+   "card": "163 yd",
+   "carryM": 149.05,
+   "power": 1,
+   "note": "I7 as Common"
+  }
+ ],
+ "guideCard": "163 yd",
+ "consoleErrors": []
+}
