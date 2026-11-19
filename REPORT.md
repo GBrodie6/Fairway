@@ -1292,3 +1292,35 @@ value is -1.00, right at the edge of the target, so the true value sits in the u
 the range.
 
 https://gbrodie6.github.io/Fairway/
+
+## Desktop as well as phones (fifth brief)
+
+Proof and notes: `qa/proof/desktop/NOTES.md` (one section per part) and
+`qa/proof/live-3c0a275/NOTES.md`. Headless Chrome here renders with SwiftShader on the CPU, so
+frame times from these runs are not a real GPU's, and no physical controller or real monitor
+was used.
+
+- Part 1, layout at desktop sizes (be4af63): HUD and menus scale with the window height and a
+  Screen size setting (Small, Normal, Large); menu cards keep capped widths; an ultrawide frame
+  keeps the HUD near the action; fullscreen button and F. Verify: 436 tests, smoke 56 of 56.
+- Part 2, mouse swing (7a02ff4): a wide press zone under the ball with the track beside the press
+  point, hover preview, grab cursors, a refiner that makes 60, 144 and 240 Hz mice agree, a safe
+  cancel when the pointer leaves the window, left-handed mirror. Verify: 440 tests, 56 of 56.
+- Part 3, keyboard (b06e82d): every shortcut in the brief, a Controls screen and a ? overlay,
+  Space swing, level editor zoom, pan, undo, redo, delete and number keys, tooltips, nothing fires
+  while typing. Verify: 444 tests, 56 of 56.
+- Part 4, graphics (efadf7f, then 4694f7d, e2fdbe3, 89d2c9c, proof ae3b415): desktop GPUs start on
+  High or Ultra, Settings for shadow quality, resolution scale, frame rate cap and V-Sync, a cap
+  that averages its rate on any refresh rate, the tracer fixed above 100 Hz, frame time by tier
+  at 1080p and 1440p in the ?debug overlay. Verify at efadf7f failed (the smoke reads the
+  overlay's first four lines and a new line pushed one out); fixed in 4694f7d: 455 tests, 56 of
+  56.
+- Part 5, controller (41d783e, then 5e24a44): aim, club, shot type, the contact dot, the A swing,
+  menus, the map, the club list and the level editor basics, with button hints. Checked with an
+  injected standard gamepad, 18 of 18. Verify at 41d783e: 460 tests, 56 of 56.
+- Part 6, proof and deploy (1d67247, 2eff688, 3c0a275): 8 screens at 4 sizes with real mouse
+  events, 0 problems after fixing the ball reaching into the mouse zone at 2560x1440, the shot
+  panel covering the ball, fan and club on desktop, shot types cut off in that panel, and 10 px
+  labels. Phones unchanged. Verify at 3c0a275: 460 tests, 56 of 56. Deployed by route B
+  (gh-pages 07b17cc); route A (Vercel) has no login or token. Live at 1920x1080: 0 problems,
+  0 console errors.

@@ -15,5 +15,5 @@ describe('the Controls list', () => {
     const pad = SHORTCUTS.find((g) => g.group === 'Controller').rows.map((r) => r.join(' ')).join('\n');
     for (const k of ['Left stick', 'A', 'LB and RB', 'LT and RT', 'Right stick', 'D-pad']) expect(pad).toContain(k);
   });
-  it('has no em dashes', () => { expect(all.includes('—')).toBe(false); });
+  it('has no em dashes', () => { expect(all.includes('\u2014')).toBe(false); });
 });

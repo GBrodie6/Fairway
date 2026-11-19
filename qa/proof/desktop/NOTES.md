@@ -198,3 +198,67 @@ opened) and sets its buttons and sticks between frames: 18 of 18 checks pass
   - On a very slow machine a quick d-pad tap seen on two polls a frame apart could count as a
     hold and repeat; a repeat now also needs the button seen held on two more polls.
 - Console errors: 0.
+
+## Part 6: proof at every desktop size, phones, deploy
+
+`node scripts/tools/deskproof.mjs qa/proof/desktop/p6 <size>` on the final build (3c0a275) at
+1366x768, 1920x1080, 2560x1440 and 3440x1440, with the mouse driven through real input events
+(the DevTools input domain): the main menu, a hole at address, mid-swing (a press in the swing
+zone dragged to 70 percent and held; then the pointer leaves the window, which cancels the swing
+with no stroke taken), the spin pad (the shot button clicked, the contact dot dragged), the shot
+selector (another shot type clicked, the next one hovered), the scorecard (the settings button,
+then Scorecard), the level editor (Back, Quit round, Create, a template, a wheel zoom) and the
+community browser (Back, Browse holes). Each screen is measured: HUD boxes against each other
+and against the ball, the aim fan, the club and the swing zone, an open shot panel the same
+way, controls cut off inside it, menu cards past the window edge, overlapping controls, clipped
+text, and the smallest text as drawn.
+
+| size | screens | problems | console errors | smallest text (CSS px, as drawn) |
+| --- | --- | --- | --- | --- |
+| 1366x768 | 8 | 0 | 0 | 11.0 (the club distances in the shot panel) |
+| 1920x1080 | 8 | 0 | 0 | 13.2 |
+| 2560x1440 | 8 | 0 | 0 | 17.4 |
+| 3440x1440 | 8 | 0 | 0 | 17.4 |
+
+Menu cards keep their capped width (the main menu 560 px wide at 1366, 672 at 1920, 812 at
+1440p; cards never span an ultrawide screen) and the level editor fits the window at every size.
+
+Overlap and readability problems found and fixed in this brief:
+
+1. The HUD stayed drawn behind the menus after quitting a round (it was in the deployed build
+   too). Part 3.
+2. The level editor's tool rows stretched to fill a tall desktop window. Part 1.
+3. With the bottom row scaled up on desktop, the look button is kept above it (a guard added
+   with the scaling, so the two cannot meet on a short window). Part 1.
+4. The level editor's name field took focus on open, so number keys typed into it instead of
+   picking tools. Part 3.
+5. The controller hint bar was wider than a 1920 window and covered the bottom of the editor
+   map. Part 5.
+6. At 2560x1440 the ball (drawn about 32 px tall) reached 0.7 px into the wide mouse swing zone;
+   the gap above the zone now grows with the desktop HUD scale. Part 6.
+7. On desktop the open shot panel sat bottom centre over the ball, the aim fan, the club and the
+   bottom row (seen at 3440x1440); it now opens in the side column above the shot button
+   (`p6-3440x1440-5-shot-selector.jpg`). Part 6.
+8. In that column the row of shot types ran past the panel's edge (a phone swipes it, a mouse
+   cannot); on desktop it wraps. Part 6.
+9. The HOLE caption and the shot type under the shot button were 10 px on desktop windows; they
+   are 11.5 px before the HUD scale there (phones unchanged). Part 6.
+10. Not layout, but found the same way: the ball tracer ran out of points above about 100 Hz
+    (Part 4), and the ?debug frame summary left out frames slower than a second (Part 4).
+
+Phones unchanged (on the build at 1d67247; the later commits only change rules that apply to
+desktop windows):
+
+- HUD layout, `node scripts/tools/hud.mjs` at 390x844, 844x390, 360x640 and 1024x768 against
+  the last deployed build (5ec8117, `p1-phone-layout-before.json`): every one of the 15 HUD boxes
+  and the swing zone identical to a tenth of a pixel; the ball within 0.12 px and the aim fan
+  within 0.16 px (the 3D camera's settle at the moment of measurement); no overlaps, nothing off
+  screen, no small targets (`p6-phone-layout-final.json`, `p6-phone-layout-compare.txt`,
+  `p6-phone-final-parkland-*-address.jpg`).
+- Every menu screen by touch at 390x844 (`node scripts/tools/screens.mjs`, 22 screens and the
+  three-step tutorial with a real swing), run on this build and on 5ec8117: the same findings on
+  all 22 screens (the only ones are the pro chooser's chips running past the edge on Quick Play,
+  Tournament and Daily, which is a sideways-scrolling row in both builds), the tutorial completes
+  in both, 0 console errors in both (`p6-phone-screens-390x844.json`,
+  `p6-phone-screens-before-5ec8117-390x844.json`). Settings differs by design (the new Graphics
+  section and the Controls button).

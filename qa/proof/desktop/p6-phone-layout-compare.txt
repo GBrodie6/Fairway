@@ -1,0 +1,47 @@
+[
+ {
+  "size": "390x844",
+  "changed": [
+   "ball",
+   "fan"
+  ],
+  "overlapsBefore": [],
+  "overlapsAfter": [],
+  "offscreenAfter": [],
+  "smallAfter": []
+ },
+ {
+  "size": "844x390",
+  "changed": [
+   "ball",
+   "fan"
+  ],
+  "overlapsBefore": [],
+  "overlapsAfter": [],
+  "offscreenAfter": [],
+  "smallAfter": []
+ },
+ {
+  "size": "360x640",
+  "changed": [
+   "ball",
+   "fan"
+  ],
+  "overlapsBefore": [],
+  "overlapsAfter": [],
+  "offscreenAfter": [],
+  "smallAfter": []
+ },
+ {
+  "size": "1024x768",
+  "changed": [
+   "ball",
+   "fan"
+  ],
+  "overlapsBefore": [],
+  "overlapsAfter": [],
+  "offscreenAfter": [],
+  "smallAfter": []
+ }
+]
+8 differences

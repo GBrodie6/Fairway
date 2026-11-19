@@ -1,0 +1,132 @@
+{
+ "size": "1920x1080",
+ "steps": {
+  "rest": {
+   "x": 653,
+   "y": 730,
+   "w": 614,
+   "h": 148,
+   "startY": 756,
+   "travel": 190,
+   "mouse": true,
+   "wide": true,
+   "track": {
+    "x": 1036,
+    "y": 756,
+    "h": 192
+   },
+   "cursor": "grab"
+  },
+  "hover": {
+   "hover": true,
+   "cursor": "grab",
+   "cx": "442px",
+   "cy": "40px"
+  },
+  "top": {
+   "x": 653,
+   "y": 730,
+   "w": 614,
+   "h": 148,
+   "startY": 756,
+   "travel": 190,
+   "mouse": true,
+   "wide": true,
+   "track": {
+    "x": 1119,
+    "y": 760,
+    "h": 192
+   },
+   "cursor": "grabbing",
+   "live": {
+    "phase": "back",
+    "depth": 0.9210526315789473,
+    "top": 0.9210526315789473,
+    "face": 0,
+    "path": 0
+   },
+   "cursorDuring": "grabbing",
+   "trackBesidePress": {
+    "pressX": 1083,
+    "pressY": 760,
+    "trackX": 1119,
+    "trackTop": 760
+   }
+  },
+  "swing": {
+   "phaseAfter": "flight",
+   "result": {
+    "power": 0.9210526315789473,
+    "face": 0,
+    "path": 0,
+    "tempoRatio": 2.719535925410038,
+    "tempoGrade": "perfect",
+    "tempoLabel": "Perfect",
+    "tempoQuality": 0.9548244147562551,
+    "backMs": 823.0222222225493,
+    "downMs": 302.6333333318471,
+    "auto": false
+   }
+  },
+  "rates": {
+   "60": {
+    "power": 0.6,
+    "tempoRatio": 3.054,
+    "tempo": "Perfect",
+    "face": 0,
+    "path": 0.68
+   },
+   "144": {
+    "power": 0.6,
+    "tempoRatio": 3.188,
+    "tempo": "Perfect",
+    "face": 0,
+    "path": 0.64
+   },
+   "240": {
+    "power": 0.6,
+    "tempoRatio": 3.137,
+    "tempo": "Perfect",
+    "face": 0,
+    "path": 0.6
+   }
+  },
+  "leave": {
+   "phaseDuring": "aim",
+   "phase": "aim",
+   "strokesBefore": 0,
+   "strokesAfter": 0,
+   "zoneMode": null,
+   "feedback": "Swing cancelled"
+  },
+  "lefty": {
+   "rest": {
+    "x": 653,
+    "y": 730,
+    "w": 614,
+    "h": 148,
+    "startY": 756,
+    "travel": 190,
+    "mouse": true,
+    "wide": true,
+    "track": {
+     "x": 1036,
+     "y": 756,
+     "h": 192
+    },
+    "cursor": "grab"
+   },
+   "track": {
+    "x": 853,
+    "y": 760,
+    "h": 192
+   },
+   "press": {
+    "x": 899,
+    "y": 760
+   },
+   "phaseAfter": "flight"
+  }
+ },
+ "consoleErrors": []
+}
