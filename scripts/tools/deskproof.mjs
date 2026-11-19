@@ -110,6 +110,14 @@ async function step(name, { hud = false } = {}) {
       return x;
     });
     Object.assign(r, hudCheck(b));
+    // Controls cut off inside an open shot panel (past its edges).
+    const cut = await page.evaluate(() => {
+      const p = document.querySelector('.shotpanel:not(.hidden)');
+      if (!p) return [];
+      const q = p.getBoundingClientRect();
+      return [...p.querySelectorAll('button')].filter((e) => { const r = e.getBoundingClientRect(); return r.width && (r.right > q.right + 0.5 || r.left < q.left - 0.5 || r.bottom > q.bottom + 0.5); }).map((e) => `cut off in the shot panel: ${e.textContent.trim().slice(0, 16)}`);
+    });
+    r.overlaps.push(...cut);
     r.hudKeys = Object.keys(b.hud);
   }
   Object.assign(r, { sheet: await sheetCheck() });
