@@ -96,6 +96,16 @@ export function createUI(app) {
       if (game.state.round) ui.screens.pause();
     },
     modalOpen: () => !!ui.modal || ui.map.open || (ui.hud && ui.hud.clubListOpen()),
+    // Where a controller's d-pad moves the focus: the map, the club list, a menu screen (the
+    // level editor is one), or the shot panel. Null in play.
+    navRoot: () => {
+      if (ui.map && ui.map.open) return ui.map.el;
+      if (ui.hud && ui.hud.clubListOpen()) return root.querySelector('.clublist');
+      if (ui.modal && ui.screens) return ui.screens.layer;
+      if (ui.hud && ui.hud.shotPanel && ui.hud.shotPanel.open) return ui.hud.shotPanel.panel;
+      return null;
+    },
+    editorPad: () => app.editorPad || null,
   };
   ui.hud = createHud(root, { game, settings, haptic, actions, getWorld });
   ui.map = createHoleMap(root, { getWorld, game, settings });

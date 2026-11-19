@@ -33,8 +33,10 @@ export function createScreens(root, { app, game, settings, ui, save }) {
     layer.setAttribute('aria-hidden', 'false');
     ui.modal = modal ? name : null;
     if (!stack.length || stack[stack.length - 1].name !== name) stack.push({ name, build, modal });
-    const first = layer.querySelector('button, select, input');
-    if (first && !matchMedia('(pointer: coarse)').matches) first.focus({ preventScroll: true });
+    // With a controller in use the main action takes the focus (A presses it), on any screen.
+    const pad = document.documentElement.classList.contains('padnav');
+    const first = (pad && layer.querySelector('.btn.primary:not([disabled])')) || layer.querySelector('button, select, input');
+    if (first && (pad || !matchMedia('(pointer: coarse)').matches)) first.focus({ preventScroll: true });
   }
   function hide() {
     layer.classList.add('off');

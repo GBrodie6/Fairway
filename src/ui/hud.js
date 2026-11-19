@@ -366,6 +366,37 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   window.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse' && !zone.mouse) setMouseMode(true); }, { passive: true });
   window.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch' && zone.mouse) setMouseMode(false); else if (e.pointerType === 'mouse' && !zone.mouse) setMouseMode(true); }, { passive: true, capture: true });
   hud.mouseMode = () => zone.mouse;
+  // Controller button hints (shown while a controller is in use, input.js): a small badge on
+  // each HUD button with its controller button, a line in the swing zone, and a bar at the foot
+  // of menus and the level editor.
+  const padHint = (b, label) => { const s = h('span', { class: 'padhint', 'aria-hidden': 'true', text: label }); b.appendChild(s); return s; };
+  padHint(mapBtn, 'X'); padHint(replayBtn, 'Y'); padHint(settingsBtn, 'Menu'); padHint(clubBtn, 'View'); padHint(lookBtn, 'L3');
+  const hintL = padHint(arrowL, 'LB'), hintR = padHint(arrowR, 'RB');
+  if (shotPanel && shotPanel.btn) padHint(shotPanel.btn, 'LT RT');
+  const zoneHint = h('div', { class: 'padzonehint', 'aria-hidden': 'true' }, h('b', { text: 'A' }), ' hold, let go at the top, ', h('b', { text: 'A' }), ' again to hit');
+  zone.el.appendChild(zoneHint);
+  const padbar = h('div', { class: 'padbar glass', 'aria-hidden': 'true' });
+  root.appendChild(padbar);
+  const PADBARS = {
+    menu: [['D-pad', 'Move'], ['A', 'Choose'], ['B', 'Back'], ['Right stick', 'Scroll']],
+    editor: [['D-pad', 'Buttons'], ['A', 'Press'], ['Left stick', 'Move piece'], ['LB RB', 'Select'], ['X', 'Delete'], ['Y', 'Undo'], ['View', 'Redo'], ['LT RT', 'Zoom'], ['Right stick', 'Pan'], ['B', 'Back']],
+  };
+  let padbarKind = '';
+  hud.setPadBar = (kind) => {
+    const k = kind && PADBARS[kind] ? kind : '';
+    if (k === padbarKind) return;
+    padbarKind = k;
+    padbar.textContent = '';
+    if (k) for (const [b, what] of PADBARS[k]) padbar.append(h('span', {}, h('b', { text: b }), what));
+    padbar.classList.toggle('on', !!k);
+  };
+  hud.setPadMode = (on) => {
+    root.classList.toggle('padmode', !!on);
+    if (!on) hud.setPadBar(null);
+    // The club arrows swap sides with the left-handed layout.
+    hintL.textContent = settings.leftHandLayout ? 'RB' : 'LB';
+    hintR.textContent = settings.leftHandLayout ? 'LB' : 'RB';
+  };
   hud.setLook = (on) => lookBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
   window.addEventListener('resize', () => requestAnimationFrame(hud.layout));
   requestAnimationFrame(hud.layout);

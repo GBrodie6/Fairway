@@ -589,3 +589,20 @@ html.desk .sheet.editor .lvstatus { min-height: 2.6em; }
 .lvcanvas.over { cursor: move; }
 .lvcanvas.panready, .lvcanvas.panready.over { cursor: grab; }
 .lvcanvas.panning { cursor: grabbing; }
+
+/* Controller: button hints on the HUD while a controller is in use (input.js sets .padmode on
+   the UI root and .padnav on the page), a clear focus ring for the d-pad's focus, and a bar of
+   button hints at the foot of menus and the level editor. */
+.padhint { display: none; position: absolute; top: -7px; right: -7px; min-width: 20px; height: 18px; padding: 0 5px; border-radius: 9px; background: #f2f6ec; color: #0d1a12; font-size: 10.5px; font-weight: 700; line-height: 18px; text-align: center; letter-spacing: 0.02em; white-space: nowrap; pointer-events: none; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45); z-index: 2; }
+.padmode .padhint { display: block; }
+.padmode .roundbtn:not(.lookbtn), .padmode .arrow, .padmode .clubbtn { position: relative; }
+.padmode .spinbtn .padhint { top: -9px; right: -12px; }
+.padzonehint { display: none; position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%); padding: 4px 10px; border-radius: 10px; background: rgba(8, 14, 11, 0.62); color: var(--ink); font-size: 12px; white-space: nowrap; pointer-events: none; }
+.padzonehint b { display: inline-block; min-width: 18px; padding: 0 4px; border-radius: 9px; background: #f2f6ec; color: #0d1a12; font-size: 10.5px; line-height: 17px; text-align: center; }
+.padmode .swingzone:not(.disabled) .padzonehint { display: block; }
+.padmode .swingzone.active .padzonehint { display: none; }
+html.padnav #ui :focus { outline: 3px solid var(--accent); outline-offset: 2px; }
+.padbar { display: none; position: absolute; left: 50%; bottom: calc(10px + var(--safe-b)); transform: translateX(-50%); z-index: 70; gap: 14px; align-items: center; padding: 7px 14px; border-radius: 12px; font-size: 13px; color: var(--ink); white-space: nowrap; pointer-events: none; max-width: calc(100vw - 20px); overflow: hidden; }
+.padbar.on { display: flex; }
+.padbar b { display: inline-block; min-width: 20px; margin-right: 5px; padding: 0 5px; border-radius: 9px; background: #f2f6ec; color: #0d1a12; font-size: 11px; line-height: 18px; text-align: center; }
+.desk .padbar { scale: var(--hs, 1); transform-origin: bottom center; translate: -50% 0; transform: none; }

@@ -122,6 +122,7 @@ export function installLevels(app, ui) {
   app.levelEditor = {
     level: () => ed.lv && JSON.parse(JSON.stringify(ed.lv)),
     selected: () => ed.selected,
+    zoom: () => ({ zoom: ed.zoom, pan: { ...ed.pan }, undo: ed.undo.length, redo: ed.redo.length }),
     draft: () => ed.draft && { id: ed.draft.id, publishedId: ed.draft.publishedId || null, pendingPublish: !!ed.draft.pendingPublish },
     toScreen: (x, z) => { if (!ed.view) return null; const r = canvas.getBoundingClientRect(), [px, py] = ed.view.toPx(x, z); return { x: r.left + px, y: r.top + py }; },
   };
@@ -164,7 +165,7 @@ export function installLevels(app, ui) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (!ed.view || !drag) ed.view = zoomView(fitView(ed.lv, w, hh), w, hh);
+    if (!ed.view || (!drag && !padDrag)) ed.view = zoomView(fitView(ed.lv, w, hh), w, hh);
     drawLevel(ctx, ed.lv, w, hh, { view: ed.view, selected: ed.selected, handles: true });
   }
   // Hit test: the pin, the tee, the bends, then placed things (topmost first).
@@ -212,7 +213,7 @@ export function installLevels(app, ui) {
   // One finger drags what it lands on (an empty spot does nothing; a tap there clears the
   // selection). Two fingers resize the selected bunker, pond, rough patch or hill, wherever
   // they are on the map.
-  let drag = null; const pointers = new Map();
+  let drag = null, padDrag = null; const pointers = new Map();
   canvas.addEventListener('pointerdown', (e) => {
     e.preventDefault();
     try { canvas.setPointerCapture(e.pointerId); } catch { /* fine */ }
@@ -354,6 +355,56 @@ export function installLevels(app, ui) {
   });
   window.addEventListener('keyup', (e) => { if (e.code === 'Space') { spaceHeld = false; canvas.classList.remove('panready'); } });
   window.addEventListener('blur', () => { spaceHeld = false; canvas.classList.remove('panready'); });
+
+  // A controller in the editor (input.js calls this every frame while the editor is open): the
+  // left stick moves the selected piece (the tee when nothing is selected) and one undo step
+  // covers the whole move, LB and RB select the previous and next piece, X deletes it, Y undoes,
+  // View redoes, LT and RT zoom out and in, the right stick pans. The d-pad and A use the
+  // editor's buttons like any menu.
+  const pieces = () => {
+    const lv = ed.lv, out = [{ kind: 'tee' }, { kind: 'pin' }];
+    lv.bend.forEach((_, i) => out.push({ kind: 'bend', i }));
+    for (const list of ['bunkers', 'water', 'rough', 'hills', 'trees']) lv[list].forEach((_, i) => out.push({ kind: 'item', list, i }));
+    return out;
+  };
+  const samePiece = (a, b) => !!a && !!b && a.kind === b.kind && a.i === b.i && a.list === b.list;
+  const piecePos = (lv, t) => (t.kind === 'tee' ? lv.tee : t.kind === 'pin' ? lv.pin : t.kind === 'bend' ? lv.bend[t.i] : lv[t.list] && lv[t.list][t.i]);
+  app.editorPad = {
+    active: () => ui.modal === 'editor' && !!ed.lv,
+    pad({ dt, lx, ly, rx, ry, presses, PAD }) {
+      if (presses[PAD.LB] || presses[PAD.RB]) {
+        const ps = pieces(), i = ps.findIndex((p) => samePiece(p, ed.selected)), d = presses[PAD.RB] ? 1 : -1;
+        ed.selected = ps[i < 0 ? (d > 0 ? 0 : ps.length - 1) : (i + d + ps.length) % ps.length];
+        refresh();
+      }
+      if (presses[PAD.X] && binBtn && !binBtn.disabled) binBtn.click();
+      if (presses[PAD.Y] && undoBtn && !undoBtn.disabled) undoBtn.click();
+      if (presses[PAD.VIEW] && redoBtn && !redoBtn.disabled) redoBtn.click();
+      if (presses[PAD.LT] || presses[PAD.RT]) {
+        ed.zoom = clamp(ed.zoom * (presses[PAD.RT] ? 1.25 : 0.8), 1, 6);
+        if (ed.zoom === 1) ed.pan = { x: 0, y: 0 };
+        ed.view = null; draw();
+      }
+      if (rx || ry) { ed.pan = { x: ed.pan.x - rx * 420 * dt, y: ed.pan.y - ry * 420 * dt }; ed.view = null; draw(); }
+      if (lx || ly) {
+        if (!ed.selected) ed.selected = { kind: 'tee' };
+        if (!padDrag) padDrag = { start: ed.lv, target: ed.selected };
+        const t = padDrag.target, v = ed.view;
+        const lv = JSON.parse(JSON.stringify(ed.lv)), cur = piecePos(lv, t);
+        if (!v || !cur) { padDrag = null; return; }
+        const [px, py] = v.toPx(cur[0], cur[1]), sp = 260 * dt;
+        const [x, z] = v.toWorld(px + lx * sp, py + ly * sp);
+        const p = [clamp(x, LEVEL_AREA.minX, LEVEL_AREA.maxX), clamp(z, LEVEL_AREA.minZ, LEVEL_AREA.maxZ)];
+        if (t.kind === 'pin') lv.pin = p; else if (t.kind === 'tee') lv.tee = p; else if (t.kind === 'bend') lv.bend[t.i] = p;
+        else { lv[t.list][t.i][0] = p[0]; lv[t.list][t.i][1] = p[1]; }
+        const parsed = parseLevel(lv);
+        if (parsed.ok) { ed.lv = parsed.level; refresh(); }
+      } else if (padDrag) {
+        const d = padDrag; padDrag = null;
+        if (ed.lv !== d.start) { const now = ed.lv; ed.lv = d.start; commit(now); }
+      }
+    },
+  };
 
   // ---------- playing a hole (test or published) ----------
   async function playHole(lv, { test = false, id = null } = {}) {

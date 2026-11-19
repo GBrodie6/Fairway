@@ -3,6 +3,7 @@
 // and every value is checked for finiteness before it reaches the game.
 import { dragToAimDelta } from '../physics/aim.js';
 import { clamp, smoothstep, DEG } from '../core/math.js';
+import { createPadNav } from './padNav.js';
 
 export function createInput({ view, game, getWorld, settings, hud, actions, haptic }) {
   const input = { look: false, dragging: false, gamepad: null };
@@ -111,52 +112,134 @@ export function createInput({ view, game, getWorld, settings, hud, actions, hapt
   });
 
   // --- gamepad ---
-  // Standard mapping: A meter, B back, X map, Y replay, LB/RB club, LT/RT shot type, Select
-  // club list, d-pad and left stick aim, right stick look, Start pause.
+  // Standard mapping (any controller the browser reports as "standard": Xbox, PlayStation,
+  // Switch Pro and most others). Every binding is listed on the Controls screen.
+  //   in a round    left stick or d-pad left and right aim, d-pad up and down or LB and RB the
+  //                 club, LT and RT the shot type, A hold for the backswing, release at the top,
+  //                 press again for impact, right stick the ball contact dot (click it to
+  //                 centre), L3 look around (the right stick looks while it is on), X map,
+  //                 Y replay, View the club list, Menu pause, B back
+  //   menus, lists  d-pad or left stick move, A choose, B back, right stick scroll; a focused
+  //                 select or slider takes left and right
+  //   level editor  as menus for its buttons; on the map the left stick moves the selected
+  //                 piece, LB and RB select, X deletes, Y undo, View redo, LT and RT zoom, the
+  //                 right stick pans
+  const PAD = { A: 0, B: 1, X: 2, Y: 3, LB: 4, RB: 5, LT: 6, RT: 7, VIEW: 8, MENU: 9, L3: 10, R3: 11, UP: 12, DOWN: 13, LEFT: 14, RIGHT: 15 };
+  const nav = createPadNav();
   const prevButtons = [];
-  const pressed = (gp, i) => { const b = gp.buttons[i]; const now = !!(b && (b.pressed || b.value > 0.5)); const was = !!prevButtons[i]; prevButtons[i] = now; return now && !was; };
-  window.addEventListener('gamepadconnected', (e) => { input.gamepad = e.gamepad.index; hud.toast('Controller connected', 'A to swing, sticks to aim and look', 2600); });
-  window.addEventListener('gamepaddisconnected', () => { input.gamepad = null; });
+  let lastScan = 0, repeat = { dir: null, next: 0 };
+  input.padActive = false;
+  const setPadMode = (on) => {
+    if (input.padActive === on) return;
+    input.padActive = on;
+    document.documentElement.classList.toggle('padnav', on);
+    if (hud.setPadMode) hud.setPadMode(on);
+  };
+  const connect = (index) => {
+    if (!Number.isInteger(index)) return;
+    const first = input.gamepad == null;
+    input.gamepad = index;
+    setPadMode(true);
+    if (first) hud.toast('Controller connected', 'Hold A to swing. The button hints show while you use it', 2800);
+  };
+  window.addEventListener('gamepadconnected', (e) => connect(e.gamepad && e.gamepad.index));
+  window.addEventListener('gamepaddisconnected', (e) => { if (!e.gamepad || e.gamepad.index === input.gamepad) { input.gamepad = null; setPadMode(false); } });
+  // The mouse, a finger or the keyboard hide the hints until the controller is used again.
+  for (const ev of ['pointerdown', 'keydown']) window.addEventListener(ev, () => setPadMode(false), { passive: true, capture: true });
   input.rumble = (strength = 0.5, ms = 60) => {
     if (input.gamepad == null || !navigator.getGamepads) return;
     const gp = navigator.getGamepads()[input.gamepad];
     const act = gp && gp.vibrationActuator;
     if (act && act.playEffect) act.playEffect('dual-rumble', { duration: ms, strongMagnitude: strength, weakMagnitude: strength * 0.6 }).catch(() => {});
   };
+  // Held d-pad (or stick past halfway): a first move, then repeats after a pause. A repeat also
+  // needs the button seen held on two more polls, so a quick tap on a very slow machine (a frame
+  // longer than the pause) never counts as a hold.
+  function repeated(held, pressedDir, now) {
+    if (pressedDir) { repeat = { dir: pressedDir, next: now + 380, polls: 0 }; return pressedDir; }
+    if (!held) { repeat.dir = null; return null; }
+    if (repeat.dir !== held) { repeat = { dir: held, next: now + 380, polls: 0 }; return held; }
+    repeat.polls = (repeat.polls || 0) + 1;
+    if (now >= repeat.next && repeat.polls >= 2) { repeat.next = now + 120; return held; }
+    return null;
+  }
   input.update = (dt) => {
-    if (input.gamepad == null || !navigator.getGamepads) return;
-    const gp = navigator.getGamepads()[input.gamepad];
-    if (!gp) return;
-    const ph = game.state.phase;
-    const ax = (i) => { const v = gp.axes[i] || 0; return Math.abs(v) < 0.16 ? 0 : v; };
-    const presses = [];
-    for (let i = 0; i < gp.buttons.length; i++) presses[i] = pressed(gp, i);
-    if (presses[9]) actions.pause();
-    if (presses[1]) actions.escape();
-    if (actions.modalOpen()) return;
-    if (ph === 'intro' && presses[0]) game.skipIntro();
-    if (ph === 'summary' && presses[0]) actions.continue();
-    if (ph === 'replay' && (presses[0] || presses[3])) game.endReplay();
-    const lx = ax(2), ly = ax(3);
-    if (lx || ly) getWorld().rig.look(-lx * 1.8 * dt, ly * 1.2 * dt);
-    if (ph !== 'aim') return;
-    // The pad's own timestamp is when the button changed, which is closer to the press than
-    // the frame that polled it.
-    if (presses[0]) hud.stick.meterPress(gp.timestamp > 0 ? gp.timestamp : performance.now());
-    if (presses[2]) actions.map();
-    if (presses[8]) actions.clubList();
-    if (presses[3]) actions.replay();
-    if (presses[4]) game.selectClub(-1);
-    if (presses[5]) game.selectClub(1);
-    if (presses[6] || presses[7]) {
-      const types = game.shotTypes();
-      const i = types.findIndex((t) => t.id === game.state.shotType.id);
-      if (types.length) game.setShotType(types[(i + (presses[7] ? 1 : types.length - 1)) % types.length].id);
+    if (!navigator.getGamepads) return;
+    if (input.gamepad == null) {
+      // A controller plugged in before the page opened shows up after its first button press,
+      // and not every browser fires the event for it: look for one twice a second.
+      const now = performance.now();
+      if (now - lastScan < 500) return;
+      lastScan = now;
+      for (const p of navigator.getGamepads() || []) if (p && p.connected !== false) { connect(p.index); break; }
+      if (input.gamepad == null) return;
     }
-    if (presses[14]) game.nudgeAim(-0.25 * DEG);
-    if (presses[15]) game.nudgeAim(0.25 * DEG);
+    const gp = navigator.getGamepads()[input.gamepad];
+    if (!gp || !Number.isFinite(dt)) return;
+    const ax = (i) => { const v = Number(gp.axes[i]) || 0; return Math.abs(v) < 0.16 ? 0 : clamp(v, -1, 1); };
+    const down = [], presses = [], releases = [];
+    for (let i = 0; i < gp.buttons.length; i++) {
+      const b = gp.buttons[i], now = !!(b && (b.pressed || b.value > 0.5)), was = !!prevButtons[i];
+      prevButtons[i] = now; down[i] = now; presses[i] = now && !was; releases[i] = !now && was;
+    }
+    if (presses.some(Boolean) || [0, 1, 2, 3].some((i) => Math.abs(ax(i)) > 0.5)) setPadMode(true);
+    // The pad's own timestamp is when its state changed, which is closer to the press than the
+    // frame that polled it.
+    const t = gp.timestamp > 0 ? gp.timestamp : performance.now();
+    const ph = game.state.phase;
+    if (releases[PAD.A]) hud.stick.meterUp(t);
+    if (presses[PAD.MENU]) actions.pause();
+    if (presses[PAD.B]) actions.escape();
+    const now = performance.now();
+    const pressedDir = presses[PAD.UP] ? 'up' : presses[PAD.DOWN] ? 'down' : presses[PAD.LEFT] ? 'left' : presses[PAD.RIGHT] ? 'right' : null;
+    const heldPad = down[PAD.UP] ? 'up' : down[PAD.DOWN] ? 'down' : down[PAD.LEFT] ? 'left' : down[PAD.RIGHT] ? 'right' : null;
+    // Menus, the map, the club list, the shot panel and the level editor's buttons.
+    const navRoot = actions.navRoot ? actions.navRoot() : null;
+    const ed = navRoot && actions.editorPad ? actions.editorPad() : null;
+    const editing = !!(ed && ed.active());
+    if (hud.setPadBar) hud.setPadBar(input.padActive && navRoot ? (editing ? 'editor' : 'menu') : null);
+    if (navRoot) {
+      const lx = ax(0), ly = ax(1);
+      const heldStick = editing ? null : Math.abs(ly) > 0.6 && Math.abs(ly) >= Math.abs(lx) ? (ly > 0 ? 'down' : 'up') : Math.abs(lx) > 0.6 ? (lx > 0 ? 'right' : 'left') : null;
+      const dir = repeated(heldPad || heldStick, pressedDir, now);
+      if (dir) nav.move(navRoot, dir);
+      if (presses[PAD.A]) nav.activate(navRoot);
+      if (presses[PAD.X] && actions.mapOpen && actions.mapOpen()) actions.escape();
+      if (presses[PAD.VIEW] && hud.clubListOpen && hud.clubListOpen()) actions.escape();
+      if (editing) ed.pad({ dt, lx, ly, rx: ax(2), ry: ax(3), presses, PAD });
+      else { const ry = ax(3); if (ry) nav.scroll(navRoot, ry * 900 * dt); }
+      return;
+    }
+    if (ph === 'intro' && presses[PAD.A]) game.skipIntro();
+    if (ph === 'summary' && presses[PAD.A]) actions.continue();
+    if (ph === 'replay') {
+      if (presses[PAD.A] || presses[PAD.Y]) game.endReplay();
+      else if (presses[PAD.X] && actions.replayAngle) actions.replayAngle();
+    }
+    const rx = ax(2), ry = ax(3);
+    const lookOn = !!(getWorld().rig && getWorld().rig.mode === 'peek');
+    if ((ph !== 'aim' || lookOn) && (rx || ry)) getWorld().rig.look(-rx * 1.8 * dt, ry * 1.2 * dt);
+    if (ph !== 'aim') return;
+    if (presses[PAD.A]) hud.stick.meterDown(t);
+    if (presses[PAD.L3]) actions.toggleLook();
+    if (presses[PAD.X]) actions.map();
+    if (presses[PAD.VIEW]) actions.clubList();
+    if (presses[PAD.Y]) actions.replay();
+    if (presses[PAD.LB] || presses[PAD.UP]) game.selectClub(-1);
+    if (presses[PAD.RB] || presses[PAD.DOWN]) game.selectClub(1);
+    if (presses[PAD.LT]) cycleShot(-1);
+    if (presses[PAD.RT]) cycleShot(1);
+    // The d-pad aims in fine steps (held: repeats); the left stick aims faster the further it goes.
+    const aimDir = repeated(heldPad === 'left' || heldPad === 'right' ? heldPad : null, pressedDir === 'left' || pressedDir === 'right' ? pressedDir : null, now);
+    if (aimDir) game.nudgeAim((aimDir === 'left' ? -0.25 : 0.25) * DEG);
     const sx = ax(0);
     if (sx) game.nudgeAim(Math.sign(sx) * sx * sx * 22 * DEG * dt * (game.state.club.putter ? 0.35 : 1));
+    // The right stick moves the ball contact dot (up adds backspin); R3 centres it.
+    if (!lookOn && (rx || ry)) {
+      const s = game.spin(), R = game.spinRange();
+      if (R) game.setSpin(s.x + rx * R * 1.4 * dt, s.y - ry * R * 1.4 * dt);
+    }
+    if (presses[PAD.R3]) game.setSpin(0, 0);
   };
   input.setLook = (on) => { input.look = !!on; hud.setLook(input.look); if (!input.look) getWorld().rig.resetLook(); };
   return input;
