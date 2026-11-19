@@ -1190,3 +1190,78 @@ a real GPU, which was not measured.
 9. Color-vision checks of the fan tints and the orange and blue face line.
 10. Whether the 10 minute cache on GitHub Pages matters in practice (repeat visits are served
     by the service worker); on Vercel the long caching in `vercel.json` would apply instead.
+
+## Final report (third brief: accounts, swing, carry rule, ball control, shot types, pros, real courses, community holes)
+
+### Parts
+
+| Part | What changed | Evidence | Commit | Tests | `npm run verify` |
+| --- | --- | --- | --- | --- | --- |
+| Carry rule | A Pured strike carries the club's table carry at that power for every tier; the guide's mark is exact. Rarity changes only the sweet spot and the difficulty (risk and control). The old carry perk became "Clean speed" (profile power) | `qa/balance.md`, `qa/balance-tiers.md` (tables below) | ea53db4 | 364 | pass |
+| Accounts | Username and password, no email; a robot-check picture at sign-up; the shared project's `fairway_` tables; Delete my data | `qa/proof/accounts/`, live in `qa/proof/live-d88848a/` | 174c241 | 375 | pass |
+| Better swing | Spring-smoothed club, eased motion, trail, docked stick, hit-stop and camera punch at impact; swing math unchanged | `qa/proof/swing-feel/` (backswing stutter 28 of 66 frames before, 2 after) | d88848a | 383 | pass |
+| Deploy (brief B) | GitHub Pages; accounts checked live end to end | `qa/proof/live-d88848a/` | 67796d7 (site 80f653b) | 383 | pass |
+| Ball contact control | A pad for draw, fade, backspin and topspin with a carry guard (never longer than neutral); range by tier, archetype and perk | `qa/proof/spin-shots/`; draw 179.9, fade 179.7, stinger 168.1 yd carry with a 5-iron (local) | 333299f | 400 | pass |
+| Shot types | Ten shot types as data (normal, stinger, knockdown, punch, high, flop, pitch, chip, bump and run, bunker splash) with club and lie rules, unlocks and AI use | same | 333299f | 400 | pass |
+| Twelve original pros | Invented names, emblems and archetypes; Play as, rival, Tournament field, Campaign mentor | `qa/proof/pros/`, `qa/balance-pros.md` (every pro within 1.5 strokes of the pros' average) | 82096c1 | not run on its own; 409 at cd4fbae | covered by the cd4fbae and a4fbc48 runs |
+| Augusta National and St Andrews | Procedural approximations on the official cards (7,565 and 7,313 yards), looks, conditions | `qa/proof/real-courses/` | cd4fbae | 409 | failed: smoke clipped 2.6 percent on Augusta at golden hour and dusk |
+| Augusta clipping fix | Pines a little further back and shorter, turf a touch lighter (look only): golden 1.14, dusk 1.63 percent | the a4fbc48 smoke | e64571a | 409 committed | covered by the a4fbc48 run |
+| Community holes | Create tile, templates, top-down editor, test play, publish, New, Top and Mine, likes, plays, reports, share links, best scores, drafts, offline publish; strict versioned format with a fuzz test | `qa/proof/levels/` (both sizes), `qa/proof/levels-live-api/` | ab5da59 | 424 | unit tests and build passed; smoke stopped when the next fix landed |
+| Board name fix | Best scores on `lvl:<id>` (the server allows 40 characters; found against the real project) | `qa/proof/levels-live-api/` | a4fbc48 | 424 | pass (56 of 56 smoke rows in band) |
+| Deploy and live check | Route A (Vercel) unavailable; GitHub Pages; live checks below | `qa/proof/live-a4fbc48/`, DEPLOY.md | site 3025a4b | 424 | deployed build is the one verify passed |
+
+Live on https://gbrodie6.github.io/Fairway/ at 390x844 with the throwaway account fwlv988645:
+a draw carried 180.2 yd, a fade 182.4 yd and a stinger 168.1 yd (5-iron, all Pured). A hole
+made from the short par 3 template was test played (holed in 2), published, found in New,
+liked, played from its share link (best score shown), deleted, and then Delete my data removed
+the account. Zero console errors in that run and in the clean loads.
+
+### Balance (simulated golfer, strokes per 18 against Common, 3,000 rounds per cell)
+
+| Tier | Poor swing | Average swing | Skilled swing |
+| --- | --- | --- | --- |
+| Uncommon | +0.31 | +0.02 (-0.09 to 0.12) | +0.02 |
+| Rare | +0.69 | +0.29 | +0.06 |
+| Epic | +1.12 | +0.53 | +0.10 |
+| Legendary | +1.76 | +0.97 | +0.17 |
+
+No tier beats Common for an average swing (every 95 percent interval reaches 0 or above).
+Archetypes at levels 5, 15 and 30 are within 1.5 strokes of their level's average, and the 12
+pros within 1.5 of the pros' average at both a tour swing and an average swing. Difficulty
+settings with Common clubs: relaxed 6.33, standard 6.67, pro 7.48 over par per 18.
+
+### Ease of the level creator
+
+From the Create tile to a published hole, from a template, signed in: 11 taps at 390x844 and 10
+at 844x390 in the demo runs, 10 on the live site, counting every swing, putt nudge, the flyover
+skip and the first-run tip. Five of them are menu taps. The target was 25.
+
+### Could not verify
+
+Frame rate and feel on a real phone GPU (all rendering here is software); haptics; iOS Safari
+and Android installs; a real offline publish on a phone (the offline path was exercised with
+the browser's offline mode); two different people liking and reporting the same hole on the
+live project (one account at a time was used, and five-report hiding was tested only against
+the in-memory stand-in); Vercel (no credentials).
+
+### Needs a human eye or a real phone (most important first)
+
+1. The editor under real fingers: dragging small handles, the two-finger pinch, and how small
+   pieces get on a long par 5 at phone size.
+2. Moderation of community holes: names pass a profanity filter, but 400 trees can draw a
+   picture or words on the map. Someone should decide whether that needs review or limits.
+3. Using the real names Augusta National and St Andrews (Old Course) in a shipped game, and
+   whether the approximations read as respectful.
+4. The swing on a real phone at 60 and 120 Hz: the spring smoothing, the hit-stop and the
+   camera punch.
+5. The robot-check picture for people: I misread some digits at small size in earlier runs.
+6. The ball contact pad and the ten shot types by feel: whether the carry costs and curves are
+   readable and fair.
+7. The twelve pros' names, emblems and bios: a check that none resembles a real golfer.
+8. Augusta's pines after the clipping fix, at golden hour on a real screen.
+9. Whether tiers above Common should feel riskier than they do for skilled players (+0.17 for
+   Legendary is close to nothing).
+10. The latent stream bug on the invented courses (documented in OVERHAUL.md), left for a human
+    decision because fixing it adds hazards to existing holes.
+
+https://gbrodie6.github.io/Fairway/

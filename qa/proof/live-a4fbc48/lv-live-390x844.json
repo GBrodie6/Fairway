@@ -1,0 +1,446 @@
+{
+ "mode": "live",
+ "size": "390x844",
+ "url": "https://gbrodie6.github.io/Fairway",
+ "parts": [
+  "shots",
+  "count",
+  "browse",
+  "editor",
+  "delete"
+ ],
+ "signUp": {
+  "attempt": 1,
+  "user": "fwlv988645"
+ },
+ "username": "fwlv988645",
+ "shots": [
+  {
+   "kind": "draw",
+   "planned": {
+    "shot": "full",
+    "club": "I5",
+    "readout": "Straight. Rolls about 9 yd. Carry 181 yd."
+   },
+   "club": "I5",
+   "shot": "full",
+   "strike": "pured",
+   "carryYd": 180.2,
+   "totalYd": 189.2,
+   "rightOfAimYd": -0.1,
+   "apexYd": 24,
+   "power": 1
+  },
+  {
+   "kind": "fade",
+   "planned": {
+    "shot": "full",
+    "club": "I5",
+    "readout": "Curves 15 yd right. Rolls about 9 yd. Carry 183 yd."
+   },
+   "club": "I5",
+   "shot": "full",
+   "strike": "pured",
+   "carryYd": 182.4,
+   "totalYd": 192.1,
+   "rightOfAimYd": 13.8,
+   "apexYd": 24,
+   "power": 1
+  },
+  {
+   "kind": "stinger",
+   "planned": {
+    "shot": "stinger",
+    "club": "I5",
+    "readout": "Curves 5 yd right. Rolls about 15 yd. Carry 169 yd."
+   },
+   "club": "I5",
+   "shot": "stinger",
+   "strike": "pured",
+   "carryYd": 168.1,
+   "totalYd": 183.7,
+   "rightOfAimYd": 4.5,
+   "apexYd": 14.1,
+   "power": 1
+  }
+ ],
+ "template": {
+  "level": {
+   "v": 1,
+   "name": "Island Carry",
+   "theme": "parkland",
+   "seed": 11,
+   "tee": [
+    0,
+    0
+   ],
+   "pin": [
+    4,
+    -142
+   ],
+   "bend": [],
+   "green": 12,
+   "bunkers": [
+    [
+     17,
+     -150,
+     4
+    ]
+   ],
+   "water": [
+    [
+     2,
+     -96,
+     18
+    ],
+    [
+     -14,
+     -110,
+     11
+    ]
+   ],
+   "rough": [],
+   "hills": [],
+   "trees": []
+  },
+  "status": "Test play the hole once to publish it."
+ },
+ "testPlay": {
+  "log": [
+   "I6 142.1m -> 1.1",
+   "PT 1.1m -> 1.1"
+  ],
+  "result": "Holed in 2"
+ },
+ "afterTest": "Tested. Ready to publish.",
+ "published": "Published \"Island Carry\". Find it under New.",
+ "publishedId": "a8d53cb2-3d38-4369-b85c-f95e53087d78",
+ "tapCount": {
+  "total": 10,
+  "menu": 5,
+  "swings": 2,
+  "aim": 2,
+  "skips": 1,
+  "firstRunOnly": 0,
+  "withoutGolf": 6,
+  "menuOnly": 5
+ },
+ "newTab": [
+  "Island Carry / by fwlv988645 / Par 3, 155 yd. 0 likes, 0 plays."
+ ],
+ "foundInNew": true,
+ "afterLike": "Island Carry / by fwlv988645 / Par 3, 155 yd. 1 like, 0 plays.",
+ "likeButton": "Play, Liked (1), Share, Delete",
+ "shareStatus": "Link copied.",
+ "topTab": [
+  "Island Carry / by fwlv988645 / Par 3, 155 yd. 1 like, 0 plays."
+ ],
+ "mineTab": [
+  "Island Carry / by fwlv988645 / Par 3, 155 yd. 1 like, 0 plays."
+ ],
+ "sharePreview": [
+  "Island Carry",
+  "By fwlv988645. Par 3, 155 yd. 1 like, 0 plays.",
+  "Back",
+  "Play"
+ ],
+ "publishedPlay": {
+  "log": [
+   "I7 142.1m -> 2.3",
+   "PT 2.3m -> 2.3"
+  ],
+  "result": "Holed in 2"
+ },
+ "publishedEnd": [
+  "Holed in 2",
+  "Island Carry, par 3.",
+  "Best: 2 by fwlv988645. Your best: 2.",
+  "Back to the holes"
+ ],
+ "afterPlay": "Island Carry / by fwlv988645 / Par 3, 155 yd. 1 like, 1 play.",
+ "deleteStatus": "Deleted.",
+ "mineAfterDelete": [],
+ "newAfterDelete": [],
+ "editor": {
+  "start": {
+   "v": 1,
+   "name": "Corner Bend",
+   "theme": "parkland",
+   "seed": 23,
+   "tee": [
+    0,
+    0
+   ],
+   "pin": [
+    -92,
+    -350
+   ],
+   "bend": [
+    [
+     0,
+     -230
+    ]
+   ],
+   "green": 13,
+   "bunkers": [
+    [
+     22,
+     -232,
+     5
+    ],
+    [
+     -82,
+     -318,
+     4
+    ]
+   ],
+   "water": [
+    [
+     -34,
+     -262,
+     12
+    ]
+   ],
+   "rough": [],
+   "hills": [],
+   "trees": []
+  },
+  "teeMoved": {
+   "from": [
+    0,
+    0
+   ],
+   "to": [
+    40.3,
+    0
+   ]
+  },
+  "pinMoved": {
+   "from": [
+    -92,
+    -350
+   ],
+   "to": [
+    -145.8,
+    -309.7
+   ],
+   "par": "Par 4, 437 yd"
+  },
+  "bendMoved": {
+   "from": [
+    0,
+    -230
+   ],
+   "to": [
+    55.7,
+    -230
+   ]
+  },
+  "palette": {
+   "Bunker": {
+    "before": {
+     "bunkers": 2,
+     "water": 1,
+     "trees": 0,
+     "rough": 0,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    },
+    "after": {
+     "bunkers": 3,
+     "water": 1,
+     "trees": 0,
+     "rough": 0,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    }
+   },
+   "Water": {
+    "before": {
+     "bunkers": 3,
+     "water": 1,
+     "trees": 0,
+     "rough": 0,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    },
+    "after": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 0,
+     "rough": 0,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    }
+   },
+   "Trees": {
+    "before": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 0,
+     "rough": 0,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    },
+    "after": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 0,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    }
+   },
+   "Rough": {
+    "before": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 0,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    },
+    "after": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 1,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    }
+   },
+   "Hills": {
+    "before": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 1,
+     "hills": 0,
+     "green": 13,
+     "bends": 1
+    },
+    "after": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 1,
+     "hills": 1,
+     "green": 13,
+     "bends": 1
+    }
+   },
+   "Green size": {
+    "before": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 1,
+     "hills": 1,
+     "green": 13,
+     "bends": 1
+    },
+    "after": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 1,
+     "hills": 1,
+     "green": 17,
+     "bends": 1
+    }
+   },
+   "Add bend": {
+    "before": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 1,
+     "hills": 1,
+     "green": 17,
+     "bends": 1
+    },
+    "after": {
+     "bunkers": 3,
+     "water": 2,
+     "trees": 6,
+     "rough": 1,
+     "hills": 1,
+     "green": 17,
+     "bends": 2
+    }
+   }
+  },
+  "bunker": {
+   "placed": [
+    28.9,
+    -189.1,
+    5
+   ],
+   "dragged": [
+    62.5,
+    -212.4,
+    5
+   ],
+   "pinched": [
+    62.5,
+    -212.4,
+    9
+   ],
+   "grew": true
+  },
+  "binUndoRedo": {
+   "before": 4,
+   "afterDelete": 3,
+   "afterUndo": 4,
+   "afterRedo": 3
+  },
+  "decorate": {
+   "before": {
+    "bunkers": 3,
+    "water": 2,
+    "trees": 6,
+    "rough": 1,
+    "hills": 1,
+    "green": 17,
+    "bends": 2
+   },
+   "after": {
+    "bunkers": 3,
+    "water": 2,
+    "trees": 74,
+    "rough": 6,
+    "hills": 1,
+    "green": 17,
+    "bends": 2
+   }
+  },
+  "pinInWater": {
+   "status": "The pin is in the water.",
+   "testDisabled": true,
+   "publishDisabled": true
+  },
+  "afterUndo": {
+   "status": "Test play the hole once to publish it.",
+   "testDisabled": false
+  },
+  "badName": {
+   "status": "Links are not allowed in names.",
+   "publishDisabled": true
+  },
+  "bytes": 1408
+ },
+ "afterDelete": {
+  "user": false,
+  "account": null,
+  "myHolesInNew": 0
+ },
+ "consoleErrors": []
+}

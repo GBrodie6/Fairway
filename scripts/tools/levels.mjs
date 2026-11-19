@@ -5,7 +5,8 @@
 //         .env.production, or URL=https://... for a deployed copy). Live sign-up shows a picture
 //         that a person (or the agent running this) reads: the tool saves it and waits for the
 //         digits in <prefix>-...-answer-<n>.txt, as scripts/tools/account.mjs does.
-//   parts (comma list, default all): count, browse, editor, offline, delete
+//   parts (comma list, default all but shots): shots, count, browse, editor, offline, delete
+// shots    on the range: a draw, a fade and a stinger with real swing drags, carry for each
 // count    the tap count from the Create tile to a published hole, from a template, signed in
 // browse   find it under New, like it, Top and Mine, the share link, play it from the card,
 //          then delete it from Mine
@@ -18,6 +19,7 @@ import { mkdirSync, writeFileSync, existsSync, readFileSync } from 'node:fs';
 import { launchBrowser, trackErrors } from '../lib/browser.mjs';
 import { serveStatic } from '../lib/serve.mjs';
 import { createPointer, waitPhase, swing, aimTo } from '../lib/drive.mjs';
+import sharp from 'sharp';
 
 const [prefix = 'qa/tmp/levels/run', size = '390x844', mode = 'demo', partsArg = 'count,browse,editor,offline,delete'] = process.argv.slice(2);
 const parts = new Set(partsArg.split(','));
@@ -88,8 +90,11 @@ async function readDigits() {
     const svg = decodeURIComponent((await picSrc()).split(',').slice(1).join(','));
     return [...svg.matchAll(/<text[^>]*>(\d)<\/text>/g)].map((m) => m[1]).join('');
   }
+  // Live: the same picture, drawn larger from its own src so a person can read it.
+  const svg = decodeURIComponent((await picSrc()).split(',').slice(1).join(','));
+  await sharp(Buffer.from(svg)).resize({ width: 600 }).png().toFile(`${base}-pic-${picN}-large.png`);
   const f = `${base}-answer-${picN}.txt`;
-  console.log(`PICTURE ${base}-pic-${picN}.png -> write the digits to ${f}`);
+  console.log(`PICTURE ${base}-pic-${picN}-large.png -> write the digits to ${f}`);
   const t0 = Date.now();
   while (!existsSync(f)) { if (Date.now() - t0 > 540000) throw new Error('no answer within 9 minutes'); await page.waitForTimeout(1000); }
   return readFileSync(f, 'utf8').trim();
@@ -167,6 +172,45 @@ try {
   await page.evaluate(() => window.__fw.app.ui.screens.menu());
   await page.waitForTimeout(300);
   await shot('menu');
+
+  // ---------- 0. a draw, a fade and a stinger on the range, signed in ----------
+  if (parts.has('shots')) {
+    const center = (sel) => page.evaluate((q) => { const e = document.querySelector(q); if (!e || e.offsetParent === null) return null; const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; }, sel);
+    const tapSel = async (sel) => { const c = await center(sel); if (!c) throw new Error(`no ${sel}`); await pointer.tap(c.x, c.y); await page.waitForTimeout(450); };
+    const tapIn = async (text, scope = '.shotpanel') => {
+      const c = await page.evaluate(([t, sc]) => { const b = [...document.querySelectorAll(`${sc} button`)].find((e) => e.textContent.trim().startsWith(t) && e.offsetParent !== null); if (!b) return null; b.scrollIntoView({ block: 'nearest', inline: 'center' }); const r = b.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; }, [text, scope]);
+      if (!c) throw new Error(`no button ${text}`);
+      await pointer.tap(c.x, c.y); await page.waitForTimeout(500);
+    };
+    const dismissTip = async () => { const t = await center('.tip:not(.hidden) .row button:last-child'); if (t) { await pointer.tap(t.x, t.y); await page.waitForTimeout(300); } };
+    const readPanel = () => page.evaluate(() => { const g = window.__fw.game, st = g.state; return { shot: st.shotType.id, club: st.club.id, readout: document.querySelector('.padread') ? document.querySelector('.padread').textContent : '' }; });
+    await page.evaluate(() => { window.__fw.app.ui.screens.hide(); return window.__fw.game.startRange({ bay: 2, surface: 'grass', tod: 'morning', players: [{ kind: 'human', name: 'You', ball: '#ffffff' }] }); });
+    await waitPhase(page, 'aim');
+    await page.evaluate(() => { window.__fw.game.setRangeTarget(null, 200); window.__fw.game.setClub('I5'); });
+    await page.waitForTimeout(800);
+    out.shots = [];
+    for (const kind of ['draw', 'fade', 'stinger']) {
+      await waitPhase(page, 'aim');
+      await page.waitForTimeout(400);
+      await dismissTip();
+      await tapSel('.spinbtn');
+      if (kind === 'stinger') { await tapIn('Straight'); await tapIn('Stinger', '.shottypes'); } else { await tapIn('Normal', '.shottypes').catch(() => {}); await tapIn(kind === 'draw' ? 'Draw' : 'Fade'); }
+      const planned = await readPanel();
+      await shot(`shot-${kind}-panel`);
+      await tapIn('Done');
+      const power = await page.evaluate(() => window.__fw.game.suggestedPower());
+      await swing(page, pointer, { power: Math.min(1, power), backMs: 780, downMs: 260 });
+      await page.waitForFunction(() => window.__fw.game.state.shot || window.__fw.game.state.lastShot, null, { timeout: 20000 });
+      const res = await page.evaluate(() => { const g = window.__fw.game, s = g.state.shot || g.state.lastShot; const a = s.aim, fx = Math.sin(a), fz = -Math.cos(a), p = s.result.carryPoint || s.result.end; return { club: s.club.id, shot: s.shotType.id, strike: s.strike.kind, carryYd: +(s.result.carry / 0.9144).toFixed(1), totalYd: +(s.result.total / 0.9144).toFixed(1), rightOfAimYd: +(((p.x - s.from.x) * -fz + (p.z - s.from.z) * fx) / 0.9144).toFixed(1), apexYd: +(s.result.apex / 0.9144).toFixed(1), power: +s.swing.power.toFixed(3) }; });
+      out.shots.push({ kind, planned, ...res });
+      console.log('shot', kind, JSON.stringify(res));
+      await page.waitForTimeout(900);
+      await shot(`shot-${kind}-flight`);
+      await page.waitForFunction(() => window.__fw.game.state.phase === 'aim', null, { timeout: 60000 }).catch(() => {});
+    }
+    await page.evaluate(() => window.__fw.game.quit());
+    await page.waitForTimeout(600);
+  }
 
   // ---------- 1. the tap count ----------
   let pubId = null, pubName = null;
