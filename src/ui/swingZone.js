@@ -1,6 +1,11 @@
 // The swing zone: a clear patch of the course view between the ball and the bottom row. Touch
 // it, drag down for the backswing, push up through the start line to strike. A chevron marks
-// where the drag starts; a thin rail with the power guide appears only while dragging.
+// where the drag starts. The swing stick is a slim rounded track docked to the screen edge on
+// the side away from the club (right for a right-handed golfer): a soft gradient fill follows
+// the backswing, a warm mark shows the power guide, a short tick marks the top of the
+// backswing, the start marker pulses as the drag comes back to it, and a small ring is the
+// tempo cue (it fills during the backswing and empties three times as fast on the way down, so
+// it is empty at the line on a 3 to 1 swing). Little text; it never sits over the ball or club.
 //
 // It is a DOM view over the pure gesture logic in game/swingGesture.js, exactly like the old
 // swing stick: same travel rule, same gesture, same three-press meter for keyboard and gamepad.
@@ -18,10 +23,21 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
   el.setAttribute('aria-valuemin', '0');
   el.setAttribute('aria-valuemax', '100');
   el.tabIndex = 0;
-  el.innerHTML = '<div class="rail"><div class="fill"></div><div class="ideal"></div></div><div class="startline"></div><div class="chev"></div>';
+  el.innerHTML = '<div class="startline"></div><div class="chev"></div>';
   el.querySelector('.chev').appendChild(icon('chevron'));
   parent.appendChild(el);
-  const rail = el.querySelector('.rail'), fill = el.querySelector('.fill'), ideal = el.querySelector('.ideal');
+  const startline = el.querySelector('.startline');
+  // The docked track (decorative: the zone itself is the slider for assistive tech).
+  const track = document.createElement('div');
+  track.className = 'swingtrack';
+  track.setAttribute('aria-hidden', 'true');
+  track.innerHTML = '<div class="tfill"></div><div class="tguide"></div><div class="ttop"></div><div class="tstart"></div><div class="ttempo"></div>';
+  parent.appendChild(track);
+  const fill = track.querySelector('.tfill'), ideal = track.querySelector('.tguide'), topTick = track.querySelector('.ttop'), tempoRing = track.querySelector('.ttempo');
+  // The tempo cue's clock: when the backswing started, when it last went deeper, and the
+  // ring's level when the downswing began.
+  const tempo = { start: 0, top: 0, level: 0, phase: 'address' };
+  const BACK_REF = 1000; // ms of backswing that fills the ring
   // The tempo grade after impact. It lives outside the zone, which hides once the ball is away.
   const fb = document.createElement('div');
   fb.className = 'tempo';
@@ -54,9 +70,34 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     zone.box = box;
     Object.assign(el.style, { left: `${box.x}px`, top: `${box.y}px`, width: `${box.w}px`, height: `${box.h}px` });
     Object.assign(fb.style, { left: `${box.x + box.w / 2}px`, top: `${box.y + START + 18}px` });
-    rail.style.height = `${zone.travel}px`;
+    zone.placeTrack();
     if (!same) zone.gesture = createSwingGesture({ travel: zone.travel, handedness: hand });
   };
+  // Dock the track to the screen edge away from the club: the club swings back to the left of
+  // the ball for a right-handed golfer and to the right for a left-handed one. Called again by
+  // the HUD once its buttons are in place.
+  zone.placeTrack = () => {
+    const box = zone.box;
+    if (!box || !box.h) return;
+    const vw = window.innerWidth || 390;
+    const edge = 12, lefty = settings.handedness === 'left';
+    let left = lefty ? edge : vw - edge - 10;
+    // Step inward past any control on that edge within the track's height (the look and aim
+    // buttons sit on the right edge in landscape), so the track never covers a button.
+    const y0 = box.y + START - 34, y1 = box.y + START + zone.travel + 6;
+    const controls = [...parent.querySelectorAll('button, .tab')].filter((b) => b.offsetParent !== null && !el.contains(b) && !track.contains(b)).map((b) => b.getBoundingClientRect());
+    for (let pass = 0; pass < 4; pass++) {
+      let moved = false;
+      for (const r of controls) {
+        if (r.bottom < y0 || r.top > y1 || !r.width) continue;
+        if (left + 16 > r.left && left - 6 < r.right) { left = lefty ? r.right + 8 : r.left - 18; moved = true; }
+      }
+      if (!moved) break;
+    }
+    Object.assign(track.style, { left: `${left}px`, top: `${box.y + START}px`, height: `${zone.travel}px` });
+    track.classList.toggle('lefty', lefty);
+  };
+
   // A layout that arrived during a swing is applied once the swing is over.
   const flushLayout = () => { if (zone.pendingBox && !zone.mode) { const b = zone.pendingBox; zone.pendingBox = null; zone.layout(b); } };
   zone.startY = () => zone.box.y + START;
@@ -66,15 +107,44 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     fill.style.height = `${Math.min(1, d) * zone.travel}px`;
     const p = Math.round(clamp(d, 0, 1) * 100);
     el.setAttribute('aria-valuenow', String(p));
+    // The top tick and the start marker's pulse, from the live drag.
+    const l = zone.live;
+    const top = l.phase === 'down' ? l.top : l.phase === 'back' ? l.depth : 0;
+    topTick.style.top = `${clamp(top, 0, 1) * zone.travel - 1}px`;
+    track.classList.toggle('hastop', l.phase === 'down' || (l.phase === 'back' && l.depth > 0.05));
+    const near = l.phase === 'down' ? clamp(1 - l.depth / Math.max(l.top, 1e-3), 0, 1) : 0;
+    track.style.setProperty('--near', near.toFixed(3));
+    startline.style.setProperty('--near', near.toFixed(3));
+    track.classList.toggle('close', near > 0.7);
+    el.classList.toggle('close', near > 0.7);
+  }
+  // The tempo ring, per frame: fills over the backswing, empties three times as fast after the
+  // top, so a 3 to 1 swing reaches the line as it empties.
+  function drawTempo(now) {
+    const l = zone.live;
+    if (l.phase === 'back') {
+      if (tempo.phase !== 'back') { tempo.start = now; tempo.top = now; tempo.maxDepth = 0; }
+      if (l.depth > (tempo.maxDepth || 0) + 0.004) { tempo.maxDepth = l.depth; tempo.top = now; }
+      tempo.level = clamp((tempo.top - tempo.start) / BACK_REF, 0, 1);
+    } else if (l.phase === 'down') {
+      if (tempo.phase !== 'down') tempo.downFrom = tempo.level;
+      const back = Math.max(1, tempo.top - tempo.start), down = now - tempo.top;
+      tempo.level = (tempo.downFrom || 0) * clamp(1 - down / (back / 3), 0, 1);
+    } else tempo.level = 0;
+    tempo.phase = l.phase;
+    tempoRing.style.setProperty('--tempo', tempo.level.toFixed(3));
+    track.classList.toggle('tempo-on', l.phase === 'back' || l.phase === 'down');
   }
   zone.setIdeal = (power) => {
     if (!Number.isFinite(power) || power <= 0) { ideal.style.display = 'none'; return; }
     ideal.style.display = '';
     ideal.style.top = `${clamp(power, 0, 1) * zone.travel - 1.5}px`;
   };
+  zone.track = track;
   zone.setEnabled = (on) => {
     zone.enabled = !!on;
     el.classList.toggle('disabled', !on);
+    track.classList.toggle('disabled', !on);
     if (!on && zone.mode) zone.cancel();
   };
   zone.feedback = (text) => {
@@ -88,7 +158,7 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     if (zone.gesture) zone.gesture.cancel();
     zone.meter.cancel();
     zone.mode = null; zone.pointerId = null;
-    el.classList.remove('active');
+    el.classList.remove('active'); track.classList.remove('active');
     setLive('address', 0, 0);
     draw(0);
     flushLayout();
@@ -97,7 +167,7 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
   function complete(result) {
     zone.lastResult = result;
     zone.mode = null;
-    el.classList.remove('active');
+    el.classList.remove('active'); track.classList.remove('active');
     draw(0);
     if (haptic) haptic(result.tempoGrade === 'perfect' ? [12, 30, 18] : 16);
     zone.feedback(result.tempoLabel);
@@ -108,7 +178,7 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
   }
   function cancelled() {
     zone.mode = null;
-    el.classList.remove('active');
+    el.classList.remove('active'); track.classList.remove('active');
     setLive('address', 0, 0);
     draw(0);
     flushLayout();
@@ -129,11 +199,9 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     zone.pointerId = e.pointerId;
     try { el.setPointerCapture(e.pointerId); } catch { /* capture is a nicety */ }
     zone.mode = 'pointer';
-    el.classList.add('active');
+    el.classList.add('active'); track.classList.add('active');
     if (zone.onStart) zone.onStart();
     const p = local(e);
-    // The rail is drawn from where the finger landed.
-    rail.style.left = `${p.x}px`; rail.style.top = `${p.y}px`;
     zone.gesture.down(p.x, p.y, e.timeStamp);
     if (haptic) haptic(6);
     zone.feedback('');
@@ -171,7 +239,7 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
     if (!zone.enabled) return;
     if (zone.mode === 'pointer') return;
     const st = zone.meter.press(t);
-    if (st.phase === PHASE.BACK) { zone.mode = 'meter'; el.classList.add('active'); rail.style.left = '50%'; rail.style.top = `${START}px`; zone.feedback(''); }
+    if (st.phase === PHASE.BACK) { zone.mode = 'meter'; el.classList.add('active'); track.classList.add('active'); zone.feedback(''); }
     else if (st.phase === PHASE.DONE) complete(st.result);
     else if (st.phase === PHASE.CANCELLED) cancelled();
   };
@@ -190,6 +258,8 @@ export function createSwingZone(parent, { onSwing, onCancel, getIdeal, settings,
       draw(m);
     }
     if (getIdeal) zone.setIdeal(getIdeal());
+    drawTempo(performance.now());
+    if (zone.mode === 'pointer') draw(zone.live.depth);
   };
   zone.relayout = () => { if (zone.box.h) zone.layout(zone.box); };
   zone.flushLayout = flushLayout;

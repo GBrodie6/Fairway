@@ -62,7 +62,13 @@ export function createUI(app) {
     // The HUD's layout says where the ball goes on screen; the address camera frames it there.
     onLayout: ({ ballY, keep }) => { if (app.world && app.world.rig) { app.world.rig.ballScreenY = ballY; app.world.rig.hudKeep = keep; app.world.rig.lefty = settings.handedness === 'left'; } },
     // The drag crossed the start line and the shot is away: the club shows impact this frame.
-    onSwing: (res) => { if (app.world && app.world.club) app.world.club.impact({ face: res.face, path: res.path, strike: game.state.shot && game.state.shot.strike }); },
+    onSwing: (res) => {
+      const w = app.world;
+      if (!w) return;
+      if (w.club) w.club.impact({ face: res.face, path: res.path, power: res.power, strike: game.state.shot && game.state.shot.strike });
+      // A small camera punch scaled by power (off with reduced motion, inside the rig).
+      if (w.rig && w.rig.punch && !(game.state.shot && game.state.shot.club && game.state.shot.club.putter)) w.rig.punch(res.power);
+    },
     mulligans: () => (app.save ? (app.save().wallet || {}).mulligans || 0 : 0),
     // Average carry from range sessions (meters), once a club has three or more range shots.
     rangeAverage: (clubId) => { const y = app.save ? clubAverageCarry(app.save().range, clubId) : null; return y ? y * 0.9144 : null; },
@@ -200,6 +206,7 @@ export function createUI(app) {
     if (app.world && app.world.rig) app.world.rig.lefty = settings.handedness === 'left';
     if (app.world && app.world.overlays) app.world.overlays.setPalette(settings.colorblind);
     if (app.world && app.world.rig) app.world.rig.reducedMotion = app.motionReduced();
+    document.documentElement.classList.toggle('reduced-motion', app.motionReduced());
     if (app.world && app.world.ball) app.world.ball.setSpinViz(!!settings.spinViz);
     if (app.audio) app.audio.applySettings(settings);
   };

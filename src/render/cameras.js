@@ -32,6 +32,11 @@ export function createCameraRig(world, engine) {
     engine.post.state.dof.enabled = mode === 'flyover' || !!ctx.replay;
   };
   rig.shake = (amount) => { if (!rig.reducedMotion) rig.shakeAmt = Math.max(rig.shakeAmt, amount); };
+  // A small punch at impact: the camera nudges toward the ball and springs back in about
+  // 0.2 s, scaled by power. Off with reduced motion.
+  const punchV = new THREE.Vector3();
+  rig.punchT = -1; rig.punchAmt = 0;
+  rig.punch = (power) => { if (rig.reducedMotion) return; rig.punchAmt = 0.05 + 0.1 * clamp(fin(power), 0, 1); rig.punchT = 0; };
   // Drag to look around from the address position.
   rig.look = (dYaw, dPitch) => { rig.yaw = clamp(rig.yaw + fin(dYaw), -2.4, 2.4); rig.pitch = clamp(rig.pitch + fin(dPitch), -0.5, 0.7); };
   rig.resetLook = () => { rig.yaw = 0; rig.pitch = 0; };
@@ -167,6 +172,18 @@ export function createCameraRig(world, engine) {
     rig.shakeAmt *= Math.exp(-9 * dt);
     if (rig.shakeAmt > 1e-4) shakeV.set((Math.random() - 0.5) * rig.shakeAmt, (Math.random() - 0.5) * rig.shakeAmt, (Math.random() - 0.5) * rig.shakeAmt); else shakeV.set(0, 0, 0);
     camera.position.copy(pos).add(shakeV);
+    if (rig.punchT >= 0) {
+      rig.punchT += dt;
+      const u = rig.punchT / 0.22;
+      if (u >= 1 || rig.reducedMotion) rig.punchT = -1;
+      else {
+        // In fast (40 ms), out slow.
+        const k = u < 0.18 ? u / 0.18 : (1 - (u - 0.18) / 0.82) ** 2;
+        punchV.copy(tgt).sub(camera.position);
+        const len = punchV.length();
+        if (len > 1e-3) camera.position.addScaledVector(punchV, (rig.punchAmt * k) / len);
+      }
+    }
     tmp.copy(tgt);
     if (tmp.distanceToSquared(camera.position) < 1e-6) tmp.z -= 1;
     camera.lookAt(tmp);

@@ -309,6 +309,8 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     const cr = settings.handedness === 'left' ? tr.getBoundingClientRect() : tabWind.getBoundingClientRect();
     const keep = settings.handedness === 'left' ? { x: (cr.left - 6) / W, y: (Math.max(cr.bottom, mapBtn.getBoundingClientRect().bottom) + 6) / H } : { x: (Math.max(cr.right, tabDist.getBoundingClientRect().right) + 6) / W, y: (cr.bottom + 6) / H };
     if (actions.onLayout) actions.onLayout({ ballY: hud.ballY / H, zone: box, keep });
+    // The swing track docks last, clear of the buttons placed above.
+    zone.placeTrack();
   };
   // Bottom of the three tabs (the chips under them are not counted).
   function tabTop(tbR) { const r = tabWind.getBoundingClientRect(); return r.height ? r.bottom : tbR.bottom; }

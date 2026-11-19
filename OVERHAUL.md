@@ -357,6 +357,45 @@ Outcome (tables in qa/balance.md):
 - Settings: mishits for an average swing are 0.4 percent on relaxed, 3.7 on standard, 10.3 on
   pro, in line with the request for only a little more challenge on standard.
 
+## Swing look and feel
+
+Visual and input smoothing only. The gesture math (power, tempo, face, path), the moment the
+shot launches (the touch event that crosses the start line), and every swing test are
+unchanged; the same recorded drag gives the same power, tempo ratio and strike before and after
+(qa/proof/swing-feel).
+
+- Smoothing (`src/game/swingMotion.js`): the floating club no longer follows the raw drag. The
+  drag depth goes through a critically damped spring (exact step, about a 40 ms time constant),
+  so uneven touch sampling and a pixel of wobble never step or jitter the club. In the last 10
+  percent before impact the spring is stiffer (90 rad/s) and its lag is capped at half the
+  remaining depth, so the drawn club reaches the ball with the drag. The frame on which the
+  drag crosses the start line draws the impact pose exactly: the head sits 0.3 cm from the
+  ball's surface on that frame in every capture (2.44 cm from the ball's center). Face and path
+  drift are smoothed the same way so the face never flickers.
+- Easing: the backswing is the spring (unhurried); when a moving backswing comes to rest the
+  club carries on a touch and settles back (at most 0.014 of the swing's progress, once per
+  rest) and then holds still while the finger rests. The downswing is eased in (half linear,
+  half ease-in, so it accelerates without hanging at the top) with a gentle speed-based shaft
+  lag (up to 7 degrees). The follow-through decelerates (cubic ease-out over 0.5 s) and fades.
+- Swing trail: one ribbon mesh over a fixed ring buffer of 32 head samples (no allocation per
+  frame), laid down through the downswing and the first part of the finish, each sample fading
+  out 0.3 s after it was laid, additive glow. Tint by strike at impact: white for Pured, amber
+  for Good, red for any mishit.
+- Swing stick: the rail under the finger is replaced by a slim rounded track docked to the
+  screen edge away from the club (right for a right-handed golfer, left for a left-handed
+  one), stepping inward past any button on that edge (the look and aim buttons in landscape).
+  A soft gradient fill follows backswing power, a warm mark is the power guide, a short tick
+  marks the top of the backswing, and the start marker (on the track and the start line under
+  the ball) glows and pulses as the drag comes back to it. The tempo cue is a small ring: it
+  fills during the backswing and empties three times as fast after the top, so it is empty at
+  the line on a 3 to 1 swing. No text. The layout check measures it with every HUD control,
+  the ball and the club at four sizes for both hands: no overlaps.
+- Impact: a 60 ms hit-stop on the club only, a camera punch toward the ball scaled by power
+  (0.05 to 0.15 m, in fast and out over 0.22 s), a soft shock ring on the ground under the ball
+  (0.35 s, larger and brighter with power), plus the existing sound, debris and haptics (a tick
+  at the crossing, then the strike pattern). Reduced motion turns off the punch, the hit-stop
+  and the pulsing animations.
+
 ## Stage 10: proof and deploy
 
 Screenshots of every new screen at 360x640, 390x844, 844x390, and 1024x768 with the layout

@@ -50,7 +50,7 @@ function check(boxes, W, H) {
   if (boxes.clubPts) for (const [k, r] of hudItems) if (boxes.clubPts.some((p) => ptIn(p, r))) bad.push(`club x ${k}`);
   const off = items.filter(([k, b]) => b.x < -1 || b.y < -1 || b.x + b.w > W + 1 || b.y + b.h > H + 1).map(([k]) => `${k} off screen`);
   if (boxes.clubPts && boxes.clubPts.some(([x, y]) => x < 0 || y < 0 || x > W || y > H)) off.push('club partly off screen');
-  const small = Object.entries(boxes.hud).filter(([k, b]) => !k.startsWith('tab') && !['hole', 'score', 'badge', 'hazard', 'putt'].includes(k) && (b.w < 47.5 || b.h < 47.5)).map(([k, b]) => `${k} ${b.w.toFixed(0)}x${b.h.toFixed(0)}`);
+  const small = Object.entries(boxes.hud).filter(([k, b]) => !k.startsWith('tab') && !['hole', 'score', 'badge', 'hazard', 'putt', 'swingTrack'].includes(k) && (b.w < 47.5 || b.h < 47.5)).map(([k, b]) => `${k} ${b.w.toFixed(0)}x${b.h.toFixed(0)}`);
   return { overlaps: bad, offscreen: off, smallTargets: small };
 }
 

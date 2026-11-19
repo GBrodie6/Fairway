@@ -1,0 +1,96 @@
+{
+ "size": "390x844",
+ "hand": "right",
+ "captures": {
+  "1-address": {
+   "t": 100,
+   "p": 0,
+   "headToBallCm": 2.44
+  },
+  "2-quarter": {
+   "t": 383.3,
+   "p": 0.1232,
+   "headToBallCm": 64.22
+  },
+  "3-half": {
+   "t": 650,
+   "p": 0.2468,
+   "headToBallCm": 128.74
+  },
+  "4-top": {
+   "t": 1283.3,
+   "p": 0.497,
+   "headToBallCm": 238.51
+  },
+  "5-mid-downswing": {
+   "t": 1416.7,
+   "p": 0.7638,
+   "headToBallCm": 186.37
+  },
+  "6-impact": {
+   "t": 1550,
+   "p": 1,
+   "headToBallCm": 2.44
+  },
+  "7-follow-through": {
+   "t": 1750,
+   "p": 1.2,
+   "headToBallCm": 158.44
+  }
+ },
+ "zone": {
+  "x": 195,
+  "y": 536,
+  "travel": 190
+ },
+ "preCrossing": {
+  "t": 1533.3,
+  "p": 0.9804570616458493,
+  "live": "down",
+  "depth": 0.04175447162828947,
+  "head": [
+   -0.00950093319559675,
+   43.006551541308546,
+   0.22933286841624986
+  ],
+  "ball": [
+   0,
+   42.993163201904295,
+   0
+  ],
+  "follow": false,
+  "visible": true
+ },
+ "impactFrame": {
+  "t": 1550,
+  "p": 1,
+  "live": "address",
+  "depth": 0,
+  "head": [
+   -0.00009938746860227443,
+   42.993163201904295,
+   0.024349797168171337
+  ],
+  "ball": [
+   0,
+   42.993163201904295,
+   0
+  ],
+  "follow": true,
+  "visible": true
+ },
+ "downswingFrames": 20,
+ "smoothness": {
+  "frames": 82,
+  "worstHeadAccel": 1226.4,
+  "meanHeadAccel": 227.7,
+  "unit": "m/s^2 from the second difference of the head position per 60 Hz frame"
+ },
+ "shot": {
+  "strike": "good",
+  "power": 0.994,
+  "tempo": "good",
+  "ratio": 2.51
+ },
+ "consoleErrors": []
+}

@@ -67,6 +67,10 @@ export function installHooks(app) {
       for (const [k, s] of Object.entries(sel)) { const el = document.querySelector(s); if (visible(el)) out.hud[k] = box(el); }
       const z = document.querySelector('.swingzone');
       if (visible(z)) out.zone = box(z);
+      // The docked swing track with its tempo ring (not a tap target, but it must clear
+      // every control, the ball, and the club).
+      const tr = document.querySelector('.swingtrack');
+      if (visible(tr)) { const a = box(tr), r = tr.querySelector('.ttempo').getBoundingClientRect(); const x0 = Math.min(a.x, r.x), y0 = Math.min(a.y, r.y); out.hud.swingTrack = { x: x0, y: y0, w: Math.max(a.x + a.w, r.right) - x0, h: Math.max(a.y + a.h, r.bottom) - y0 }; }
       const w = app.world, b = w.ball && w.ball.position;
       if (b && w.ball.group ? w.ball.group.visible !== false : true) {
         const c = fw.project(b.x, b.y, b.z), r = Math.max(4, Math.abs(fw.project(b.x, b.y + 0.0427, b.z).y - c.y));
