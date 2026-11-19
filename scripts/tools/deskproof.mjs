@@ -100,7 +100,18 @@ async function step(name, { hud = false } = {}) {
   n++;
   const file = `${prefix}-${size}-${n}-${name}.jpg`;
   const r = { name, file };
-  if (hud) Object.assign(r, hudCheck(await page.evaluate(() => window.__fw.layoutBoxes())));
+  if (hud) {
+    // An open shot panel is checked like a HUD box: it must clear the ball, the aim fan, the club
+    // and every other HUD box .
+    const b = await page.evaluate(() => {
+      const x = window.__fw.layoutBoxes();
+      const p = document.querySelector('.shotpanel:not(.hidden)');
+      if (p) { const q = p.getBoundingClientRect(); if (q.width) { x.hud = { ...x.hud, shotPanel: { x: q.x, y: q.y, w: q.width, h: q.height } }; } }
+      return x;
+    });
+    Object.assign(r, hudCheck(b));
+    r.hudKeys = Object.keys(b.hud);
+  }
   Object.assign(r, { sheet: await sheetCheck() });
   await page.screenshot({ path: file, type: 'jpeg', quality: 82 });
   out.steps.push(r);
