@@ -1,0 +1,129 @@
+{
+ "mode": "live",
+ "size": "390x844",
+ "url": "https://gbrodie6.github.io/Fairway",
+ "username": "fwtest827695",
+ "cloudEnabled": true,
+ "signupScreen": {
+  "fields": [
+   "a-user:text",
+   "a-pass:password",
+   "a-code:text",
+   ":file"
+  ],
+  "alt": "Security picture with 5 digits",
+  "lines": [
+   "Type the 5 digits you see",
+   "There is no email on this account, so a forgotten password cannot be reset."
+  ],
+  "emailAnywhere": false
+ },
+ "wrongCode": {
+  "status": "That code was wrong or expired. Here is a new picture.",
+  "newPicture": true
+ },
+ "signUp": {
+  "attempt": 1,
+  "digits": "24446"
+ },
+ "signedIn": {
+  "user": {
+   "id": "48e712af-df29-44b6-893d-9ccc462cd8a0",
+   "username": "fwtest827695",
+   "app_metadata": {
+    "fairway": true
+   }
+  },
+  "account": {
+   "userId": "48e712af-df29-44b6-893d-9ccc462cd8a0",
+   "username": "fwtest827695",
+   "displayName": "FWTEST827695"
+  }
+ },
+ "marker": 163468,
+ "synced": "Synced.",
+ "posted": "ok",
+ "board": [
+  "1. FWTEST827695287 yd"
+ ],
+ "boardHasMe": true,
+ "afterSignOut": {
+  "user": false,
+  "account": null
+ },
+ "markerAfterWipe": null,
+ "wrongPassword": "That username and password do not match.",
+ "signedBackIn": {
+  "account": {
+   "userId": "48e712af-df29-44b6-893d-9ccc462cd8a0",
+   "username": "fwtest827695",
+   "displayName": "FWTEST827695"
+  },
+  "marker": 163468
+ },
+ "restored": true,
+ "afterDelete": {
+  "user": false,
+  "account": null,
+  "queue": null,
+  "session": null
+ },
+ "signInAfterDelete": "That username and password do not match.",
+ "accountGone": true,
+ "consoleErrorsByPhase": [
+  {
+   "phase": "start",
+   "errors": [
+    "503 https://gbrodie6.github.io/Fairway/assets/models/shrub2.glb?v=16cp2zo",
+    "Failed to load resource: the server responded with a status of 503 ()"
+   ]
+  },
+  {
+   "phase": "deliberate wrong code",
+   "errors": [
+    "500 https://htyeqsnydoksmdwjxmqj.supabase.co/auth/v1/signup",
+    "Failed to load resource: the server responded with a status of 500 ()"
+   ]
+  },
+  {
+   "phase": "sign-up (a misread picture is refused by the server)",
+   "errors": []
+  },
+  {
+   "phase": "signed in: save, score, board, sign out",
+   "errors": []
+  },
+  {
+   "phase": "deliberate wrong password",
+   "errors": [
+    "400 https://htyeqsnydoksmdwjxmqj.supabase.co/auth/v1/token?grant_type=password",
+    "Failed to load resource: the server responded with a status of 400 ()"
+   ]
+  },
+  {
+   "phase": "sign in, restore, delete",
+   "errors": []
+  },
+  {
+   "phase": "deliberate sign-in to the deleted account",
+   "errors": [
+    "400 https://htyeqsnydoksmdwjxmqj.supabase.co/auth/v1/token?grant_type=password",
+    "Failed to load resource: the server responded with a status of 400 ()"
+   ]
+  }
+ ],
+ "unexpectedConsoleErrors": [
+  "503 https://gbrodie6.github.io/Fairway/assets/models/shrub2.glb?v=16cp2zo",
+  "Failed to load resource: the server responded with a status of 503 ()"
+ ],
+ "consoleErrors": [
+  "503 https://gbrodie6.github.io/Fairway/assets/models/shrub2.glb?v=16cp2zo",
+  "Failed to load resource: the server responded with a status of 503 ()",
+  "500 https://htyeqsnydoksmdwjxmqj.supabase.co/auth/v1/signup",
+  "Failed to load resource: the server responded with a status of 500 ()",
+  "400 https://htyeqsnydoksmdwjxmqj.supabase.co/auth/v1/token?grant_type=password",
+  "Failed to load resource: the server responded with a status of 400 ()",
+  "400 https://htyeqsnydoksmdwjxmqj.supabase.co/auth/v1/token?grant_type=password",
+  "Failed to load resource: the server responded with a status of 400 ()"
+ ]
+}

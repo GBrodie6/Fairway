@@ -1,0 +1,499 @@
+{
+ "url": "https://gbrodie6.github.io/Fairway/",
+ "when": "2026-11-19T01:21:13.943Z",
+ "software": true,
+ "runs": [
+  {
+   "name": "phone 390x844",
+   "readyMs": 7657,
+   "settledMs": 18393,
+   "serviceWorker": {
+    "scope": "https://gbrodie6.github.io/Fairway/",
+    "active": true
+   },
+   "controlledAfterReload": true,
+   "manifest": {
+    "url": "https://gbrodie6.github.io/Fairway/manifest.webmanifest",
+    "errors": [],
+    "name": "Fairway Next",
+    "short_name": "Fairway",
+    "start_url": "./",
+    "display": "fullscreen",
+    "icons": [
+     "192x192",
+     "512x512",
+     "192x192",
+     "512x512"
+    ]
+   },
+   "installabilityErrors": [
+    {
+     "errorId": "in-incognito",
+     "errorArguments": []
+    }
+   ],
+   "requests": 202,
+   "nonHttps": [],
+   "failedRequests": [],
+   "bytesFirstFrame": 8536005,
+   "bytesSettled": 8536005,
+   "consoleErrors": [],
+   "headers": {
+    "/": {
+     "status": 200,
+     "type": "text/html; charset=utf-8",
+     "cache": "max-age=600"
+    },
+    "/assets/three-iVlL6CYX.js": {
+     "status": 200,
+     "type": "application/javascript; charset=utf-8",
+     "cache": "max-age=600"
+    },
+    "/assets/three-addons-BVdD_Qhw.js": {
+     "status": 200,
+     "type": "application/javascript; charset=utf-8",
+     "cache": "max-age=600"
+    },
+    "/assets/index-Mvi0wVFV.js": {
+     "status": 200,
+     "type": "application/javascript; charset=utf-8",
+     "cache": "max-age=600"
+    },
+    "/assets/hdri/morning.hdr": {
+     "status": 200,
+     "type": "application/octet-stream",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/cloud_noise.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/models/oak.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/mossrocks.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/fir.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/shrub2.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/elm.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/water_normal.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/models/tallgrass.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/tallgrass2.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/shrub4.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/maple.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/fern.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/jacaranda.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/pine.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/birch.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/log.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/bushtree.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/celandine.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/rock1.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/dandelion.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/stump.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/shrub3.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/rough_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/gravel_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/rock_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/wetsand_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/forest_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/fairway_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/dirt_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/bunker_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/green_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/deeprough_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/icons/icon-32.png": {
+     "status": 200,
+     "type": "image/png",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/detail_noise.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/manifest.webmanifest": {
+     "status": 200,
+     "type": "application/manifest+json; charset=utf-8",
+     "cache": "max-age=600"
+    },
+    "/icons/icon-192.png": {
+     "status": 200,
+     "type": "image/png",
+     "cache": "max-age=600"
+    }
+   }
+  },
+  {
+   "name": "desktop 1366x768",
+   "readyMs": 6273,
+   "settledMs": 26366,
+   "serviceWorker": {
+    "scope": "https://gbrodie6.github.io/Fairway/",
+    "active": true
+   },
+   "controlledAfterReload": true,
+   "manifest": {
+    "url": "https://gbrodie6.github.io/Fairway/manifest.webmanifest",
+    "errors": [],
+    "name": "Fairway Next",
+    "short_name": "Fairway",
+    "start_url": "./",
+    "display": "fullscreen",
+    "icons": [
+     "192x192",
+     "512x512",
+     "192x192",
+     "512x512"
+    ]
+   },
+   "installabilityErrors": [
+    {
+     "errorId": "in-incognito",
+     "errorArguments": []
+    }
+   ],
+   "requests": 202,
+   "nonHttps": [],
+   "failedRequests": [],
+   "bytesFirstFrame": 8534220,
+   "bytesSettled": 8536084,
+   "consoleErrors": [],
+   "headers": {
+    "/": {
+     "status": 200,
+     "type": "text/html; charset=utf-8",
+     "cache": "max-age=600"
+    },
+    "/assets/three-addons-BVdD_Qhw.js": {
+     "status": 200,
+     "type": "application/javascript; charset=utf-8",
+     "cache": "max-age=600"
+    },
+    "/assets/index-Mvi0wVFV.js": {
+     "status": 200,
+     "type": "application/javascript; charset=utf-8",
+     "cache": "max-age=600"
+    },
+    "/assets/three-iVlL6CYX.js": {
+     "status": 200,
+     "type": "application/javascript; charset=utf-8",
+     "cache": "max-age=600"
+    },
+    "/assets/models/jacaranda.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/cloud_noise.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/models/shrub3.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/oak.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/fern.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/water_normal.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/models/shrub2.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/tallgrass.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/dandelion.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/rock1.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/mossrocks.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/pine.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/celandine.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/hdri/morning.hdr": {
+     "status": 200,
+     "type": "application/octet-stream",
+     "cache": "max-age=600"
+    },
+    "/assets/models/birch.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/maple.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/deeprough_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/models/elm.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/log.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/tallgrass2.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/forest_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/green_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/models/fir.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/models/shrub4.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/rough_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/bunker_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/dirt_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/models/stump.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/fairway_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/gravel_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/models/bushtree.glb": {
+     "status": 200,
+     "type": "model/gltf-binary",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/rock_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/wetsand_a_512.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/icons/icon-32.png": {
+     "status": 200,
+     "type": "image/png",
+     "cache": "max-age=600"
+    },
+    "/assets/textures/detail_noise.webp": {
+     "status": 200,
+     "type": "image/webp",
+     "cache": "max-age=600"
+    },
+    "/manifest.webmanifest": {
+     "status": 200,
+     "type": "application/manifest+json; charset=utf-8",
+     "cache": "max-age=600"
+    },
+    "/icons/icon-192.png": {
+     "status": 200,
+     "type": "image/png",
+     "cache": "max-age=600"
+    }
+   }
+  },
+  {
+   "name": "installability (persistent profile, phone)",
+   "controlled": true,
+   "installabilityErrors": [],
+   "manifestErrors": []
+  }
+ ]
+}

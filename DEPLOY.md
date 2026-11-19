@@ -6,6 +6,13 @@ Any static host works. Vercel is configured in `vercel.json`.
 
 Live now: https://gbrodie6.github.io/Fairway/ (GitHub Pages, from the `gh-pages` branch).
 
+Deploy of commit d88848a (gh-pages 80f653b): route A, Vercel, did not work (no login and no
+VERCEL_TOKEN on this machine; the CLI config holds no credentials). Route B, the gh-pages
+flow, worked: the verified `dist/` from a clean checkout of d88848a was copied onto the
+`gh-pages` branch and pushed; Pages served it within 40 seconds. Route C was not needed and
+was not possible anyway (no Netlify, Cloudflare, Surge or Firebase credentials). The build
+carries the Supabase URL and public anon key from `.env.production`.
+
 ## Optional: Vercel from your phone (one tap, no commands)
 
 The repository holds everything the build needs, including the processed CC0 game assets in

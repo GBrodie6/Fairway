@@ -1,0 +1,126 @@
+{
+ "size": "390x844",
+ "hand": "right",
+ "captures": {
+  "1-address": {
+   "t": 100,
+   "p": 0,
+   "headToBallCm": 2.44
+  },
+  "2-quarter": {
+   "t": 383.3,
+   "p": 0.0868,
+   "headToBallCm": 45.46
+  },
+  "3-half": {
+   "t": 650,
+   "p": 0.2214,
+   "headToBallCm": 115.53
+  },
+  "4-top": {
+   "t": 1283.3,
+   "p": 0.5053,
+   "headToBallCm": 239.43
+  },
+  "5-mid-downswing": {
+   "t": 1416.7,
+   "p": 0.6633,
+   "headToBallCm": 221.73
+  },
+  "6-impact": {
+   "t": 1550,
+   "p": 1,
+   "headToBallCm": 2.44
+  },
+  "7-follow-through": {
+   "t": 1750,
+   "p": 1.3134,
+   "headToBallCm": 216.03
+  }
+ },
+ "zone": {
+  "x": 195,
+  "y": 536,
+  "travel": 190
+ },
+ "preCrossing": {
+  "t": 1533.3,
+  "cpu": 5.7999999999883585,
+  "sys": {
+   "game": 0.0026481978938415265,
+   "camera": 0.06231525955966138,
+   "world": 0.26923923817477746,
+   "ui": 0.14751698373832522,
+   "audio": 0.009863759185677015,
+   "render": 4.154877694185814
+  },
+  "world": 0.26923923817477746,
+  "ui": 0.14751698373832522,
+  "p": 0.9658106543058383,
+  "live": "down",
+  "depth": 0.04175447162828947,
+  "head": [
+   -0.026427584328665876,
+   43.031451422119616,
+   0.3701197867292506
+  ],
+  "ball": [
+   0,
+   42.993163201904295,
+   0
+  ],
+  "follow": false,
+  "visible": true
+ },
+ "impactFrame": {
+  "t": 1550,
+  "cpu": 666.5999999999767,
+  "sys": {
+   "game": 0.002383378104457374,
+   "camera": 0.06608373360136693,
+   "world": 0.29231531435729974,
+   "ui": 0.16276528536332854,
+   "audio": 0.008877383267109315,
+   "render": 70.30938992476841
+  },
+  "world": 0.29231531435729974,
+  "ui": 0.16276528536332854,
+  "p": 1,
+  "live": "address",
+  "depth": 0,
+  "head": [
+   -0.00009938746860227443,
+   42.993163201904295,
+   0.024349797168171337
+  ],
+  "ball": [
+   0,
+   42.993163201904295,
+   0
+  ],
+  "follow": true,
+  "visible": true
+ },
+ "downswingFrames": 20,
+ "smoothness": {
+  "frames": 82,
+  "worstHeadAccel": 3080.2,
+  "meanHeadAccel": 100.4,
+  "unit": "m/s^2 from the second difference of the head position per 60 Hz frame"
+ },
+ "frameCost": {
+  "tier": "low",
+  "frames": 82,
+  "meanMs": 4.24,
+  "p50Ms": 3.3,
+  "p95Ms": 8.5,
+  "maxMs": 13
+ },
+ "shot": {
+  "strike": "good",
+  "power": 0.994,
+  "tempo": "good",
+  "ratio": 2.51
+ },
+ "consoleErrors": []
+}
