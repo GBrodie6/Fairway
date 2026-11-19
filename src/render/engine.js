@@ -3,11 +3,11 @@
 // debug overlay and the QA tools read.
 import * as THREE from 'three';
 import { createPost } from './post.js';
-import { tierById } from '../core/quality.js';
+import { tierById, withShadows, tierKey } from '../core/quality.js';
 import { clamp } from '../core/math.js';
 import { fin } from '../core/guards.js';
 
-export function createEngine({ container, tierId = 'medium', renderScale = 1 }) {
+export function createEngine({ container, tierId = 'medium', renderScale = 1, lowLatency = false }) {
   const canvas = document.createElement('canvas');
   canvas.className = 'fw-canvas';
   canvas.setAttribute('aria-label', 'Golf course view');
@@ -17,6 +17,9 @@ export function createEngine({ container, tierId = 'medium', renderScale = 1 }) 
   const renderer = new THREE.WebGLRenderer({
     canvas, antialias: false, alpha: false, depth: false, stencil: false,
     powerPreference: 'high-performance', preserveDrawingBuffer: false, failIfMajorPerformanceCaveat: false,
+    // V-Sync off (Settings, Graphics): a low-latency canvas the browser may show without waiting
+    // for the compositor, which can tear. Only a hint: where it is not supported nothing changes.
+    desynchronized: !!lowLatency,
   });
   // Linear workflow: materials write linear light into the HDR target. Tone mapping and the
   // sRGB encode happen once, in the composite pass, so three's own output transform is off.
@@ -48,10 +51,12 @@ export function createEngine({ container, tierId = 'medium', renderScale = 1 }) 
     const cw = Math.max(1, Math.floor(fin(rect.width, 1)));
     const ch = Math.max(1, Math.floor(fin(rect.height, 1)));
     const dpr = clamp(fin(window.devicePixelRatio, 1), 0.5, 4);
-    const pr = Math.min(dpr, tier.pixelRatioCap) * clamp(fin(engine.renderScale, 1), 0.1, 2);
+    let pr = Math.min(dpr, tier.pixelRatioCap) * clamp(fin(engine.renderScale, 1), 0.1, 2);
+    // A fixed drawing size (the ?debug benchmark renders 1080p and 1440p in any window).
+    if (engine.forcedSize) pr = engine.forcedSize.height / ch;
     engine.cssWidth = cw; engine.cssHeight = ch; engine.pixelRatio = pr;
-    engine.width = Math.max(2, Math.round(cw * pr));
-    engine.height = Math.max(2, Math.round(ch * pr));
+    engine.width = Math.max(2, engine.forcedSize ? engine.forcedSize.width : Math.round(cw * pr));
+    engine.height = Math.max(2, engine.forcedSize ? engine.forcedSize.height : Math.round(ch * pr));
     engine.orientation = cw >= ch ? 'landscape' : 'portrait';
     renderer.setPixelRatio(1);
     renderer.setSize(engine.width, engine.height, false);
@@ -96,9 +101,16 @@ export function createEngine({ container, tierId = 'medium', renderScale = 1 }) 
 
   engine.resize = applySize;
   engine.setRenderScale = (s) => { engine.renderScale = s; applySize(); };
-  engine.setTier = (id) => {
-    const next = tierById(id);
-    if (next === tier) return;
+  engine.shadowLevel = 'auto';
+  engine.lowLatency = !!lowLatency;
+  engine.forcedSize = null;
+  engine.setForcedSize = (size) => { engine.forcedSize = size && size.width > 1 && size.height > 1 ? { width: Math.round(size.width), height: Math.round(size.height) } : null; applySize(); };
+  // The tier and the shadow quality (Settings, Graphics). A change needs the world rebuilt
+  // (main.js app.applyGraphics): the shadow cascades and materials are built for one tier.
+  engine.setTier = (id, shadows = engine.shadowLevel) => {
+    const next = withShadows(tierById(id), shadows);
+    engine.shadowLevel = shadows || 'auto';
+    if (tierKey(next) === tierKey(tier)) return;
     tier = next;
     renderer.shadowMap.enabled = !!tier.shadows.enabled;
     post.setTier(tier);

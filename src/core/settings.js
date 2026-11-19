@@ -1,6 +1,6 @@
 // User settings: versioned, validated, persisted to localStorage, overridable from the URL.
 import { clamp } from './math.js';
-import { TIER_ORDER } from './quality.js';
+import { TIER_ORDER, SHADOW_LEVELS, FPS_CAPS } from './quality.js';
 
 export const SETTINGS_VERSION = 2;
 const KEY = 'fairway-next.settings';
@@ -31,6 +31,10 @@ export const DEFAULT_SETTINGS = Object.freeze({
   spinMemory: 'reset', // the ball-contact dot after each shot: reset to the middle, or remember
   allShotsQuickPlay: true, // every shot type in Quick Play (Campaign unlocks them on the skill tree)
   screenSize: 'normal', // desktop HUD and menu size: small | normal | large (ui/desktop.js)
+  fpsCap: 'uncapped', // frame rate cap: uncapped (the display's refresh rate) | 30 | 60 | 120 | 144
+  renderScale: 1, // resolution scale, 0.5 to 1 of the screen's pixels (before the tier's pixel ratio cap)
+  shadowQuality: 'auto', // auto (follows the tier) | off | low | medium | high | ultra
+  vsync: 'on', // on | off: off asks the browser for a low-latency canvas (applies after a reload)
 });
 
 const ENUMS = {
@@ -41,6 +45,9 @@ const ENUMS = {
   difficulty: ['relaxed', 'standard', 'pro'],
   spinMemory: ['reset', 'remember'],
   screenSize: ['small', 'normal', 'large'],
+  fpsCap: FPS_CAPS,
+  shadowQuality: SHADOW_LEVELS,
+  vsync: ['on', 'off'],
 };
 
 // Validate and normalize any object into a well-formed settings object.
@@ -55,9 +62,9 @@ export function sanitizeSettings(raw) {
     if (typeof def === 'boolean') out[k] = v === true || v === 'true' || v === 1;
     else if (typeof def === 'number') {
       const n = Number(v);
-      if (Number.isFinite(n)) out[k] = k === 'aimSensitivity' ? clamp(n, 0.25, 3) : k === 'stickScale' ? clamp(n, 0.7, 1.5) : clamp(n, 0, 1);
+      if (Number.isFinite(n)) out[k] = k === 'aimSensitivity' ? clamp(n, 0.25, 3) : k === 'stickScale' ? clamp(n, 0.7, 1.5) : k === 'renderScale' ? Math.round(clamp(n, 0.5, 1) * 20) / 20 : clamp(n, 0, 1);
     } else if (ENUMS[k]) {
-      if (ENUMS[k].includes(v)) out[k] = v;
+      if (ENUMS[k].includes(String(v))) out[k] = String(v);
     }
   }
   return out;
@@ -143,5 +150,6 @@ export function readUrlParams(search = (typeof location !== 'undefined' ? locati
     fresh: flag('fresh'),
     online: flag('online'),
     cloud: p.get('cloud') || undefined,
+    bench: flag('bench'),
   };
 }

@@ -55,6 +55,34 @@ export const TIERS = Object.freeze({
 
 export const tierById = (id) => TIERS[id] || TIERS.medium;
 
+// Shadow quality, set apart from the tier (Settings, Graphics). 'auto' follows the tier; the
+// others use the shadow settings of that tier, and 'off' turns the shadow maps off.
+export const SHADOW_LEVELS = ['auto', 'off', 'low', 'medium', 'high', 'ultra'];
+const SHADOWS_OFF = Object.freeze({ enabled: false, cascades: 1, size: 512, far: 70, radius: 1 });
+export function withShadows(tier, level = 'auto') {
+  if (!level || level === 'auto' || !SHADOW_LEVELS.includes(level)) return tier;
+  const shadows = level === 'off' ? SHADOWS_OFF : TIERS[level].shadows;
+  if (shadows === tier.shadows) return tier;
+  return Object.freeze({ ...tier, shadows, shadowLevel: level });
+}
+// The key a world is built for: the tier and its shadow quality.
+export const tierKey = (tier) => `${tier.id}:${tier.shadowLevel || 'auto'}`;
+
+// Frame rate caps (Settings, Graphics). 'uncapped' runs at the display's refresh rate, which is
+// as fast as a browser draws.
+export const FPS_CAPS = ['uncapped', '30', '60', '120', '144'];
+export const fpsCapValue = (v) => (v === 'uncapped' || !FPS_CAPS.includes(String(v)) ? 0 : Number(v));
+
+// Whether the GPU string names a desktop-class GPU (a dedicated card, Apple silicon, or a recent
+// strong integrated GPU). Pure, for the Settings label and the tier choice.
+const DESKTOP_GPU = /rtx|gtx|geforce|quadro|radeon rx|rx \d{3,4}|radeon pro|radeon \d{3}m|radeon\(tm\) \d{3}m|arc a\d|arc\(tm\)|intel\(r\) arc|apple m\d|iris xe|iris\(r\) xe/;
+export function isDesktopGpu(caps = {}) {
+  if (caps.mobile) return false;
+  const gpu = String(caps.gpu || '').toLowerCase();
+  if (/swiftshader|llvmpipe|software|basic render/.test(gpu)) return false;
+  return DESKTOP_GPU.test(gpu) || /^apple gpu$/.test(gpu.trim());
+}
+
 /**
  * Pick a tier from device capabilities. Pure, so it is unit tested.
  * caps: { gpu (unmasked renderer string), mobile, memoryGb, cores, maxTextureSize, webgl2, pixels }
@@ -73,10 +101,14 @@ export function detectTier(caps = {}) {
     if ((strong || appleGeneric) && mem >= 4 && cores >= 6) return 'medium';
     return 'low';
   }
-  if (/rtx|radeon rx (6[6-9]|7|8|9)\d\d|rx (6[6-9]|7|8|9)\d\d\d|arc a[57]|apple m[2-9] (pro|max|ultra)|apple m[3-9]/.test(gpu)) {
+  if (/rtx|radeon rx (6[6-9]|7|8|9)\d\d|rx (6[6-9]|7|8|9)\d\d\d|arc a[57]|arc\(tm\) a[57]|apple m[2-9] (pro|max|ultra)|apple m[3-9]/.test(gpu)) {
     return mem >= 8 ? 'ultra' : 'high';
   }
   if (/gtx (9[6-9]|10[5-9]|16)\d|geforce|radeon rx|radeon pro|apple m1|apple m2|arc|quadro|iris xe|iris\(r\) xe/.test(gpu)) return 'high';
+  // A desktop-class GPU named some other way: recent AMD integrated graphics (Radeon 680M,
+  // 780M, 890M), or Safari on a Mac, which reports only "Apple GPU" (every Mac it runs that on
+  // with WebGL 2 is Apple silicon or a dedicated card).
+  if (isDesktopGpu(caps)) return 'high';
   if (/intel|uhd|hd graphics|iris|radeon|mali|adreno|powervr/.test(gpu)) return mem >= 8 && cores >= 8 ? 'medium' : 'low';
   // Unknown GPU string (many browsers mask it): judge by the machine.
   if (mem >= 8 && cores >= 8) return 'high';

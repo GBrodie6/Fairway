@@ -99,6 +99,7 @@ export function installMenus(app, ui) {
   const btn = (label, onclick, cls = 'btn') => h('button', { class: cls, type: 'button', onclick }, label);
   const back = () => btn('Back', () => screens.back());
   const field = (label, control, id) => h('div', { class: 'field' }, h('label', { for: id, text: label }), control);
+  const cap = (t) => String(t || '').charAt(0).toUpperCase() + String(t || '').slice(1);
   const toastUnlocks = (ids) => { ids.forEach((id, i) => { const a = ACHIEVEMENTS.find((x) => x.id === id); if (a) setTimeout(() => ui.hud.toast(`Achievement: ${a.name}`, a.text, 2600), 600 + i * 2800); }); };
   let context = null; // { kind: 'career', eventId } | { kind: 'daily', key } | { kind: 'challenge', challenge } | null
 
@@ -130,11 +131,17 @@ export function installMenus(app, ui) {
       h('h3', { class: 'h', text: 'Display' }),
       field('Screen size (desktop)', select('s-size', settings.screenSize, [['small', 'Small'], ['normal', 'Normal'], ['large', 'Large']], (v) => { settings.screenSize = v; save2(); }), 's-size'),
       document.fullscreenEnabled || document.webkitFullscreenEnabled ? field('Fullscreen (F)', btn(document.fullscreenElement ? 'Leave fullscreen' : 'Go fullscreen', (e) => { const b = e.currentTarget; app.toggleFullscreen().then((on) => { b.textContent = on ? 'Leave fullscreen' : 'Go fullscreen'; }); }, 'btn small'), 's-fs') : null,
-      field('Graphics quality', select('s-tier', settings.tier, [['auto', `Automatic (${app.engine.tier.id})`], ...TIER_ORDER.map((t) => [t, t[0].toUpperCase() + t.slice(1)])], async (v) => { settings.tier = v; app.saveSettings(); await app.setTier(v === 'auto' ? app.autoTier : v); }), 's-tier'),
       field('Color vision', select('s-cb', settings.colorblind, [['off', 'Standard'], ['deuteranopia', 'Deuteranopia'], ['protanopia', 'Protanopia'], ['tritanopia', 'Tritanopia']], (v) => { settings.colorblind = v; save2(); }), 's-cb'),
       field('Reduce motion', check('s-rm', settings.reducedMotion, (v) => { settings.reducedMotion = v; save2(); }), 's-rm'),
       field('Show ball spin', check('s-spin', settings.spinViz, (v) => { settings.spinViz = v; save2(); }), 's-spin'),
       field('Vibration', check('s-hap', settings.haptics, (v) => { settings.haptics = v; save2(); }), 's-hap'),
+      h('h3', { class: 'h', text: 'Graphics' }),
+      h('p', { class: 'muted small', text: `GPU: ${(app.caps && app.caps.gpu) || 'not reported by the browser'}${app.caps && app.caps.desktopGpu ? ' (a desktop GPU)' : ''}. Display: ${Math.round(app.loop.stats.refreshHz || 60)} Hz.` }),
+      field('Graphics quality', select('s-tier', settings.tier, [['auto', `Automatic (${cap(app.autoTier)})`], ...TIER_ORDER.map((t) => [t, cap(t)])], async (v) => { settings.tier = v; app.saveSettings(); await app.applyGraphics(); }), 's-tier'),
+      field('Shadow quality', select('s-shadow', settings.shadowQuality, [['auto', 'Match the graphics quality'], ['off', 'Off'], ['low', 'Low'], ['medium', 'Medium'], ['high', 'High'], ['ultra', 'Ultra']], async (v) => { settings.shadowQuality = v; app.saveSettings(); await app.applyGraphics(); }), 's-shadow'),
+      field('Resolution scale', h('div', { class: 'rangerow' }, range('s-res', settings.renderScale, 0.5, 1, 0.05, (v) => { settings.renderScale = v; const o = document.getElementById('s-res-out'); if (o) o.textContent = `${Math.round(v * 100)}%`; app.saveSettings(); app.applyGraphics(); }), h('output', { id: 's-res-out', for: 's-res', text: `${Math.round(settings.renderScale * 100)}%` })), 's-res'),
+      field('Frame rate cap', select('s-fps', settings.fpsCap, [['uncapped', 'Uncapped (the display refresh rate)'], ['144', '144 fps'], ['120', '120 fps'], ['60', '60 fps'], ['30', '30 fps']], (v) => { settings.fpsCap = v; app.saveSettings(); app.applyGraphics(); }), 's-fps'),
+      field('V-Sync', select('s-vsync', settings.vsync, [['on', 'On'], ['off', 'Off: lower latency, may tear']], (v) => { settings.vsync = v; app.saveSettings(); ui.hud.toast('V-Sync applies after a reload', 'A browser draws at most once per display refresh either way', 2600); }), 's-vsync'),
       h('h3', { class: 'h', text: 'Sound' }),
       field('Master volume', range('s-mv', settings.masterVolume, 0, 1, 0.05, (v) => { settings.masterVolume = v; save2(); }), 's-mv'),
       field('Effects', range('s-sv', settings.sfxVolume, 0, 1, 0.05, (v) => { settings.sfxVolume = v; save2(); }), 's-sv'),

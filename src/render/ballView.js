@@ -41,7 +41,18 @@ function blobTexture() {
   return new THREE.CanvasTexture(c);
 }
 
-const MAX_TRACE = 420, MAX_PARTICLES = 220;
+const MAX_PARTICLES = 220;
+// The tracer keeps a point every TRACE_STEP metres or more, up to TRACE_MAX points. The
+// controller offers a point every drawn frame, so at a high refresh rate (144, 240 Hz) the
+// points come closer together; the budget holds a 500 m flight at any rate (the old 420 points
+// at 0.35 m ran out before a long drive landed above about 100 Hz).
+export const TRACE_MAX = 1000, TRACE_STEP = 0.5;
+export function traceAccepts(tp, x, y, z) {
+  const n = tp.length;
+  if (n >= TRACE_MAX * 3) return false;
+  return !(n >= 3 && Math.hypot(x - tp[n - 3], y - tp[n - 2], z - tp[n - 1]) < TRACE_STEP);
+}
+const MAX_TRACE = TRACE_MAX;
 const PART_COLORS = { grass: [0.12, 0.3, 0.06], sand: [0.78, 0.68, 0.48], dirt: [0.3, 0.2, 0.12], water: [0.8, 0.9, 1.0] };
 
 export function createBallView(world, engine) {
@@ -122,10 +133,7 @@ export function createBallView(world, engine) {
     clearTrace() { view.tracePoints.length = 0; traceGeo.setDrawRange(0, 0); landMark.visible = false; apexMark.visible = false; },
     addTrace(x, y, z) {
       const tp = view.tracePoints;
-      if (tp.length >= MAX_TRACE * 3) return;
-      const n = tp.length;
-      if (n >= 3 && Math.hypot(x - tp[n - 3], y - tp[n - 2], z - tp[n - 1]) < 0.35) return;
-      tp.push(x, y, z);
+      if (traceAccepts(tp, x, y, z)) tp.push(x, y, z);
     },
     showLanding(x, y, z, radius = 1.6) { landMark.position.set(x, y + 0.03, z); landMark.scale.setScalar(radius); landMark.visible = true; },
     showApex(x, y, z) { apexMark.position.set(x, y, z); apexMark.visible = true; },

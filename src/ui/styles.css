@@ -156,6 +156,9 @@ h3.h { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform
 .field input[type="range"] { width: min(46%, 200px); accent-color: var(--accent); min-height: 36px; }
 .field input[type="checkbox"] { width: 24px; height: 24px; accent-color: var(--accent); }
 .field select option { color: #111; }
+.field .rangerow { display: flex; align-items: center; gap: 8px; width: min(52%, 250px); }
+.field .rangerow input[type="range"] { flex: 1 1 auto; width: auto; min-width: 0; }
+.field .rangerow output { min-width: 3.2em; text-align: right; font-variant-numeric: tabular-nums; }
 table.card-t { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 table.card-t th, table.card-t td { padding: 6px 4px; text-align: center; border-bottom: 1px solid var(--line); }
 table.card-t th:first-child, table.card-t td:first-child { text-align: left; }

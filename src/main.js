@@ -4,10 +4,11 @@ import { createWorld } from './render/world.js';
 import { createAssets } from './render/assets.js';
 import { createLoop } from './core/loop.js';
 import { loadSettings, readUrlParams } from './core/settings.js';
-import { detectTier, readCaps } from './core/quality.js';
+import { detectTier, readCaps, withShadows, tierById, tierKey, fpsCapValue, isDesktopGpu } from './core/quality.js';
 import { COURSE_IDS } from './course/courses.js';
 import { TOD_ORDER } from './render/timeOfDay.js';
 import { createDebugOverlay } from './ui/debug.js';
+import { runBench, loadBench } from './render/bench.js';
 import { installHooks } from './tools/hooks.js';
 import { createGame } from './game/controller.js';
 import { createUI } from './ui/ui.js';
@@ -32,11 +33,15 @@ async function boot() {
   const ui = document.getElementById('ui');
   const bootEl = document.getElementById('boot');
 
-  const engine = createEngine({ container: view, tierId: 'low', renderScale: params.scale || 1 });
+  // Resolution scale: the URL's (QA runs) or the setting's.
+  const engine = createEngine({ container: view, tierId: 'low', renderScale: params.scale || settings.renderScale || 1, lowLatency: settings.vsync === 'off' });
   const caps = readCaps(engine.renderer.getContext());
+  // A desktop GPU (a dedicated card, Apple silicon, a strong integrated GPU) starts on High or
+  // Ultra; the Settings choice overrides it.
+  caps.desktopGpu = isDesktopGpu(caps);
   const autoTier = detectTier(caps);
-  const tierId = params.tier || (settings.tier !== 'auto' ? settings.tier : autoTier);
-  engine.setTier(tierId);
+  const wantTier = () => params.tier || (settings.tier !== 'auto' ? settings.tier : autoTier);
+  engine.setTier(wantTier(), settings.shadowQuality);
 
   const loop = createLoop({ timescale: params.timescale || 1 });
   const assets = createAssets(params.noassets ? { enabled: false } : {});
@@ -52,10 +57,10 @@ async function boot() {
   app.setCourse = async (id, hole = 1) => { await app.world.loadHole(id, hole); };
   // A tier change rebuilds the world: shadow cascades, material variants, and instance
   // counts are all baked into it.
-  app.setTier = async (id) => {
-    if (id === engine.tier.id) return;
+  app.setTier = async (id, shadows = settings.shadowQuality) => {
+    if (tierKey(withShadows(tierById(id), shadows)) === tierKey(engine.tier)) return;
     const prev = app.world;
-    engine.setTier(id);
+    engine.setTier(id, shadows);
     const next = createWorld(engine, { courseId: prev.courseId, todId: prev.todId, hole: prev.hole, assets });
     if (prev.wind) next.wind = { ...prev.wind };
     await next.loadHole(prev.courseId, prev.hole);
@@ -63,6 +68,14 @@ async function boot() {
     prev.dispose();
     for (const fn of app.onWorld || []) fn(next);
   };
+
+  // Settings, Graphics: the tier, shadow quality, resolution scale and frame rate cap.
+  app.applyGraphics = async () => {
+    if (!params.scale && Math.abs(engine.renderScale - settings.renderScale) > 1e-6) engine.setRenderScale(settings.renderScale);
+    loop.setMaxFps(fpsCapValue(settings.fpsCap));
+    await app.setTier(wantTier(), settings.shadowQuality);
+  };
+  loop.setMaxFps(fpsCapValue(settings.fpsCap));
 
   await app.world.loadHole(courseId, params.hole || 1);
 
@@ -94,8 +107,11 @@ async function boot() {
   loop.add('ui', (dt) => app.ui.update(dt));
   loop.add('audio', (dt) => app.audio.update(dt, app.world, app.game));
   loop.add('render', (dt, t, realDt) => engine.render(app.world.scene, app.world.camera, t, realDt));
+  // Frame time by tier at 1080p and 1440p (the ?debug overlay; ?debug&bench runs it on load).
+  app.bench = async (opts) => { app.benchResult = await runBench(app, opts); return app.benchResult; };
+  app.benchResult = loadBench();
   if (params.debug) {
-    app.debug = createDebugOverlay(ui, { engine, loop, getExtra: () => `terrain build ${app.world.buildMs.toFixed(0)} ms  terrain tris ${(app.world.terrainView.triangles / 1000).toFixed(0)}k\ntrees ${app.world.vegetation.counts.trees} (lod0 ${app.world.vegetation.drawn.lod0} lod1 ${app.world.vegetation.drawn.lod1} impostor ${app.world.vegetation.drawn.impostor})  plants ${app.world.vegetation.drawn.small}/${app.world.vegetation.counts.plants}  veg tris ${(app.world.vegetation.triangles / 1000).toFixed(0)}k\n  assets ${(assets.stats.bytes / 1048576).toFixed(1)} MB in ${assets.stats.requests} req` });
+    app.debug = createDebugOverlay(ui, { engine, loop, app, getExtra: () => `terrain build ${app.world.buildMs.toFixed(0)} ms  terrain tris ${(app.world.terrainView.triangles / 1000).toFixed(0)}k\ntrees ${app.world.vegetation.counts.trees} (lod0 ${app.world.vegetation.drawn.lod0} lod1 ${app.world.vegetation.drawn.lod1} impostor ${app.world.vegetation.drawn.impostor})  plants ${app.world.vegetation.drawn.small}/${app.world.vegetation.counts.plants}  veg tris ${(app.world.vegetation.triangles / 1000).toFixed(0)}k\n  assets ${(assets.stats.bytes / 1048576).toFixed(1)} MB in ${assets.stats.requests} req` });
     loop.add('debug', (dt, t, realDt) => app.debug.update(realDt), { profile: false });
   }
 
@@ -118,7 +134,10 @@ async function boot() {
   // A challenge link pasted into an open tab only changes the hash.
   window.addEventListener('hashchange', () => { if (!app.game.state.round && !app.openChallengeFromHash()) openLevelFromHash(app); });
   // The heavy assets arrive after first paint.
-  app.world.whenSettled().then(() => { fw.settled = true; });
+  app.world.whenSettled().then(() => {
+    fw.settled = true;
+    if (params.debug && params.bench && app.debug) app.debug.runBench();
+  });
 }
 
 // A shared community hole: #level=<id>.
