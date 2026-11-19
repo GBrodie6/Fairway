@@ -1,0 +1,210 @@
+{
+ "size": "1920x1080",
+ "checks": [
+  {
+   "name": "Controller found, button hints shown",
+   "pass": true,
+   "detail": {
+    "padnav": true,
+    "padmode": true,
+    "badges": [
+     "X",
+     "L3",
+     "Menu",
+     "LB",
+     "View",
+     "RB",
+     "LT RT"
+    ],
+    "zoneHint": "A hold, let go at the top, A again to hit"
+   }
+  },
+  {
+   "name": "Left stick and d-pad aim",
+   "pass": true,
+   "detail": {
+    "a0": -0.007246739113400734,
+    "stick": 0.06237207110087173,
+    "dpad": 0.06673539423085773
+   }
+  },
+  {
+   "name": "LB and RB, d-pad up and down change club",
+   "pass": true,
+   "detail": {
+    "c0": "I4",
+    "rb": "I5",
+    "lb": "I4",
+    "down": "I5",
+    "up": "I4"
+   }
+  },
+  {
+   "name": "RT and LT change shot type",
+   "pass": true,
+   "detail": {
+    "t0": "full",
+    "rt": "stinger",
+    "lt": "full"
+   }
+  },
+  {
+   "name": "Right stick moves the contact dot (up adds backspin), R3 centres it",
+   "pass": true,
+   "detail": {
+    "moved": {
+     "x": 0.13999999999999999,
+     "y": 0.10506999999999388
+    },
+    "centred": {
+     "x": 0,
+     "y": 0
+    }
+   }
+  },
+  {
+   "name": "X opens the map, B closes it",
+   "pass": true,
+   "detail": {
+    "open": true,
+    "after": false
+   }
+  },
+  {
+   "name": "View opens the club list; the d-pad moves, A picks a club",
+   "pass": true,
+   "detail": {
+    "open": true,
+    "focus": "5i185 yd",
+    "before": "I4",
+    "picked": "I5"
+   }
+  },
+  {
+   "name": "A: hold, release, press swings",
+   "pass": true,
+   "detail": {
+    "phase": "flight",
+    "power": 0.904,
+    "tempo": "Late"
+   }
+  },
+  {
+   "name": "Menu pauses with the main action focused; the d-pad moves (with a focus ring); B goes back",
+   "pass": true,
+   "detail": {
+    "modal": "pause",
+    "focus": "Resume",
+    "down": "Scorecard",
+    "up": "Resume",
+    "ring": "solid",
+    "bar": "D-padMoveAChooseBBackRight stickScroll",
+    "after": null
+   }
+  },
+  {
+   "name": "A opens Settings from the pause menu; left and right change a setting",
+   "pass": true,
+   "detail": {
+    "onSettings": "Settings",
+    "modal": "settings",
+    "sizeBefore": "normal",
+    "sizeAfter": "large",
+    "sizeBack": "normal"
+   }
+  },
+  {
+   "name": "LB and RB select pieces",
+   "pass": true,
+   "detail": {
+    "selA": {
+     "kind": "tee"
+    },
+    "selB": {
+     "kind": "pin"
+    },
+    "selC": {
+     "kind": "tee"
+    }
+   }
+  },
+  {
+   "name": "The left stick moves the selected piece, one undo step for the move",
+   "pass": true,
+   "detail": {
+    "piece": {
+     "kind": "tee"
+    },
+    "undo": [
+     0,
+     1
+    ]
+   }
+  },
+  {
+   "name": "Y undoes the move, View redoes it",
+   "pass": true
+  },
+  {
+   "name": "A presses the focused Bunker button, X deletes the new bunker",
+   "pass": true,
+   "detail": {
+    "n0": 2,
+    "n1": 3,
+    "n2": 2
+   }
+  },
+  {
+   "name": "RT and LT zoom, the right stick pans",
+   "pass": true,
+   "detail": {
+    "zoomIn": 1.5625,
+    "pan": {
+     "x": -84,
+     "y": 0
+    },
+    "zoomOut": 1
+   }
+  },
+  {
+   "name": "The editor shows its controller bar",
+   "pass": true,
+   "detail": "D-padButtonsAPressLeft stickMove pieceLB RBSelectXDeleteYUndoViewRedoLT RTZoomRight stickPanBBack"
+  },
+  {
+   "name": "B leaves the editor",
+   "pass": true,
+   "detail": "create"
+  },
+  {
+   "name": "The mouse hides the hints, the controller brings them back",
+   "pass": true,
+   "detail": {
+    "afterMouse": false,
+    "afterPad": true
+   }
+  }
+ ],
+ "note": "An injected standard gamepad; no physical controller was used.",
+ "swingLog": [
+  "meterDown(129520.4) now=130429.0 phase=idle frame=105",
+  "meterPress(129520.4) now=130429.0 phase=idle frame=105",
+  "meter.press(129520.4) now=130429.0 phase=idle frame=105",
+  "meterUp(130515.2) now=131658.0 phase=backswing frame=107",
+  "meterPress(130515.2) now=131658.0 phase=backswing frame=107",
+  "meter.press(130515.2) now=131658.0 phase=backswing frame=107",
+  "meter.press(131249.8) now=131658.1 phase=downswing frame=107",
+  "setEnabled(false) now=131667.0 phase=done frame=107",
+  "setEnabled(false) now=135602.4 phase=done frame=108",
+  "setEnabled(false) now=135618.7 phase=done frame=109",
+  "meterUp(135623.1) now=135635.1 phase=done frame=110",
+  "setEnabled(false) now=135635.2 phase=done frame=110"
+ ],
+ "swingTimes": {
+  "tPress": 129520.40000000037,
+  "tRel": 130515.20000000112
+ },
+ "consoleErrors": [],
+ "passed": 18,
+ "total": 18
+}

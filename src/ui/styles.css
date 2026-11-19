@@ -602,7 +602,12 @@ html.desk .sheet.editor .lvstatus { min-height: 2.6em; }
 .padmode .swingzone:not(.disabled) .padzonehint { display: block; }
 .padmode .swingzone.active .padzonehint { display: none; }
 html.padnav #ui :focus { outline: 3px solid var(--accent); outline-offset: 2px; }
-.padbar { display: none; position: absolute; left: 50%; bottom: calc(10px + var(--safe-b)); transform: translateX(-50%); z-index: 70; gap: 14px; align-items: center; padding: 7px 14px; border-radius: 12px; font-size: 13px; color: var(--ink); white-space: nowrap; pointer-events: none; max-width: calc(100vw - 20px); overflow: hidden; }
+.padbar { display: none; position: absolute; left: 10px; right: 10px; bottom: calc(10px + var(--safe-b)); z-index: 70; justify-content: center; pointer-events: none; }
 .padbar.on { display: flex; }
-.padbar b { display: inline-block; min-width: 20px; margin-right: 5px; padding: 0 5px; border-radius: 9px; background: #f2f6ec; color: #0d1a12; font-size: 11px; line-height: 18px; text-align: center; }
-.desk .padbar { scale: var(--hs, 1); transform-origin: bottom center; translate: -50% 0; transform: none; }
+.padpill { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 14px; max-width: 100%; padding: 7px 14px; border-radius: 12px; font-size: 13px; color: var(--ink); }
+.padpill span { white-space: nowrap; }
+.padpill b { display: inline-block; min-width: 20px; margin-right: 5px; padding: 0 5px; border-radius: 9px; background: #f2f6ec; color: #0d1a12; font-size: 11px; line-height: 18px; text-align: center; }
+.desk .padpill { zoom: var(--hs, 1); max-width: calc((100vw - 20px) / var(--hs, 1)); }
+/* Menus and the level editor keep their foot clear of the bar. */
+html.padbar-on .screen { padding-bottom: calc(16px + 64px * var(--hs, 1) + var(--safe-b)); }
+html.desk.padbar-on .sheet.editor .lvcanvas { height: min(calc((100vh - 90px - 64px * var(--hs, 1)) / var(--ms, 1)), 820px); }

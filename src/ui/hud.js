@@ -375,7 +375,8 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
   if (shotPanel && shotPanel.btn) padHint(shotPanel.btn, 'LT RT');
   const zoneHint = h('div', { class: 'padzonehint', 'aria-hidden': 'true' }, h('b', { text: 'A' }), ' hold, let go at the top, ', h('b', { text: 'A' }), ' again to hit');
   zone.el.appendChild(zoneHint);
-  const padbar = h('div', { class: 'padbar glass', 'aria-hidden': 'true' });
+  const padpill = h('div', { class: 'padpill glass' });
+  const padbar = h('div', { class: 'padbar', 'aria-hidden': 'true' }, padpill);
   root.appendChild(padbar);
   const PADBARS = {
     menu: [['D-pad', 'Move'], ['A', 'Choose'], ['B', 'Back'], ['Right stick', 'Scroll']],
@@ -386,9 +387,11 @@ export function createHud(root, { game, settings, haptic, actions, getWorld }) {
     const k = kind && PADBARS[kind] ? kind : '';
     if (k === padbarKind) return;
     padbarKind = k;
-    padbar.textContent = '';
-    if (k) for (const [b, what] of PADBARS[k]) padbar.append(h('span', {}, h('b', { text: b }), what));
+    padpill.textContent = '';
+    if (k) for (const [b, what] of PADBARS[k]) padpill.append(h('span', {}, h('b', { text: b }), what));
     padbar.classList.toggle('on', !!k);
+    // Menus leave room for the bar at the foot of the window (styles.css html.padbar-on).
+    document.documentElement.classList.toggle('padbar-on', !!k);
   };
   hud.setPadMode = (on) => {
     root.classList.toggle('padmode', !!on);

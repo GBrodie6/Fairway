@@ -156,3 +156,45 @@ GPU's; see the benchmark below.
 
   Real GPU numbers need the button pressed on a real machine.
 - Console errors: 0 in every part.
+
+## Part 5: controller
+
+No physical controller is attached to this machine. `node scripts/tools/pad.mjs
+qa/proof/desktop/p5 1920x1080` injects a standard-mapping gamepad into the page
+(`navigator.getGamepads` returns it, as Chrome does for a pad plugged in before the page
+opened) and sets its buttons and sticks between frames: 18 of 18 checks pass
+(`p5-1920x1080.json`, `p5-1920x1080-*.jpg`).
+
+- Found without the connect event (a pad plugged in before the page opened), with a toast.
+- Button hints while a controller is in use (`p5-1920x1080-1-hints.jpg`): a badge on each HUD
+  button (X map, Y replay, Menu, View club list, LB and RB on the club arrows, swapped in the
+  left-handed layout, L3 look, LT RT on the shot button), a line in the swing zone ("A hold, let
+  go at the top, A again to hit") and a bar of hints at the foot of menus and the editor. The
+  mouse or the keyboard hides them; the pad brings them back.
+- In a round: the left stick and the d-pad aim (the d-pad in 0.25 degree steps, repeating when
+  held), LB and RB and the d-pad up and down change club, LT and RT the shot type, the right
+  stick moves the ball contact dot (up adds backspin) and R3 centres it
+  (`p5-1920x1080-2-spin-dot.jpg`), X opens the map and B closes it, View opens the club list and
+  the d-pad and A pick a club (`p5-1920x1080-4-club-list.jpg`), L3 looks around.
+- The swing with A: hold for the backswing, release at the top, press again for impact, the same
+  meter as Space. The check's swing launched the ball at power 0.90. On this software renderer
+  a frame takes about a second, so the impact press was polled after the meter's own window
+  closed and the meter's late strike hit it (tempo Late); with a frame every 16 ms the press
+  lands in time (the keyboard check in Part 3 got Perfect on the same meter).
+- Menus: Menu pauses with Resume focused (a new screen focuses its main action), the d-pad
+  moves the focus with a clear ring (`p5-1920x1080-6-pause-menu.jpg`), A chooses, B goes back,
+  left and right change a select or a slider (Screen size changed and changed back on the
+  Settings screen, `p5-1920x1080-7-settings.jpg`), the right stick scrolls.
+- The level editor: the d-pad and A use its buttons (A on Bunker placed one, X deleted it), LB
+  and RB select the tee, the pin, the bends and the pieces, the left stick moves the selected
+  piece and the whole move is one undo step, Y undoes and View redoes, LT and RT zoom, the right
+  stick pans, B leaves.
+- Found and fixed while checking:
+  - The editor's hint bar was wider than a 1920 window at the desktop scale and covered the
+    bottom edge of the map (`p5-1920x1080-8-editor.jpg`). It now wraps when it has to, sits
+    centred inside the window, and menus and the editor map leave room for it
+    (`p5-padbar-fixed-1366x768.jpg`, `-1920x1080.jpg`, `-3440x1440.jpg`: at 1920x1080 the
+    editor ends at y 974 and the bar starts at 1030).
+  - On a very slow machine a quick d-pad tap seen on two polls a frame apart could count as a
+    hold and repeat; a repeat now also needs the button seen held on two more polls.
+- Console errors: 0.
