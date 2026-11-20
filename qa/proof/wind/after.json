@@ -1,0 +1,128 @@
+[
+ {
+  "course": "links",
+  "tag": "after",
+  "windMph": 18,
+  "preview": {
+   "withWind": {
+    "land": {
+     "x": -27.663,
+     "z": -206.853
+    },
+    "carry": 208.69,
+    "power": 0.9174,
+    "windMph": 18
+   },
+   "calm": {
+    "land": {
+     "x": -27.663,
+     "z": -206.853
+    },
+    "carry": 208.69,
+    "power": 0.9174,
+    "windMph": 18
+   },
+   "back": {
+    "land": {
+     "x": -27.663,
+     "z": -206.853
+    },
+    "carry": 208.69,
+    "power": 0.9174,
+    "windMph": 18
+   }
+  },
+  "previewMovesWithWind": 0,
+  "powerMovesWithWind": 0,
+  "previewIgnoresWind": true,
+  "shot": {
+   "carry": 218.9,
+   "offPreview": 19.6
+  },
+  "consoleErrors": 0
+ },
+ {
+  "course": "standrews",
+  "tag": "after",
+  "windMph": 20,
+  "preview": {
+   "withWind": {
+    "land": {
+     "x": 0,
+     "z": -203.755
+    },
+    "carry": 203.75,
+    "power": 0.901,
+    "windMph": 20
+   },
+   "calm": {
+    "land": {
+     "x": 0,
+     "z": -203.755
+    },
+    "carry": 203.75,
+    "power": 0.901,
+    "windMph": 20
+   },
+   "back": {
+    "land": {
+     "x": 0,
+     "z": -203.755
+    },
+    "carry": 203.75,
+    "power": 0.901,
+    "windMph": 20
+   }
+  },
+  "previewMovesWithWind": 0,
+  "powerMovesWithWind": 0,
+  "previewIgnoresWind": true,
+  "shot": {
+   "carry": 213.5,
+   "offPreview": 17.5
+  },
+  "consoleErrors": 0
+ },
+ {
+  "course": "parkland",
+  "tag": "after",
+  "windMph": 7,
+  "preview": {
+   "withWind": {
+    "land": {
+     "x": 0.871,
+     "z": -213.348
+    },
+    "carry": 213.35,
+    "power": 0.9392,
+    "windMph": 7
+   },
+   "calm": {
+    "land": {
+     "x": 0.871,
+     "z": -213.348
+    },
+    "carry": 213.35,
+    "power": 0.9392,
+    "windMph": 7
+   },
+   "back": {
+    "land": {
+     "x": 0.871,
+     "z": -213.348
+    },
+    "carry": 213.35,
+    "power": 0.9392,
+    "windMph": 7
+   }
+  },
+  "previewMovesWithWind": 0,
+  "powerMovesWithWind": 0,
+  "previewIgnoresWind": true,
+  "shot": {
+   "carry": 219.1,
+   "offPreview": 9
+  },
+  "consoleErrors": 0
+ }
+]

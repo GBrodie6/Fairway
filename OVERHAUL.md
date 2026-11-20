@@ -899,3 +899,32 @@ the first runs were the check tool's own timing (a fixed pause after a tap, when
 frame takes seconds on a software renderer) and a button below the fold; the tool now waits for
 each expected result and scrolls buttons into view.
 
+
+## The aim preview leaves the wind out
+
+The preview of where the ball lands (the landing ring at the end of the aim fan, the hole map's
+line and ring, the look-ahead camera's landing point, the hazard warning that reads it) and the
+HUD's suggested power used to fly the ball in the round's wind, so the player only had to follow
+them. Both now fly in still air (`game/controller.js`: `predictShot` and `solvePower` get no wind);
+the wind readout stays, and judging the difference is the player's job. The shot itself still
+flies in the real wind (each club tier's wind benefit included), the computer players still plan
+with the wind, and the fan's width still grows with the wind (it shows how uncertain the shot is,
+not which way it goes). Nothing in the ball physics, the swing or the carry rules changed.
+
+Checked in the game (`scripts/tools/wind-preview.mjs`, 390x844, real touch for the swing; `qa/proof/wind/`): in
+a windy round the preview and the suggested power are read, then read again with the wind
+replaced by still air, then with the wind back; then a real swing at the suggested power.
+
+| course, wind | before: preview moves with the wind | before: power moves | before: shot lands from the preview | after: preview moves | after: power moves | after: shot lands from the preview |
+| --- | --- | --- | --- | --- | --- | --- |
+| links, 18 mph | 14.7 m | 0.024 | 1.2 m | 0.0 m | 0.000 | 19.6 m |
+| standrews, 20 mph | 34.2 m | 0.116 | 2.7 m | 0.0 m | 0.000 | 17.5 m |
+| parkland, 7 mph | 7.3 m | 0.035 | 0.8 m | 0.0 m | 0.000 | 9 m |
+
+Before, the preview moved 7 to 34 m with the wind and the shot landed within 3 m of it, so the
+preview gave the answer away. Now the preview and the power do not move at all, the preview
+with wind is exactly the old build's still-air preview, and the shots landed 9 to 20 m from
+it: the wind and the strike are the player's to judge. 0 console errors on both builds. A unit
+test (`tests/aimPreview.test.js`) pins the controller to no wind for the preview and the
+power and the real wind for the shot, and checks that no wind means still air.
+

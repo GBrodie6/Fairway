@@ -243,7 +243,9 @@ export function createGame(app) {
       w.overlays.showPutt({ path: r.points });
     } else {
       const power = game.suggestedPower();
-      const r = predictShot(t, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aim, power, profile: guideProfile(state.club), spin: mySpin() }, guideWind(state.club, state.aim), state.clock);
+      // The preview flies in still air: where the ball lands in the wind is for the player to
+      // judge from the wind readout (the shot itself still flies in the real wind).
+      const r = predictShot(t, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aim, power, profile: guideProfile(state.club), spin: mySpin() }, null, state.clock);
       state.prediction = r; state.putt = null;
       const wRel = windRelative(state.wind, state.aim, state.clock);
       const disp = dispersion(state.club, state.lie, { windMps: Math.hypot(wRel.along, wRel.cross), profile: state.profile, shotType: state.shotType });
@@ -252,13 +254,14 @@ export function createGame(app) {
     }
     emit('aim', null);
   }
-  // Power that sends the ball to the target with the current club, shot type, lie, and wind.
-  // Solved once per club or shot-type change (not on every aim drag) and cached.
+  // Power that sends the ball to the target with the current club, shot type and lie, in still
+  // air (the wind is the player's to allow for, as in the preview). Solved once per club or
+  // shot-type change (not on every aim drag) and cached.
   function computeIdeal() {
     if (state.club.putter || !state.target) { state.idealPower = 0.5; return; }
     // Solve for where the ball stops, not where it lands: with only part of the roll allowed
     // for, approaches to firm or downhill greens ran 20 yards past the pin in play tests.
-    state.idealPower = solvePower(W().terrain, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aimRef, profile: guideProfile(state.club), spin: mySpin() }, guideWind(state.club, state.aimRef), state.clock, state.target, 'end');
+    state.idealPower = solvePower(W().terrain, { x: state.ball.x, z: state.ball.z, lie: state.lie, club: state.club, shotType: state.shotType, aim: state.aimRef, profile: guideProfile(state.club), spin: mySpin() }, null, state.clock, state.target, 'end');
   }
   game.suggestedPower = () => {
     if (state.club.putter) return state.putt ? state.putt.idealPower : 0.5;
@@ -464,8 +467,8 @@ export function createGame(app) {
   // for every tier; your ball's small speed and spin factors are folded in, so the guide's
   // mark is exactly where a Pured strike lands. Computer players use the profile unchanged.
   // The tier's smaller lie penalty is folded in too (it changes nothing from a fairway or a
-  // tee), and guideWind is the wind the tier's ball feels, so the mark stays exact in wind and
-  // rough as well.
+  // tee), so the mark stays exact in rough as well. The guide leaves the wind out on purpose:
+  // in wind the player judges the difference.
   function guideProfile(club) {
     if (!club || club.putter || !isHuman() || !app.gearFor) return state.profile;
     const gear = app.gearFor(club.id) || {};
@@ -473,7 +476,6 @@ export function createGame(app) {
     const p = b.speed === 1 && b.spin === 1 ? state.profile : { ...state.profile, power: state.profile.power * b.speed, spin: state.profile.spin * b.spin };
     return tierProfile(p, gear.rarity || 'common');
   }
-  const guideWind = (club, heading) => (club && !club.putter && isHuman() && app.gearFor ? tierWind(windAt, (app.gearFor(club.id) || {}).rarity, heading) : windAt);
 
   // The pro behind the current player, if any, and the profile that player's shots fly with:
   // a computer pro flies with the pro's profile; everyone else with the round's profile.

@@ -1,0 +1,128 @@
+[
+ {
+  "course": "links",
+  "tag": "before",
+  "windMph": 18,
+  "preview": {
+   "withWind": {
+    "land": {
+     "x": -13.347,
+     "z": -210.283
+    },
+    "carry": 210.71,
+    "power": 0.8937,
+    "windMph": 18
+   },
+   "calm": {
+    "land": {
+     "x": -27.663,
+     "z": -206.853
+    },
+    "carry": 208.69,
+    "power": 0.9174,
+    "windMph": 18
+   },
+   "back": {
+    "land": {
+     "x": -13.347,
+     "z": -210.283
+    },
+    "carry": 210.71,
+    "power": 0.8937,
+    "windMph": 18
+   }
+  },
+  "previewMovesWithWind": 14.721,
+  "powerMovesWithWind": 0.0237,
+  "previewIgnoresWind": false,
+  "shot": {
+   "carry": 210.4,
+   "offPreview": 1.2
+  },
+  "consoleErrors": 0
+ },
+ {
+  "course": "standrews",
+  "tag": "before",
+  "windMph": 20,
+  "preview": {
+   "withWind": {
+    "land": {
+     "x": 8.86,
+     "z": -170.735
+    },
+    "carry": 170.96,
+    "power": 0.7848,
+    "windMph": 20
+   },
+   "calm": {
+    "land": {
+     "x": 0,
+     "z": -203.755
+    },
+    "carry": 203.75,
+    "power": 0.901,
+    "windMph": 20
+   },
+   "back": {
+    "land": {
+     "x": 8.947,
+     "z": -171.427
+    },
+    "carry": 171.66,
+    "power": 0.7866,
+    "windMph": 20
+   }
+  },
+  "previewMovesWithWind": 34.188,
+  "powerMovesWithWind": 0.1162,
+  "previewIgnoresWind": false,
+  "shot": {
+   "carry": 169,
+   "offPreview": 2.7
+  },
+  "consoleErrors": 0
+ },
+ {
+  "course": "parkland",
+  "tag": "before",
+  "windMph": 7,
+  "preview": {
+   "withWind": {
+    "land": {
+     "x": 7.029,
+     "z": -209.488
+    },
+    "carry": 209.61,
+    "power": 0.9046,
+    "windMph": 7
+   },
+   "calm": {
+    "land": {
+     "x": 0.871,
+     "z": -213.348
+    },
+    "carry": 213.35,
+    "power": 0.9392,
+    "windMph": 7
+   },
+   "back": {
+    "land": {
+     "x": 7.036,
+     "z": -209.497
+    },
+    "carry": 209.61,
+    "power": 0.9046,
+    "windMph": 7
+   }
+  },
+  "previewMovesWithWind": 7.268,
+  "powerMovesWithWind": 0.0346,
+  "previewIgnoresWind": false,
+  "shot": {
+   "carry": 208.9,
+   "offPreview": 0.8
+  },
+  "consoleErrors": 0
+ }
+]
