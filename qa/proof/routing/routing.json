@@ -1,0 +1,472 @@
+[
+ {
+  "course": "parkland",
+  "source": "generated",
+  "solveMs": 193,
+  "nodes": 17,
+  "storedMatchesSolve": true,
+  "problems": [],
+  "minGap": 62.3,
+  "minPair": [
+   8,
+   9
+  ],
+  "walks": [
+   24,
+   24,
+   58.2,
+   58.2,
+   24,
+   58.2,
+   58.2,
+   100,
+   24,
+   58.2,
+   58.2,
+   24,
+   100,
+   58.2,
+   58.2,
+   58.2,
+   58.2
+  ],
+  "home": 431.9,
+  "width": 1428,
+  "depth": 1572,
+  "deviation": null
+ },
+ {
+  "course": "links",
+  "source": "generated",
+  "solveMs": 1568,
+  "nodes": 18,
+  "storedMatchesSolve": true,
+  "problems": [],
+  "minGap": 60.9,
+  "minPair": [
+   14,
+   15
+  ],
+  "walks": [
+   24,
+   100,
+   100,
+   58.2,
+   100,
+   100,
+   100,
+   100,
+   58.2,
+   24,
+   100,
+   100,
+   58.2,
+   24,
+   100,
+   100,
+   58.2
+  ],
+  "home": 3066.1,
+  "width": 1874,
+  "depth": 3488,
+  "deviation": null
+ },
+ {
+  "course": "desert",
+  "source": "generated",
+  "solveMs": 125,
+  "nodes": 19,
+  "storedMatchesSolve": true,
+  "problems": [],
+  "minGap": 60.5,
+  "minPair": [
+   2,
+   3
+  ],
+  "walks": [
+   24,
+   24,
+   24,
+   24,
+   58.2,
+   100,
+   100,
+   100,
+   24,
+   24,
+   100,
+   58.2,
+   24,
+   24,
+   24,
+   24,
+   24
+  ],
+  "home": 576.3,
+  "width": 1285,
+  "depth": 1344,
+  "deviation": null
+ },
+ {
+  "course": "alpine",
+  "source": "generated",
+  "solveMs": 83,
+  "nodes": 17,
+  "storedMatchesSolve": true,
+  "problems": [],
+  "minGap": 60.6,
+  "minPair": [
+   5,
+   6
+  ],
+  "walks": [
+   24,
+   24,
+   58.2,
+   58.2,
+   58.2,
+   100,
+   24,
+   100,
+   24,
+   24,
+   58.2,
+   58.2,
+   24,
+   58.2,
+   58.2,
+   24,
+   58.2
+  ],
+  "home": 324.3,
+  "width": 1352,
+  "depth": 1273,
+  "deviation": null
+ },
+ {
+  "course": "tropical",
+  "source": "generated",
+  "solveMs": 756,
+  "nodes": 17,
+  "storedMatchesSolve": true,
+  "problems": [],
+  "minGap": 63.4,
+  "minPair": [
+   3,
+   4
+  ],
+  "walks": [
+   24,
+   100,
+   58.2,
+   24,
+   24,
+   100,
+   100,
+   100,
+   24,
+   58.2,
+   58.2,
+   100,
+   100,
+   100,
+   58.2,
+   100,
+   58.2
+  ],
+  "home": 1776.4,
+  "width": 2700,
+  "depth": 1541,
+  "deviation": null
+ },
+ {
+  "course": "augusta",
+  "source": "OpenStreetMap",
+  "solveMs": 411,
+  "nodes": 62,
+  "storedMatchesSolve": true,
+  "problems": [],
+  "minGap": 60.4,
+  "minPair": [
+   8,
+   9
+  ],
+  "walks": [
+   58.2,
+   58.2,
+   24,
+   58.2,
+   100,
+   58.2,
+   100,
+   24,
+   58.2,
+   24,
+   100,
+   100,
+   100,
+   100,
+   58.2,
+   100,
+   100
+  ],
+  "home": 961.9,
+  "width": 1639,
+  "depth": 1625,
+  "deviation": [
+   {
+    "hole": 1,
+    "headingOff": 0,
+    "teeOff": 0,
+    "greenOff": 1
+   },
+   {
+    "hole": 2,
+    "headingOff": 5,
+    "teeOff": 21,
+    "greenOff": 77
+   },
+   {
+    "hole": 3,
+    "headingOff": 0,
+    "teeOff": 132,
+    "greenOff": 136
+   },
+   {
+    "hole": 4,
+    "headingOff": 0,
+    "teeOff": 221,
+    "greenOff": 217
+   },
+   {
+    "hole": 5,
+    "headingOff": 0,
+    "teeOff": 258,
+    "greenOff": 260
+   },
+   {
+    "hole": 6,
+    "headingOff": 0,
+    "teeOff": 179,
+    "greenOff": 183
+   },
+   {
+    "hole": 7,
+    "headingOff": 20,
+    "teeOff": 121,
+    "greenOff": 262
+   },
+   {
+    "hole": 8,
+    "headingOff": 30,
+    "teeOff": 258,
+    "greenOff": 290
+   },
+   {
+    "hole": 9,
+    "headingOff": 0,
+    "teeOff": 416,
+    "greenOff": 430
+   },
+   {
+    "hole": 10,
+    "headingOff": 0,
+    "teeOff": 407,
+    "greenOff": 407
+   },
+   {
+    "hole": 11,
+    "headingOff": 10,
+    "teeOff": 438,
+    "greenOff": 364
+   },
+   {
+    "hole": 12,
+    "headingOff": 10,
+    "teeOff": 345,
+    "greenOff": 332
+   },
+   {
+    "hole": 13,
+    "headingOff": 5,
+    "teeOff": 270,
+    "greenOff": 272
+   },
+   {
+    "hole": 14,
+    "headingOff": 65,
+    "teeOff": 401,
+    "greenOff": 823
+   },
+   {
+    "hole": 15,
+    "headingOff": 30,
+    "teeOff": 1014,
+    "greenOff": 761
+   },
+   {
+    "hole": 16,
+    "headingOff": 30,
+    "teeOff": 627,
+    "greenOff": 558
+   },
+   {
+    "hole": 17,
+    "headingOff": 115,
+    "teeOff": 645,
+    "greenOff": 1009
+   },
+   {
+    "hole": 18,
+    "headingOff": 30,
+    "teeOff": 1152,
+    "greenOff": 940
+   }
+  ]
+ },
+ {
+  "course": "standrews",
+  "source": "OpenStreetMap",
+  "solveMs": 66,
+  "nodes": 17,
+  "storedMatchesSolve": true,
+  "problems": [],
+  "minGap": 60.4,
+  "minPair": [
+   9,
+   10
+  ],
+  "walks": [
+   24,
+   24,
+   24,
+   24,
+   24,
+   24,
+   100,
+   100,
+   100,
+   100,
+   100,
+   58.2,
+   58.2,
+   100,
+   24,
+   100,
+   24
+  ],
+  "home": 512.8,
+  "width": 2174,
+  "depth": 2723,
+  "deviation": [
+   {
+    "hole": 1,
+    "headingOff": 0,
+    "teeOff": 0,
+    "greenOff": 9
+   },
+   {
+    "hole": 2,
+    "headingOff": 0,
+    "teeOff": 50,
+    "greenOff": 94
+   },
+   {
+    "hole": 3,
+    "headingOff": 0,
+    "teeOff": 211,
+    "greenOff": 209
+   },
+   {
+    "hole": 4,
+    "headingOff": 0,
+    "teeOff": 312,
+    "greenOff": 326
+   },
+   {
+    "hole": 5,
+    "headingOff": 0,
+    "teeOff": 408,
+    "greenOff": 434
+   },
+   {
+    "hole": 6,
+    "headingOff": 0,
+    "teeOff": 478,
+    "greenOff": 479
+   },
+   {
+    "hole": 7,
+    "headingOff": 40,
+    "teeOff": 554,
+    "greenOff": 450
+   },
+   {
+    "hole": 8,
+    "headingOff": 20,
+    "teeOff": 409,
+    "greenOff": 377
+   },
+   {
+    "hole": 9,
+    "headingOff": 20,
+    "teeOff": 340,
+    "greenOff": 268
+   },
+   {
+    "hole": 10,
+    "headingOff": 105,
+    "teeOff": 239,
+    "greenOff": 586
+   },
+   {
+    "hole": 11,
+    "headingOff": 120,
+    "teeOff": 729,
+    "greenOff": 976
+   },
+   {
+    "hole": 12,
+    "headingOff": 55,
+    "teeOff": 1109,
+    "greenOff": 836
+   },
+   {
+    "hole": 13,
+    "headingOff": 60,
+    "teeOff": 803,
+    "greenOff": 459
+   },
+   {
+    "hole": 14,
+    "headingOff": 25,
+    "teeOff": 428,
+    "greenOff": 368
+   },
+   {
+    "hole": 15,
+    "headingOff": 15,
+    "teeOff": 523,
+    "greenOff": 471
+   },
+   {
+    "hole": 16,
+    "headingOff": 55,
+    "teeOff": 602,
+    "greenOff": 711
+   },
+   {
+    "hole": 17,
+    "headingOff": 50,
+    "teeOff": 826,
+    "greenOff": 532
+   },
+   {
+    "hole": 18,
+    "headingOff": 15,
+    "teeOff": 581,
+    "greenOff": 533
+   }
+  ]
+ }
+]

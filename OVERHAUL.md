@@ -679,3 +679,64 @@ Live checks and a live 3-hole tap-through at 390x844 found no errors.
 | medium | 112 draws, 455k tris, 3,555 ms | 119 draws, 404k tris, 2,750 ms | 96 draws, 448k tris, 3,116 ms |
 | high | 135 draws, 1,009k tris, 5,713 ms | 131 draws, 927k tris, 4,125 ms | 117 draws, 814k tris, 5,237 ms |
 | ultra | 147 draws, 1,640k tris, 7,255 ms | 151 draws, 1,569k tris, 4,993 ms | 141 draws, 1,431k tris, 6,185 ms |
+
+## Course scenery 2: one world for all 18 holes (the routing)
+
+`course/routing.js` gives every built-in course a routing: for each hole a world position for
+its back tee and a heading for its frame, plus the clubhouse. Hole definitions do not change
+(pars, yardages, shapes, hazards, pins and the physics ground are the same; a test checks the
+definitions and the ground before and after the routing is built). The rules, checked by
+`routingProblems` and `tests/routing.test.js`:
+
+- No two playing corridors overlap and at least 60 m separate any two. A corridor is the
+  centerline from 10 m behind the back tee to the green, out to the widest fairway half-width
+  (or the green) plus the hole's `corridorExtra` (rough, deep rough and tree margin: the band
+  the terrain builder treats as the hole's own).
+- Each hole's back tee is 24 to 100 m from the edge of the previous green. Where two holes meet
+  (the last 150 m of one and the first 150 m of the next, at most half a hole), and where the
+  1st and 10th tees and the 9th and 18th greens gather at the clubhouse, the corridors may come
+  closer; along the rest of each hole the 60 m holds.
+- On the invented courses no corridor reaches the coastline beside a coastal hole (along that
+  hole's length), so the sea one hole shows is never where another hole lies.
+- Deterministic: a seeded search with no clock or Math.random.
+
+The search places hole after hole: for each, tee spots around the last green (3 walk lengths,
+11 directions) and every 15 degrees of heading, cheapest first; a candidate that breaks a rule
+is skipped, and a dead end backs up. Invented courses pay for wandering from the clubhouse late
+in each nine and for boxing in the next green. The search takes 66 ms to 1.6 s in Node here,
+so a phone never runs it: the frames of the 7 built-in courses are stored in
+`course/routingData.js` (`scripts/tools/routing-build.mjs`) and a test solves them again and
+requires an exact match. A community level (one hole) is solved on the spot.
+
+Augusta National and the Old Course use the real routing from OpenStreetMap (the mapped tee to
+green line of each hole and the clubhouse; data (c) OpenStreetMap contributors, ODbL; see
+`course/realRouting.js`). The same search runs with a cost that keeps each hole's real turn from
+the hole before, its real direction and its real walk from the last green, with a pull toward
+its real position spread out by 1.35 from the clubhouse (the 60 m rule needs more room than the
+real courses have). Results (`qa/proof/routing/`, maps with the real lines dashed in red; the
+least gap is measured as the rules measure it, joints and clubhouse ends left out):
+
+| course | source | least gap (holes) | walks, green edge to next tee | 18th green to 1st tee | size | real direction within 10 / 30 degrees |
+| --- | --- | --- | --- | --- | --- | --- |
+| parkland | generated | 62.3 m (8, 9) | 24 to 100 m | 432 m | 1428 x 1572 m | generated |
+| links | generated | 60.9 m (14, 15) | 24 to 100 m | 3066 m | 1874 x 3488 m | generated |
+| desert | generated | 60.5 m (2, 3) | 24 to 100 m | 576 m | 1285 x 1344 m | generated |
+| alpine | generated | 60.6 m (5, 6) | 24 to 100 m | 324 m | 1352 x 1273 m | generated |
+| tropical | generated | 63.4 m (3, 4) | 24 to 100 m | 1776 m | 2700 x 1541 m | generated |
+| augusta | OpenStreetMap | 60.4 m (8, 9) | 24 to 100 m | 962 m | 1639 x 1625 m | 11 / 16 of 18 |
+| standrews | OpenStreetMap | 60.4 m (9, 10) | 24 to 100 m | 513 m | 2174 x 2723 m | 6 / 11 of 18 |
+
+What does not match the real courses, plainly: the corridors of both real courses are closer
+than 60 m in places and the Old Course shares fairways and double greens, so holes move apart.
+On the Old Course the real 11th crosses the 7th, which corridors that may not overlap cannot do,
+so the loop at the far end turns the other way and the inbound nine comes back on the east side
+of the outbound nine instead of the west. The game's specs for the Old Course put the sea on
+the left of the 10th and 11th, which faces inland on the real routing, so the real courses are
+not held to the coastline rule; the scenery does not draw other holes inside the current hole's
+sea. The 18th green does not come back to the clubhouse on most courses (from 324 m on the alpine
+course to 3.1 km on the links, where every coastal hole must keep the others off its sea side,
+so the course runs along the coast as a long chain); coming home is not one of the rules, and
+the clubhouse is drawn where the round starts. On Augusta 11 holes keep the real direction
+within 10 degrees and 16 within 30 (the 17th is turned 115 degrees); on the Old Course the first
+six follow the real line exactly, 11 are within 30 degrees, and the 10th and 11th turn the
+other way (105 and 120 degrees).
