@@ -73,7 +73,8 @@ async function tapStarts(text) {
   await page.waitForTimeout(300);
 }
 async function boot(query) {
-  await page.goto(`${server.url}/?tier=${tier}&scale=${scale}&timescale=${timescale}&bot=1${query}`, { waitUntil: 'load', timeout: 180000 });
+  // --scenery 1 draws the other holes whatever the tier (Low leaves them off by default).
+  await page.goto(`${server.url}/?tier=${tier}&scale=${scale}&timescale=${timescale}&bot=1${args.scenery !== undefined ? `&scenery=${args.scenery}` : ''}${query}`, { waitUntil: 'load', timeout: 180000 });
   await page.waitForFunction(() => window.__fw && window.__fw.ready, null, { timeout: 240000 });
 }
 const saveSummary = () => page.evaluate(() => { const s = window.__fw.app.save(); return { player: s.player.name, rounds: s.stats.rounds, history: s.history.slice(-3), daily: s.daily, achievements: Object.keys(s.achievements), inProgress: !!s.inProgress, career: s.career && { level: s.career.level, xp: s.career.xp, points: s.career.points, tier: s.career.season.tier, results: s.career.season.events.filter((e) => e.result).map((e) => ({ name: e.name, ...e.result })), titles: s.career.titles } }; });
@@ -173,6 +174,14 @@ try {
     }
     if (ph === 'done') {
       await page.waitForTimeout(600);
+      // The scorecard against the bot's own count: every shot it took on a hole plus one
+      // stroke for each penalty the game announced (out of bounds, water).
+      const card = await page.evaluate(() => { const r = window.__fw.game.state.round; return { holes: r.holes.map((h) => h + 1), scores: r.scores[0].slice() }; });
+      const expected = card.holes.map((h) => report.shots.filter((x) => x.hole === h).length + report.shots.filter((x) => x.hole === h && /stroke penalty/i.test(x.result || '')).length);
+      const summaries = card.holes.map((h) => { const p = report.holesPlayed.find((x) => x.hole === h); return p ? p.strokes[0] : null; });
+      const mismatches = card.holes.map((h, i) => ({ hole: h, card: card.scores[i], counted: expected[i], summary: summaries[i] })).filter((m) => m.card !== m.counted || m.card !== m.summary);
+      report.scorecard = { ...card, counted: expected, summaries, mismatches, ok: mismatches.length === 0 };
+      console.log(`scorecard ${report.scorecard.ok ? 'matches' : 'MISMATCH'}: ${card.scores.join(' ')}${mismatches.length ? ` ${JSON.stringify(mismatches)}` : ''}`);
       await snap('round-end');
       if (args.broadcast) {
         await page.evaluate(() => { const b = [...document.querySelectorAll('#ui button')].find((x) => x.textContent.trim() === 'Round recap'); if (b) b.scrollIntoView({ block: 'center' }); });
@@ -281,6 +290,7 @@ report.summary = {
   putts: report.shots.filter((s) => s.club === 'PT').length,
   tempo,
   stuck: report.stuck.length, consoleErrors: report.consoleErrors.length, guardErrors: report.guard ? report.guard.count : null,
+  scorecardOk: report.scorecard ? report.scorecard.ok : null,
 };
 report.summary.toPar = report.summary.strokes - report.summary.par;
 writeFileSync(path.join(outDir, `${tag}.json`), JSON.stringify(report, null, 1));
