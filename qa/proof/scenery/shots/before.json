@@ -1,0 +1,927 @@
+[
+ {
+  "size": "390x844",
+  "course": "parkland",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-parkland-h1-390x844-tee.jpg",
+    "draws": 140,
+    "tris": 428618,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-parkland-h1-390x844-mid.jpg",
+    "draws": 121,
+    "tris": 395533,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-parkland-h1-390x844-green.jpg",
+    "draws": 132,
+    "tris": 418780,
+    "scenery": null
+   },
+   "flyover": {
+    "file": "qa/proof/scenery/shots/before-parkland-h1-390x844-flyover.jpg",
+    "draws": 139,
+    "tris": 392606,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "parkland",
+  "hole": 7,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-parkland-h7-390x844-tee.jpg",
+    "draws": 94,
+    "tris": 387889,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-parkland-h7-390x844-mid.jpg",
+    "draws": 86,
+    "tris": 384295,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-parkland-h7-390x844-green.jpg",
+    "draws": 84,
+    "tris": 390671,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "parkland",
+  "hole": 14,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-parkland-h14-390x844-tee.jpg",
+    "draws": 106,
+    "tris": 400927,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-parkland-h14-390x844-mid.jpg",
+    "draws": 68,
+    "tris": 228173,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-parkland-h14-390x844-green.jpg",
+    "draws": 81,
+    "tris": 393164,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "links",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-links-h1-390x844-tee.jpg",
+    "draws": 99,
+    "tris": 271729,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-links-h1-390x844-mid.jpg",
+    "draws": 61,
+    "tris": 223117,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-links-h1-390x844-green.jpg",
+    "draws": 59,
+    "tris": 220725,
+    "scenery": null
+   },
+   "flyover": {
+    "file": "qa/proof/scenery/shots/before-links-h1-390x844-flyover.jpg",
+    "draws": 95,
+    "tris": 229988,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "links",
+  "hole": 7,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-links-h7-390x844-tee.jpg",
+    "draws": 81,
+    "tris": 227162,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-links-h7-390x844-mid.jpg",
+    "draws": 54,
+    "tris": 239797,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-links-h7-390x844-green.jpg",
+    "draws": 51,
+    "tris": 221410,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "links",
+  "hole": 14,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-links-h14-390x844-tee.jpg",
+    "draws": 83,
+    "tris": 236580,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-links-h14-390x844-mid.jpg",
+    "draws": 62,
+    "tris": 228526,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-links-h14-390x844-green.jpg",
+    "draws": 52,
+    "tris": 217498,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "desert",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-desert-h1-390x844-tee.jpg",
+    "draws": 127,
+    "tris": 311671,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-desert-h1-390x844-mid.jpg",
+    "draws": 102,
+    "tris": 250539,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-desert-h1-390x844-green.jpg",
+    "draws": 107,
+    "tris": 273148,
+    "scenery": null
+   },
+   "flyover": {
+    "file": "qa/proof/scenery/shots/before-desert-h1-390x844-flyover.jpg",
+    "draws": 114,
+    "tris": 247044,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "desert",
+  "hole": 7,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-desert-h7-390x844-tee.jpg",
+    "draws": 93,
+    "tris": 286170,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-desert-h7-390x844-mid.jpg",
+    "draws": 73,
+    "tris": 211809,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-desert-h7-390x844-green.jpg",
+    "draws": 63,
+    "tris": 244822,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "desert",
+  "hole": 14,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-desert-h14-390x844-tee.jpg",
+    "draws": 92,
+    "tris": 316070,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-desert-h14-390x844-mid.jpg",
+    "draws": 69,
+    "tris": 208158,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-desert-h14-390x844-green.jpg",
+    "draws": 72,
+    "tris": 253876,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "alpine",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-alpine-h1-390x844-tee.jpg",
+    "draws": 115,
+    "tris": 428428,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-alpine-h1-390x844-mid.jpg",
+    "draws": 92,
+    "tris": 381330,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-alpine-h1-390x844-green.jpg",
+    "draws": 107,
+    "tris": 415820,
+    "scenery": null
+   },
+   "flyover": {
+    "file": "qa/proof/scenery/shots/before-alpine-h1-390x844-flyover.jpg",
+    "draws": 105,
+    "tris": 370474,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "alpine",
+  "hole": 7,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-alpine-h7-390x844-tee.jpg",
+    "draws": 98,
+    "tris": 399198,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-alpine-h7-390x844-mid.jpg",
+    "draws": 71,
+    "tris": 394601,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-alpine-h7-390x844-green.jpg",
+    "draws": 70,
+    "tris": 402117,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "alpine",
+  "hole": 14,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-alpine-h14-390x844-tee.jpg",
+    "draws": 90,
+    "tris": 399943,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-alpine-h14-390x844-mid.jpg",
+    "draws": 66,
+    "tris": 350873,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-alpine-h14-390x844-green.jpg",
+    "draws": 69,
+    "tris": 375701,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "tropical",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-tropical-h1-390x844-tee.jpg",
+    "draws": 133,
+    "tris": 342788,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-tropical-h1-390x844-mid.jpg",
+    "draws": 99,
+    "tris": 295286,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-tropical-h1-390x844-green.jpg",
+    "draws": 104,
+    "tris": 302206,
+    "scenery": null
+   },
+   "flyover": {
+    "file": "qa/proof/scenery/shots/before-tropical-h1-390x844-flyover.jpg",
+    "draws": 126,
+    "tris": 291673,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "tropical",
+  "hole": 7,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-tropical-h7-390x844-tee.jpg",
+    "draws": 88,
+    "tris": 296588,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-tropical-h7-390x844-mid.jpg",
+    "draws": 72,
+    "tris": 253892,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-tropical-h7-390x844-green.jpg",
+    "draws": 75,
+    "tris": 290188,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "tropical",
+  "hole": 14,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-tropical-h14-390x844-tee.jpg",
+    "draws": 95,
+    "tris": 279237,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-tropical-h14-390x844-mid.jpg",
+    "draws": 72,
+    "tris": 217211,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-tropical-h14-390x844-green.jpg",
+    "draws": 71,
+    "tris": 269878,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "augusta",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-augusta-h1-390x844-tee.jpg",
+    "draws": 102,
+    "tris": 413081,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-augusta-h1-390x844-mid.jpg",
+    "draws": 80,
+    "tris": 355152,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-augusta-h1-390x844-green.jpg",
+    "draws": 71,
+    "tris": 402936,
+    "scenery": null
+   },
+   "flyover": {
+    "file": "qa/proof/scenery/shots/before-augusta-h1-390x844-flyover.jpg",
+    "draws": 93,
+    "tris": 386727,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "augusta",
+  "hole": 7,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-augusta-h7-390x844-tee.jpg",
+    "draws": 89,
+    "tris": 406606,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-augusta-h7-390x844-mid.jpg",
+    "draws": 59,
+    "tris": 354839,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-augusta-h7-390x844-green.jpg",
+    "draws": 58,
+    "tris": 368194,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "augusta",
+  "hole": 14,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-augusta-h14-390x844-tee.jpg",
+    "draws": 83,
+    "tris": 403988,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-augusta-h14-390x844-mid.jpg",
+    "draws": 61,
+    "tris": 380040,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-augusta-h14-390x844-green.jpg",
+    "draws": 59,
+    "tris": 396682,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "standrews",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-standrews-h1-390x844-tee.jpg",
+    "draws": 68,
+    "tris": 254953,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-standrews-h1-390x844-mid.jpg",
+    "draws": 44,
+    "tris": 202618,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-standrews-h1-390x844-green.jpg",
+    "draws": 48,
+    "tris": 262059,
+    "scenery": null
+   },
+   "flyover": {
+    "file": "qa/proof/scenery/shots/before-standrews-h1-390x844-flyover.jpg",
+    "draws": 77,
+    "tris": 209832,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "standrews",
+  "hole": 7,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-standrews-h7-390x844-tee.jpg",
+    "draws": 62,
+    "tris": 214420,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-standrews-h7-390x844-mid.jpg",
+    "draws": 42,
+    "tris": 188878,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-standrews-h7-390x844-green.jpg",
+    "draws": 41,
+    "tris": 198098,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "standrews",
+  "hole": 14,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-standrews-h14-390x844-tee.jpg",
+    "draws": 73,
+    "tris": 218384,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-standrews-h14-390x844-mid.jpg",
+    "draws": 41,
+    "tris": 195955,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-standrews-h14-390x844-green.jpg",
+    "draws": 39,
+    "tris": 203551,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "parkland",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-parkland-h1-1920x1080-tee.jpg",
+    "draws": 156,
+    "tris": 511782,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-parkland-h1-1920x1080-mid.jpg",
+    "draws": 142,
+    "tris": 505820,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-parkland-h1-1920x1080-green.jpg",
+    "draws": 140,
+    "tris": 499772,
+    "scenery": null
+   },
+   "flyover": {
+    "file": "qa/proof/scenery/shots/before-parkland-h1-1920x1080-flyover.jpg",
+    "draws": 170,
+    "tris": 428497,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "parkland",
+  "hole": 7,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-parkland-h7-1920x1080-tee.jpg",
+    "draws": 109,
+    "tris": 445765,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-parkland-h7-1920x1080-mid.jpg",
+    "draws": 95,
+    "tris": 453240,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-parkland-h7-1920x1080-green.jpg",
+    "draws": 91,
+    "tris": 433286,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "parkland",
+  "hole": 14,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-parkland-h14-1920x1080-tee.jpg",
+    "draws": 120,
+    "tris": 480998,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-parkland-h14-1920x1080-mid.jpg",
+    "draws": 89,
+    "tris": 297426,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-parkland-h14-1920x1080-green.jpg",
+    "draws": 85,
+    "tris": 440885,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "links",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-links-h1-1920x1080-tee.jpg",
+    "draws": 103,
+    "tris": 355800,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-links-h1-1920x1080-mid.jpg",
+    "draws": 85,
+    "tris": 283356,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-links-h1-1920x1080-green.jpg",
+    "draws": 67,
+    "tris": 287816,
+    "scenery": null
+   },
+   "flyover": {
+    "file": "qa/proof/scenery/shots/before-links-h1-1920x1080-flyover.jpg",
+    "draws": 114,
+    "tris": 251598,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "links",
+  "hole": 7,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-links-h7-1920x1080-tee.jpg",
+    "draws": 92,
+    "tris": 269593,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-links-h7-1920x1080-mid.jpg",
+    "draws": 65,
+    "tris": 254572,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-links-h7-1920x1080-green.jpg",
+    "draws": 58,
+    "tris": 258638,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "links",
+  "hole": 14,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-links-h14-1920x1080-tee.jpg",
+    "draws": 92,
+    "tris": 291324,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-links-h14-1920x1080-mid.jpg",
+    "draws": 70,
+    "tris": 255086,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-links-h14-1920x1080-green.jpg",
+    "draws": 56,
+    "tris": 261290,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "desert",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-desert-h1-1920x1080-tee.jpg",
+    "draws": 157,
+    "tris": 378503,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-desert-h1-1920x1080-mid.jpg",
+    "draws": 123,
+    "tris": 290402,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-desert-h1-1920x1080-green.jpg",
+    "draws": 123,
+    "tris": 357951,
+    "scenery": null
+   },
+   "flyover": {
+    "file": "qa/proof/scenery/shots/before-desert-h1-1920x1080-flyover.jpg",
+    "draws": 137,
+    "tris": 273931,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "desert",
+  "hole": 7,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-desert-h7-1920x1080-tee.jpg",
+    "draws": 107,
+    "tris": 346855,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-desert-h7-1920x1080-mid.jpg",
+    "draws": 83,
+    "tris": 257496,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/shots/before-desert-h7-1920x1080-green.jpg",
+    "draws": 76,
+    "tris": 293655,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "desert",
+  "hole": 14,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/shots/before-desert-h14-1920x1080-tee.jpg",
+    "draws": 101,
+    "tris": 361546,
+    "scenery": null
+   },
+   "mid": {
+    "file": "qa/proof/scenery/shots/before-desert-h14-1920x1080-mid.jpg",
+    "draws": 84,
+    "tris": 241510,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "failed": "page.waitForFunction: Target page, context or browser has been closed",
+  "consoleErrors": 0,
+  "errors": []
+ }
+]

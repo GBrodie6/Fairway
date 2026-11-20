@@ -17,6 +17,10 @@ const server = await serveStatic(path.resolve(process.env.DIST || 'dist'));
 const { browser } = await launchBrowser();
 const report = [];
 const views = (process.env.VIEWS || 'tee,mid,green').split(',');
+// EXTRA=0: no flyover or course map on the first hole. SCENERY=1: the other holes on whatever
+// the tier (Settings, Show other holes: On), so Low shows them too; older builds ignore it.
+const extra = process.env.EXTRA !== '0';
+const sceneryParam = process.env.SCENERY ? `&scenery=${process.env.SCENERY}` : '';
 
 for (const size of sizeArg.split(',')) {
   const [W, H] = size.split('x').map(Number);
@@ -37,7 +41,7 @@ for (const size of sizeArg.split(',')) {
         if (first) {
           // Desktop at half the drawing resolution, so a software-rendered frame takes seconds,
           // not tens of seconds; the phone at its own size.
-          await page.goto(`${server.url}/?mode=stroke&course=${course}&hole=${hole}&holes=1&tier=${tier}&bot=1&seed=7${phone ? '' : '&scale=0.5'}`, { waitUntil: 'load' });
+          await page.goto(`${server.url}/?mode=stroke&course=${course}&hole=${hole}&holes=1&tier=${tier}&bot=1&seed=7${sceneryParam}${phone ? '' : '&scale=0.5'}`, { waitUntil: 'load' });
           await page.waitForFunction(() => window.__fw && window.__fw.ready, null);
         } else {
           await page.evaluate(({ course, hole }) => { window.__fw.game.startRound({ courseId: course, mode: 'stroke', holes: [hole - 1], seed: 7, tod: 'morning' }); }, { course, hole });
@@ -47,7 +51,7 @@ for (const size of sizeArg.split(',')) {
         await waitPhase(page, 'aim');
         await page.evaluate(() => window.__fw.settle && window.__fw.settle());
         row.scenery = await page.evaluate(() => (window.__fw.sceneryStats ? window.__fw.sceneryStats() : null));
-        const list = first ? [...views, 'flyover'] : views;
+        const list = first && extra ? [...views, 'flyover'] : views;
         for (const v of list) {
           await page.evaluate((v) => {
             const w = window.__fw.app.world, h = w.holeData;
@@ -75,7 +79,7 @@ for (const size of sizeArg.split(',')) {
           console.log(tag, course, hole, size, v, JSON.stringify(info));
         }
         // The course map, where this build has one (first hole only).
-        if (first && process.env.MAP !== '0') {
+        if (first && extra && process.env.MAP !== '0') {
           const has = await page.evaluate(() => !!(window.__fw.app.openCourseMap));
           if (has) {
             await page.evaluate(() => { window.__fw.app.world.rig.enabled = true; window.__fw.app.openCourseMap(); });
