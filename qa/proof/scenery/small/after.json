@@ -1,0 +1,248 @@
+[
+ {
+  "size": "390x844",
+  "course": "augusta",
+  "hole": 1,
+  "tag": "after",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/small/after-augusta-h1-390x844-tee.jpg",
+    "draws": 82,
+    "tris": 210502,
+    "scenery": {
+     "drawnHoles": 1,
+     "drawnTris": 187
+    }
+   },
+   "green": {
+    "file": "qa/proof/scenery/small/after-augusta-h1-390x844-green.jpg",
+    "draws": 50,
+    "tris": 123541,
+    "scenery": {
+     "drawnHoles": 0,
+     "drawnTris": 0
+    }
+   }
+  },
+  "scenery": {
+   "holes": 17,
+   "dropped": 0,
+   "tris": 3555,
+   "drawnTris": 373,
+   "drawnHoles": 2,
+   "trees": 167,
+   "far": 1400,
+   "budget": 8000,
+   "draws": 2,
+   "buildMs": 4,
+   "outerMs": 51.2
+  },
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "standrews",
+  "hole": 1,
+  "tag": "after",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/small/after-standrews-h1-390x844-tee.jpg",
+    "draws": 54,
+    "tris": 129979,
+    "scenery": {
+     "drawnHoles": 0,
+     "drawnTris": 0
+    }
+   },
+   "green": {
+    "file": "qa/proof/scenery/small/after-standrews-h1-390x844-green.jpg",
+    "draws": 37,
+    "tris": 124344,
+    "scenery": {
+     "drawnHoles": 0,
+     "drawnTris": 0
+    }
+   }
+  },
+  "scenery": {
+   "holes": 2,
+   "dropped": 0,
+   "tris": 230,
+   "drawnTris": 86,
+   "drawnHoles": 1,
+   "trees": 4,
+   "far": 1400,
+   "budget": 8000,
+   "draws": 2,
+   "buildMs": 4.6,
+   "outerMs": 128.4
+  },
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "parkland",
+  "hole": 1,
+  "tag": "after",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/small/after-parkland-h1-390x844-tee.jpg",
+    "draws": 119,
+    "tris": 221317,
+    "scenery": {
+     "drawnHoles": 4,
+     "drawnTris": 868
+    }
+   },
+   "green": {
+    "file": "qa/proof/scenery/small/after-parkland-h1-390x844-green.jpg",
+    "draws": 91,
+    "tris": 165747,
+    "scenery": {
+     "drawnHoles": 2,
+     "drawnTris": 436
+    }
+   }
+  },
+  "scenery": {
+   "holes": 17,
+   "dropped": 0,
+   "tris": 3378,
+   "drawnTris": 868,
+   "drawnHoles": 4,
+   "trees": 138,
+   "far": 1400,
+   "budget": 8000,
+   "draws": 2,
+   "buildMs": 4,
+   "outerMs": 57.5
+  },
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "augusta",
+  "hole": 1,
+  "tag": "after",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/small/after-augusta-h1-1920x1080-tee.jpg",
+    "draws": 86,
+    "tris": 239004,
+    "scenery": {
+     "drawnHoles": 7,
+     "drawnTris": 1421
+    }
+   },
+   "green": {
+    "file": "qa/proof/scenery/small/after-augusta-h1-1920x1080-green.jpg",
+    "draws": 58,
+    "tris": 151588,
+    "scenery": {
+     "drawnHoles": 1,
+     "drawnTris": 186
+    }
+   }
+  },
+  "scenery": {
+   "holes": 17,
+   "dropped": 0,
+   "tris": 3555,
+   "drawnTris": 1421,
+   "drawnHoles": 7,
+   "trees": 167,
+   "far": 1400,
+   "budget": 8000,
+   "draws": 2,
+   "buildMs": 5.7,
+   "outerMs": 74.6
+  },
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "standrews",
+  "hole": 1,
+  "tag": "after",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/small/after-standrews-h1-1920x1080-tee.jpg",
+    "draws": 66,
+    "tris": 179019,
+    "scenery": {
+     "drawnHoles": 0,
+     "drawnTris": 0
+    }
+   },
+   "green": {
+    "file": "qa/proof/scenery/small/after-standrews-h1-1920x1080-green.jpg",
+    "draws": 41,
+    "tris": 166127,
+    "scenery": {
+     "drawnHoles": 0,
+     "drawnTris": 0
+    }
+   }
+  },
+  "scenery": {
+   "holes": 2,
+   "dropped": 0,
+   "tris": 230,
+   "drawnTris": 0,
+   "drawnHoles": 0,
+   "trees": 4,
+   "far": 1400,
+   "budget": 8000,
+   "draws": 2,
+   "buildMs": 7,
+   "outerMs": 141.9
+  },
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "parkland",
+  "hole": 1,
+  "tag": "after",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/small/after-parkland-h1-1920x1080-tee.jpg",
+    "draws": 121,
+    "tris": 261427,
+    "scenery": {
+     "drawnHoles": 9,
+     "drawnTris": 1990
+    }
+   },
+   "green": {
+    "file": "qa/proof/scenery/small/after-parkland-h1-1920x1080-green.jpg",
+    "draws": 101,
+    "tris": 197279,
+    "scenery": {
+     "drawnHoles": 6,
+     "drawnTris": 1264
+    }
+   }
+  },
+  "scenery": {
+   "holes": 17,
+   "dropped": 0,
+   "tris": 3378,
+   "drawnTris": 1990,
+   "drawnHoles": 9,
+   "trees": 138,
+   "far": 1400,
+   "budget": 8000,
+   "draws": 2,
+   "buildMs": 4.4,
+   "outerMs": 57.1
+  },
+  "consoleErrors": 0,
+  "errors": []
+ }
+]
