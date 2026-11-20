@@ -665,3 +665,17 @@ first campaign event and the daily challenge through real touch on the gated bui
 no login or token (the `--temporary` mode was not used); the gated build went to the
 `gh-pages` branch and is live, built without Supabase values, so cloud sync is dormant there.
 Live checks and a live 3-hole tap-through at 390x844 found no errors.
+
+## Course scenery 1: how a hole stands alone (before)
+
+- Holes: `generateHole` (course/layout.js) builds each hole alone from the course seed and its index (the card yardage and a spec per hole on the two real courses), in its own frame: back tee at the origin, tee to green turned to run down -Z. No hole knows where another one is; `bearing` only turns the sun.
+- Ground: `buildTerrain` makes one 1 m heightfield, shared by the ball and the renderer, over the hole's bounds (the corridor plus 92 m a side, 70 m more on a sea side, 112 m behind the tee, 150 m past the green); past them plus 6 m the ball is out of bounds. Drawn as 96 m chunks with 1 to 16 m LOD steps and skirts.
+- Around it: one outer mesh of the same macro function on cells growing from 10 m to 110, 160 or 220 m (high, medium, low) out to about 6.6 km, starting 4 m inside the grid so the seam matches. The backdrop (hills, mesas, mountains) rises from 380 m to 2.4 km from the hole's center, coastal holes fall to a beach and the sea, wooded courses get a canopy and a ring of impostor trees, and 4 stand-in flags stand at random 170 to 420 m out. Post-pass height fog and aerial perspective (about 0.0006 per m, capped at 0.85) fade the distance; the far plane is 14 km.
+- Cost, parkland hole 1, 960x540 drawing buffer, headless Chrome with SwiftShader (CPU rendering: compare rows, not devices), renderer.info and the median ms per frame of 6 batches of 3 synced frames after the draw counts settle (`scripts/tools/scenery-bench.mjs`, `qa/proof/scenery/bench-before.json`):
+
+| tier | tee (address) | flyover | green |
+| --- | --- | --- | --- |
+| low | 111 draws, 248k tris, 1,205 ms | 106 draws, 223k tris, 1,324 ms | 106 draws, 197k tris, 1,197 ms |
+| medium | 112 draws, 455k tris, 3,555 ms | 119 draws, 404k tris, 2,750 ms | 96 draws, 448k tris, 3,116 ms |
+| high | 135 draws, 1,009k tris, 5,713 ms | 131 draws, 927k tris, 4,125 ms | 117 draws, 814k tris, 5,237 ms |
+| ultra | 147 draws, 1,640k tris, 7,255 ms | 151 draws, 1,569k tris, 4,993 ms | 141 draws, 1,431k tris, 6,185 ms |

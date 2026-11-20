@@ -1,0 +1,252 @@
+{
+ "at": "2026-11-20T12:01:29.698Z",
+ "size": "960x540",
+ "method": "median of 6 batches of 3 frames, synced; scenery on and off alternate by batch",
+ "runs": [
+  {
+   "course": "parkland",
+   "hole": 1,
+   "tier": "low",
+   "view": "address",
+   "settleFrames": 4,
+   "draws": 111,
+   "tris": 248425,
+   "drawsAfter": 111,
+   "trisAfter": 248425,
+   "ms": 1204.7,
+   "batchesMs": [
+    1197.7,
+    1201.7,
+    1206.7,
+    1202.9,
+    1215,
+    1204.7
+   ]
+  },
+  {
+   "course": "parkland",
+   "hole": 1,
+   "tier": "low",
+   "view": "flyover",
+   "settleFrames": 4,
+   "draws": 106,
+   "tris": 222697,
+   "drawsAfter": 106,
+   "trisAfter": 222697,
+   "ms": 1324.1,
+   "batchesMs": [
+    1185.5,
+    1419.3,
+    1272.6,
+    1260.1,
+    1343.1,
+    1324.1
+   ]
+  },
+  {
+   "course": "parkland",
+   "hole": 1,
+   "tier": "low",
+   "view": "green",
+   "settleFrames": 6,
+   "draws": 106,
+   "tris": 196787,
+   "drawsAfter": 106,
+   "trisAfter": 196787,
+   "ms": 1197.3,
+   "batchesMs": [
+    1287.4,
+    1104.5,
+    1136,
+    1197.3,
+    1263.5,
+    1169.3
+   ]
+  },
+  {
+   "course": "parkland",
+   "hole": 1,
+   "tier": "medium",
+   "view": "address",
+   "settleFrames": 5,
+   "draws": 112,
+   "tris": 454823,
+   "drawsAfter": 113,
+   "trisAfter": 454824,
+   "ms": 3555.4,
+   "batchesMs": [
+    3543.7,
+    3653.2,
+    3693.6,
+    3555.4,
+    3484.4,
+    3518
+   ]
+  },
+  {
+   "course": "parkland",
+   "hole": 1,
+   "tier": "medium",
+   "view": "flyover",
+   "settleFrames": 4,
+   "draws": 119,
+   "tris": 403565,
+   "drawsAfter": 119,
+   "trisAfter": 403565,
+   "ms": 2749.8,
+   "batchesMs": [
+    2629.6,
+    2749.8,
+    2751.6,
+    2786.1,
+    2544.5,
+    2521.1
+   ]
+  },
+  {
+   "course": "parkland",
+   "hole": 1,
+   "tier": "medium",
+   "view": "green",
+   "settleFrames": 5,
+   "draws": 96,
+   "tris": 447979,
+   "drawsAfter": 96,
+   "trisAfter": 447979,
+   "ms": 3116.1,
+   "batchesMs": [
+    3114.9,
+    2970.8,
+    3010,
+    3116.1,
+    3158.7,
+    3158.7
+   ]
+  },
+  {
+   "course": "parkland",
+   "hole": 1,
+   "tier": "high",
+   "view": "address",
+   "settleFrames": 5,
+   "draws": 135,
+   "tris": 1008907,
+   "drawsAfter": 135,
+   "trisAfter": 1008907,
+   "ms": 5713.2,
+   "batchesMs": [
+    6167.1,
+    6151.6,
+    5614.6,
+    5562.9,
+    5713.2,
+    5659.2
+   ]
+  },
+  {
+   "course": "parkland",
+   "hole": 1,
+   "tier": "high",
+   "view": "flyover",
+   "settleFrames": 5,
+   "draws": 131,
+   "tris": 927233,
+   "drawsAfter": 131,
+   "trisAfter": 927233,
+   "ms": 4124.8,
+   "batchesMs": [
+    3993.9,
+    4149.6,
+    4123.2,
+    4389.9,
+    4050.7,
+    4124.8
+   ]
+  },
+  {
+   "course": "parkland",
+   "hole": 1,
+   "tier": "high",
+   "view": "green",
+   "settleFrames": 5,
+   "draws": 117,
+   "tris": 814156,
+   "drawsAfter": 117,
+   "trisAfter": 814156,
+   "ms": 5237.3,
+   "batchesMs": [
+    5125.2,
+    5178.3,
+    5237.3,
+    5066.7,
+    5554.5,
+    5410.1
+   ]
+  },
+  {
+   "course": "parkland",
+   "hole": 1,
+   "tier": "ultra",
+   "view": "address",
+   "settleFrames": 5,
+   "draws": 147,
+   "tris": 1640138,
+   "drawsAfter": 147,
+   "trisAfter": 1640138,
+   "ms": 7254.7,
+   "batchesMs": [
+    7174.3,
+    7042.9,
+    7254.7,
+    7334.9,
+    7408.2,
+    7133.7
+   ]
+  },
+  {
+   "course": "parkland",
+   "hole": 1,
+   "tier": "ultra",
+   "view": "flyover",
+   "settleFrames": 4,
+   "draws": 151,
+   "tris": 1569055,
+   "drawsAfter": 152,
+   "trisAfter": 1569056,
+   "ms": 4993,
+   "batchesMs": [
+    4917.2,
+    4666.2,
+    4993,
+    4973.6,
+    5014.9,
+    4996.1
+   ]
+  },
+  {
+   "course": "parkland",
+   "hole": 1,
+   "tier": "ultra",
+   "view": "green",
+   "settleFrames": 4,
+   "draws": 141,
+   "tris": 1431135,
+   "drawsAfter": 141,
+   "trisAfter": 1431135,
+   "ms": 6184.9,
+   "batchesMs": [
+    6391.5,
+    6106.3,
+    6101.5,
+    5852.8,
+    6184.9,
+    6347.6
+   ]
+  },
+  {
+   "course": "parkland",
+   "consoleErrors": 0,
+   "errors": []
+  }
+ ]
+}
