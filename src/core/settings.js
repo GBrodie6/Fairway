@@ -35,6 +35,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   fpsCap: 'uncapped', // frame rate cap: uncapped (the display's refresh rate) | 30 | 60 | 120 | 144
   renderScale: 1, // resolution scale, 0.5 to 1 of the screen's pixels (before the tier's pixel ratio cap)
   shadowQuality: 'auto', // auto (follows the tier) | off | low | medium | high | ultra
+  otherHoles: 'auto', // the other holes drawn around the one in play: auto (on for medium and up, off for low) | on | off
   vsync: 'on', // on | off: off asks the browser for a low-latency canvas (applies after a reload)
 });
 
@@ -49,6 +50,7 @@ const ENUMS = {
   swingGuide: ['box', 'classic'],
   fpsCap: FPS_CAPS,
   shadowQuality: SHADOW_LEVELS,
+  otherHoles: ['auto', 'on', 'off'],
   vsync: ['on', 'off'],
 };
 
@@ -153,5 +155,7 @@ export function readUrlParams(search = (typeof location !== 'undefined' ? locati
     online: flag('online'),
     cloud: p.get('cloud') || undefined,
     bench: flag('bench'),
+    // QA: draw the other holes (1) or not (0), whatever the setting says.
+    scenery: p.has('scenery') ? flag('scenery') : undefined,
   };
 }

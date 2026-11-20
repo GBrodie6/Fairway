@@ -7,7 +7,7 @@ import { h } from './dom.js';
 import { fmtDist, fmtToPar, ordinal } from './format.js';
 import { COURSES, courseById } from '../course/courses.js';
 import { TOD_ORDER } from '../render/timeOfDay.js';
-import { TIER_ORDER } from '../core/quality.js';
+import { TIER_ORDER, otherHolesOn } from '../core/quality.js';
 import { hashString, createRng } from '../core/rng.js';
 import { loadSave, writeSave, recordRound, recordDaily, unlock, dayKey, statsSummary, ACHIEVEMENTS, touchSave } from '../game/save.js';
 import {
@@ -140,6 +140,8 @@ export function installMenus(app, ui) {
       h('p', { class: 'muted small', text: `GPU: ${(app.caps && app.caps.gpu) || 'not reported by the browser'}${app.caps && app.caps.desktopGpu ? ' (a desktop GPU)' : ''}. Display: ${Math.round(app.loop.stats.refreshHz || 60)} Hz.` }),
       field('Graphics quality', select('s-tier', settings.tier, [['auto', `Automatic (${cap(app.autoTier)})`], ...TIER_ORDER.map((t) => [t, cap(t)])], async (v) => { settings.tier = v; app.saveSettings(); await app.applyGraphics(); }), 's-tier'),
       field('Shadow quality', select('s-shadow', settings.shadowQuality, [['auto', 'Match the graphics quality'], ['off', 'Off'], ['low', 'Low'], ['medium', 'Medium'], ['high', 'High'], ['ultra', 'Ultra']], async (v) => { settings.shadowQuality = v; app.saveSettings(); await app.applyGraphics(); }), 's-shadow'),
+      // Shown as On or Off: until it is changed it follows the quality (On for Medium and up).
+      field('Show other holes', select('s-holes', otherHolesOn(settings.otherHoles, app.engine.tier.id) ? 'on' : 'off', [['on', 'On'], ['off', 'Off']], async (v) => { settings.otherHoles = v; app.saveSettings(); await app.applyGraphics(); }), 's-holes'),
       field('Resolution scale', h('div', { class: 'rangerow' }, range('s-res', settings.renderScale, 0.5, 1, 0.05, (v) => { settings.renderScale = v; const o = document.getElementById('s-res-out'); if (o) o.textContent = `${Math.round(v * 100)}%`; app.saveSettings(); app.applyGraphics(); }), h('output', { id: 's-res-out', for: 's-res', text: `${Math.round(settings.renderScale * 100)}%` })), 's-res'),
       field('Frame rate cap', select('s-fps', settings.fpsCap, [['uncapped', 'Uncapped (the display refresh rate)'], ['144', '144 fps'], ['120', '120 fps'], ['60', '60 fps'], ['30', '30 fps']], (v) => { settings.fpsCap = v; app.saveSettings(); app.applyGraphics(); }), 's-fps'),
       field('V-Sync', select('s-vsync', settings.vsync, [['on', 'On'], ['off', 'Off: lower latency, may tear']], (v) => { settings.vsync = v; app.saveSettings(); ui.hud.toast('V-Sync applies after a reload', 'A browser draws at most once per display refresh either way', 2600); }), 's-vsync'),

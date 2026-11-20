@@ -1,0 +1,184 @@
+[
+ {
+  "course": "parkland",
+  "size": "390x844",
+  "tier": "medium",
+  "views": {
+   "address": 4,
+   "flyover": 5,
+   "green": 2
+  },
+  "target": {
+   "d": 180
+  },
+  "frames": 76,
+  "outsideGridFrames": 31,
+  "minHeight": 1.69,
+  "minTreeDistance": 10,
+  "result": {
+   "phase": "aim",
+   "lastShot": {
+    "oob": false,
+    "water": false
+   }
+  },
+  "pass": true,
+  "consoleErrors": 0
+ },
+ {
+  "course": "links",
+  "size": "390x844",
+  "tier": "medium",
+  "views": {
+   "address": 0,
+   "flyover": 0,
+   "green": 2
+  },
+  "target": {
+   "d": 1076
+  },
+  "frames": 87,
+  "outsideGridFrames": 35,
+  "minHeight": 1.93,
+  "minTreeDistance": 937.9,
+  "result": {
+   "phase": "aim",
+   "lastShot": {
+    "oob": false,
+    "water": false
+   }
+  },
+  "pass": false,
+  "consoleErrors": 0
+ },
+ {
+  "course": "desert",
+  "size": "390x844",
+  "tier": "medium",
+  "views": {
+   "address": 5,
+   "flyover": 5,
+   "green": 2
+  },
+  "target": {
+   "d": 141
+  },
+  "frames": 76,
+  "outsideGridFrames": 30,
+  "minHeight": 1.67,
+  "minTreeDistance": 129.3,
+  "result": {
+   "phase": "aim",
+   "lastShot": {
+    "oob": false,
+    "water": false
+   }
+  },
+  "pass": true,
+  "consoleErrors": 0
+ },
+ {
+  "course": "alpine",
+  "size": "390x844",
+  "tier": "medium",
+  "views": {
+   "address": 6,
+   "flyover": 7,
+   "green": 4
+  },
+  "target": {
+   "d": 151
+  },
+  "frames": 77,
+  "outsideGridFrames": 28,
+  "minHeight": 1.9,
+  "minTreeDistance": 23.8,
+  "result": {
+   "phase": "aim",
+   "lastShot": {
+    "oob": false,
+    "water": false
+   }
+  },
+  "pass": true,
+  "consoleErrors": 0
+ },
+ {
+  "course": "tropical",
+  "size": "390x844",
+  "tier": "medium",
+  "views": {
+   "address": 3,
+   "flyover": 3,
+   "green": 2
+  },
+  "target": {
+   "d": 191
+  },
+  "frames": 99,
+  "outsideGridFrames": 48,
+  "minHeight": 2.04,
+  "minTreeDistance": 56.3,
+  "result": {
+   "phase": "aim",
+   "lastShot": {
+    "oob": false,
+    "water": false
+   }
+  },
+  "pass": true,
+  "consoleErrors": 0
+ },
+ {
+  "course": "augusta",
+  "size": "390x844",
+  "tier": "medium",
+  "views": {
+   "address": 2,
+   "flyover": 2,
+   "green": 0
+  },
+  "target": {
+   "d": 162
+  },
+  "frames": 88,
+  "outsideGridFrames": 38,
+  "minHeight": 1.19,
+  "minTreeDistance": 2,
+  "result": {
+   "phase": "aim",
+   "lastShot": {
+    "oob": false,
+    "water": false
+   }
+  },
+  "pass": true,
+  "consoleErrors": 0
+ },
+ {
+  "course": "standrews",
+  "size": "390x844",
+  "tier": "medium",
+  "views": {
+   "address": 1,
+   "flyover": 1,
+   "green": 0
+  },
+  "target": {
+   "d": 161
+  },
+  "frames": 83,
+  "outsideGridFrames": 33,
+  "minHeight": 2.18,
+  "minTreeDistance": 118.8,
+  "result": {
+   "phase": "aim",
+   "lastShot": {
+    "oob": false,
+    "water": false
+   }
+  },
+  "pass": true,
+  "consoleErrors": 0
+ }
+]

@@ -306,10 +306,15 @@ export function createVegetation(world, engine) {
     };
     const n = { x: 0, y: 1, z: 0 };
     // Trees and understory on a jittered grid, thinned by the terrain's tree density.
+    // With the other holes drawn (render/scenery.js), this hole's woods stop at their corridors
+    // (that ground is their rough) and thin toward them across the gap between the holes, so the
+    // next hole shows through. Visual only: trees take no part in the ball's flight.
+    const foot = w.terrainView.footprintAt;
+    const thin = (x, z) => { if (!foot) return 1; const dl = foot(x, z); return dl < 0 ? 0 : 0.4 + 0.6 * smoothstep(10, 45, dl); };
     const G = 6.5;
     for (let gz = t.z0 + 8; gz < t.maxZ - 8; gz += G) for (let gx = t.x0 + 8; gx < t.maxX - 8; gx += G) {
       const x = gx + (rng.next() - 0.5) * G * 0.9, z = gz + (rng.next() - 0.5) * G * 0.9;
-      const dens = t.treeDensityAt(x, z);
+      const dens = t.treeDensityAt(x, z) * thin(x, z);
       const roll = rng.next(), r2 = rng.next(), r3 = rng.next(), r4 = rng.next();
       if (dens <= 0.01) {
         // A specimen tree now and then just outside a wood, in the rough beyond play.
@@ -367,6 +372,7 @@ export function createVegetation(world, engine) {
     // Beyond the mapped ground the woodland carries on over the outer landscape, as impostors
     // only, so the forest does not stop at the edge of the detailed grid.
     const ringW = tier.treeLod.outerRing, forest = w.course.theme.trees.forest, outerH = w.terrainView.outerHeightAt;
+    // With the other holes drawn, the woods stay off their corridors (foot, above).
     if (forest > 0 && ringW > 0 && outerH) {
       const O = 12;
       for (let gz = t.z0 - ringW; gz < t.maxZ + ringW; gz += O) for (let gx = t.x0 - ringW; gx < t.maxX + ringW; gx += O) {
@@ -374,6 +380,7 @@ export function createVegetation(world, engine) {
         // The second layer: denser than the first and a little taller, so the woods have depth.
         if (rng.next() > 0.95 * clamp(forest, 0, 1)) continue;
         const x = gx + (rng.next() - 0.5) * O, z = gz + (rng.next() - 0.5) * O;
+        if (foot && foot(x, z) < 4) continue;
         const y = outerH(x, z);
         if (w.course.theme.seaLevel !== null && y < w.course.theme.seaLevel + 1.5) continue;
         const stand = fbm2(x / 120, z / 120, seed + 77, 2) * 0.5 + 0.5;

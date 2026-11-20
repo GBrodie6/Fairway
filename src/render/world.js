@@ -15,6 +15,7 @@ import { createWater } from './water.js';
 import { createVegetation } from './vegetation.js';
 import { createGrass } from './grass.js';
 import { createProps } from './props.js';
+import { createScenery, sceneryFootprint } from './scenery.js';
 import { createBallView } from './ballView.js';
 import { createCameraRig } from './cameras.js';
 import { createOverlays } from './overlays.js';
@@ -23,7 +24,7 @@ import { createRangeProps } from './rangeProps.js';
 import { DEG, clamp } from '../core/math.js';
 import { fin } from '../core/guards.js';
 
-export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
+export function createWorld(engine, { courseId, todId, hole = 1, assets, otherHoles = false }) {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(55, engine.width / engine.height, 0.3, 14000);
   const lighting = createLighting(scene, camera, engine.tier);
@@ -36,6 +37,8 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
     time: 0, ready: false, loading: null, buildMs: 0,
     systems: [], // { update(dt, t), dispose() } added by later stages
     baseFov: 55,
+    // The other holes of the course drawn around this one (render/scenery.js), when on.
+    otherHoles: !!otherHoles, scenery: null, sceneryMs: 0,
   };
 
   // Game wind as a steady vector (m/s). The game sets this; the flag, grass, trees, clouds,
@@ -134,12 +137,28 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
     const terrain = buildTerrain(course, holeData);
     world.buildMs = performance.now() - t0;
     if (world.terrainView) { scene.remove(world.terrainView.group); world.terrainView.dispose(); }
+    dropScenery();
     for (const s of world.systems) if (s.unloadHole) s.unloadHole();
     // A community level looks like the theme it was built on (course.look).
     world.course = course; world.courseId = course.look || course.id; world.hole = index + 1;
     world.holeData = holeData; world.terrain = terrain;
-    world.terrainView = createTerrainView({ terrain, course, lighting, tier: engine.tier, assets, manifest: MANIFEST, engine });
+    // With the other holes shown, the ground around this hole is laid out for them first
+    // (their corridors), then they are built on it for as long as this hole is in play.
+    // sceneryMs: the footprint and the scenery itself (the outer ground's own time, with or
+    // without the footprint, is terrainView.outerMs).
+    let ts = performance.now();
+    const footprint = world.otherHoles ? sceneryFootprint(course, index) : null;
+    let sceneryMs = performance.now() - ts;
+    world.terrainView = createTerrainView({ terrain, course, lighting, tier: engine.tier, assets, manifest: MANIFEST, engine, footprint });
     scene.add(world.terrainView.group);
+    if (footprint) {
+      ts = performance.now();
+      world.scenery = createScenery({ course, index, terrain, view: world.terrainView, tier: engine.tier, surfaces: world.terrainView.surfaces });
+      scene.add(world.scenery.group);
+      for (const m of world.scenery.meshes) engine.post.state.noAo.add(m);
+      sceneryMs += performance.now() - ts;
+    }
+    world.sceneryMs = footprint ? sceneryMs : 0;
     world.setTimeOfDay(world.todId);
     // Address view from the tee toward the first landing area or the green.
     const aimS = Math.min(holeData.length, holeData.par === 3 ? holeData.length : 235);
@@ -171,7 +190,16 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
     if (world.terrainView) { world.terrainView.updateLod(camera); world.terrainView.update(dt); }
     for (const s of world.systems) if (s.update) s.update(dt, t, world);
     lighting.update();
+    // After the camera rig has moved the camera: which other holes are near and in view.
+    if (world.scenery) world.scenery.update(camera);
   };
+  function dropScenery() {
+    if (!world.scenery) return;
+    for (const m of world.scenery.meshes) engine.post.state.noAo.delete(m);
+    scene.remove(world.scenery.group);
+    world.scenery.dispose();
+    world.scenery = null;
+  }
 
   // Named camera views for QA shots and contact sheets. Returns false if the hole has no such
   // feature (for example no water), so the caller can label the frame honestly.
@@ -460,6 +488,7 @@ export function createWorld(engine, { courseId, todId, hole = 1, assets }) {
   engine.listeners.restore.add(onRestore);
 
   world.dispose = () => {
+    dropScenery();
     if (world.terrainView) world.terrainView.dispose();
     for (const s of world.systems) if (s.dispose) s.dispose();
     lighting.dispose();

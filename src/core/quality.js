@@ -76,6 +76,13 @@ export const fpsCapValue = (v) => (v === 'uncapped' || !FPS_CAPS.includes(String
 // Whether the GPU string names a desktop-class GPU (a dedicated card, Apple silicon, or a recent
 // strong integrated GPU). Pure, for the Settings label and the tier choice.
 const DESKTOP_GPU = /rtx|gtx|geforce|quadro|radeon rx|rx \d{3,4}|radeon pro|radeon \d{3}m|radeon\(tm\) \d{3}m|arc a\d|arc\(tm\)|intel\(r\) arc|apple m\d|iris xe|iris\(r\) xe/;
+// Settings, Graphics, Show other holes: On by default on Medium and up, Off on Low.
+export function otherHolesOn(setting, tierId) {
+  if (setting === 'on') return true;
+  if (setting === 'off') return false;
+  return tierId !== 'low';
+}
+
 export function isDesktopGpu(caps = {}) {
   if (caps.mobile) return false;
   const gpu = String(caps.gpu || '').toLowerCase();

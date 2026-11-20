@@ -1,0 +1,116 @@
+{
+ "checks": [
+  {
+   "name": "1920x1080: on Low the setting shows Off and no other holes are drawn",
+   "pass": true,
+   "detail": {
+    "setting": "auto",
+    "tier": "low",
+    "scenery": false,
+    "holes": 0,
+    "select": "off"
+   }
+  },
+  {
+   "name": "1920x1080: picking On draws the other holes on Low",
+   "pass": true,
+   "detail": {
+    "setting": "on",
+    "tier": "low",
+    "scenery": true,
+    "holes": 17,
+    "select": "on"
+   }
+  },
+  {
+   "name": "1920x1080: picking Off removes them",
+   "pass": true,
+   "detail": {
+    "setting": "off",
+    "tier": "low",
+    "scenery": false,
+    "holes": 0,
+    "select": "off"
+   }
+  },
+  {
+   "name": "1920x1080: on Medium the default is On and the other holes are drawn",
+   "pass": true,
+   "detail": {
+    "setting": "auto",
+    "tier": "medium",
+    "scenery": true,
+    "holes": 17,
+    "select": "on"
+   }
+  },
+  {
+   "name": "1920x1080: the setting is saved",
+   "pass": true,
+   "detail": {
+    "saved": "auto"
+   }
+  },
+  {
+   "name": "1920x1080: no console errors",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "390x844: on Low the setting shows Off and no other holes are drawn",
+   "pass": true,
+   "detail": {
+    "setting": "auto",
+    "tier": "low",
+    "scenery": false,
+    "holes": 0,
+    "select": "off"
+   }
+  },
+  {
+   "name": "390x844: picking On draws the other holes on Low",
+   "pass": true,
+   "detail": {
+    "setting": "on",
+    "tier": "low",
+    "scenery": true,
+    "holes": 17,
+    "select": "on"
+   }
+  },
+  {
+   "name": "390x844: picking Off removes them",
+   "pass": true,
+   "detail": {
+    "setting": "off",
+    "tier": "low",
+    "scenery": false,
+    "holes": 0,
+    "select": "off"
+   }
+  },
+  {
+   "name": "390x844: on Medium the default is On and the other holes are drawn",
+   "pass": true,
+   "detail": {
+    "setting": "auto",
+    "tier": "medium",
+    "scenery": true,
+    "holes": 17,
+    "select": "on"
+   }
+  },
+  {
+   "name": "390x844: the setting is saved",
+   "pass": true,
+   "detail": {
+    "saved": "auto"
+   }
+  },
+  {
+   "name": "390x844: no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}

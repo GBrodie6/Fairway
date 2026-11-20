@@ -313,8 +313,9 @@ export function createProps(world, engine) {
           b.box(wdt + 0.4, 0.08, 0.08, cx + fx * 0.5, gy + 1.2, cz + fz * 0.5, yaw, 0x2a2c30);
         }
       }
-      // Flags of neighboring holes in the distance.
-      for (let i = 0; i < 4; i++) {
+      // Flags of neighboring holes in the distance (stand-ins, unless the real other holes are
+      // drawn around this one: render/scenery.js).
+      for (let i = 0; i < (w.scenery ? 0 : 4); i++) {
         const a = rng.range(0, 6.28), d = rng.range(170, 420);
         const x = (t.x0 + t.maxX) / 2 + Math.cos(a) * d * 1.4, z = (t.z0 + t.maxZ) / 2 + Math.sin(a) * d * 2.0;
         if (t.inBounds(x, z, 0)) continue;

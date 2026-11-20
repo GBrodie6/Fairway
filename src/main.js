@@ -4,7 +4,7 @@ import { createWorld } from './render/world.js';
 import { createAssets } from './render/assets.js';
 import { createLoop } from './core/loop.js';
 import { loadSettings, readUrlParams } from './core/settings.js';
-import { detectTier, readCaps, withShadows, tierById, tierKey, fpsCapValue, isDesktopGpu } from './core/quality.js';
+import { detectTier, readCaps, withShadows, tierById, tierKey, fpsCapValue, isDesktopGpu, otherHolesOn } from './core/quality.js';
 import { COURSE_IDS } from './course/courses.js';
 import { TOD_ORDER } from './render/timeOfDay.js';
 import { createDebugOverlay } from './ui/debug.js';
@@ -41,6 +41,8 @@ async function boot() {
   caps.desktopGpu = isDesktopGpu(caps);
   const autoTier = detectTier(caps);
   const wantTier = () => params.tier || (settings.tier !== 'auto' ? settings.tier : autoTier);
+  // The other holes around the one in play (render/scenery.js): the setting, or the URL for QA.
+  const wantScenery = (tierId) => (params.scenery !== undefined ? params.scenery : otherHolesOn(settings.otherHoles, tierId));
   engine.setTier(wantTier(), settings.shadowQuality);
 
   const loop = createLoop({ timescale: params.timescale || 1 });
@@ -50,18 +52,20 @@ async function boot() {
 
   const courseId = COURSE_IDS.includes(params.course) ? params.course : COURSE_IDS[0];
   const todId = TOD_ORDER.includes(params.tod) ? params.tod : 'morning';
-  app.world = createWorld(engine, { courseId, todId, hole: params.hole || 1, assets });
+  app.world = createWorld(engine, { courseId, todId, hole: params.hole || 1, assets, otherHoles: wantScenery(engine.tier.id) });
   engine.listeners.resize.add(() => app.world && app.world.resize());
 
   app.setTimeOfDay = async (id) => { app.world.setTimeOfDay(id); };
   app.setCourse = async (id, hole = 1) => { await app.world.loadHole(id, hole); };
   // A tier change rebuilds the world: shadow cascades, material variants, and instance
   // counts are all baked into it.
+  // Showing the other holes changes the ground around the hole too, so it rebuilds the world.
   app.setTier = async (id, shadows = settings.shadowQuality) => {
-    if (tierKey(withShadows(tierById(id), shadows)) === tierKey(engine.tier)) return;
+    const scenery = wantScenery(id);
+    if (tierKey(withShadows(tierById(id), shadows)) === tierKey(engine.tier) && scenery === app.world.otherHoles) return;
     const prev = app.world;
     engine.setTier(id, shadows);
-    const next = createWorld(engine, { courseId: prev.courseId, todId: prev.todId, hole: prev.hole, assets });
+    const next = createWorld(engine, { courseId: prev.courseId, todId: prev.todId, hole: prev.hole, assets, otherHoles: scenery });
     if (prev.wind) next.wind = { ...prev.wind };
     await next.loadHole(prev.courseId, prev.hole);
     app.world = next;

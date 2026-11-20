@@ -444,7 +444,28 @@ export function createSurfaceIdMaterial(tex, grid) {
 // ---------------------------------------------------------------------------------------
 // The view.
 // ---------------------------------------------------------------------------------------
-export function createTerrainView({ terrain, course, lighting, tier, assets, manifest, engine }) {
+// The other holes' corridors in this hole's frame (render/scenery.js, from the course routing):
+// a flat list of segments, five numbers each (ax, az, bx, bz, corridor half-width). Returns the
+// distance from (x, z) to the nearest corridor's edge (negative inside one), or Infinity.
+export function footprintDistance(segs) {
+  if (!segs || !segs.length) return null;
+  const n = segs.length / 5;
+  return (x, z) => {
+    let best = Infinity;
+    for (let i = 0; i < n; i++) {
+      const o = i * 5, ax = segs[o], az = segs[o + 1], vx = segs[o + 2] - ax, vz = segs[o + 3] - az;
+      const l2 = vx * vx + vz * vz || 1e-9;
+      let u = ((x - ax) * vx + (z - az) * vz) / l2;
+      u = u < 0 ? 0 : u > 1 ? 1 : u;
+      const d = Math.hypot(x - ax - vx * u, z - az - vz * u) - segs[o + 4];
+      if (d < best) best = d;
+    }
+    return best;
+  };
+}
+
+export function createTerrainView({ terrain, course, lighting, tier, assets, manifest, engine, footprint = null }) {
+  const footAt = footprintDistance(footprint);
   const group = new THREE.Group();
   group.name = 'terrain';
   const { nx, nz, x0, z0, height } = terrain;
@@ -607,11 +628,17 @@ export function createTerrainView({ terrain, course, lighting, tier, assets, man
     const sea = hole.sea;
     const far = course.backdrop || {};
     const seed = hole.seed & 0xffff;
-    const hAt = (x, z) => {
-      let hh = terrain.macro(x, z, 1);
+    // With the other holes drawn around this one (footprint), the ground under them is course
+    // ground: the mesas and ridges of the macro and the distant relief fade out near their
+    // corridors, so they lie on rolling land and the hills rise beyond the course. Near the
+    // detailed grid (seam) nothing changes, so the two meshes still meet exactly.
+    const seamAt = (x, z) => smoothstep(10, 110, Math.hypot(Math.max(ix0 - x, 0, x - ix1), Math.max(iz0 - z, 0, z - iz1)));
+    const hAt = (x, z, dl = footAt ? footAt(x, z) : Infinity, seam = footAt ? seamAt(x, z) : 0) => {
+      const flat = footAt ? (1 - smoothstep(30, 220, dl)) * seam : 0;
+      let hh = terrain.macro(x, z, 1, 1 - flat * 0.95);
       // Distant relief grows with range: hills, mesas, or mountains depending on the course.
       const d = Math.hypot(x - cx, z - cz);
-      const rise = smoothstep(380, 2400, d);
+      const rise = smoothstep(380, 2400, d) * (footAt ? 1 - (1 - smoothstep(60, 700, dl)) * seam : 1);
       if (rise > 0 && far.amp) {
         const px = x / far.wave + seed, pz = z / far.wave - seed * 0.7;
         let r = 0, amp = 1, f = 1, norm = 0;
@@ -633,19 +660,23 @@ export function createTerrainView({ terrain, course, lighting, tier, assets, man
     for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
       const x = xs[i], z = zs[j], k = j * w + i;
       const inside = x >= ix0 - 0.01 && x <= ix1 + 0.01 && z >= iz0 - 0.01 && z <= iz1 + 0.01;
-      const hh = hAt(x, z);
+      // The footprint distance is found once per vertex and reused for the normal's samples
+      // (it changes over tens of meters, the samples are a few meters apart).
+      const dl = footAt ? footAt(x, z) : Infinity, seam = footAt ? seamAt(x, z) : 0;
+      const hh = hAt(x, z, dl, seam);
       pos[k * 3] = x; pos[k * 3 + 1] = hh - (inside ? 0.7 : 0); pos[k * 3 + 2] = z;
       // Normal over half a cell, so it describes the shape the cell can actually show.
       const cell = Math.min(xs[Math.min(w - 1, i + 1)] - xs[Math.max(0, i - 1)], zs[Math.min(h - 1, j + 1)] - zs[Math.max(0, j - 1)]) / 2;
       const e = Math.max(6, cell * 0.5);
-      const gx = (hAt(x + e, z) - hAt(x - e, z)) / (2 * e), gz = (hAt(x, z + e) - hAt(x, z - e)) / (2 * e);
+      const gx = (hAt(x + e, z, dl, seam) - hAt(x - e, z, dl, seam)) / (2 * e), gz = (hAt(x, z + e, dl, seam) - hAt(x, z - e, dl, seam)) / (2 * e);
       const inv = 1 / Math.hypot(gx, gz, 1);
       nor[k * 3] = -gx * inv; nor[k * 3 + 1] = inv; nor[k * 3 + 2] = -gz * inv;
       const desert = th.base === 'waste';
       const nearSea = sea ? 1 - smoothstep(0.9, 3.0, hh - sea.level) : 0;
       wts[k * 4] = desert ? 0 : 1; // deep rough ground
       wts[k * 4 + 1] = desert ? 1 : Math.max(th.trees.forest > 0 ? 1 : 0, nearSea); // waste: desert floor, forest floor, beach
-      wts[k * 4 + 2] = clamp(th.trees.forest, 0, 1) * (1 - nearSea); // canopy
+      // Canopy, cleared over the other holes' corridors (they are open ground).
+      wts[k * 4 + 2] = clamp(th.trees.forest, 0, 1) * (1 - nearSea) * (footAt ? 1 - (1 - smoothstep(-10, 45, dl)) * seam : 1);
       wts[k * 4 + 3] = sea ? 1 - smoothstep(0.1, 0.6, hh - sea.level) : 0; // wet shore
     }
     const idx = [];
@@ -669,11 +700,28 @@ export function createTerrainView({ terrain, course, lighting, tier, assets, man
     mesh.renderOrder = 1;
     mesh.userData.terrain = true;
     view.outerHeightAt = hAt;
+    // The outer mesh's own surface (its triangles, not the function it samples), for flat
+    // things laid on it from far away: they then sit exactly on what is drawn.
+    const cellOf = (arr, v) => {
+      let lo = 0, hi = arr.length - 2;
+      if (v <= arr[0]) return 0;
+      if (v >= arr[hi]) return hi;
+      while (hi - lo > 1) { const m = (lo + hi) >> 1; if (arr[m] <= v) lo = m; else hi = m; }
+      return lo;
+    };
+    view.outerSurfaceAt = (x, z) => {
+      const i = cellOf(xs, x), j = cellOf(zs, z);
+      const fx = clamp((x - xs[i]) / (xs[i + 1] - xs[i]), 0, 1), fz = clamp((z - zs[j]) / (zs[j + 1] - zs[j]), 0, 1);
+      const a = (j * w + i) * 3 + 1, b = a + 3, d = a + w * 3, e2 = d + 3;
+      return fx + fz <= 1 ? pos[a] + fx * (pos[b] - pos[a]) + fz * (pos[d] - pos[a]) : pos[e2] + (1 - fx) * (pos[d] - pos[e2]) + (1 - fz) * (pos[b] - pos[e2]);
+    };
     return mesh;
   }
 
-  const view = { group, material, outerMaterial, uniforms, tex, chunks, triangles: 0, surfaces, sets, updateLod, ready: false };
+  const view = { group, material, outerMaterial, uniforms, tex, chunks, triangles: 0, surfaces, sets, updateLod, ready: false, footprintAt: footAt };
+  const tOuter = performance.now();
   const outer = buildOuter();
+  view.outerMs = performance.now() - tOuter;
   group.add(outer);
   view.outer = outer;
   if (course.backdrop && course.backdrop.snowLine) uniforms.uSnowLine.value = course.theme.baseElevation + course.backdrop.snowLine;

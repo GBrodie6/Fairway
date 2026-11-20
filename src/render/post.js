@@ -314,6 +314,7 @@ export function createPost(renderer, tier) {
   let gtao = null;
 
   const state = {
+    noAo: new Set(),
     exposure: 1,
     tonemap: 'aces',
     aoStrength: 0.85,
@@ -421,7 +422,11 @@ export function createPost(renderer, tier) {
     let aoTex = null;
     if (currentTier.ao && state.aoStrength > 0) {
       const g = ensureGtao(scene, camera);
+      // Objects listed in state.noAo (far scenery) stay out of the AO pass's own scene render.
+      const hidden = [];
+      for (const o of state.noAo) if (o.visible) { o.visible = false; hidden.push(o); }
       if (g) { g.render(renderer, null, null); aoTex = g.pdRenderTarget.texture; }
+      for (const o of hidden) o.visible = true;
     }
 
     // Depth of field (replay and flyover only)

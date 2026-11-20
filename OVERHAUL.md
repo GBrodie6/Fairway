@@ -740,3 +740,105 @@ the clubhouse is drawn where the round starts. On Augusta 11 holes keep the real
 within 10 degrees and 16 within 30 (the 17th is turned 115 degrees); on the Old Course the first
 six follow the real line exactly, 11 are within 30 degrees, and the 10th and 11th turn the
 other way (105 and 120 degrees).
+
+## Course scenery 3: the other holes around the one in play
+
+`render/scenery.js`, built when a hole starts (`world.loadHole`) and freed when it ends. Each
+other hole is a flat, vertex-colored drape laid on the outer ground: its rough corridor (not on
+Low), fairway, green, tees, bunkers, ponds and streams, and a flag at its pin, plus a few cone
+trees (a 6-sided cone over a 3-sided trunk, sized and colored per course) along its tree line
+and behind its green. No textures, grass, shadows, particles or props. Colors are the terrain's
+own far-distance averages for each surface, so a far fairway matches a near one.
+
+- Two draw calls whatever the number of holes: one mesh holds every hole's drape, one instanced
+  mesh every tree. Each frame a bounding sphere per hole decides which holes are within the
+  distance limit (1,400 m Low, 2,000 m Medium, 2,700 m High and Ultra) and in view; only when
+  that set changes are their index ranges and tree instances copied into what is drawn.
+- Far holes fade out before the limit (the drape's alpha from 72 percent of it, the trees
+  shrink from 78 percent), so nothing pops, and the post pass's aerial perspective and fog fade
+  them on the way. Trees within 14 to 24 m of the camera shrink away, so no camera ends up
+  inside one.
+- Shadows skip both meshes, and so does the AO pass's own scene render (`post.state.noAo`), so
+  they cost two draw calls on every tier.
+- The budget is enforced on what is built, so whatever is drawn fits: trees go first from the
+  farthest holes, then whole far holes, until the triangles fit.
+- Ground: with the scenery on, the outer landscape (the same macro function as the hole's
+  grid) flattens the mesas and ridges near the other holes' corridors and lets the backdrop
+  relief rise beyond them, and clears the forest canopy and the outer ring of impostor trees
+  off their corridors; within 10 m of the detailed grid nothing changes, so the seam is
+  untouched, and with the scenery off the ground is exactly as before. The drape is laid on the
+  outer mesh's own triangles (`outerSurfaceAt`), 0.35 m up with a polygon offset.
+- Woods: the first look showed the current hole's own woods standing where the other holes'
+  rough is (the hole's grid reaches about 30 m into the next corridor) and a solid wall across
+  the 60 m between holes. With the scenery on, this hole's trees now stop at the other holes'
+  corridors and thin toward them across the gap (to 40 percent at the far side, full near this
+  hole). Trees take no part in the ball's flight, so this changes only what is drawn.
+- Colors: the plain lighting of the drape came out brighter than the terrain shader, so the
+  turf colors are taken down by a fifth to sit with the hole's own far fairway (by eye).
+- What shows where: from the flyover and other high views the other holes show on the
+  desktop; on wooded courses (parkland, alpine, Augusta) the woods between holes hide them at
+  eye level from the tee and the green, as on a real wooded course, and a portrait phone sees
+  only about 27 degrees across, so it shows fewer of them than a desktop. From a coastal hole,
+  holes that lie in its sea are not drawn: its coastline runs on past its ends (the game draws
+  the sea to the horizon), and the routing keeps other holes out of it only along the hole's
+  own length. How many other holes have anything drawable, per hole
+  (`qa/proof/scenery/drawable-holes.json`): all 17 from every hole of parkland, desert, alpine
+  and Augusta; links 11.3 on average (1 from the 18th, 3 from the 2nd and the 17th);
+  tropical 15.7 (2 from the 9th); the Old Course 15.3 (2 from the 1st, whose sea in the game's
+  spec lies to the north, where the real outward nine runs). A cost in the search for
+  avoiding coastal holes' seas past their ends was tried and did not help (links 11.0,
+  tropical 15.2), so it was left out.
+- Physics: nothing here touches it. The drape stops at the edge of the current hole's grid (2 m
+  out) and outside its coastline, so where the ball can land on this hole's own ground nothing
+  else is drawn; a ball that flies onto another hole lands where it always did (out of bounds
+  past the grid). The stand-in flags of the old outer ground are left out when the real holes
+  are drawn.
+- Setting: Settings, Graphics, Show other holes: On or Off. Until it is changed it follows the
+  quality: On for Medium and up, Off for Low. Changing it (or the quality) rebuilds the world,
+  as a quality change always has. `?scenery=1` or `0` overrides it for QA.
+
+Checks (`qa/proof/scenery/`): the renderer and physics agreement check, with the other holes
+forced on at Medium, passes on all 7 courses (99.96 to 99.99 percent of 27,648 surface
+samples, mesh heights within 0.1 mm; `agreement.json`), and the smoke test's own run (Low,
+other holes off) passed in every verify. Cameras (`cameras/`, 390x844, Medium, a real swing
+aimed off the hole at the nearest other hole): over the whole flight the ball-follow camera
+stayed 1.2 m or more above the ground drawn under it on every course (28 to 48 of its frames
+were past the hole's grid, over the other holes' ground), and the nearest full-size tree of
+another hole was 10 m or more away on 6 courses; on Augusta one came within 2 m, which is
+inside the 14 m where trees shrink to nothing, so the camera was never inside one. The
+address, flyover and green views drew 0 to 7 other holes depending on the course and the
+woods; on links hole 1 none (the holes near it lie in its sea), so that course fails the
+tool's own "the flyover draws another hole" line. Settings (`setting.json`, real mouse at
+1920x1080 and touch at 390x844): Low shows Off and draws nothing, On draws 17 holes, Off
+removes them, Medium defaults to On, no console errors. Build time when a hole starts, headless Chrome here: the scenery itself 13 to
+25 ms, and the outer ground takes 8 to 59 ms longer with the other holes' footprint (for
+example 83 against 40 ms on parkland; `agreement.json`).
+
+Cost (`qa/proof/scenery/bench-after.json`, the same tool, hole, views and 960x540 buffer as
+the before table in part 1, on SwiftShader). "Scenery off" is the same world with the two
+scenery meshes hidden (the ground and woods changes stay), measured in batches alternating with
+"on", so the last column is the scenery's own cost, as the median of the six on/off batch
+pairs (each pair's ratio in brackets, to show the noise of a CPU rasterizer). The before column
+is the old build: the after columns differ from it also because the woods between holes are
+thinner. Budgets: added draw calls at most 2, 4 and 6 (Low, Medium, High) and triangles at most
+8,000, 25,000 and 60,000: the scenery adds 2 draw calls on every tier, and at most 2,142,
+5,165 and 10,055 triangles in these views (3,378, 7,781 and 14,067 built in all on parkland). Frame
+cost limits: 10 percent on Low (the largest median is +6.2 percent) and 5 percent on High
+(+3.2 percent), so no detail had to be cut. The first run of this table found 3 draw calls,
+not 2: three.js draws a transparent double-sided material in two passes, and the drape now
+forces one.
+
+| tier | view | before: draws, tris, ms | after, scenery off | after, scenery on | added | frame cost, on / off (median of paired batches) |
+| --- | --- | --- | --- | --- | --- | --- |
+| low | address | 111, 248k, 1,205 | 107, 257k, 1,146 | 109, 259k, 1,127 | +2 draws, +1,990 tris (9 holes) | +0.0% (-2.5 to +8.8) |
+| low | flyover | 106, 223k, 1,324 | 110, 230k, 1,116 | 112, 232k, 1,153 | +2 draws, +2,142 tris (10 holes) | +3.3% (-3.7 to +6.6) |
+| low | green | 106, 197k, 1,197 | 98, 196k, 952 | 100, 197k, 1,001 | +2 draws, +1,264 tris (6 holes) | +6.2% (-1.6 to +9.6) |
+| medium | address | 112, 455k, 3,555 | 114, 459k, 3,491 | 116, 464k, 3,422 | +2 draws, +4,453 tris (9 holes) | +2.1% (-2.3 to +3.1) |
+| medium | flyover | 119, 404k, 2,750 | 113, 392k, 2,572 | 115, 398k, 2,602 | +2 draws, +5,165 tris (11 holes) | +0.8% (-3.2 to +10.6) |
+| medium | green | 96, 448k, 3,116 | 96, 445k, 2,735 | 98, 448k, 2,713 | +2 draws, +2,857 tris (6 holes) | -0.8% (-4.0 to +8.1) |
+| high | address | 135, 1009k, 5,713 | 135, 951k, 5,571 | 137, 959k, 5,691 | +2 draws, +7,969 tris (9 holes) | +3.2% (-0.4 to +4.0) |
+| high | flyover | 131, 927k, 4,125 | 132, 930k, 3,944 | 134, 940k, 3,825 | +2 draws, +10k tris (12 holes) | +0.5% (-5.6 to +1.6) |
+| high | green | 117, 814k, 5,237 | 109, 708k, 4,765 | 111, 713k, 4,693 | +2 draws, +5,161 tris (6 holes) | +0.6% (-3.8 to +9.3) |
+| ultra | address | 147, 1640k, 7,255 | 151, 1578k, 6,955 | 153, 1586k, 7,054 | +2 draws, +7,969 tris (9 holes) | +1.7% (-1.7 to +9.2) |
+| ultra | flyover | 151, 1569k, 4,993 | 157, 1565k, 5,021 | 159, 1575k, 4,978 | +2 draws, +10k tris (12 holes) | +2.1% (-11.2 to +4.6) |
+| ultra | green | 141, 1431k, 6,185 | 136, 1363k, 5,754 | 138, 1368k, 5,801 | +2 draws, +5,161 tris (6 holes) | -0.1% (-4.3 to +4.5) |
