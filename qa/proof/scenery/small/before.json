@@ -1,0 +1,140 @@
+[
+ {
+  "size": "390x844",
+  "course": "augusta",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/small/before-augusta-h1-390x844-tee.jpg",
+    "draws": 82,
+    "tris": 211643,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/small/before-augusta-h1-390x844-green.jpg",
+    "draws": 48,
+    "tris": 134453,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "standrews",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/small/before-standrews-h1-390x844-tee.jpg",
+    "draws": 56,
+    "tris": 129895,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/small/before-standrews-h1-390x844-green.jpg",
+    "draws": 42,
+    "tris": 122467,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "parkland",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/small/before-parkland-h1-390x844-tee.jpg",
+    "draws": 113,
+    "tris": 214661,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/small/before-parkland-h1-390x844-green.jpg",
+    "draws": 91,
+    "tris": 155595,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "augusta",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/small/before-augusta-h1-1920x1080-tee.jpg",
+    "draws": 88,
+    "tris": 243755,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/small/before-augusta-h1-1920x1080-green.jpg",
+    "draws": 52,
+    "tris": 158170,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "standrews",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/small/before-standrews-h1-1920x1080-tee.jpg",
+    "draws": 66,
+    "tris": 176415,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/small/before-standrews-h1-1920x1080-green.jpg",
+    "draws": 46,
+    "tris": 159412,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "parkland",
+  "hole": 1,
+  "tag": "before",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/scenery/small/before-parkland-h1-1920x1080-tee.jpg",
+    "draws": 123,
+    "tris": 250945,
+    "scenery": null
+   },
+   "green": {
+    "file": "qa/proof/scenery/small/before-parkland-h1-1920x1080-green.jpg",
+    "draws": 108,
+    "tris": 197164,
+    "scenery": null
+   }
+  },
+  "scenery": null,
+  "consoleErrors": 0,
+  "errors": []
+ }
+]
