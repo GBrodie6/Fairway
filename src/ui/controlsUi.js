@@ -22,7 +22,8 @@ export const SHORTCUTS = Object.freeze([
   ] },
   { group: 'Views and menus', rows: [
     ['Tab', 'Scorecard (Tab again to close)'],
-    ['M', 'Hole map and rangefinder'],
+    ['M', 'Hole map and rangefinder; M again for the course map, once more to close'],
+    ['Course map: wheel, + and -', 'Zoom in and out (0 fits the whole course; drag to move)'],
     ['C', 'Camera: look around the hole (in a replay: the next angle)'],
     ['Z', 'Replay the last shot (Z again to end it)'],
     ['Esc', 'Pause, or back'],

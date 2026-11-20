@@ -842,3 +842,60 @@ forces one.
 | ultra | address | 147, 1640k, 7,255 | 151, 1578k, 6,955 | 153, 1586k, 7,054 | +2 draws, +7,969 tris (9 holes) | +1.7% (-1.7 to +9.2) |
 | ultra | flyover | 151, 1569k, 4,993 | 157, 1565k, 5,021 | 159, 1575k, 4,978 | +2 draws, +10k tris (12 holes) | +2.1% (-11.2 to +4.6) |
 | ultra | green | 141, 1431k, 6,185 | 136, 1363k, 5,754 | 138, 1368k, 5,801 | +2 draws, +5,161 tris (6 holes) | -0.1% (-4.3 to +4.5) |
+
+## Course scenery 4: the course map
+
+`ui/courseMap.js`: a flat drawing of the whole course from the routing and each hole's own
+definition, north up: every hole's rough corridor, fairway, green, tees, bunkers, ponds and
+streams, a flag on every green, the walks between holes (faint dashes), the clubhouse, and a
+number for every hole. In a round the hole in play is outlined in gold, the others are dimmed a
+little, and the ball and a dashed line to the pin are drawn, with the distance below.
+
+- Open it from the hole map's Hole and Course toggle (and M: the first M opens the hole map,
+  the second the course map, the third closes it), from the scorecard (Course map), and from
+  Quick Play's course select (Course map, beside the course cards).
+- Drag to move and pinch to zoom on touch (the two fingers' midpoint stays on the same spot),
+  the wheel zooms about the pointer on a desktop, + and - and 0 (fit) on the keyboard, and the
+  + and - and Fit buttons on screen. Zoom runs from 0.6 to 14 times the fitted size.
+- Quick Play: tap a hole (its number or anywhere in its corridor) and Start on hole N sets the
+  round's first hole (the round then runs on in order and wraps after the 18th, as Quick
+  Play's start hole always has); the setup screen shows Starting on hole N. Closest to the pin
+  (par 3s only) has no start hole, so there the map is for looking only.
+- Readable at every size: hole numbers are placed in screen space, each trying spots behind its
+  tee, beside it and then along its line, and taking the first that overlaps no other label and
+  stays inside the part of the screen the controls leave free (measured from the controls
+  themselves, so wrapped text along the bottom is allowed for). A label that finds no free spot
+  is left out rather than drawn over another (at the fitted zoom every course placed all 19
+  labels at 360x640 and 2560x1440: see the proof).
+
+Checked with `scripts/tools/coursemap-check.mjs` on the production build (`qa/proof/coursemap/`):
+real touch at 360x640 (taps, a drag, a two-finger pinch through DevTools touch points) and a real
+mouse at 2560x1440 (clicks, a drag, the wheel, the M key), on every course: Quick Play's course
+card and Course map button, the map fitted (every label placed, no label over another or over a
+control, every control on screen and 44 px or more), a drag (the map follows the pointer exactly:
+94.3 px for a 94.3 px drag), the pinch or wheel (zoom 3 times or more about the fingers), Fit and
++, a tap on hole 7, Start on hole 7, the setup screen then reading Starting on hole 7, Tee off and
+the round starting on hole 7, in the round the hole map's Course toggle (the hole in play
+outlined, the ball and its line drawn), Hole back to the hole map, M three times on the desktop
+(hole map, course map, closed), and the scorecard's Course map button: 273 of 273 checks passed, 0
+console errors. Labels placed (19 is all 18 holes and the clubhouse):
+
+| course | 360x640: labels fitted, zoomed (off screen), in a round | 2560x1440: the same |
+| --- | --- | --- |
+| parkland | 19, 5 (14), 19 | 19, 9 (10), 19 |
+| links | 19, 0 (19), 19 | 19, 8 (11), 19 |
+| desert | 19, 4 (15), 19 | 19, 8 (11), 19 |
+| alpine | 19, 6 (13), 19 | 19, 8 (11), 19 |
+| tropical | 19, 4 (15), 19 | 19, 4 (15), 19 |
+| augusta | 19, 7 (12), 19 | 19, 8 (11), 19 |
+| standrews | 19, 5 (14), 19 | 19, 6 (13), 19 |
+
+Found and fixed on the way: zoomed in, a hole at the very edge of the screen got no number (its
+spots on screen were too close to the edge for the label to fit), so a label now slides inside
+the edge; and on the Old Course at 360x640 the long title chip ran into the close button (its
+padding was not counted in its width), so it is now sized with its padding and the title is
+shorter ("St Andrews (Old Course), par 72"; recheck: `title-recheck/`, 19 of 19). Two failures in
+the first runs were the check tool's own timing (a fixed pause after a tap, when a 2560x1440
+frame takes seconds on a software renderer) and a button below the fold; the tool now waits for
+each expected result and scrolls buttons into view.
+

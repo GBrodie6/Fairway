@@ -4,6 +4,7 @@ import './styles.css';
 import { h, iconButton } from './dom.js';
 import { createHud } from './hud.js';
 import { createHoleMap } from './map.js';
+import { createCourseMap } from './courseMap.js';
 import { createInput } from './input.js';
 import { createScreens } from './screens.js';
 import { fmtDist, fmtShort } from './format.js';
@@ -38,14 +39,21 @@ export function createUI(app) {
   app.motionReduced = () => !!settings.reducedMotion || !!(mq && mq.matches);
   if (mq && mq.addEventListener) mq.addEventListener('change', () => ui.applySettings());
   const actions = {
-    map: () => { if (game.state.round && game.state.round.mode === 'range' && app.rangeMap) app.rangeMap(); else if (game.state.round) ui.map.toggle(); },
+    // The map button and M: the hole map; M again (or its Course toggle) the whole course; M
+    // once more closes it.
+    map: () => {
+      if (game.state.round && game.state.round.mode === 'range' && app.rangeMap) app.rangeMap();
+      else if (ui.courseMap.open) ui.courseMap.close();
+      else if (ui.map.open) openCourseMap();
+      else if (game.state.round) ui.map.show();
+    },
     rangeHud: () => (app.rangeHud ? app.rangeHud() : null),
     pause: () => { if (game.state.round && !ui.modal) ui.screens.pause(); },
     fullscreen: () => app.toggleFullscreen(),
     shortcuts: () => { if (app.toggleShortcuts) app.toggleShortcuts(); },
     scorecard: () => { if (ui.modal === 'scorecard') ui.screens.back(); else if (game.state.round && !ui.modal) ui.screens.scorecard(); },
     scorecardOpen: () => ui.modal === 'scorecard',
-    mapOpen: () => !!ui.map.open,
+    mapOpen: () => !!ui.map.open || !!ui.courseMap.open,
     // C in a replay: the next camera angle.
     replayAngle: () => { const order = ['follow', 'landing', 'side', 'high']; const i = order.indexOf(game.state.replayAngle || 'follow'); game.replay(order[(i + 1) % order.length]); },
     replay: () => { if (game.replay('follow')) ui.hud.toast('Replay', 'Half speed. Tap the course to return', 1600); },
@@ -89,16 +97,18 @@ export function createUI(app) {
     holdFan: (on) => { if (app.world && app.world.overlays && app.world.overlays.holdFan) app.world.overlays.holdFan(on); },
     continue: () => game.continue(),
     escape: () => {
+      if (ui.courseMap.open) { ui.courseMap.close(); return; }
       if (ui.map.open) { ui.map.close(); return; }
       if (ui.hud.clubListOpen()) { ui.hud.closeClubList(); return; }
       if (game.state.phase === 'replay') { game.endReplay(); return; }
       if (ui.modal) { ui.screens.back(); return; }
       if (game.state.round) ui.screens.pause();
     },
-    modalOpen: () => !!ui.modal || ui.map.open || (ui.hud && ui.hud.clubListOpen()),
+    modalOpen: () => !!ui.modal || ui.map.open || ui.courseMap.open || (ui.hud && ui.hud.clubListOpen()),
     // Where a controller's d-pad moves the focus: the map, the club list, a menu screen (the
     // level editor is one), or the shot panel. Null in play.
     navRoot: () => {
+      if (ui.courseMap && ui.courseMap.open) return ui.courseMap.el;
       if (ui.map && ui.map.open) return ui.map.el;
       if (ui.hud && ui.hud.clubListOpen()) return root.querySelector('.clublist');
       if (ui.modal && ui.screens) return ui.screens.layer;
@@ -108,7 +118,17 @@ export function createUI(app) {
     editorPad: () => app.editorPad || null,
   };
   ui.hud = createHud(root, { game, settings, haptic, actions, getWorld });
-  ui.map = createHoleMap(root, { getWorld, game, settings });
+  ui.map = createHoleMap(root, { getWorld, game, settings, onCourseMap: () => openCourseMap() });
+  ui.courseMap = createCourseMap(root, { settings, onHoleMap: () => { ui.courseMap.close(); if (game.state.round) ui.map.show(); } });
+  // The course map in a round: the hole in play, the ball and the pin.
+  function openCourseMap() {
+    const w = getWorld(), st = game.state;
+    if (ui.map.open) ui.map.close();
+    if (!st.round || st.round.mode === 'range' || !w || !w.terrain || !w.course) return false;
+    return ui.courseMap.show({ courseId: w.course.id, current: w.hole - 1, ball: st.ball, pin: w.terrain.pin });
+  }
+  // From the course select screen and the scorecard: opts as courseMap.show takes them.
+  app.openCourseMap = (opts) => (opts ? ui.courseMap.show(opts) : openCourseMap());
   ui.input = createInput({ view: app.engine.renderer.domElement.parentElement || app.engine.renderer.domElement, game, getWorld, settings, hud: ui.hud, actions, haptic });
   ui.screens = createScreens(root, { app, game, settings, ui, save: () => saveSettings(settings) });
 
@@ -144,6 +164,7 @@ export function createUI(app) {
         if (d === 'menu') ui.screens.menu();
         if (d === 'aim') ui.screens.maybeTutorial();
         if (d !== 'aim' && ui.map.open) ui.map.close();
+        if (d !== 'aim' && ui.courseMap.open && !ui.modal) ui.courseMap.close();
         break;
       case 'hole':
         ui.map.invalidate();
@@ -210,7 +231,7 @@ export function createUI(app) {
   const clubSource = () => {
     const st = game.state, w = app.world;
     const v = st.round ? game.view() : null;
-    clubCtx.show = !!(v && v.phase === 'aim' && v.human && w.rig.mode === 'address' && !ui.map.open && !ui.modal && w.ball && w.ball.group.visible !== false);
+    clubCtx.show = !!(v && v.phase === 'aim' && v.human && w.rig.mode === 'address' && !ui.map.open && !ui.courseMap.open && !ui.modal && w.ball && w.ball.group.visible !== false);
     if (w.ball) { const p = w.ball.position; clubCtx.ball.x = p.x; clubCtx.ball.y = p.y; clubCtx.ball.z = p.z; }
     clubCtx.heading = st.aim; clubCtx.clubId = st.club ? st.club.id : 'I7'; clubCtx.rarity = app.gearFor ? app.gearFor(clubCtx.clubId).rarity : 'common';
     clubCtx.lefty = settings.handedness === 'left';

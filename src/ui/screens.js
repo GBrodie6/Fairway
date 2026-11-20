@@ -88,7 +88,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
     show('setup', () => {
       const cards = h('div', { class: 'cards' });
       for (const c of COURSES) {
-        cards.appendChild(h('button', { class: 'card', type: 'button', 'aria-pressed': setupState.courseId === c.id ? 'true' : 'false', onclick: () => { setupState.courseId = c.id; screens.setup(); } },
+        cards.appendChild(h('button', { class: 'card', type: 'button', 'aria-pressed': setupState.courseId === c.id ? 'true' : 'false', onclick: () => { if (setupState.courseId !== c.id) setupState.startHole = 1; setupState.courseId = c.id; screens.setup(); } },
           h('b', { text: c.name }), h('span', { text: c.blurb || c.style || '' })));
       }
       const modeSeg = h('div', { class: 'seg glass', role: 'group', 'aria-label': 'Game mode' });
@@ -103,6 +103,10 @@ export function createScreens(root, { app, game, settings, ui, save }) {
       return sheet('wide',
         h('h2', { class: 'h', text: 'Quick Play' }),
         h('h3', { class: 'h', text: 'Course' }), cards,
+        // The whole course on a map; tapping a hole there picks the hole the round starts on.
+        app.openCourseMap ? h('div', { class: 'row', style: { marginTop: '8px', alignItems: 'center', gap: '10px' } },
+          btn('Course map', () => app.openCourseMap({ courseId: setupState.courseId, pick: setupState.mode !== 'ctp', startHole: setupState.startHole || 1, onPick: (n) => { setupState.startHole = n; screens.setup(); } }), 'btn small'),
+          setupState.mode !== 'ctp' ? h('span', { class: 'muted small', text: `Starting on hole ${setupState.startHole || 1}` }) : null) : null,
         h('h3', { class: 'h', text: 'Format' }), h('div', { class: 'row' }, modeSeg, holeSeg),
         h('p', { class: 'muted', text: info.text }),
         h('div', { class: 'field' }, h('label', { text: 'Time of day' }), tod),
@@ -199,7 +203,7 @@ export function createScreens(root, { app, game, settings, ui, save }) {
     });
     return h('div', { class: 'scroll-x' }, t);
   }
-  screens.scorecard = () => show('scorecard', () => sheet('wide', h('h2', { class: 'h', text: 'Scorecard' }), scorecardTable(game.state.round), h('div', { style: { marginTop: '14px' } }, btn('Back', () => screens.back(), 'btn'))));
+  screens.scorecard = () => show('scorecard', () => sheet('wide', h('h2', { class: 'h', text: 'Scorecard' }), scorecardTable(game.state.round), h('div', { class: 'grid2', style: { marginTop: '14px' } }, btn('Back', () => screens.back(), 'btn'), app.openCourseMap && game.state.round && game.state.round.mode !== 'range' ? btn('Course map', () => app.openCourseMap(), 'btn') : null)));
 
   // --- hole summary ---
   screens.holeSummary = (s) => {

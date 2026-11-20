@@ -36,12 +36,18 @@ export function makeFrame(cx, cz, heading, scale, w, hgt) {
   };
 }
 
-export function createHoleMap(parent, { getWorld, game, settings, onClose }) {
+export function createHoleMap(parent, { getWorld, game, settings, onClose, onCourseMap }) {
   const wrap = h('div', { class: 'mapwrap hidden', role: 'dialog', 'aria-label': 'Hole map. Tap to measure a distance.' });
   const canvas = h('canvas', { 'aria-hidden': 'true' });
   const readout = h('div', { class: 'glass chip', style: { position: 'absolute', left: '50%', bottom: 'calc(18px + var(--safe-b))', transform: 'translateX(-50%)', fontSize: '14px', padding: '9px 14px' }, 'aria-live': 'polite' });
   const aimHere = h('button', { class: 'btn small primary hidden', type: 'button', style: { position: 'absolute', left: '50%', bottom: 'calc(64px + var(--safe-b))', transform: 'translateX(-50%)' } }, 'Aim here');
   wrap.append(canvas, readout, aimHere, iconButton('close', 'Close map (M or Esc)', () => map.close(), 'iconbtn glass close'));
+  // Hole or Course: the whole course on one map (ui/courseMap.js; M from here opens it too).
+  if (onCourseMap) {
+    wrap.append(h('div', { class: 'seg glass mapseg', role: 'group', 'aria-label': 'Map' },
+      h('button', { type: 'button', 'aria-pressed': 'true' }, 'Hole'),
+      h('button', { type: 'button', 'aria-pressed': 'false', onclick: (e) => { e.stopPropagation(); onCourseMap(); } }, 'Course')));
+  }
   parent.appendChild(wrap);
   const ctx = canvas.getContext('2d');
   const map = { open: false, base: null, frame: null, key: '', tap: null, el: wrap };
@@ -92,7 +98,8 @@ export function createHoleMap(parent, { getWorld, game, settings, onClose }) {
   }
 
   function size() {
-    const vw = window.innerWidth * 0.92, vh = window.innerHeight * 0.82;
+    // Clear of the controls along the top (the Hole and Course toggle, close) and the bottom.
+    const vw = window.innerWidth * 0.92, vh = Math.min(window.innerHeight * 0.82, window.innerHeight - 140);
     const a = map.base.width / map.base.height;
     let cw = vh * a, ch = vh;
     if (cw > vw) { cw = vw; ch = vw / a; }

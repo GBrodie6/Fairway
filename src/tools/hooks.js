@@ -57,6 +57,8 @@ export function installHooks(app) {
       const r = app.engine.renderer.domElement.getBoundingClientRect();
       return { x: r.x + ((cx / cw) * 0.5 + 0.5) * r.width, y: r.y + (0.5 - (cy / cw) * 0.5) * r.height, behind: cw <= 0 };
     },
+    // The course map's label boxes, control boxes and usable area (ui/courseMap.js), or null.
+    courseMapBoxes() { const cm = app.ui && app.ui.courseMap; return cm && cm.open ? cm.boxes() : null; },
     // The other holes drawn around this one (render/scenery.js), or null when off.
     sceneryStats() { const w = app.world; return w && w.scenery ? { ...w.scenery.stats(), buildMs: +w.sceneryMs.toFixed(1), outerMs: +(w.terrainView.outerMs || 0).toFixed(1) } : null; },
     // Screen boxes for the layout check: every visible HUD control, the ball, the swing zone,

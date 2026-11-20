@@ -184,6 +184,27 @@ table.card-t .over { color: var(--warm); }
 .mapwrap { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: auto; background: rgba(6, 12, 9, 0.55); }
 .mapwrap canvas { max-width: 92vw; max-height: 82vh; border-radius: 14px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); }
 .mapwrap .close { position: absolute; top: calc(14px + var(--safe-t)); right: calc(14px + var(--safe-r)); }
+/* The hole map's Hole and Course toggle. */
+.mapwrap .mapseg { position: absolute; top: calc(14px + var(--safe-t)); left: calc(14px + var(--safe-l)); }
+.mapwrap .mapseg button, .coursemap .cmseg button { min-height: 44px; min-width: 64px; }
+.desk .mapwrap .mapseg { scale: var(--hs, 1); transform-origin: top left; }
+/* The course map (ui/courseMap.js): the whole screen, two rows of controls along the top and
+   the hole details along the bottom; the map's labels keep clear of all of them. */
+.coursemap { position: absolute; inset: 0; pointer-events: auto; background: #1b2a20; z-index: 30; outline: none; }
+.coursemap .cmcanvas { position: absolute; inset: 0; touch-action: none; cursor: grab; }
+.coursemap .cmcanvas:active { cursor: grabbing; }
+.coursemap .cmtitle { position: absolute; top: calc(14px + var(--safe-t)); left: calc(14px + var(--safe-l)); box-sizing: border-box; max-width: calc(100% - 92px - var(--safe-l) - var(--safe-r)); min-height: 44px; display: flex; align-items: center; padding: 6px 12px; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.coursemap .close { position: absolute; top: calc(14px + var(--safe-t)); right: calc(14px + var(--safe-r)); }
+.coursemap .cmseg { position: absolute; top: calc(72px + var(--safe-t)); left: calc(14px + var(--safe-l)); }
+.coursemap .cmzout, .coursemap .cmzin, .coursemap .cmfit { position: absolute; top: calc(72px + var(--safe-t)); }
+.coursemap .cmfit { right: calc(14px + var(--safe-r)); min-height: 48px; min-width: 52px; }
+.coursemap .cmzin { right: calc(74px + var(--safe-r)); }
+.coursemap .cmzout { right: calc(128px + var(--safe-r)); }
+.coursemap .cmbottom { position: absolute; left: 14px; right: 14px; bottom: calc(14px + var(--safe-b)); display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+.coursemap .cmbottom > * { pointer-events: auto; }
+.coursemap .cminfo { max-width: 100%; text-align: center; font-size: 14px; padding: 9px 14px; }
+.coursemap .cmstart { min-height: 48px; }
+
 /* Top center, where no HUD control lives, so a late tap cannot land on the club button. */
 .intro-skip { position: absolute; left: 50%; top: calc(14px + var(--safe-t)); transform: translateX(-50%); pointer-events: auto; }
 
