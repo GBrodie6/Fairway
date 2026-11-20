@@ -1324,3 +1324,23 @@ was used.
   labels. Phones unchanged. Verify at 3c0a275: 460 tests, 56 of 56. Deployed by route B
   (gh-pages 07b17cc); route A (Vercel) has no login or token. Live at 1920x1080: 0 problems,
   0 console errors.
+
+## Swing box (sixth brief)
+
+The default swing guide is a box: a soft translucent rectangle under the ball where a press
+starts the swing (a press outside does not), a ring at the start line where the press began, a
+soft fill for the backswing and a small power number. Leaving the box lights the outline in the
+warning colour with one pulse (and a short tick on a phone); more than 1.5 box widths outside
+cancels with no stroke. Settings, Swing guide: Box or Classic track. The tutorial says "Press in
+the box and pull down", then "Swipe up through the ring". The swing math and every existing swing
+test are unchanged; the same input gives the same result in the old and new builds.
+
+Box width: the gesture's face dead zone is about 4 to 5 px (too narrow for a thumb), so the box's
+half-width is the drift where the strike model first allows a mishit (16.8 px on a phone, 18.6
+px on a desktop at the default drag length), never under a 44 px touch target.
+
+Commits: 997aafc (the box), 0abbf48 (the ball 24 px above it on desktop), 71b4cb5 (proof). Verify
+at 0abbf48: 472 tests, smoke 56 of 56. Proof in `qa/proof/swingbox/NOTES.md`: before and after at
+390x844, 844x390, 360x640, 1366x768, 1920x1080 and 2560x1440 with real touch and mouse events, 0
+overlap problems after. Deployed by route B (gh-pages 19bfb81); live checks in
+`qa/proof/live-0abbf48/`.

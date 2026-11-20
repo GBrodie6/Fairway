@@ -1,0 +1,495 @@
+{
+ "sizes": {
+  "390x844": {
+   "input": "touch",
+   "moments": [
+    {
+     "name": "address",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": true,
+      "start": {
+       "x": 196,
+       "y": 537
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": {
+       "x": 173,
+       "y": 510,
+       "w": 44,
+       "h": 234,
+       "start": 26,
+       "halfWidth": 22
+      },
+      "phase": "aim",
+      "strokes": 0,
+      "mode": null,
+      "outline": "inside",
+      "lit": false,
+      "pct": "",
+      "feedback": ""
+     }
+    },
+    {
+     "name": "mid-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": true,
+      "start": {
+       "x": 197,
+       "y": 538
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": {
+       "x": 173,
+       "y": 510,
+       "w": 44,
+       "h": 234,
+       "start": 26,
+       "halfWidth": 22
+      },
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": "inside",
+      "lit": false,
+      "pct": "45%",
+      "feedback": ""
+     }
+    },
+    {
+     "name": "top-of-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": true,
+      "start": {
+       "x": 197,
+       "y": 538
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": {
+       "x": 173,
+       "y": 510,
+       "w": 44,
+       "h": 234,
+       "start": 26,
+       "halfWidth": 22
+      },
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": "inside",
+      "lit": false,
+      "pct": "90%",
+      "feedback": ""
+     }
+    },
+    {
+     "name": "outside-the-box",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": true,
+      "start": {
+       "x": 197,
+       "y": 538
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": {
+       "x": 173,
+       "y": 510,
+       "w": 44,
+       "h": 234,
+       "start": 26,
+       "halfWidth": 22
+      },
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": "outside",
+      "lit": true,
+      "pct": "90%",
+      "feedback": ""
+     }
+    },
+    {
+     "name": "impact",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": true,
+      "start": {
+       "x": 196,
+       "y": 537
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": {
+       "x": 173,
+       "y": 510,
+       "w": 44,
+       "h": 234,
+       "start": 26,
+       "halfWidth": 22
+      },
+      "phase": "flight",
+      "strokes": 0,
+      "mode": null,
+      "outline": "inside",
+      "lit": false,
+      "pct": "90%",
+      "feedback": "Perfect Pured"
+     }
+    }
+   ],
+   "checks": [
+    {
+     "name": "Outside the box during a swing: the outline lights up",
+     "pass": true,
+     "detail": {
+      "lit": true
+     }
+    },
+    {
+     "name": "Back inside: the outline is quiet again",
+     "pass": true,
+     "detail": {
+      "lit": false
+     }
+    },
+    {
+     "name": "The swing launched",
+     "pass": true,
+     "detail": {
+      "phase": "flight",
+      "power": 0.9,
+      "tempo": "Perfect",
+      "face": 0
+     }
+    },
+    {
+     "name": "A press outside the box does not start a swing",
+     "pass": true,
+     "detail": {
+      "press": [
+       235,
+       537
+      ],
+      "box": [
+       173,
+       217
+      ],
+      "mode": null,
+      "phase": "aim"
+     }
+    },
+    {
+     "name": "More than 1.5 box widths outside cancels the swing, no stroke",
+     "pass": true,
+     "detail": {
+      "mode": null,
+      "strokes": [
+       0,
+       0
+      ],
+      "feedback": "Swing cancelled"
+     }
+    },
+    {
+     "name": "Left-handed: the box mirrors (power number on the left), no overlaps",
+     "pass": true,
+     "detail": {
+      "pctRight": 166,
+      "boxLeft": 174,
+      "guideX": 174.5,
+      "boxCx": 196,
+      "overlaps": []
+     }
+    },
+    {
+     "name": "Classic track in Settings brings the old stick back (no box), no overlaps",
+     "pass": true,
+     "detail": {
+      "box": false,
+      "track": true,
+      "vis": "none",
+      "overlaps": []
+     }
+    },
+    {
+     "name": "Settings has Swing guide: Box or Classic track",
+     "pass": true,
+     "detail": [
+      "Box",
+      "Classic track"
+     ]
+    },
+    {
+     "name": "Tutorial: \"Press in the box and pull down\", then \"Swipe up through the ring\"",
+     "pass": true,
+     "detail": {
+      "first": "Press in the box and pull down",
+      "during": "Swipe up through the ring"
+     }
+    }
+   ],
+   "result": {
+    "power": 0.9,
+    "tempo": "Perfect",
+    "face": 0,
+    "path": 0
+   },
+   "consoleErrors": [],
+   "problems": []
+  },
+  "1920x1080": {
+   "input": "mouse",
+   "moments": [
+    {
+     "name": "address",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": true,
+      "start": {
+       "x": 961,
+       "y": 757
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": {
+       "x": 938,
+       "y": 730,
+       "w": 44,
+       "h": 234,
+       "start": 26,
+       "halfWidth": 22
+      },
+      "phase": "aim",
+      "strokes": 0,
+      "mode": null,
+      "outline": "inside",
+      "lit": false,
+      "pct": "",
+      "feedback": ""
+     }
+    },
+    {
+     "name": "mid-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": true,
+      "start": {
+       "x": 962,
+       "y": 758
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": {
+       "x": 938,
+       "y": 730,
+       "w": 44,
+       "h": 234,
+       "start": 26,
+       "halfWidth": 22
+      },
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": "inside",
+      "lit": false,
+      "pct": "45%",
+      "feedback": ""
+     }
+    },
+    {
+     "name": "top-of-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": true,
+      "start": {
+       "x": 962,
+       "y": 758
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": {
+       "x": 938,
+       "y": 730,
+       "w": 44,
+       "h": 234,
+       "start": 26,
+       "halfWidth": 22
+      },
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": "inside",
+      "lit": false,
+      "pct": "90%",
+      "feedback": ""
+     }
+    },
+    {
+     "name": "outside-the-box",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": true,
+      "start": {
+       "x": 962,
+       "y": 758
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": {
+       "x": 938,
+       "y": 730,
+       "w": 44,
+       "h": 234,
+       "start": 26,
+       "halfWidth": 22
+      },
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": "outside",
+      "lit": true,
+      "pct": "90%",
+      "feedback": ""
+     }
+    },
+    {
+     "name": "impact",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": true,
+      "start": {
+       "x": 961,
+       "y": 757
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": {
+       "x": 938,
+       "y": 730,
+       "w": 44,
+       "h": 234,
+       "start": 26,
+       "halfWidth": 22
+      },
+      "phase": "flight",
+      "strokes": 0,
+      "mode": null,
+      "outline": "inside",
+      "lit": false,
+      "pct": "90%",
+      "feedback": "Perfect Pured"
+     }
+    }
+   ],
+   "checks": [
+    {
+     "name": "Outside the box during a swing: the outline lights up",
+     "pass": true,
+     "detail": {
+      "lit": true
+     }
+    },
+    {
+     "name": "Back inside: the outline is quiet again",
+     "pass": true,
+     "detail": {
+      "lit": false
+     }
+    },
+    {
+     "name": "The swing launched",
+     "pass": true,
+     "detail": {
+      "phase": "flight",
+      "power": 0.9,
+      "tempo": "Perfect",
+      "face": 0
+     }
+    },
+    {
+     "name": "A press outside the box does not start a swing",
+     "pass": true,
+     "detail": {
+      "press": [
+       1000,
+       757
+      ],
+      "box": [
+       938,
+       982
+      ],
+      "mode": null,
+      "phase": "aim"
+     }
+    },
+    {
+     "name": "More than 1.5 box widths outside cancels the swing, no stroke",
+     "pass": true,
+     "detail": {
+      "mode": null,
+      "strokes": [
+       0,
+       0
+      ],
+      "feedback": "Swing cancelled"
+     }
+    },
+    {
+     "name": "Left-handed: the box mirrors (power number on the left), no overlaps",
+     "pass": true,
+     "detail": {
+      "pctRight": 931,
+      "boxLeft": 939,
+      "guideX": 939.5,
+      "boxCx": 961,
+      "overlaps": []
+     }
+    },
+    {
+     "name": "Classic track in Settings brings the old stick back (no box), no overlaps",
+     "pass": true,
+     "detail": {
+      "box": false,
+      "track": true,
+      "vis": "none",
+      "overlaps": []
+     }
+    },
+    {
+     "name": "Settings has Swing guide: Box or Classic track",
+     "pass": true,
+     "detail": [
+      "Box",
+      "Classic track"
+     ]
+    }
+   ],
+   "result": {
+    "power": 0.9,
+    "tempo": "Perfect",
+    "face": 0,
+    "path": 0
+   },
+   "consoleErrors": [],
+   "problems": []
+  }
+ },
+ "consoleErrors": []
+}

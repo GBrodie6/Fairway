@@ -6,7 +6,13 @@ Any static host works. Vercel is configured in `vercel.json`.
 
 Live now: https://gbrodie6.github.io/Fairway/ (GitHub Pages, from the `gh-pages` branch).
 
-Deploy of commit 3c0a275 (gh-pages 07b17cc): route A, Vercel, still unavailable (no
+Deploy of commit 0abbf48 (gh-pages 19bfb81): route A, Vercel, still unavailable (no
+VERCEL_TOKEN, and the Vercel CLI folder holds no login). Route B: the `dist/` that `npm run verify`
+passed at 0abbf48 (472 tests, smoke 56 of 56 inside the bands) replaced the files on `gh-pages`;
+Pages served it about 40 seconds after the push. Route C was not needed. Live checks at 390x844
+(touch) and 1920x1080 (mouse) in `qa/proof/live-0abbf48/`.
+
+Earlier: deploy of commit 3c0a275 (gh-pages 07b17cc): route A, Vercel, still unavailable (no
 VERCEL_TOKEN in the environment, and the Vercel CLI folder holds only its config notes and
 telemetry, no login). Route B: the `dist/` that `npm run verify` passed at 3c0a275 (460 tests,
 smoke 56 of 56 inside the bands) replaced the files on `gh-pages` (the old hashed bundles from
