@@ -5,6 +5,7 @@
 // errors. Works on builds before the scenery too (the "before" pictures).
 //   node scripts/tools/scenery-shots.mjs <outDir> <tag> [courses] [sizes] [holes] [tier]
 //   e.g. DIST=/path/to/dist node scripts/tools/scenery-shots.mjs qa/proof/scenery/shots after parkland 390x844,1920x1080 1,7,14 medium
+//   URL=https://... runs it against a deployed copy instead of a local build.
 import path from 'node:path';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { launchBrowser, trackErrors } from '../lib/browser.mjs';
@@ -13,7 +14,7 @@ import { waitPhase, createPointer, clickSel } from '../lib/drive.mjs';
 
 const [outDir = 'qa/tmp/scenery-shots', tag = 'after', courseArg = 'parkland', sizeArg = '390x844,1920x1080', holeArg = '1,7,14', tier = 'medium'] = process.argv.slice(2);
 mkdirSync(outDir, { recursive: true });
-const server = await serveStatic(path.resolve(process.env.DIST || 'dist'));
+const server = process.env.URL ? { url: process.env.URL.replace(/\/$/, ''), close: async () => {} } : await serveStatic(path.resolve(process.env.DIST || 'dist'));
 const { browser } = await launchBrowser();
 const report = [];
 const views = (process.env.VIEWS || 'tee,mid,green').split(',');

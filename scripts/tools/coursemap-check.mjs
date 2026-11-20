@@ -8,6 +8,7 @@
 // the hole map's Course toggle, from the M key (on desktop) and from the scorecard, and checks
 // the ball and the current hole. Screenshots of each step.
 //   node scripts/tools/coursemap-check.mjs <outDir> [sizes] [courses]
+//   URL=https://... runs it against a deployed copy instead of a local build.
 import path from 'node:path';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { launchBrowser, trackErrors } from '../lib/browser.mjs';
@@ -17,7 +18,7 @@ import { COURSES } from '../../src/course/courses.js';
 
 const [outDir = 'qa/tmp/coursemap', sizeArg = '360x640,2560x1440', courseArg = 'parkland,links,desert,alpine,tropical,augusta,standrews'] = process.argv.slice(2);
 mkdirSync(outDir, { recursive: true });
-const server = await serveStatic(path.resolve(process.env.DIST || 'dist'));
+const server = process.env.URL ? { url: process.env.URL.replace(/\/$/, ''), close: async () => {} } : await serveStatic(path.resolve(process.env.DIST || 'dist'));
 const { browser } = await launchBrowser();
 const out = { checks: [], rows: [] };
 const check = (name, pass, detail) => { out.checks.push({ name, pass: !!pass, detail }); console.log(pass ? 'PASS' : 'FAIL', name, detail === undefined ? '' : JSON.stringify(detail).slice(0, 300)); };
