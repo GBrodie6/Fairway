@@ -1,0 +1,240 @@
+{
+ "size": "1920x1080",
+ "live": false,
+ "steps": [
+  {
+   "name": "menu",
+   "file": "qa/tmp/swingbox/desk-1920x1080-1-menu.jpg",
+   "sheet": {
+    "overflow": [],
+    "overlaps": [],
+    "clipped": [],
+    "minFontPx": 14.4,
+    "smallest": [
+     "14.4 SMALL: A round on any cou",
+     "14.4 SMALL: Six chapters, boss",
+     "14.4 SMALL: Practice ground an"
+    ],
+    "card": {
+     "w": 672,
+     "h": 724,
+     "x": 624
+    },
+    "cardFits": true
+   }
+  },
+  {
+   "name": "address",
+   "file": "qa/tmp/swingbox/desk-1920x1080-2-address.jpg",
+   "overlaps": [],
+   "offscreen": [],
+   "hudKeys": [
+    "tabLie",
+    "tabDist",
+    "tabWind",
+    "hole",
+    "score",
+    "badge",
+    "map",
+    "look",
+    "settings",
+    "prev",
+    "club",
+    "next",
+    "reset",
+    "spin",
+    "fullscreen"
+   ],
+   "sheet": {
+    "overflow": [],
+    "overlaps": [],
+    "clipped": [],
+    "minFontPx": 13.8,
+    "smallest": [
+     "13.8 k: Hole",
+     "13.8 s: Par 3  197 yd",
+     "13.8 s: 1st shot"
+    ]
+   }
+  },
+  {
+   "name": "mid-swing",
+   "file": "qa/tmp/swingbox/desk-1920x1080-3-mid-swing.jpg",
+   "overlaps": [],
+   "offscreen": [],
+   "hudKeys": [
+    "tabLie",
+    "tabDist",
+    "tabWind",
+    "hole",
+    "score",
+    "badge",
+    "map",
+    "look",
+    "settings",
+    "prev",
+    "club",
+    "next",
+    "reset",
+    "spin",
+    "fullscreen",
+    "swingPct"
+   ],
+   "sheet": {
+    "overflow": [],
+    "overlaps": [],
+    "clipped": [],
+    "minFontPx": 13.8,
+    "smallest": [
+     "13.8 k: Hole",
+     "13.8 s: Par 3  197 yd",
+     "13.8 s: 1st shot"
+    ]
+   }
+  },
+  {
+   "name": "spin-pad",
+   "file": "qa/tmp/swingbox/desk-1920x1080-4-spin-pad.jpg",
+   "overlaps": [],
+   "offscreen": [],
+   "hudKeys": [
+    "tabLie",
+    "tabDist",
+    "tabWind",
+    "hole",
+    "score",
+    "badge",
+    "map",
+    "look",
+    "settings",
+    "prev",
+    "club",
+    "next",
+    "reset",
+    "spin",
+    "fullscreen",
+    "shotPanel"
+   ],
+   "sheet": {
+    "overflow": [],
+    "overlaps": [],
+    "clipped": [],
+    "minFontPx": 13.2,
+    "smallest": [
+     "13.2 SPAN: 196 yd",
+     "13.2 SPAN: 178 yd",
+     "13.2 SPAN: 149 yd"
+    ]
+   }
+  },
+  {
+   "name": "shot-selector",
+   "file": "qa/tmp/swingbox/desk-1920x1080-5-shot-selector.jpg",
+   "overlaps": [],
+   "offscreen": [],
+   "hudKeys": [
+    "tabLie",
+    "tabDist",
+    "tabWind",
+    "hole",
+    "score",
+    "badge",
+    "map",
+    "look",
+    "settings",
+    "prev",
+    "club",
+    "next",
+    "reset",
+    "spin",
+    "fullscreen",
+    "shotPanel"
+   ],
+   "sheet": {
+    "overflow": [],
+    "overlaps": [],
+    "clipped": [],
+    "minFontPx": 13.2,
+    "smallest": [
+     "13.2 SPAN: 196 yd",
+     "13.2 SPAN: 178 yd",
+     "13.2 SPAN: 149 yd"
+    ]
+   }
+  },
+  {
+   "name": "scorecard",
+   "file": "qa/tmp/swingbox/desk-1920x1080-6-scorecard.jpg",
+   "sheet": {
+    "overflow": [],
+    "overlaps": [],
+    "clipped": [],
+    "minFontPx": 13.8,
+    "smallest": [
+     "13.8 k: Hole",
+     "13.8 s: Par 3  197 yd",
+     "13.8 s: 1st shot"
+    ],
+    "card": {
+     "w": 912,
+     "h": 286,
+     "x": 504
+    },
+    "cardFits": true
+   }
+  },
+  {
+   "name": "level-editor",
+   "file": "qa/tmp/swingbox/desk-1920x1080-7-level-editor.jpg",
+   "sheet": {
+    "overflow": [],
+    "overlaps": [],
+    "clipped": [],
+    "minFontPx": 16.2,
+    "smallest": [
+     "16.2 muted small lvstatus: Test play the hole",
+     "16.2 btn lvtool: Bunker",
+     "16.2 btn lvtool: Water"
+    ],
+    "card": {
+     "w": 1416,
+     "h": 1015,
+     "x": 252
+    },
+    "cardFits": true
+   }
+  },
+  {
+   "name": "community-browser",
+   "file": "qa/tmp/swingbox/desk-1920x1080-8-community-browser.jpg",
+   "sheet": {
+    "overflow": [],
+    "overlaps": [],
+    "clipped": [],
+    "minFontPx": 15.6,
+    "smallest": [
+     "15.6 BUTTON: New",
+     "15.6 BUTTON: Top",
+     "15.6 BUTTON: Mine"
+    ],
+    "card": {
+     "w": 912,
+     "h": 367,
+     "x": 504
+    },
+    "cardFits": true
+   }
+  }
+ ],
+ "cancel": {
+  "phase": "aim",
+  "strokes": 0
+ },
+ "spin": {
+  "x": 0.3344823084504498,
+  "y": 0.3716471247482728
+ },
+ "shotType": "stinger",
+ "consoleErrors": [],
+ "problems": []
+}

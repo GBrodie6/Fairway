@@ -1,0 +1,827 @@
+{
+ "sizes": {
+  "390x844": {
+   "input": "touch",
+   "moments": [
+    {
+     "name": "address",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 195,
+       "y": 536
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": null,
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "mid-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 195,
+       "y": 536
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "top-of-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 195,
+       "y": 536
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "outside-the-box",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 195,
+       "y": 536
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "impact",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 195,
+       "y": 536
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "flight",
+      "strokes": 0,
+      "mode": null,
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": "Perfect Pured"
+     }
+    }
+   ],
+   "checks": [
+    {
+     "name": "The swing launched",
+     "pass": true,
+     "detail": {
+      "phase": "flight",
+      "power": 0.9,
+      "tempo": "Perfect",
+      "face": 0
+     }
+    }
+   ],
+   "result": {
+    "power": 0.9,
+    "tempo": "Perfect",
+    "face": 0,
+    "path": 0
+   },
+   "consoleErrors": [],
+   "problems": []
+  },
+  "844x390": {
+   "input": "touch",
+   "moments": [
+    {
+     "name": "address",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 422.5,
+       "y": 241
+      },
+      "travel": 105,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": null,
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "mid-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 422.5,
+       "y": 241
+      },
+      "travel": 105,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "top-of-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 422.5,
+       "y": 241
+      },
+      "travel": 105,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "outside-the-box",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 422.5,
+       "y": 241
+      },
+      "travel": 105,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "impact",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 422.5,
+       "y": 241
+      },
+      "travel": 105,
+      "half": 22,
+      "rest": null,
+      "phase": "flight",
+      "strokes": 0,
+      "mode": null,
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": "Perfect Pured"
+     }
+    }
+   ],
+   "checks": [
+    {
+     "name": "The swing launched",
+     "pass": true,
+     "detail": {
+      "phase": "flight",
+      "power": 0.9,
+      "tempo": "Perfect",
+      "face": 0
+     }
+    }
+   ],
+   "result": {
+    "power": 0.9,
+    "tempo": "Perfect",
+    "face": 0,
+    "path": 0
+   },
+   "consoleErrors": [],
+   "problems": []
+  },
+  "360x640": {
+   "input": "touch",
+   "moments": [
+    {
+     "name": "address",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 180.5,
+       "y": 378
+      },
+      "travel": 158,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": null,
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "mid-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 180.5,
+       "y": 378
+      },
+      "travel": 158,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "top-of-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 180.5,
+       "y": 378
+      },
+      "travel": 158,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "outside-the-box",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 180.5,
+       "y": 378
+      },
+      "travel": 158,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "impact",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 180.5,
+       "y": 378
+      },
+      "travel": 158,
+      "half": 22,
+      "rest": null,
+      "phase": "flight",
+      "strokes": 0,
+      "mode": null,
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": "Perfect Pured"
+     }
+    }
+   ],
+   "checks": [
+    {
+     "name": "The swing launched",
+     "pass": true,
+     "detail": {
+      "phase": "flight",
+      "power": 0.9,
+      "tempo": "Perfect",
+      "face": 0
+     }
+    }
+   ],
+   "result": {
+    "power": 0.9,
+    "tempo": "Perfect",
+    "face": 0,
+    "path": 0
+   },
+   "consoleErrors": [],
+   "problems": []
+  },
+  "1366x768": {
+   "input": "mouse",
+   "moments": [
+    {
+     "name": "address",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 683.5,
+       "y": 460
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": null,
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "mid-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 683.5,
+       "y": 460
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "top-of-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 683.5,
+       "y": 460
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "outside-the-box",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 683.5,
+       "y": 460
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "impact",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 683.5,
+       "y": 460
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "flight",
+      "strokes": 0,
+      "mode": null,
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": "Perfect Pured"
+     }
+    }
+   ],
+   "checks": [
+    {
+     "name": "The swing launched",
+     "pass": true,
+     "detail": {
+      "phase": "flight",
+      "power": 0.9,
+      "tempo": "Perfect",
+      "face": 0
+     }
+    }
+   ],
+   "result": {
+    "power": 0.9,
+    "tempo": "Perfect",
+    "face": 0,
+    "path": 0
+   },
+   "consoleErrors": [],
+   "problems": []
+  },
+  "1920x1080": {
+   "input": "mouse",
+   "moments": [
+    {
+     "name": "address",
+     "overlaps": [
+      "ball x swingArea",
+      "club x swingArea"
+     ],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 960,
+       "y": 756
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": null,
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "mid-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 960,
+       "y": 756
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "top-of-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 960,
+       "y": 756
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "outside-the-box",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 960,
+       "y": 756
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "impact",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 960,
+       "y": 756
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "flight",
+      "strokes": 0,
+      "mode": null,
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": "Perfect Pured"
+     }
+    }
+   ],
+   "checks": [
+    {
+     "name": "The swing launched",
+     "pass": true,
+     "detail": {
+      "phase": "flight",
+      "power": 0.9,
+      "tempo": "Perfect",
+      "face": 0
+     }
+    }
+   ],
+   "result": {
+    "power": 0.9,
+    "tempo": "Perfect",
+    "face": 0,
+    "path": 0
+   },
+   "consoleErrors": [],
+   "problems": [
+    "address: ball x swingArea",
+    "address: club x swingArea"
+   ]
+  },
+  "2560x1440": {
+   "input": "mouse",
+   "moments": [
+    {
+     "name": "address",
+     "overlaps": [
+      "ball x swingArea",
+      "club x swingArea"
+     ],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 1280,
+       "y": 1085
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": null,
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "mid-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 1280,
+       "y": 1085
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "top-of-backswing",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 1280,
+       "y": 1085
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "outside-the-box",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 1280,
+       "y": 1085
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "aim",
+      "strokes": 0,
+      "mode": "pointer",
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": ""
+     }
+    },
+    {
+     "name": "impact",
+     "overlaps": [],
+     "offscreen": [],
+     "state": {
+      "box": false,
+      "start": {
+       "x": 1280,
+       "y": 1085
+      },
+      "travel": 190,
+      "half": 22,
+      "rest": null,
+      "phase": "flight",
+      "strokes": 0,
+      "mode": null,
+      "outline": null,
+      "lit": false,
+      "pct": null,
+      "feedback": "Perfect Pured"
+     }
+    }
+   ],
+   "checks": [
+    {
+     "name": "The swing launched",
+     "pass": true,
+     "detail": {
+      "phase": "flight",
+      "power": 0.9,
+      "tempo": "Perfect",
+      "face": 0
+     }
+    }
+   ],
+   "result": {
+    "power": 0.9,
+    "tempo": "Perfect",
+    "face": 0,
+    "path": 0
+   },
+   "consoleErrors": [],
+   "problems": [
+    "address: ball x swingArea",
+    "address: club x swingArea"
+   ]
+  }
+ },
+ "consoleErrors": []
+}
