@@ -1,0 +1,712 @@
+{
+ "checks": [
+  {
+   "name": "augusta 390x844: Quick Play has a Course map button",
+   "pass": true
+  },
+  {
+   "name": "augusta 390x844 fitted: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "augusta 390x844: the map shows this course",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "name": "augusta 390x844: drag moves the map with the pointer",
+   "pass": true,
+   "detail": {
+    "moved": 94.3
+   }
+  },
+  {
+   "name": "augusta 390x844: pinch zooms in about the fingers or pointer",
+   "pass": true,
+   "detail": {
+    "from": 0.2257,
+    "to": 0.6772
+   }
+  },
+  {
+   "name": "augusta 390x844 zoomed: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 8,
+    "offScreen": 11,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "augusta 390x844: Fit returns to the whole course",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "name": "augusta 390x844: the + button zooms in",
+   "pass": true,
+   "detail": {
+    "s": 0.338621110433191
+   }
+  },
+  {
+   "name": "augusta 390x844: a tap on hole 7 selects it",
+   "pass": true,
+   "detail": {
+    "sel": 6
+   }
+  },
+  {
+   "name": "augusta 390x844 hole picked: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "augusta 390x844: Start on hole 7 is offered",
+   "pass": true
+  },
+  {
+   "name": "augusta 390x844: the setup screen now starts on hole 7",
+   "pass": true,
+   "detail": {
+    "startText": "Starting on hole 7"
+   }
+  },
+  {
+   "name": "augusta 390x844: the round starts on hole 7",
+   "pass": true,
+   "detail": {
+    "first": 7
+   }
+  },
+  {
+   "name": "augusta 390x844: the hole map has a Course toggle",
+   "pass": true
+  },
+  {
+   "name": "augusta 390x844: in a round the course map marks hole 7 and the ball",
+   "pass": true,
+   "detail": {
+    "open": true,
+    "current": 6,
+    "ball": true
+   }
+  },
+  {
+   "name": "augusta 390x844 in a round: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "augusta 390x844: Hole goes back to the hole map",
+   "pass": true
+  },
+  {
+   "name": "augusta 390x844: the scorecard opens the course map",
+   "pass": true
+  },
+  {
+   "name": "augusta 390x844: no console errors",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "standrews 390x844: Quick Play has a Course map button",
+   "pass": true
+  },
+  {
+   "name": "standrews 390x844 fitted: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "standrews 390x844: the map shows this course",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "name": "standrews 390x844: drag moves the map with the pointer",
+   "pass": true,
+   "detail": {
+    "moved": 94.3
+   }
+  },
+  {
+   "name": "standrews 390x844: pinch zooms in about the fingers or pointer",
+   "pass": true,
+   "detail": {
+    "from": 0.1702,
+    "to": 0.5106
+   }
+  },
+  {
+   "name": "standrews 390x844 zoomed: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 7,
+    "offScreen": 12,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "standrews 390x844: Fit returns to the whole course",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "name": "standrews 390x844: the + button zooms in",
+   "pass": true,
+   "detail": {
+    "s": 0.25528978840846367
+   }
+  },
+  {
+   "name": "standrews 390x844: a tap on hole 7 selects it",
+   "pass": true,
+   "detail": {
+    "sel": 6
+   }
+  },
+  {
+   "name": "standrews 390x844 hole picked: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "standrews 390x844: Start on hole 7 is offered",
+   "pass": true
+  },
+  {
+   "name": "standrews 390x844: the setup screen now starts on hole 7",
+   "pass": true,
+   "detail": {
+    "startText": "Starting on hole 7"
+   }
+  },
+  {
+   "name": "standrews 390x844: the round starts on hole 7",
+   "pass": true,
+   "detail": {
+    "first": 7
+   }
+  },
+  {
+   "name": "standrews 390x844: the hole map has a Course toggle",
+   "pass": true
+  },
+  {
+   "name": "standrews 390x844: in a round the course map marks hole 7 and the ball",
+   "pass": true,
+   "detail": {
+    "open": true,
+    "current": 6,
+    "ball": true
+   }
+  },
+  {
+   "name": "standrews 390x844 in a round: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "standrews 390x844: Hole goes back to the hole map",
+   "pass": true
+  },
+  {
+   "name": "standrews 390x844: the scorecard opens the course map",
+   "pass": true
+  },
+  {
+   "name": "standrews 390x844: no console errors",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "augusta 1920x1080: Quick Play has a Course map button",
+   "pass": true
+  },
+  {
+   "name": "augusta 1920x1080 fitted: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "augusta 1920x1080: the map shows this course",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "name": "augusta 1920x1080: drag moves the map with the pointer",
+   "pass": true,
+   "detail": {
+    "moved": 94.3
+   }
+  },
+  {
+   "name": "augusta 1920x1080: wheel zooms in about the fingers or pointer",
+   "pass": true,
+   "detail": {
+    "from": 0.5882,
+    "to": 1.8613
+   }
+  },
+  {
+   "name": "augusta 1920x1080 zoomed: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 8,
+    "offScreen": 11,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "augusta 1920x1080: Fit returns to the whole course",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "name": "augusta 1920x1080: the + button zooms in",
+   "pass": true,
+   "detail": {
+    "s": 0.8822884615384615
+   }
+  },
+  {
+   "name": "augusta 1920x1080: a tap on hole 7 selects it",
+   "pass": true,
+   "detail": {
+    "sel": 6
+   }
+  },
+  {
+   "name": "augusta 1920x1080 hole picked: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "augusta 1920x1080: Start on hole 7 is offered",
+   "pass": true
+  },
+  {
+   "name": "augusta 1920x1080: the setup screen now starts on hole 7",
+   "pass": true,
+   "detail": {
+    "startText": "Starting on hole 7"
+   }
+  },
+  {
+   "name": "augusta 1920x1080: the round starts on hole 7",
+   "pass": true,
+   "detail": {
+    "first": 7
+   }
+  },
+  {
+   "name": "augusta 1920x1080: the hole map has a Course toggle",
+   "pass": true
+  },
+  {
+   "name": "augusta 1920x1080: in a round the course map marks hole 7 and the ball",
+   "pass": true,
+   "detail": {
+    "open": true,
+    "current": 6,
+    "ball": true
+   }
+  },
+  {
+   "name": "augusta 1920x1080 in a round: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "augusta 1920x1080: Hole goes back to the hole map",
+   "pass": true
+  },
+  {
+   "name": "augusta 1920x1080: M opens the hole map, then the course map, then closes",
+   "pass": true,
+   "detail": [
+    "hole",
+    "course",
+    "closed"
+   ]
+  },
+  {
+   "name": "augusta 1920x1080: the scorecard opens the course map",
+   "pass": true
+  },
+  {
+   "name": "augusta 1920x1080: no console errors",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "standrews 1920x1080: Quick Play has a Course map button",
+   "pass": true
+  },
+  {
+   "name": "standrews 1920x1080 fitted: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "standrews 1920x1080: the map shows this course",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "name": "standrews 1920x1080: drag moves the map with the pointer",
+   "pass": true,
+   "detail": {
+    "moved": 94.3
+   }
+  },
+  {
+   "name": "standrews 1920x1080: wheel zooms in about the fingers or pointer",
+   "pass": true,
+   "detail": {
+    "from": 0.351,
+    "to": 1.1108
+   }
+  },
+  {
+   "name": "standrews 1920x1080 zoomed: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 5,
+    "offScreen": 14,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "standrews 1920x1080: Fit returns to the whole course",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "name": "standrews 1920x1080: the + button zooms in",
+   "pass": true,
+   "detail": {
+    "s": 0.5265217590892398
+   }
+  },
+  {
+   "name": "standrews 1920x1080: a tap on hole 7 selects it",
+   "pass": true,
+   "detail": {
+    "sel": 6
+   }
+  },
+  {
+   "name": "standrews 1920x1080 hole picked: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "standrews 1920x1080: Start on hole 7 is offered",
+   "pass": true
+  },
+  {
+   "name": "standrews 1920x1080: the setup screen now starts on hole 7",
+   "pass": true,
+   "detail": {
+    "startText": "Starting on hole 7"
+   }
+  },
+  {
+   "name": "standrews 1920x1080: the round starts on hole 7",
+   "pass": true,
+   "detail": {
+    "first": 7
+   }
+  },
+  {
+   "name": "standrews 1920x1080: the hole map has a Course toggle",
+   "pass": true
+  },
+  {
+   "name": "standrews 1920x1080: in a round the course map marks hole 7 and the ball",
+   "pass": true,
+   "detail": {
+    "open": true,
+    "current": 6,
+    "ball": true
+   }
+  },
+  {
+   "name": "standrews 1920x1080 in a round: every hole and the clubhouse on screen labeled, no overlaps, controls on screen and 44 px or more",
+   "pass": true,
+   "detail": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   }
+  },
+  {
+   "name": "standrews 1920x1080: Hole goes back to the hole map",
+   "pass": true
+  },
+  {
+   "name": "standrews 1920x1080: M opens the hole map, then the course map, then closes",
+   "pass": true,
+   "detail": [
+    "hole",
+    "course",
+    "closed"
+   ]
+  },
+  {
+   "name": "standrews 1920x1080: the scorecard opens the course map",
+   "pass": true
+  },
+  {
+   "name": "standrews 1920x1080: no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "rows": [
+  {
+   "course": "augusta",
+   "size": "390x844",
+   "fit": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "zoomed": {
+    "labels": 8,
+    "offScreen": 11,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "picked": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "round": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "consoleErrors": 0
+  },
+  {
+   "course": "standrews",
+   "size": "390x844",
+   "fit": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "zoomed": {
+    "labels": 7,
+    "offScreen": 12,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "picked": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "round": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "consoleErrors": 0
+  },
+  {
+   "course": "augusta",
+   "size": "1920x1080",
+   "fit": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "zoomed": {
+    "labels": 8,
+    "offScreen": 11,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "picked": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "round": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "consoleErrors": 0
+  },
+  {
+   "course": "standrews",
+   "size": "1920x1080",
+   "fit": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "zoomed": {
+    "labels": 5,
+    "offScreen": 14,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "picked": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "round": {
+    "labels": 19,
+    "offScreen": 0,
+    "missing": [],
+    "overlaps": [],
+    "off": [],
+    "small": []
+   },
+   "consoleErrors": 0
+  }
+ ]
+}
