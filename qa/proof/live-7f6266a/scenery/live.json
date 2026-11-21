@@ -108,5 +108,60 @@
   },
   "consoleErrors": 0,
   "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "parkland",
+  "hole": 1,
+  "tag": "live",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/live-7f6266a/scenery/live-parkland-h1-1920x1080-tee.jpg",
+    "draws": 168,
+    "tris": 516967,
+    "scenery": {
+     "drawnHoles": 9,
+     "drawnTris": 4453
+    }
+   },
+   "green": {
+    "file": "qa/proof/live-7f6266a/scenery/live-parkland-h1-1920x1080-green.jpg",
+    "draws": 149,
+    "tris": 491370,
+    "scenery": {
+     "drawnHoles": 6,
+     "drawnTris": 2857
+    }
+   },
+   "flyover": {
+    "file": "qa/proof/live-7f6266a/scenery/live-parkland-h1-1920x1080-flyover.jpg",
+    "draws": 165,
+    "tris": 410801,
+    "scenery": {
+     "drawnHoles": 11,
+     "drawnTris": 5165
+    }
+   },
+   "map": {
+    "file": "qa/proof/live-7f6266a/scenery/live-parkland-h1-1920x1080-map.jpg",
+    "labels": 19,
+    "missing": []
+   }
+  },
+  "scenery": {
+   "holes": 17,
+   "dropped": 0,
+   "tris": 7781,
+   "drawnTris": 3951,
+   "drawnHoles": 8,
+   "trees": 363,
+   "far": 2000,
+   "budget": 25000,
+   "draws": 2,
+   "buildMs": 8.1,
+   "outerMs": 70.9
+  },
+  "consoleErrors": 0,
+  "errors": []
  }
 ]
