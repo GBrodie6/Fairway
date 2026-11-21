@@ -1,0 +1,112 @@
+[
+ {
+  "size": "390x844",
+  "course": "parkland",
+  "hole": 1,
+  "tag": "live",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/live-7f6266a/scenery/live-parkland-h1-390x844-tee.jpg",
+    "draws": 146,
+    "tris": 427383,
+    "scenery": {
+     "drawnHoles": 4,
+     "drawnTris": 2019
+    }
+   },
+   "green": {
+    "file": "qa/proof/live-7f6266a/scenery/live-parkland-h1-390x844-green.jpg",
+    "draws": 135,
+    "tris": 422915,
+    "scenery": {
+     "drawnHoles": 2,
+     "drawnTris": 1052
+    }
+   },
+   "flyover": {
+    "file": "qa/proof/live-7f6266a/scenery/live-parkland-h1-390x844-flyover.jpg",
+    "draws": 145,
+    "tris": 384609,
+    "scenery": {
+     "drawnHoles": 5,
+     "drawnTris": 2407
+    }
+   },
+   "map": {
+    "file": "qa/proof/live-7f6266a/scenery/live-parkland-h1-390x844-map.jpg",
+    "labels": 19,
+    "missing": []
+   }
+  },
+  "scenery": {
+   "holes": 17,
+   "dropped": 0,
+   "tris": 7781,
+   "drawnTris": 2019,
+   "drawnHoles": 4,
+   "trees": 363,
+   "far": 2000,
+   "budget": 25000,
+   "draws": 2,
+   "buildMs": 10.2,
+   "outerMs": 101.3
+  },
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "844x390",
+  "course": "parkland",
+  "hole": 1,
+  "tag": "live",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/live-7f6266a/scenery/live-parkland-h1-844x390-tee.jpg",
+    "draws": 168,
+    "tris": 532997,
+    "scenery": {
+     "drawnHoles": 9,
+     "drawnTris": 4453
+    }
+   },
+   "green": {
+    "file": "qa/proof/live-7f6266a/scenery/live-parkland-h1-844x390-green.jpg",
+    "draws": 157,
+    "tris": 517096,
+    "scenery": {
+     "drawnHoles": 7,
+     "drawnTris": 3359
+    }
+   },
+   "flyover": {
+    "file": "qa/proof/live-7f6266a/scenery/live-parkland-h1-844x390-flyover.jpg",
+    "draws": 165,
+    "tris": 411225,
+    "scenery": {
+     "drawnHoles": 11,
+     "drawnTris": 5165
+    }
+   },
+   "map": {
+    "file": "qa/proof/live-7f6266a/scenery/live-parkland-h1-844x390-map.jpg",
+    "labels": 19,
+    "missing": []
+   }
+  },
+  "scenery": {
+   "holes": 17,
+   "dropped": 0,
+   "tris": 7781,
+   "drawnTris": 4769,
+   "drawnHoles": 10,
+   "trees": 363,
+   "far": 2000,
+   "budget": 25000,
+   "draws": 2,
+   "buildMs": 11.8,
+   "outerMs": 115.2
+  },
+  "consoleErrors": 0,
+  "errors": []
+ }
+]
