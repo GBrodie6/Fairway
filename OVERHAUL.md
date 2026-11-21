@@ -899,6 +899,13 @@ the first runs were the check tool's own timing (a fixed pause after a tap, when
 frame takes seconds on a software renderer) and a button below the fold; the tool now waits for
 each expected result and scrolls buttons into view.
 
+Found later, in part 5's live check at 844x390 (a phone on its side, a size this check had not
+covered): on the fitted map every course left 1 to 5 hole numbers out, because the map was fitted
+into the full-width band between the buttons along the top and the full-width start button and
+details along the bottom, about 150 px tall there. Fixed in part 5 (`freeRect`, buttons as
+obstacles for the labels, a one-row bottom on short landscape screens); the rerun of this check
+at five sizes is in part 5.
+
 
 ## The aim preview leaves the wind out
 
@@ -1029,4 +1036,48 @@ byte for byte. Live checks (`qa/proof/live-6db3896/`, `NOTES.md` there): the liv
 390x844 and 1366x768, the course map at 390x844 and 1920x1080 (78 of 78), the desktop proof at
 1920x1080 (8 screens), the other holes at Medium with their course maps, the maps inside a
 community hole (9 of 9 at each size), and 3 holes of Augusta National played by the bot through
-real touch. 0 console errors in every one. Live at https://gbrodie6.github.io/Fairway/.
+real touch. 0 console errors in every one.
+
+The same live checks at 844x390 (`qa/proof/live-6db3896/*-844`), the one size of the three
+asked for that the earlier checks of the scenery and the course map had not covered, found a
+real fault: the course map check failed 13 of 133, all the same, a fitted map leaving 1 to 5 hole
+numbers out on every course (and the Old Course's 18 in a round). Everything else at 844x390
+passed on the live site: the other holes at Medium (the course map opened in a round placed
+all 19 labels on parkland and Augusta; the commit message of 534b1cf wrongly says it left labels
+out, corrected in 94690dd), the maps inside a community hole (9 of 9), and 3 holes of the Old
+Course played by the bot with the mouse in landscape (13 strokes, 0 stuck, 0 console errors,
+scorecard matches).
+
+The fix (`ui/courseMap.js`, `ui/styles.css`): the map was fitted into the full-width band
+between the buttons along the top and the full-width start button and details along the
+bottom, about 150 px tall on a phone on its side. Now:
+
+- `freeRect` fits the map into the free rectangle it is drawn biggest in, from the real boxes
+  of the buttons: on an upright phone that is still the band between them; on a short, wide
+  screen a full-height column between the buttons in the corners.
+- `placeLabels` takes the buttons as obstacles, so labels may go anywhere the buttons leave
+  free; a hole whose spots are all under a button is not on view, and a label whose spot sits
+  just beside a button is set just clear of it.
+- On short landscape screens (520 px high or less) the details sit bottom left and the start
+  button bottom right, each only as wide as it needs.
+
+The first version of the fix passed 844x390 (133 of 133) but its regression run at the other
+sizes failed 4 of 546, all one zoomed view each on a portrait phone (a hole just beside the
+title, whose label was left out rather than set beside it; `coursemap-fix/sizes/`); setting such
+a label clear of the button fixed it. The rerun on the final build (`qa/proof/coursemap-fix/final/`,
+every course at five sizes) passed 679 of 679 with 0 console errors. Labels placed (19 is all
+18 holes and the clubhouse), fitted, zoomed in (off screen in brackets), in a round:
+
+| course | 360x640 | 390x844 | 844x390 | 1920x1080 | 2560x1440 |
+|---|---|---|---|---|---|
+| parkland | 19, 7 (12), 19 | 19, 8 (11), 19 | 19, 5 (14), 19 | 19, 10 (9), 19 | 19, 8 (11), 19 |
+| links | 19, 0 (19), 19 | 19, 2 (17), 19 | 19, 0 (19), 19 | 19, 8 (11), 19 | 19, 7 (12), 19 |
+| desert | 19, 5 (14), 19 | 19, 7 (12), 19 | 19, 5 (14), 19 | 19, 10 (9), 19 | 19, 8 (11), 19 |
+| alpine | 19, 8 (11), 19 | 19, 8 (11), 19 | 19, 7 (12), 19 | 19, 9 (10), 19 | 19, 8 (11), 19 |
+| tropical | 19, 4 (15), 19 | 19, 6 (13), 19 | 19, 6 (13), 19 | 19, 6 (13), 19 | 19, 5 (14), 19 |
+| augusta | 19, 7 (12), 19 | 19, 8 (11), 19 | 19, 7 (12), 19 | 19, 8 (11), 19 | 19, 7 (12), 19 |
+| standrews | 19, 7 (12), 19 | 19, 7 (12), 19 | 19, 5 (14), 19 | 19, 5 (14), 19 | 19, 6 (13), 19 |
+
+The maps inside a community hole on this build passed 9 of 9 at 390x844, 844x390 and 1920x1080
+(`qa/proof/coursemap-fix/levelmaps/`). Unit tests for `freeRect` and the obstacles (498 tests).
+Nothing outside the course map changed.
