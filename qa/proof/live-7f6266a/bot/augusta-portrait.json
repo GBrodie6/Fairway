@@ -1,0 +1,372 @@
+{
+ "course": "augusta",
+ "view": "portrait",
+ "holes": 3,
+ "tier": "low",
+ "scale": 0.6,
+ "timescale": 4,
+ "mode": "stroke",
+ "software": true,
+ "input": "touch",
+ "started": "2026-11-21T05:14:10.129Z",
+ "shots": [
+  {
+   "hole": 1,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 398.19,
+   "after": 160.25,
+   "ideal": 0.963,
+   "power": 1,
+   "tempo": "Good, a little slow",
+   "ratio": 2.47,
+   "read": null,
+   "result": "Hole 1Par 4  445 yd",
+   "sec": 31.1
+  },
+  {
+   "hole": 1,
+   "club": "I5",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 160.25,
+   "after": 8.71,
+   "ideal": 0.916,
+   "power": 0.868,
+   "tempo": "Perfect",
+   "ratio": 2.89,
+   "read": null,
+   "result": "Hole 1Par 4  445 yd",
+   "sec": 39.1
+  },
+  {
+   "hole": 1,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 8.71,
+   "after": 8.71,
+   "ideal": 0.69,
+   "power": 0.695,
+   "tempo": "Good, a little quick",
+   "ratio": 3.54,
+   "read": {
+    "drags": 2,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0.46
+   },
+   "result": "BirdieRolled it in from distance!",
+   "sec": 22.5
+  },
+  {
+   "hole": 2,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 525.25,
+   "after": 305.8,
+   "ideal": 0.979,
+   "power": 0.99,
+   "tempo": "Good, a little quick",
+   "ratio": 3.95,
+   "read": null,
+   "result": "Hole 2Par 5  585 yd",
+   "sec": 27.2
+  },
+  {
+   "hole": 2,
+   "club": "W3",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 305.8,
+   "after": 108.06,
+   "ideal": 0.943,
+   "power": 0.907,
+   "tempo": "Perfect",
+   "ratio": 3.29,
+   "read": null,
+   "result": "Hole 2Par 5  585 yd",
+   "sec": 25.8
+  },
+  {
+   "hole": 2,
+   "club": "PW",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 108.06,
+   "after": 3.43,
+   "ideal": 0.883,
+   "power": 0.892,
+   "tempo": "Good, a little quick",
+   "ratio": 3.68,
+   "read": null,
+   "result": "Hole 2Par 5  585 yd",
+   "sec": 22.1
+  },
+  {
+   "hole": 2,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 3.43,
+   "after": 1.69,
+   "ideal": 0.455,
+   "power": 0.466,
+   "tempo": "Good, a little quick",
+   "ratio": 3.48,
+   "read": {
+    "drags": 4,
+    "taps": 14,
+    "leftDeg": -12.25,
+    "breakM": -1.31
+   },
+   "result": "Green5.5 ft left",
+   "sec": 23.6
+  },
+  {
+   "hole": 2,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 1.69,
+   "after": 1.69,
+   "ideal": 0.69,
+   "power": 0.701,
+   "tempo": "Good, a little quick",
+   "ratio": 3.86,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Par5 strokes",
+   "sec": 17.5
+  },
+  {
+   "hole": 3,
+   "club": "DR",
+   "shot": "full",
+   "lie": "Tee",
+   "before": 325.19,
+   "after": 94.98,
+   "ideal": 0.934,
+   "power": 0.941,
+   "tempo": "Perfect",
+   "ratio": 3.35,
+   "read": null,
+   "result": "Streak3 fairways in a row",
+   "sec": 26
+  },
+  {
+   "hole": 3,
+   "club": "GW",
+   "shot": "full",
+   "lie": "Fairway",
+   "before": 94.98,
+   "after": 9.57,
+   "ideal": 0.908,
+   "power": 0.959,
+   "tempo": "Perfect",
+   "ratio": 2.87,
+   "read": null,
+   "result": "Streak3 fairways in a row",
+   "sec": 22.1
+  },
+  {
+   "hole": 3,
+   "club": "SW",
+   "shot": "chip",
+   "lie": "Rough",
+   "before": 9.57,
+   "after": 3.88,
+   "ideal": 0.204,
+   "power": 0.203,
+   "tempo": "Good, a little quick",
+   "ratio": 3.86,
+   "read": null,
+   "result": "Streak3 fairways in a row",
+   "sec": 27.3
+  },
+  {
+   "hole": 3,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 3.88,
+   "after": 21.22,
+   "ideal": 0.63,
+   "power": 0.622,
+   "tempo": "Perfect",
+   "ratio": 3.4,
+   "read": {
+    "drags": 4,
+    "taps": 14,
+    "leftDeg": -19,
+    "breakM": -2.03
+   },
+   "result": "Fringe70 ft left",
+   "sec": 42.6
+  },
+  {
+   "hole": 3,
+   "club": "PW",
+   "shot": "chip",
+   "lie": "Fringe",
+   "before": 21.22,
+   "after": 0.33,
+   "ideal": 0.616,
+   "power": 0.602,
+   "tempo": "Perfect",
+   "ratio": 3.13,
+   "read": null,
+   "result": "Fringe70 ft left",
+   "sec": 20.7
+  },
+  {
+   "hole": 3,
+   "club": "PT",
+   "shot": "putt",
+   "lie": "Green",
+   "before": 0.33,
+   "after": 0.33,
+   "ideal": 0.512,
+   "power": 0.475,
+   "tempo": "Perfect",
+   "ratio": 3.12,
+   "read": {
+    "drags": 0,
+    "taps": 0,
+    "leftDeg": 0,
+    "breakM": 0
+   },
+   "result": "Double bogey6 strokes",
+   "sec": 18
+  }
+ ],
+ "holesPlayed": [
+  {
+   "hole": 1,
+   "par": 4,
+   "strokes": [
+    3
+   ]
+  },
+  {
+   "hole": 2,
+   "par": 5,
+   "strokes": [
+    5
+   ]
+  },
+  {
+   "hole": 3,
+   "par": 4,
+   "strokes": [
+    6
+   ]
+  }
+ ],
+ "result": {
+  "scores": [
+   [
+    3,
+    5,
+    6
+   ]
+  ],
+  "players": [
+   "You"
+  ],
+  "complete": true,
+  "holes": [
+   0,
+   1,
+   2
+  ],
+  "mode": "stroke",
+  "standings": "14  (+1)"
+ },
+ "errors": [],
+ "stuck": [],
+ "timing": {
+  "bootSec": 6.842,
+  "totalMin": 8.1,
+  "shots": 14,
+  "secPerShot": 26.1
+ },
+ "scorecard": {
+  "holes": [
+   1,
+   2,
+   3
+  ],
+  "scores": [
+   3,
+   5,
+   6
+  ],
+  "counted": [
+   3,
+   5,
+   6
+  ],
+  "summaries": [
+   3,
+   5,
+   6
+  ],
+  "mismatches": [],
+  "ok": true
+ },
+ "after": {
+  "player": "You",
+  "rounds": 1,
+  "history": [
+   {
+    "id": "1795238536163-1744650208",
+    "date": 1795238536163,
+    "courseId": "augusta",
+    "mode": "stroke",
+    "holes": 3,
+    "strokes": 14,
+    "par": 13,
+    "toPar": 1,
+    "birdies": 1,
+    "putts": 5,
+    "eventId": null
+   }
+  ],
+  "daily": {},
+  "achievements": [
+   "first-round",
+   "birdie"
+  ],
+  "inProgress": false,
+  "career": null
+ },
+ "guard": {
+  "count": 0,
+  "last": null,
+  "bySystem": {}
+ },
+ "consoleErrors": [],
+ "summary": {
+  "holes": 3,
+  "strokes": 14,
+  "par": 13,
+  "putts": 5,
+  "tempo": {
+   "Good, a little slow": 1,
+   "Perfect": 7,
+   "Good, a little quick": 6
+  },
+  "stuck": 0,
+  "consoleErrors": 0,
+  "guardErrors": 0,
+  "scorecardOk": true,
+  "toPar": 1
+ }
+}
