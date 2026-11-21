@@ -1,0 +1,222 @@
+[
+ {
+  "size": "390x844",
+  "course": "parkland",
+  "hole": 1,
+  "tag": "live",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/live-6db3896/scenery/live-parkland-h1-390x844-tee.jpg",
+    "draws": 146,
+    "tris": 427383,
+    "scenery": {
+     "drawnHoles": 4,
+     "drawnTris": 2019
+    }
+   },
+   "green": {
+    "file": "qa/proof/live-6db3896/scenery/live-parkland-h1-390x844-green.jpg",
+    "draws": 134,
+    "tris": 422914,
+    "scenery": {
+     "drawnHoles": 2,
+     "drawnTris": 1052
+    }
+   },
+   "flyover": {
+    "file": "qa/proof/live-6db3896/scenery/live-parkland-h1-390x844-flyover.jpg",
+    "draws": 145,
+    "tris": 384609,
+    "scenery": {
+     "drawnHoles": 5,
+     "drawnTris": 2407
+    }
+   },
+   "map": {
+    "file": "qa/proof/live-6db3896/scenery/live-parkland-h1-390x844-map.jpg",
+    "labels": 19,
+    "missing": []
+   }
+  },
+  "scenery": {
+   "holes": 17,
+   "dropped": 0,
+   "tris": 7781,
+   "drawnTris": 2019,
+   "drawnHoles": 4,
+   "trees": 363,
+   "far": 2000,
+   "budget": 25000,
+   "draws": 2,
+   "buildMs": 5,
+   "outerMs": 61.4
+  },
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "390x844",
+  "course": "augusta",
+  "hole": 1,
+  "tag": "live",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/live-6db3896/scenery/live-augusta-h1-390x844-tee.jpg",
+    "draws": 106,
+    "tris": 412306,
+    "scenery": {
+     "drawnHoles": 2,
+     "drawnTris": 995
+    }
+   },
+   "green": {
+    "file": "qa/proof/live-6db3896/scenery/live-augusta-h1-390x844-green.jpg",
+    "draws": 78,
+    "tris": 401241,
+    "scenery": {
+     "drawnHoles": 0,
+     "drawnTris": 0
+    }
+   },
+   "flyover": {
+    "file": "qa/proof/live-6db3896/scenery/live-augusta-h1-390x844-flyover.jpg",
+    "draws": 96,
+    "tris": 389735,
+    "scenery": {
+     "drawnHoles": 2,
+     "drawnTris": 995
+    }
+   },
+   "map": {
+    "file": "qa/proof/live-6db3896/scenery/live-augusta-h1-390x844-map.jpg",
+    "labels": 19,
+    "missing": []
+   }
+  },
+  "scenery": {
+   "holes": 17,
+   "dropped": 0,
+   "tris": 8695,
+   "drawnTris": 1003,
+   "drawnHoles": 2,
+   "trees": 451,
+   "far": 2000,
+   "budget": 25000,
+   "draws": 2,
+   "buildMs": 5.6,
+   "outerMs": 64.7
+  },
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "parkland",
+  "hole": 1,
+  "tag": "live",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/live-6db3896/scenery/live-parkland-h1-1920x1080-tee.jpg",
+    "draws": 169,
+    "tris": 516968,
+    "scenery": {
+     "drawnHoles": 9,
+     "drawnTris": 4453
+    }
+   },
+   "green": {
+    "file": "qa/proof/live-6db3896/scenery/live-parkland-h1-1920x1080-green.jpg",
+    "draws": 148,
+    "tris": 491369,
+    "scenery": {
+     "drawnHoles": 6,
+     "drawnTris": 2857
+    }
+   },
+   "flyover": {
+    "file": "qa/proof/live-6db3896/scenery/live-parkland-h1-1920x1080-flyover.jpg",
+    "draws": 165,
+    "tris": 410801,
+    "scenery": {
+     "drawnHoles": 11,
+     "drawnTris": 5165
+    }
+   },
+   "map": {
+    "file": "qa/proof/live-6db3896/scenery/live-parkland-h1-1920x1080-map.jpg",
+    "labels": 19,
+    "missing": []
+   }
+  },
+  "scenery": {
+   "holes": 17,
+   "dropped": 0,
+   "tris": 7781,
+   "drawnTris": 4453,
+   "drawnHoles": 9,
+   "trees": 363,
+   "far": 2000,
+   "budget": 25000,
+   "draws": 2,
+   "buildMs": 6.1,
+   "outerMs": 64.1
+  },
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "course": "augusta",
+  "hole": 1,
+  "tag": "live",
+  "shots": {
+   "tee": {
+    "file": "qa/proof/live-6db3896/scenery/live-augusta-h1-1920x1080-tee.jpg",
+    "draws": 113,
+    "tris": 456677,
+    "scenery": {
+     "drawnHoles": 7,
+     "drawnTris": 3583
+    }
+   },
+   "green": {
+    "file": "qa/proof/live-6db3896/scenery/live-augusta-h1-1920x1080-green.jpg",
+    "draws": 85,
+    "tris": 447789,
+    "scenery": {
+     "drawnHoles": 1,
+     "drawnTris": 508
+    }
+   },
+   "flyover": {
+    "file": "qa/proof/live-6db3896/scenery/live-augusta-h1-1920x1080-flyover.jpg",
+    "draws": 99,
+    "tris": 407935,
+    "scenery": {
+     "drawnHoles": 8,
+     "drawnTris": 4083
+    }
+   },
+   "map": {
+    "file": "qa/proof/live-6db3896/scenery/live-augusta-h1-1920x1080-map.jpg",
+    "labels": 19,
+    "missing": []
+   }
+  },
+  "scenery": {
+   "holes": 17,
+   "dropped": 0,
+   "tris": 8695,
+   "drawnTris": 3583,
+   "drawnHoles": 7,
+   "trees": 451,
+   "far": 2000,
+   "budget": 25000,
+   "draws": 2,
+   "buildMs": 8.2,
+   "outerMs": 76.8
+  },
+  "consoleErrors": 0,
+  "errors": []
+ }
+]
