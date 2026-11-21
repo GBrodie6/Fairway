@@ -1,0 +1,180 @@
+[
+ {
+  "size": "390x844",
+  "checks": [
+   {
+    "name": "the test play is a community hole of one hole",
+    "pass": true,
+    "detail": {
+     "course": "lvl:1fe3xjb",
+     "level": true,
+     "holes": 1,
+     "otherHoles": true
+    }
+   },
+   {
+    "name": "no other holes are built around it",
+    "pass": true,
+    "detail": null
+   },
+   {
+    "name": "the map button opens the hole map",
+    "pass": true
+   },
+   {
+    "name": "the hole map has a Course toggle",
+    "pass": true
+   },
+   {
+    "name": "Course opens the course map",
+    "pass": true
+   },
+   {
+    "name": "the course map shows the one hole and labels it",
+    "pass": true,
+    "detail": [
+     {
+      "text": "Clubhouse",
+      "placed": true
+     },
+     {
+      "text": "1",
+      "placed": true
+     }
+    ]
+   },
+   {
+    "name": "Hole goes back to the hole map",
+    "pass": true,
+    "detail": {
+     "courseMap": false,
+     "holeMap": true
+    }
+   },
+   {
+    "name": "the maps close and play goes on",
+    "pass": true,
+    "detail": {
+     "courseMap": false,
+     "holeMap": false,
+     "phase": "aim"
+    }
+   },
+   {
+    "name": "no console errors",
+    "pass": true,
+    "detail": []
+   }
+  ],
+  "round": {
+   "course": "lvl:1fe3xjb",
+   "level": true,
+   "holes": 1,
+   "otherHoles": true
+  },
+  "courseMap": {
+   "labels": [
+    {
+     "text": "Clubhouse",
+     "placed": true
+    },
+    {
+     "text": "1",
+     "placed": true
+    }
+   ],
+   "title": "Island Carry, par 3"
+  },
+  "consoleErrors": 0,
+  "errors": []
+ },
+ {
+  "size": "1920x1080",
+  "checks": [
+   {
+    "name": "the test play is a community hole of one hole",
+    "pass": true,
+    "detail": {
+     "course": "lvl:1fe3xjb",
+     "level": true,
+     "holes": 1,
+     "otherHoles": true
+    }
+   },
+   {
+    "name": "no other holes are built around it",
+    "pass": true,
+    "detail": null
+   },
+   {
+    "name": "the map button opens the hole map",
+    "pass": true
+   },
+   {
+    "name": "the hole map has a Course toggle",
+    "pass": true
+   },
+   {
+    "name": "Course opens the course map",
+    "pass": true
+   },
+   {
+    "name": "the course map shows the one hole and labels it",
+    "pass": true,
+    "detail": [
+     {
+      "text": "Clubhouse",
+      "placed": true
+     },
+     {
+      "text": "1",
+      "placed": true
+     }
+    ]
+   },
+   {
+    "name": "Hole goes back to the hole map",
+    "pass": true,
+    "detail": {
+     "courseMap": false,
+     "holeMap": true
+    }
+   },
+   {
+    "name": "the maps close and play goes on",
+    "pass": true,
+    "detail": {
+     "courseMap": false,
+     "holeMap": false,
+     "phase": "aim"
+    }
+   },
+   {
+    "name": "no console errors",
+    "pass": true,
+    "detail": []
+   }
+  ],
+  "round": {
+   "course": "lvl:1fe3xjb",
+   "level": true,
+   "holes": 1,
+   "otherHoles": true
+  },
+  "courseMap": {
+   "labels": [
+    {
+     "text": "Clubhouse",
+     "placed": true
+    },
+    {
+     "text": "1",
+     "placed": true
+    }
+   ],
+   "title": "Island Carry, par 3"
+  },
+  "consoleErrors": 0,
+  "errors": []
+ }
+]

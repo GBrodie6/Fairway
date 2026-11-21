@@ -928,3 +928,88 @@ it: the wind and the strike are the player's to judge. 0 console errors on both 
 test (`tests/aimPreview.test.js`) pins the controller to no wind for the preview and the
 power and the real wind for the shot, and checks that no wind means still air.
 
+
+## Course scenery 5: proof, bot rounds and deploy
+
+Screenshots, cut down at the owner's request to a small set: Augusta National, the Old Course
+and parkland, hole 1, at address on the tee and on the green, at 390x844 and 1920x1080, Low
+tier, one browser job at a time (`qa/proof/scenery/small/`). "Before" is the build of 5b3556b
+(the last commit before the scenery), "after" this build with Show other holes forced on
+(`?scenery=1`; Low leaves it off by default). `compare-<course>-h1-<size>.jpg` puts the pairs
+side by side. The first, larger "before" run (Medium, holes 1, 7 and 14, every course) was
+stopped part way when the set was cut down; the 99 pictures it had taken are kept in
+`qa/proof/scenery/shots/` (its 30th row, desert hole 14 at 1920x1080, was cut off by the stop;
+0 console errors in the rest), and no "after" run of that larger set was made.
+
+| Course | Size | View | Draws before | Draws after | Triangles before | Triangles after | Other holes drawn |
+|---|---|---|---|---|---|---|---|
+| Augusta National | 390x844 | Tee | 82 | 82 | 212k | 211k | 1 |
+| Augusta National | 390x844 | Green | 48 | 50 | 134k | 124k | 0 |
+| Augusta National | 1920x1080 | Tee | 88 | 86 | 244k | 239k | 7 |
+| Augusta National | 1920x1080 | Green | 52 | 58 | 158k | 152k | 1 |
+| Old Course | 390x844 | Tee | 56 | 54 | 130k | 130k | 0 |
+| Old Course | 390x844 | Green | 42 | 37 | 122k | 124k | 0 |
+| Old Course | 1920x1080 | Tee | 66 | 66 | 176k | 179k | 0 |
+| Old Course | 1920x1080 | Green | 46 | 41 | 159k | 166k | 0 |
+| Parkland | 390x844 | Tee | 113 | 119 | 215k | 221k | 4 |
+| Parkland | 390x844 | Green | 91 | 91 | 156k | 166k | 2 |
+| Parkland | 1920x1080 | Tee | 123 | 121 | 251k | 261k | 9 |
+| Parkland | 1920x1080 | Green | 108 | 101 | 197k | 197k | 6 |
+
+0 console errors in both runs. The totals move both ways because more than the scenery's two
+draw calls changes with it on: the woods thin toward the other holes, the outer canopy and
+impostor trees clear off their corridors and the old stand-in flags are left out (Part 3), so
+other draw calls drop as the scenery's are added. The budgeted cost of the scenery itself is the
+Part 3 table. What the pictures show, looked at by eye: at eye level on these wooded holes the
+change is mostly that the woods are thinner; the other holes, though counted as drawn (9 from
+parkland's 1st tee on the desktop, 7 from Augusta's), sit low behind the trees and show only
+in glimpses through the gaps. From the Old Course's 1st nothing else is drawn, because the
+holes near it lie in its sea (Part 3), so its before and after look the same. The other holes
+read clearly only from high views (the flyover pictures of Part 3).
+
+An 18-hole bot round on every course (`qa/proof/scenery/bot/`, `node scripts/bot.mjs --course
+<id> --holes 18 --view portrait --tier low --scenery 1`), one after another with one browser at a
+time: production build, 390x844, real touch through the DevTools input domain, Low tier with Show
+other holes forced on, so the scenery is built and torn down on every hole. At the end of each
+round the bot checks every hole's score on the round's scorecard (the game's own score list)
+against the strokes it counted itself (one per swing, plus one per penalty the game announced)
+and against the score in that hole's summary.
+
+| Course | Holes | Strokes | To par | Shots | Minutes | Stuck | Console errors | Scorecard |
+|---|---|---|---|---|---|---|---|---|
+| Parkland | 18 | 66 | -6 | 66 | 33.9 | 0 | 0 | matches |
+| Links | 18 | 72 | 0 | 72 | 34 | 0 | 0 | matches |
+| Desert | 18 | 69 | -3 | 69 | 34 | 0 | 0 | matches |
+| Alpine | 18 | 68 | -4 | 68 | 43 | 0 | 0 | matches |
+| Tropical | 18 | 64 | -8 | 64 | 32.8 | 0 | 0 | matches |
+| Augusta National | 18 | 83 | +11 | 83 | 47.6 | 0 | 0 | matches |
+| Old Course | 18 | 81 | +9 | 81 | 34.2 | 0 | 0 | matches |
+
+No round had a penalty stroke, so the scorecard check did not exercise penalties this time. The
+bot swings at the HUD's suggested power, which now leaves the wind out, and makes no allowance
+for the wind itself, so its scores say little about how hard a course is. One hole to look at:
+on Augusta's 17th a putt from 0.67 m lipped out and ran on 10 m into the rough, and the hole
+ended at the stroke limit (9). Nothing in the ball physics, the putting, the course data or the
+hole definitions changed in this work (`git diff --stat 5b3556b HEAD -- src` touches none of
+them), so this is the existing putting on that green, not something the scenery caused; it was
+not looked into further.
+
+The community creator, rerun on this build with the same tool as its own proof
+(`node scripts/tools/levels.mjs qa/proof/scenery/creator/run <size> demo`, the build's
+in-memory cloud, real touch including a two-finger pinch), at 390x844 and 844x390
+(`qa/proof/scenery/creator/`): sign up, a template to a published hole, find it under New, like,
+Top, Mine, share link, play it from the card, delete it; every editor control (tee, pin and
+bend drags, the palette, a bunker dragged and pinched, delete, undo, redo, the pin dragged into
+water, a bad name); publish while offline and out when back; Delete my data. Everything came out
+as in the earlier proof (`qa/proof/levels/`) except the test shots' distances and Decorate's
+random count; taps to a published hole 11 at 390x844 and 13 at 844x390 (10 before: the putt read
+took 4 nudges instead of 1, which depends on where the test shot stopped). 0 console errors at
+both sizes. The creator's own code did not change in this work.
+
+A community hole is a course of one hole, so no other holes are built around it, and its course
+map shows that one hole and the clubhouse. `node scripts/tools/level-maps.mjs` checks it in the
+game at 390x844 (Low with Show other holes forced on, touch) and 1920x1080 (Medium, where it is
+on by default, mouse): Create, the par 3 template, Test play, then the map button, the hole map's
+Course toggle, Hole back, and close; the scenery reports nothing built, the course map labels the
+one hole and the clubhouse, play goes on afterwards, 0 console errors
+(`qa/proof/scenery/creator/maps/`, 9 of 9 checks at each size).
