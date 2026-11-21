@@ -79,13 +79,16 @@ export function placeLabels(items, bounds, size = { w: 26, h: 22 }, obstacles = 
       const r = { x: c.x - w / 2, y: c.y - hh / 2, w, h: hh };
       if (!hit(r)) { chosen = r; break; }
     }
-    // A hole at the edge of the screen (zoomed in): its spots on screen, moved in just far
-    // enough for the label to fit inside the edge.
+    // A hole at the edge of the screen or beside a button (zoomed in): its spots on view, moved
+    // just far enough for the label to fit inside the edge, and if that covers a button, set
+    // just clear of it (below, above, left or right).
+    const inside = (x, y) => ({ x: Math.min(Math.max(x, bounds.x), bounds.x + bounds.w - w), y: Math.min(Math.max(y, bounds.y), bounds.y + bounds.h - hh), w, h: hh });
     if (!chosen) for (const c of it.candidates) {
       if (!onView(c)) continue;
-      const x = Math.min(Math.max(c.x - w / 2, bounds.x), bounds.x + bounds.w - w), y = Math.min(Math.max(c.y - hh / 2, bounds.y), bounds.y + bounds.h - hh);
-      const r = { x, y, w, h: hh };
-      if (!hit(r)) { chosen = r; break; }
+      const base = inside(c.x - w / 2, c.y - hh / 2), tries = [base];
+      for (const o of obstacles) if (boxesOverlap(base, o)) tries.push(inside(base.x, o.y + o.h), inside(base.x, o.y - hh), inside(o.x - w, base.y), inside(o.x + o.w, base.y));
+      chosen = tries.find((r) => !hit(r)) || null;
+      if (chosen) break;
     }
     // Nowhere free near the hole: the label is left out (the hole is still drawn); at the
     // map's fitted zoom every course places all of its labels. inView: some spot it could take

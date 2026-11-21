@@ -37,6 +37,16 @@ describe('course map labels', () => {
     expect(out[1].inView).toBe(false);
   });
 
+  it('a hole just beside a button gets its label set clear of the button', () => {
+    const button = { x: 0, y: 0, w: 120, h: 60 };
+    // The spot is on view (below the button) but a label centered on it would cover the button.
+    const out = placeLabels([{ text: '13', candidates: [{ x: 40, y: 64 }] }], { x: 0, y: 0, w: 300, h: 300 }, { w: 26, h: 22 }, [button]);
+    expect(out[0].inView).toBe(true);
+    expect(out[0].box).toBeTruthy();
+    expect(overlaps(out[0].box, button)).toBe(false);
+    expect(out[0].box.y).toBe(60);
+  });
+
   it('fits the map into the free space it is drawn biggest in', () => {
     const clear = (r, obs) => obs.every((o) => !overlaps(r, o));
     // Upright phone: buttons across the top and the bottom leave a band between them.
