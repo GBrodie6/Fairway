@@ -1081,3 +1081,16 @@ every course at five sizes) passed 679 of 679 with 0 console errors. Labels plac
 The maps inside a community hole on this build passed 9 of 9 at 390x844, 844x390 and 1920x1080
 (`qa/proof/coursemap-fix/levelmaps/`). Unit tests for `freeRect` and the obstacles (498 tests).
 Nothing outside the course map changed.
+
+Full verify on 7f6266a (the fix and this write-up): 498 of 498 unit tests, the production build
+(43.49 MB), and the smoke run, 56 of 56 combinations inside their bands, agreement 99.97 to
+99.99 percent on all seven courses; its `dist` is byte-identical to the one the course map
+reruns used. Redeployed the same way (Vercel still had no token or login): the verified `dist`
+went to `gh-pages` (4bc8631), the staged tree matched it, and all 168 files the site then served
+matched it byte for byte. Live checks on it (`qa/proof/live-7f6266a/`, `NOTES.md` there), real
+touch and mouse events: the live tool at 390x844 and 1366x768; the course map at 390x844 and
+1920x1080 (78 of 78) and on every course at 844x390 (133 of 133); the desktop proof at
+1920x1080 (8 screens); the other holes at Medium at 390x844, 844x390 and 1920x1080; the maps
+inside a community hole at the same three sizes (9 of 9 each); and 3 holes each of Augusta
+National (touch, portrait) and the Old Course (mouse, landscape) played by the bot. 0 console
+errors in every one. Live at https://gbrodie6.github.io/Fairway/.
