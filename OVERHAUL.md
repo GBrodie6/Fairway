@@ -1013,3 +1013,20 @@ on by default, mouse): Create, the par 3 template, Test play, then the map butto
 Course toggle, Hole back, and close; the scenery reports nothing built, the course map labels the
 one hole and the clubhouse, play goes on afterwards, 0 console errors
 (`qa/proof/scenery/creator/maps/`, 9 of 9 checks at each size).
+
+Full verify on 6db3896 (the commit with this section's first part), in a separate worktree:
+495 of 495 unit tests (42 files), the production build (43.49 MB), and the smoke run over every
+course and time of day, 56 of 56 combinations inside the luma and clipping bands, with the
+renderer and physics agreement at 99.97 to 99.99 percent on all seven courses. Its `dist` is
+byte-identical (SHA-256 of all 168 files) to the one the bot rounds and the creator checks above
+ran on.
+
+Deploy, the same routes in order: Vercel had no `VERCEL_TOKEN` and no stored login, and the
+temporary mode was not used; the GitHub Pages flow worked: the verified `dist` went to the
+`gh-pages` branch (a430eaa), the staged tree's hashes matched it before the push, and once the
+site served the new bundle all 168 files were fetched from it and matched the verified build
+byte for byte. Live checks (`qa/proof/live-6db3896/`, `NOTES.md` there): the live tool at
+390x844 and 1366x768, the course map at 390x844 and 1920x1080 (78 of 78), the desktop proof at
+1920x1080 (8 screens), the other holes at Medium with their course maps, the maps inside a
+community hole (9 of 9 at each size), and 3 holes of Augusta National played by the bot through
+real touch. 0 console errors in every one. Live at https://gbrodie6.github.io/Fairway/.
