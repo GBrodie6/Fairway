@@ -189,7 +189,7 @@ table.card-t .over { color: var(--warm); }
 .mapwrap .mapseg button, .coursemap .cmseg button { min-height: 44px; min-width: 64px; }
 .desk .mapwrap .mapseg { scale: var(--hs, 1); transform-origin: top left; }
 /* The course map (ui/courseMap.js): the whole screen, two rows of controls along the top and
-   the hole details along the bottom; the map's labels keep clear of all of them. */
+   the hole details along the bottom; the map and its labels keep clear of all of them. */
 .coursemap { position: absolute; inset: 0; pointer-events: auto; background: #1b2a20; z-index: 30; outline: none; }
 .coursemap .cmcanvas { position: absolute; inset: 0; touch-action: none; cursor: grab; }
 .coursemap .cmcanvas:active { cursor: grabbing; }
@@ -204,6 +204,14 @@ table.card-t .over { color: var(--warm); }
 .coursemap .cmbottom > * { pointer-events: auto; }
 .coursemap .cminfo { max-width: 100%; text-align: center; font-size: 14px; padding: 9px 14px; }
 .coursemap .cmstart { min-height: 48px; }
+/* A short, wide screen (a phone on its side): the details go to the bottom left and the start
+   button to the bottom right, each taking only its own width, so the map can use the whole
+   height between the corners (ui/courseMap.js fits it into the free space it finds). */
+@media (orientation: landscape) and (max-height: 520px) {
+  .coursemap .cmbottom { flex-direction: row; justify-content: space-between; align-items: flex-end; }
+  .coursemap .cminfo { max-width: 36%; text-align: left; }
+  .coursemap .cmstart { order: 1; width: auto; margin-left: auto; }
+}
 
 /* Top center, where no HUD control lives, so a late tap cannot land on the club button. */
 .intro-skip { position: absolute; left: 50%; top: calc(14px + var(--safe-t)); transform: translateX(-50%); pointer-events: auto; }

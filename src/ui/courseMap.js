@@ -58,13 +58,19 @@ const segDist = (px, pz, a, b) => {
   return Math.hypot(px - a.x - vx * u, pz - a.z - vz * u);
 };
 
+const boxesOverlap = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+const insideBox = (p, b) => p.x >= b.x && p.y >= b.y && p.x <= b.x + b.w && p.y <= b.y + b.h;
+
 // Place one label per hole (and the clubhouse) in screen space with no overlaps: each hole tries
 // spots behind its tee, beside it, then along its line, and takes the first that is free.
-// Exported for tests: boxes are { x, y, w, h }.
-export function placeLabels(items, bounds, size = { w: 26, h: 22 }) {
+// obstacles: boxes no label may cover (the map's own buttons and text). Exported for tests:
+// boxes are { x, y, w, h }.
+export function placeLabels(items, bounds, size = { w: 26, h: 22 }, obstacles = []) {
   const placed = [];
-  const hit = (r) => placed.some((p) => r.x < p.x + p.w && p.x < r.x + r.w && r.y < p.y + p.h && p.y < r.y + r.h)
+  const hit = (r) => placed.some((p) => boxesOverlap(r, p)) || obstacles.some((o) => boxesOverlap(r, o))
     || r.x < bounds.x || r.y < bounds.y || r.x + r.w > bounds.x + bounds.w || r.y + r.h > bounds.y + bounds.h;
+  // A spot is on view when it is on screen and not under one of the map's buttons.
+  const onView = (c) => insideBox(c, bounds) && !obstacles.some((o) => insideBox(c, o));
   const out = [];
   for (const it of items) {
     const w = it.w || size.w, hh = it.h || size.h;
@@ -76,18 +82,42 @@ export function placeLabels(items, bounds, size = { w: 26, h: 22 }) {
     // A hole at the edge of the screen (zoomed in): its spots on screen, moved in just far
     // enough for the label to fit inside the edge.
     if (!chosen) for (const c of it.candidates) {
-      if (c.x < bounds.x || c.y < bounds.y || c.x > bounds.x + bounds.w || c.y > bounds.y + bounds.h) continue;
+      if (!onView(c)) continue;
       const x = Math.min(Math.max(c.x - w / 2, bounds.x), bounds.x + bounds.w - w), y = Math.min(Math.max(c.y - hh / 2, bounds.y), bounds.y + bounds.h - hh);
       const r = { x, y, w, h: hh };
       if (!hit(r)) { chosen = r; break; }
     }
     // Nowhere free near the hole: the label is left out (the hole is still drawn); at the
     // map's fitted zoom every course places all of its labels. inView: some spot it could take
-    // is on screen (a hole off screen when zoomed in has no label to place).
-    const inView = it.candidates.some((c) => c.x >= bounds.x && c.y >= bounds.y && c.x <= bounds.x + bounds.w && c.y <= bounds.y + bounds.h);
+    // is on view (a hole off screen or under the buttons when zoomed in has no label to place).
+    const inView = it.candidates.some(onView);
     if (chosen) { placed.push(chosen); out.push({ ...it, box: chosen, inView }); } else out.push({ ...it, box: null, inView });
   }
   return out;
+}
+
+// The largest part of a W x H screen, clear of the obstacles, to fit a map of the given aspect
+// (width over height) into: every rectangle whose sides lie on the screen margin or an
+// obstacle's edge, the one the map is drawn biggest in (then the larger). On a phone held
+// upright that is the band between the buttons along the top and the bottom; on a short, wide
+// screen it can be the full-height column between buttons in the corners. Exported for tests.
+export function freeRect(W, H, obstacles, aspect = 1, margin = 10) {
+  const xs = [margin, W - margin], ys = [margin, H - margin];
+  for (const o of obstacles) { xs.push(o.x, o.x + o.w); ys.push(o.y, o.y + o.h); }
+  const X = [...new Set(xs.filter((v) => v >= margin && v <= W - margin))].sort((a, b) => a - b);
+  const Y = [...new Set(ys.filter((v) => v >= margin && v <= H - margin))].sort((a, b) => a - b);
+  let best = null, bestS = -1, bestA = -1;
+  for (let i = 0; i < X.length; i++) for (let j = i + 1; j < X.length; j++) {
+    const w = X[j] - X[i];
+    if (w < 80) continue;
+    for (let k = 0; k < Y.length; k++) for (let l = k + 1; l < Y.length; l++) {
+      const r = { x: X[i], y: Y[k], w, h: Y[l] - Y[k] };
+      if (r.h < 80 || obstacles.some((o) => boxesOverlap(r, o))) continue;
+      const sc = Math.min(r.w / aspect, r.h), area = r.w * r.h;
+      if (sc > bestS + 1e-6 || (sc > bestS - 1e-6 && area > bestA)) { best = r; bestS = sc; bestA = area; }
+    }
+  }
+  return best || { x: margin, y: margin, w: Math.max(80, W - margin * 2), h: Math.max(80, H - margin * 2) };
 }
 
 export function createCourseMap(parent, { settings, onClose, onPick, onHoleMap } = {}) {
@@ -115,13 +145,21 @@ export function createCourseMap(parent, { settings, onClose, onPick, onHoleMap }
   // --- view: screen = (world - origin) * s, north (-Z) up ---
   const toScreen = (x, z) => ({ x: (x - state.view.ox) * state.view.s, y: (z - state.view.oy) * state.view.s });
   const toWorldPt = (sx, sy) => ({ x: sx / state.view.s + state.view.ox, z: sy / state.view.s + state.view.oy });
-  // The part of the canvas the map may use (clear of the buttons along the top and bottom).
+  // The map's own buttons and text, as boxes on the canvas with a 6 px margin: no label goes
+  // under them, and the fitted map keeps clear of them.
+  const controlBoxes = () => {
+    const wr = wrap.getBoundingClientRect(), out = [];
+    for (const el of [title, seg, zoomIn, zoomOut, fitBtn, closeBtn, info, startBtn]) {
+      if (el.classList.contains('hidden')) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width && r.height) out.push({ x: r.left - wr.left - 6, y: r.top - wr.top - 6, w: r.width + 12, h: r.height + 12 });
+    }
+    return out;
+  };
+  // The part of the canvas the fitted map uses: the free rectangle it is drawn biggest in.
   const usable = () => {
-    const wr = wrap.getBoundingClientRect();
-    let top = 10, bottom = state.H - 10;
-    for (const el of [title, seg, zoomIn, zoomOut, fitBtn, closeBtn]) if (!el.classList.contains('hidden')) top = Math.max(top, el.getBoundingClientRect().bottom - wr.top + 6);
-    for (const el of [info, startBtn]) if (!el.classList.contains('hidden')) bottom = Math.min(bottom, el.getBoundingClientRect().top - wr.top - 6);
-    return { x: 10, y: top, w: state.W - 20, h: Math.max(80, bottom - top) };
+    const b = state.routing ? state.routing.bounds : null;
+    return freeRect(state.W, state.H, controlBoxes(), b ? (b.maxX - b.minX) / Math.max(1, b.maxZ - b.minZ) : 1);
   };
   function fit() {
     const b = state.routing.bounds, u = usable();
@@ -197,7 +235,7 @@ export function createCourseMap(parent, { settings, onClose, onPick, onHoleMap }
   }
 
   function drawLabels(ch) {
-    const u = usable(), items = [];
+    const items = [];
     const fontPx = state.W >= 1600 ? 15 : 13;
     const bw = Math.round(fontPx * 1.9), bh = Math.round(fontPx * 1.65);
     // The clubhouse label first, then the current or picked hole, then the rest in order.
@@ -211,7 +249,8 @@ export function createCourseMap(parent, { settings, onClose, onPick, onHoleMap }
       for (const q of sh.line) { const p = toScreen(q.x, q.z); cands.push({ x: p.x, y: p.y }); }
       items.push({ kind: 'hole', index: i, text: String(sh.number), w: bw, h: bh, candidates: cands });
     }
-    state.labels = placeLabels(items, u);
+    // Labels may go anywhere on screen that the buttons leave free.
+    state.labels = placeLabels(items, { x: 10, y: 10, w: state.W - 20, h: state.H - 20 }, undefined, controlBoxes());
     ctx.font = `700 ${fontPx}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     for (const l of state.labels) {
       if (!l.box) continue;
