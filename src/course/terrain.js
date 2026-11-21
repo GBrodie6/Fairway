@@ -64,6 +64,13 @@ export function makeMacro(course, hole) {
   };
 }
 
+// The steepest ground a cup may be cut on for a course: 4.5 percent at the usual green speed,
+// divided by the course's green speed when its greens run faster (see the pin positions below).
+export const CUP_MAX_SLOPE = 0.045;
+export function maxCupSlopeFor(course) {
+  return CUP_MAX_SLOPE / Math.max(1, courseConditions(course).greenSpeed);
+}
+
 export function buildTerrain(course, hole, { pinIndex } = {}) {
   const th = course.theme;
   const { line, bounds, green } = hole;
@@ -546,9 +553,15 @@ export function buildTerrain(course, hole, { pinIndex } = {}) {
   }
 
   // Pin positions: the layout proposes candidates, the finished ground decides. A cup is only
-  // cut where the green is close to level (under 4.5 percent), as a greenkeeper would.
+  // cut where the green is close to level, as a greenkeeper would: under 4.5 percent at the
+  // usual green speed. A course with faster greens (conditions.greenSpeed above 1) has less
+  // rolling friction, so its cups need flatter ground for the same margin: the limit is divided
+  // by the green speed. Without this, Augusta's greens (speed 1.28, friction that holds a ball
+  // only up to about 4.4 percent) got cups on 4.5 percent ground, where a missed putt never
+  // slows down and runs off the green. Slower greens keep the usual limit.
   const slopeAt = (x, z) => { const o = {}; normalAt(x, z, o); return Math.hypot(o.x, o.z) / o.y; };
-  let pins = hole.pins.filter((p) => groundSurfaceAt(p.x, p.z) === SURFACES.GREEN && slopeAt(p.x, p.z) < 0.045);
+  const maxCupSlope = maxCupSlopeFor(course);
+  let pins = hole.pins.filter((p) => groundSurfaceAt(p.x, p.z) === SURFACES.GREEN && slopeAt(p.x, p.z) < maxCupSlope);
   if (!pins.length) {
     // No candidate is flat enough: search the green for the flattest spot well inside the edge.
     let best = null;

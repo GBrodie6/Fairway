@@ -1094,3 +1094,69 @@ touch and mouse events: the live tool at 390x844 and 1366x768; the course map at
 inside a community hole at the same three sizes (9 of 9 each); and 3 holes each of Augusta
 National (touch, portrait) and the Old Course (mouse, landscape) played by the bot. 0 console
 errors in every one. Live at https://gbrodie6.github.io/Fairway/.
+
+## Augusta's 17th: the short putt that ran 10 m
+
+In the part 5 bot round a putt of 0.67 m on Augusta National's 17th lipped out and stopped about
+10 m away in the rough. Reproduced in Node and in `tests/putting.test.js`, with the cup the
+round had (x 7.380, z -409.044) and the bot's putt: 0.67 m east of it, the direct line (the HUD
+showed no break), power 0.681 against the suggested 0.69.
+
+- Cup capture (`physics/ball.js`, unchanged): on each 1/120 s roll step, a ball within the cup's
+  radius (5.4 cm) drops if its speed is at most 1.63 m/s times sqrt(1 - (d / radius)^2), d its
+  distance from the center (the dead-center limit is from Holmes; it falls to 0 at the edge).
+  Faster, it lips out once: turned aside by up to about 0.45 radians (more the nearer the
+  edge) and slowed to 72 percent. A lipped ball can still drop if it comes back slowly enough.
+- The putt: it entered the cup at 99 percent of the radius (5.35 cm from the center) at
+  0.717 m/s, where the limit is 0.214 m/s, so it lipped out per the rule and left at 0.51 m/s.
+- The slope: the cup was cut on 4.50 percent ground, falling toward 129 degrees, 4.3 to
+  5.1 percent within 0.67 m and up to 8.7 percent within 3 m. Augusta's greens run at green
+  speed 1.28, so their rolling friction is 0.429 m/s^2; gravity along a 4.50 percent slope is
+  0.440 m/s^2. A ball moving downhill there does not slow down: after the lip it fell to
+  0.1 m/s, then sped up down the fall line for about 13 s (to 1.7 m/s) and ran off the green.
+  Missed without a lip (power 0.60 to 0.67) it runs the same 10.2 to 10.5 m. The suggested
+  power, 0.69, only holes because the ball lips out and drops on its way back; 0.681 misses.
+- Verdict: the cup rule and the roll did what their rules say, but the cup should not have
+  been there. Cups were cut on ground under 4.5 percent, a limit set for the usual green
+  speed (friction 0.549 m/s^2, which holds a rolling ball up to 5.6 percent). Course conditions
+  later made Augusta's greens 1.28 times faster, and the cup rule did not follow, so it allowed
+  cups on ground (4.50 percent) steeper than those greens hold a rolling ball on (4.38
+  percent). That is the bug.
+- Fix (`course/terrain.js`, `maxCupSlopeFor`): the limit is divided by the course's green speed
+  (3.52 percent at Augusta, 4.29 at the Old Course), the same margin against a ball running
+  away on every course; courses at the usual speed and slower keep 4.5 percent. Nothing in the
+  ball physics, the capture rule or the putt solver changed. Of 126 holes only Augusta's
+  change: 10 holes lose steep cup candidates and the cup the round uses moves on 5 (holes 3,
+  6, 12, 14 and 17; the 17th's is now on 2.78 percent). Every other course's cups are
+  unchanged and its survey numbers below are identical.
+
+Putts of 0.3 to 2 m on the 3 steepest greens of every course (`scripts/tools/putt-survey.mjs`,
+`qa/proof/putting/`): 6 distances, 24 directions, each putted with the solver's read (the HUD's
+line and pace) at pace x0.95, x1 and x1.05 and line -1, 0 and +1 degree, plus the direct line
+at the solver's pace: 1,440 putts a green, 4,320 a course.
+
+| course | green speed | rolling ball held up to | steepest 3 pins | holed | lip-outs | longest lip-out run | misses past 2 m | past 5 m | off the green |
+|---|---|---|---|---|---|---|---|---|---|
+| parkland | 1 | 5.6% | 3.1, 3.0, 2.84% | 77% | 19 | 0.35 m | 0 | 0 | 0 |
+| links | 1 | 5.6% | 2.99, 2.71, 2.67% | 78% | 20 | 0.3 m | 0 | 0 | 0 |
+| desert | 1 | 5.6% | 3.11, 3.03, 2.83% | 77% | 17 | 0.36 m | 0 | 0 | 0 |
+| alpine | 1 | 5.6% | 3.74, 3.13, 2.99% | 76% | 19 | 0.67 m | 0 | 0 | 0 |
+| tropical | 1 | 5.6% | 3.09, 2.98, 2.69% | 78% | 15 | 0.37 m | 0 | 0 | 0 |
+| Old Course | 1.05 | 5.33% | 4.28, 3.12, 2.72% | 74% | 12 | 0.64 m | 23 | 0 | 0 |
+| Augusta before | 1.28 | 4.38% | 4.5, 3.97, 3.86% (17, 6, 12) | 53% | 17 | 10.9 m | 729 | 478 | 521 |
+| Augusta after | 1.28 | 4.38% | 3.42, 3.08, 3.06% (2, 14, 9) | 71% | 26 | 1.68 m | 43 | 0 | 0 |
+
+By distance, lip-outs are rare everywhere (0 from 0.3 m; 0 to 9 per course at each other
+distance) and on the usual greens a lip-out or miss stops within 1.8 m. On Augusta's former
+17th, 6th and 12th the same putts now hole 74, 82 and 81 percent (was 40, 56 and 65), with no
+miss past 2 m (was 403, 284 and 42) and none off the green (was 250, 271 and 0). What remains
+for a decision, not a bug: on Augusta's and the Old Course's steepest fast greens a missed putt
+of 1 to 2 m can still finish 2 to 4.5 m away (43 and 23 of 4,320), and the putt solver accepts
+a pace that holes only by lipping out and dropping back (the 0.69 above). Neither was changed.
+
+Tests: `tests/putting.test.js` reproduces the putt at the old cup (it lips out at the edge at
+0.65 to 0.8 m/s and finishes more than 9 m away in the rough) and shows the cause (gravity at
+that cup above the green's friction); the regression tests check that every cup on every course
+is under its limit with gravity there under 85 percent of the green's friction, and that short
+putts at Augusta's 17th now stay within 2 m when missed. Run against the old rule, the
+three regression tests fail. The existing putting tests pass (503 tests).

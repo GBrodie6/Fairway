@@ -1,0 +1,327 @@
+{
+ "when": "2026-11-21T11:37:57.981Z",
+ "dists": [
+  0.3,
+  0.5,
+  0.75,
+  1,
+  1.5,
+  2
+ ],
+ "dirs": 24,
+ "courses": [
+  {
+   "course": "augusta",
+   "greenSpeed": 1.28,
+   "friction": 0.4292,
+   "holdSlope": 4.38,
+   "pins": [
+    {
+     "hole": 2,
+     "pinSlopePct": 3.42,
+     "ring2mPct": 3.59,
+     "pullOverFriction": 0.78
+    },
+    {
+     "hole": 14,
+     "pinSlopePct": 3.08,
+     "ring2mPct": 3.7,
+     "pullOverFriction": 0.703
+    },
+    {
+     "hole": 9,
+     "pinSlopePct": 3.06,
+     "ring2mPct": 3.5,
+     "pullOverFriction": 0.699
+    },
+    {
+     "hole": 11,
+     "pinSlopePct": 3.02,
+     "ring2mPct": 4.75,
+     "pullOverFriction": 0.689
+    },
+    {
+     "hole": 3,
+     "pinSlopePct": 2.9,
+     "ring2mPct": 4.09,
+     "pullOverFriction": 0.663
+    },
+    {
+     "hole": 10,
+     "pinSlopePct": 2.9,
+     "ring2mPct": 3.83,
+     "pullOverFriction": 0.661
+    },
+    {
+     "hole": 18,
+     "pinSlopePct": 2.88,
+     "ring2mPct": 3.33,
+     "pullOverFriction": 0.658
+    },
+    {
+     "hole": 17,
+     "pinSlopePct": 2.78,
+     "ring2mPct": 7.12,
+     "pullOverFriction": 0.636
+    },
+    {
+     "hole": 5,
+     "pinSlopePct": 2.71,
+     "ring2mPct": 4.75,
+     "pullOverFriction": 0.619
+    },
+    {
+     "hole": 13,
+     "pinSlopePct": 2.55,
+     "ring2mPct": 3.61,
+     "pullOverFriction": 0.581
+    },
+    {
+     "hole": 4,
+     "pinSlopePct": 2.54,
+     "ring2mPct": 3.23,
+     "pullOverFriction": 0.581
+    },
+    {
+     "hole": 12,
+     "pinSlopePct": 1.92,
+     "ring2mPct": 2.79,
+     "pullOverFriction": 0.439
+    },
+    {
+     "hole": 15,
+     "pinSlopePct": 1.9,
+     "ring2mPct": 2.64,
+     "pullOverFriction": 0.433
+    },
+    {
+     "hole": 1,
+     "pinSlopePct": 1.8,
+     "ring2mPct": 8.6,
+     "pullOverFriction": 0.412
+    },
+    {
+     "hole": 6,
+     "pinSlopePct": 1.72,
+     "ring2mPct": 2.16,
+     "pullOverFriction": 0.393
+    },
+    {
+     "hole": 8,
+     "pinSlopePct": 1.52,
+     "ring2mPct": 1.83,
+     "pullOverFriction": 0.347
+    },
+    {
+     "hole": 7,
+     "pinSlopePct": 1.2,
+     "ring2mPct": 2.07,
+     "pullOverFriction": 0.275
+    },
+    {
+     "hole": 16,
+     "pinSlopePct": 1.02,
+     "ring2mPct": 4.79,
+     "pullOverFriction": 0.233
+    }
+   ],
+   "greens": [
+    {
+     "hole": 17,
+     "pinSlopePct": 2.78,
+     "ring2mPct": 7.12,
+     "putts": 1440,
+     "holed": 1066,
+     "lipOuts": 10,
+     "over2m": 0,
+     "over5m": 0,
+     "offGreen": 0,
+     "byDist": {
+      "1": {
+       "putts": 240,
+       "holed": 171,
+       "lipOuts": 0,
+       "over2m": 0,
+       "maxRun": 0.72
+      },
+      "2": {
+       "putts": 240,
+       "holed": 97,
+       "lipOuts": 3,
+       "over2m": 0,
+       "maxRun": 1.89
+      },
+      "0.3": {
+       "putts": 240,
+       "holed": 240,
+       "lipOuts": 0,
+       "over2m": 0,
+       "maxRun": 0
+      },
+      "0.5": {
+       "putts": 240,
+       "holed": 224,
+       "lipOuts": 3,
+       "over2m": 0,
+       "maxRun": 1.01
+      },
+      "0.75": {
+       "putts": 240,
+       "holed": 183,
+       "lipOuts": 4,
+       "over2m": 0,
+       "maxRun": 1.66
+      },
+      "1.5": {
+       "putts": 240,
+       "holed": 151,
+       "lipOuts": 0,
+       "over2m": 0,
+       "maxRun": 1.08
+      }
+     },
+     "lipRun": {
+      "median": 0.68,
+      "p90": 1.73,
+      "max": 1.89
+     },
+     "missRun": {
+      "median": 0.37,
+      "p90": 0.75,
+      "max": 1.66
+     }
+    },
+    {
+     "hole": 6,
+     "pinSlopePct": 1.72,
+     "ring2mPct": 2.16,
+     "putts": 1440,
+     "holed": 1175,
+     "lipOuts": 10,
+     "over2m": 0,
+     "over5m": 0,
+     "offGreen": 0,
+     "byDist": {
+      "1": {
+       "putts": 240,
+       "holed": 184,
+       "lipOuts": 3,
+       "over2m": 0,
+       "maxRun": 1.17
+      },
+      "2": {
+       "putts": 240,
+       "holed": 145,
+       "lipOuts": 4,
+       "over2m": 0,
+       "maxRun": 1.07
+      },
+      "0.3": {
+       "putts": 240,
+       "holed": 240,
+       "lipOuts": 0,
+       "over2m": 0,
+       "maxRun": 0
+      },
+      "0.5": {
+       "putts": 240,
+       "holed": 240,
+       "lipOuts": 0,
+       "over2m": 0,
+       "maxRun": 0
+      },
+      "0.75": {
+       "putts": 240,
+       "holed": 206,
+       "lipOuts": 1,
+       "over2m": 0,
+       "maxRun": 1
+      },
+      "1.5": {
+       "putts": 240,
+       "holed": 160,
+       "lipOuts": 2,
+       "over2m": 0,
+       "maxRun": 1.45
+      }
+     },
+     "lipRun": {
+      "median": 0.34,
+      "p90": 0.5,
+      "max": 0.55
+     },
+     "missRun": {
+      "median": 0.43,
+      "p90": 0.8,
+      "max": 1.45
+     }
+    },
+    {
+     "hole": 12,
+     "pinSlopePct": 1.92,
+     "ring2mPct": 2.79,
+     "putts": 1440,
+     "holed": 1169,
+     "lipOuts": 10,
+     "over2m": 0,
+     "over5m": 0,
+     "offGreen": 0,
+     "byDist": {
+      "1": {
+       "putts": 240,
+       "holed": 185,
+       "lipOuts": 3,
+       "over2m": 0,
+       "maxRun": 1.24
+      },
+      "2": {
+       "putts": 240,
+       "holed": 138,
+       "lipOuts": 3,
+       "over2m": 0,
+       "maxRun": 1.51
+      },
+      "0.3": {
+       "putts": 240,
+       "holed": 240,
+       "lipOuts": 0,
+       "over2m": 0,
+       "maxRun": 0
+      },
+      "0.5": {
+       "putts": 240,
+       "holed": 240,
+       "lipOuts": 0,
+       "over2m": 0,
+       "maxRun": 0
+      },
+      "0.75": {
+       "putts": 240,
+       "holed": 210,
+       "lipOuts": 1,
+       "over2m": 0,
+       "maxRun": 1.03
+      },
+      "1.5": {
+       "putts": 240,
+       "holed": 156,
+       "lipOuts": 3,
+       "over2m": 0,
+       "maxRun": 1.52
+      }
+     },
+     "lipRun": {
+      "median": 0.33,
+      "p90": 0.57,
+      "max": 0.96
+     },
+     "missRun": {
+      "median": 0.42,
+      "p90": 0.7,
+      "max": 1.52
+     }
+    }
+   ]
+  }
+ ]
+}
